@@ -466,8 +466,9 @@ HEAD = """<!DOCTYPE html>
 <meta property="og:description" content="{description}">
 <meta property="og:url" content="{canonical}">
 <meta property="og:image" content="{ogimage}">
-<meta property="og:image:width" content="1600">
-<meta property="og:image:height" content="1067">
+<meta property="og:image:width" content="{ogbreedte}">
+<meta property="og:image:height" content="{oghoogte}">
+<meta property="og:image:alt" content="{ogalt}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#22262a">
 <link rel="icon" href="{favicon}" type="image/png">
@@ -525,6 +526,13 @@ def render(slug, meta, inhoud, ver):
     for extra in meta.get("schema", []):
         graph.append(extra)
 
+    # og:image: altijd de jpg-variant (webp wordt niet door elke scraper van
+    # linkvoorbeelden gelezen) en de echte afmetingen erbij.
+    ogpad = meta.get("ogimage", "/images/na-herstelde-onderdorpel-1600.webp")
+    ogpad = re.sub(r"-\d+\.(webp|jpg)$", "", ogpad) + "-1000.jpg"
+    with Image.open(ROOT / ogpad.lstrip("/")) as og:
+        ogbreedte, oghoogte = og.size
+
     jsonld = json.dumps(
         {"@context": "https://schema.org", "@graph": graph},
         ensure_ascii=False, separators=(",", ":"),
@@ -537,7 +545,10 @@ def render(slug, meta, inhoud, ver):
         robots='<meta name="robots" content="noindex,follow">\n' if meta.get("noindex") else "",
         ogtype=meta.get("ogtype", "website"),
         ogtitle=meta.get("ogtitle", meta["title"]),
-        ogimage=SITE + meta.get("ogimage", "/images/na-herstelde-onderdorpel-1600.webp"),
+        ogimage=SITE + ogpad,
+        ogbreedte=ogbreedte,
+        oghoogte=oghoogte,
+        ogalt=meta.get("ogalt", "Hersteld kunststof kozijn met nieuwe Renolit folie"),
         favicon=FAVICON,
         fonts=FONTS,
         stylesheets=stylesheets,
