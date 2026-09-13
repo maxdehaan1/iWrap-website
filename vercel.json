@@ -6,31 +6,132 @@
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-        { "key": "Permissions-Policy", "value": "geolocation=(), microphone=(), camera=()" }
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "geolocation=(), microphone=(), camera=()"
+        }
       ]
     },
     {
       "source": "/images/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     },
     {
       "source": "/css/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     },
     {
       "source": "/js/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     }
   ],
   "redirects": [
-    { "source": "/kunststof-kozijnen-herstellen", "destination": "/kunststof-kozijn-herstellen", "permanent": true },
-    { "source": "/kozijnherstel", "destination": "/kunststof-kozijn-herstellen", "permanent": true },
-    { "source": "/over-ons", "destination": "/over-iwrap", "permanent": true },
-    { "source": "/offerte-aanvragen", "destination": "/offerte", "permanent": true },
-    { "source": "/prijzen", "destination": "/kosten", "permanent": true },
-    { "source": "/faq", "destination": "/veelgestelde-vragen", "permanent": true }
+    {
+      "source": "/kunststof-kozijnen-herstellen",
+      "destination": "/kunststof-kozijn-herstellen",
+      "permanent": true
+    },
+    {
+      "source": "/kozijnherstel",
+      "destination": "/kunststof-kozijn-herstellen",
+      "permanent": true
+    },
+    {
+      "source": "/over-ons",
+      "destination": "/over-iwrap",
+      "permanent": true
+    },
+    {
+      "source": "/offerte-aanvragen",
+      "destination": "/offerte",
+      "permanent": true
+    },
+    {
+      "source": "/prijzen",
+      "destination": "/kosten",
+      "permanent": true
+    },
+    {
+      "source": "/faq",
+      "destination": "/veelgestelde-vragen",
+      "permanent": true
+    },
+    {
+      "source": "/kozijnen-herstellen",
+      "destination": "/kunststof-kozijn-herstellen",
+      "permanent": true
+    },
+    {
+      "source": "/kozijnen-restylen",
+      "destination": "/kunststof-kozijn-herstellen",
+      "permanent": true
+    },
+    {
+      "source": "/devoordelen",
+      "destination": "/kunststof-kozijn-herstellen",
+      "permanent": true
+    },
+    {
+      "source": "/projecten",
+      "destination": "/resultaten",
+      "permanent": true
+    },
+    {
+      "source": "/portfolio",
+      "destination": "/resultaten",
+      "permanent": true
+    },
+    {
+      "source": "/portfolio/:pad*",
+      "destination": "/resultaten",
+      "permanent": true
+    },
+    {
+      "source": "/portfolio_cat/:pad*",
+      "destination": "/resultaten",
+      "permanent": true
+    },
+    {
+      "source": "/sitemap_index.xml",
+      "destination": "/sitemap.xml",
+      "permanent": true
+    },
+    {
+      "source": "/page-sitemap.xml",
+      "destination": "/sitemap.xml",
+      "permanent": true
+    },
+    {
+      "source": "/wp-sitemap.xml",
+      "destination": "/sitemap.xml",
+      "permanent": true
+    }
   ]
 }
