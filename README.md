@@ -147,6 +147,46 @@ kan dat rechtstreeks uitlezen zonder de tekst te hoeven ontleden — dan komt ee
 als kaart in je CRM te staan in plaats van als mailtje. Wil je het meteen zo:
 vervang de `fetch`-aanroep onderin `js/offerte.js` door je Make-webhook-URL.
 
+## Live zetten via GitHub en Vercel
+
+Zelfde volgorde als bij kozijnwrap.nl en houtnerffolie.nl: **eerst GitHub, dan Vercel
+importeren.** Andersom kan ook, maar dan moet je de koppeling achteraf alsnog leggen.
+
+1. **Maak een lege repo** op github.com: naam `iwrap-website`, publiek (net als de andere
+   twee), en zet géén README, .gitignore of licentie aan — die zitten hier al in.
+2. **Push deze map.** De remote staat al ingesteld:
+   ```bash
+   cd ~/Downloads/iwrap-project
+   git push -u origin main
+   ```
+3. **Importeer in Vercel.** Add New → Project → Import Git Repository → `iwrap-website`.
+   Framework preset op **Other**, build command en output directory leeg laten: de HTML
+   in de repo is al gebouwd, Vercel hoeft alleen te serveren. Deploy.
+
+Je krijgt dan een adres als `iwrap-website.vercel.app` waar je hem steeds live kunt
+bekijken. Het domein iwrap.nl blijft ongemoeid tot je het zelf koppelt.
+
+### Daarna: elke wijziging live krijgen
+
+```bash
+python3 build.py            # de HTML in de root opnieuw genereren
+git add -A && git commit -m "wat je veranderd hebt"
+git push
+```
+
+Vercel bouwt automatisch opnieuw bij elke push naar `main`. **Vergeet `build.py` niet** —
+Vercel draait hem niet, het is de gegenereerde HTML in de repo die geserveerd wordt.
+
+### Twee dingen om te weten
+
+- **De canonicals wijzen naar `https://www.iwrap.nl`**, ook op het vercel.app-adres. Dat is
+  precies de bedoeling: Google ziet dan dat de echte versie op je eigen domein staat en
+  behandelt het voorbeeld niet als een concurrerende kopie. Niet weghalen.
+- **De repo is publiek**, dus de Web3Forms-key die je er straks in zet is voor iedereen te
+  zien. Dat is bij Web3Forms normaal — die key hoort client-side te staan — maar zet in je
+  Web3Forms-account wél de domeinbeperking aan, anders kan iemand anders formulieren naar
+  jouw mailbox sturen.
+
 ## Wat er nog moet gebeuren
 
 **Voordat de site live gaat:**
