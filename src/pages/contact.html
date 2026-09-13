@@ -1,0 +1,99 @@
+<!-- {
+  "title": "Contact opnemen met iWrap",
+  "description": "Bel, mail of vraag direct een offerte aan. iWrap zit in Hilversum en werkt door heel Nederland. Reactie binnen één werkdag.",
+  "ogtitle": "Contact opnemen met iWrap",
+  "bodyclass": "tekstpagina",
+  "css": ["content", "home"],
+  "js": ["main"],
+  "kruimels": [["Contact", "/contact"]],
+  "schema": [{"@type": "ContactPage", "name": "Contact iWrap"}]
+} -->
+
+<section class="pagina-hero">
+  <div class="wrap">
+    <nav class="kruimels" aria-label="Kruimelpad">
+      <ol><li><a href="/">Home</a></li><li>Contact</li></ol>
+    </nav>
+    <p class="opschrift">Contact</p>
+    <h1>Even overleggen of meteen een offerte?</h1>
+    <p class="lede">Voor een offerte is het formulier het snelst — daar staan precies de
+    vragen in die we anders toch zouden stellen. Wil je gewoon iets vragen, bel of mail
+    dan gerust.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="doelgroepen">
+      <a class="doelgroep" href="/offerte">
+        <h3>Offerte aanvragen</h3>
+        <p>Vier vragen, een paar foto's en meteen een prijsindicatie. Antwoord
+        {{feit.reactietijd}}.</p>
+        <span class="pijl">Start de aanvraag</span>
+      </a>
+      <a class="doelgroep" href="tel:{{bedrijf.telefoon_tel}}">
+        <h3>Bellen</h3>
+        <p><strong>{{bedrijf.telefoon}}</strong><br>Op dinsdag, woensdag en donderdag
+        zijn we meestal op locatie — spreek gerust iets in.</p>
+        <span class="pijl">Bel ons</span>
+      </a>
+      <a class="doelgroep" href="mailto:{{bedrijf.email}}">
+        <h3>Mailen</h3>
+        <p><strong>{{bedrijf.email}}</strong><br>Stuur je foto's meteen mee, dan kunnen
+        we in één keer antwoorden.</p>
+        <span class="pijl">Stuur een mail</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="vlak-wit">
+  <div class="wrap zij-indeling">
+    <div class="tekst">
+      <h2>Wanneer je ons bereikt</h2>
+      <p>We zijn een klein bedrijf, dus we zijn er eerlijk over wanneer je ons het beste bereikt:</p>
+      <div class="tabel-wrap">
+        <table>
+          <thead><tr><th>Dag</th><th>Wat we doen</th><th>Bereikbaarheid</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Maandag</strong></td><td>Kantoordag: offertes, planning, mail</td><td>Goed</td></tr>
+            <tr><td><strong>Dinsdag t/m donderdag</strong></td><td>Op locatie aan het werk</td><td>Beperkt — mail komt wel binnen</td></tr>
+            <tr><td><strong>Vrijdag</strong></td><td>In principe vrij</td><td>Beperkt</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Een aanvraag via het formulier komt altijd aan, ook buiten kantooruren. Op de
+      eerstvolgende kantoordag krijg je antwoord.</p>
+
+      <h2>Waar we werken</h2>
+      <p>We zitten in {{bedrijf.plaats}} en werken door heel Nederland — van Groningen
+      tot Zeeland. Voor een klus buiten de Randstad plannen we meestal meerdere
+      opdrachten in dezelfde regio bij elkaar; dat scheelt in de reiskosten. Zie het
+      <a href="/werkgebied">werkgebied</a>.</p>
+
+      <h2>Zakelijke aanvragen</h2>
+      <p>Beheer je een VvE of werk je bij een woningcorporatie? Kijk dan op
+      <a href="/vve-en-woningcorporaties">VvE's en woningcorporaties</a>. Ben je
+      kozijnleverancier of -dealer en wil je klanten doorverwijzen? Dat leggen we uit op
+      <a href="/voor-kozijnbedrijven">voor kozijnbedrijven</a>.</p>
+    </div>
+
+    <aside class="zij">
+      <div class="zijkaart">
+        <h3>iWrap</h3>
+        <p>
+          <a href="tel:{{bedrijf.telefoon_tel}}"><strong>{{bedrijf.telefoon}}</strong></a><br>
+          <a href="mailto:{{bedrijf.email}}">{{bedrijf.email}}</a>
+        </p>
+        <p>{{bedrijf.plaats}}<br>Werkgebied: heel Nederland</p>
+        <p><a href="{{bedrijf.instagram}}" target="_blank" rel="noopener">iWrap op Instagram</a><br>
+        <a href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener">{{bedrijf.reviews_score}} uit {{bedrijf.reviews_aantal}} Google-reviews</a></p>
+      </div>
+      <div class="zijkaart">
+        <h3>Direct een offerte?</h3>
+        <p>Dat gaat sneller dan mailen — en je ziet onderweg al een prijsindicatie.</p>
+        <a class="knop knop-primair" href="/offerte">Aanvraag starten</a>
+      </div>
+    </aside>
+  </div>
+</section>

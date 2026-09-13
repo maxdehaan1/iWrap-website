@@ -1,0 +1,431 @@
+<!-- {
+  "title": "Offerte aanvragen voor kozijnherstel | iWrap",
+  "description": "Vraag in een paar minuten een offerte aan voor kozijnherstel. Je ziet meteen een prijsindicatie en krijgt binnen één werkdag antwoord.",
+  "ogtitle": "Offerte aanvragen voor kozijnherstel",
+  "bodyclass": "offertepagina",
+  "css": ["offerte"],
+  "js": ["main", "offerte"],
+  "prioriteit": "0.9",
+  "kruimels": [["Offerte aanvragen", "/offerte"]],
+  "ogimage": "/images/werk-renolit-folie-aanbrengen-1600.webp"
+} -->
+
+<section class="offerte-hero">
+  <div class="wrap">
+    <p class="opschrift">Offerte aanvragen</p>
+    <h1>Vertel ons wat je ziet</h1>
+    <p>Dit formulier stelt precies de vragen die we anders per mail zouden stellen.
+    Vul je het helemaal in, dan kunnen we er meteen een offerte van maken — meestal
+    {{feit.reactietijd}}.</p>
+  </div>
+</section>
+
+<div class="wrap offerte-schil">
+  <div class="offerte-kaart">
+    <form id="offerteformulier" data-mailbox="{{bedrijf.email}}" novalidate>
+
+      <div class="voortgang">
+        <div class="voortgang-balk"><i></i></div>
+        <p class="voortgang-tekst">
+          <span><b class="voortgang-titel">Wat zie je?</b></span>
+          <span>Stap <b class="voortgang-nu">1</b> van 6</span>
+        </p>
+      </div>
+
+      <!-- 1 ------------------------------------------------------------- -->
+      <section class="stap-paneel" data-titel="Wat zie je?" data-verplicht="klachten"
+               data-melding="Kies minstens één klacht — of kies &lsquo;iets anders&rsquo; en beschrijf het later.">
+        <h2>Wat zie je aan je kozijnen?</h2>
+        <p class="toelichting">Meerdere antwoorden mogen. Dit bepaalt of herstel
+        überhaupt de goede oplossing is.</p>
+        <fieldset class="keuzes">
+          <legend class="sr-only">Wat zie je aan je kozijnen?</legend>
+
+          <label class="keuze meervoud met-foto">
+            <input type="checkbox" name="klachten" value="verkleurd">
+            <span class="vlak">
+              <span class="beeld"><x-beeld src="klacht-verkleurd" sizes="220px" alt=""></span>
+              <span class="body">
+                <span class="titel">Verkleurd of vergeeld</span>
+                <span class="uitleg">Wit dat naar crème trekt</span>
+              </span>
+            </span>
+          </label>
+
+          <label class="keuze meervoud met-foto">
+            <input type="checkbox" name="klachten" value="laat-los">
+            <span class="vlak">
+              <span class="beeld"><x-beeld src="klacht-laat-los" sizes="220px" alt=""></span>
+              <span class="body">
+                <span class="titel">Folie laat los</span>
+                <span class="uitleg">Bobbelt, bladdert of komt omhoog</span>
+              </span>
+            </span>
+          </label>
+
+          <label class="keuze meervoud met-foto">
+            <input type="checkbox" name="klachten" value="scheuren">
+            <span class="vlak">
+              <span class="beeld"><x-beeld src="klacht-scheuren" sizes="220px" alt=""></span>
+              <span class="body">
+                <span class="titel">Scheuren of stootschade</span>
+                <span class="uitleg">Krassen, barsten, een kapotte hoek</span>
+              </span>
+            </span>
+          </label>
+
+          <label class="keuze meervoud met-foto">
+            <input type="checkbox" name="klachten" value="lijmresten">
+            <span class="vlak">
+              <span class="beeld"><x-beeld src="klacht-lijmresten" sizes="220px" alt=""></span>
+              <span class="body">
+                <span class="titel">Lijmresten of bruine randen</span>
+                <span class="uitleg">Donkere strepen langs de naden</span>
+              </span>
+            </span>
+          </label>
+
+          <label class="keuze meervoud met-foto">
+            <input type="checkbox" name="klachten" value="vuil">
+            <span class="vlak">
+              <span class="beeld"><x-beeld src="klacht-vuil" sizes="220px" alt=""></span>
+              <span class="body">
+                <span class="titel">Niet meer schoon te krijgen</span>
+                <span class="uitleg">Blijft dof en grauw, hoe je ook poetst</span>
+              </span>
+            </span>
+          </label>
+
+          <label class="keuze meervoud met-foto">
+            <input type="checkbox" name="klachten" value="gevelbekleding">
+            <span class="vlak">
+              <span class="beeld"><x-beeld src="klacht-gevelbekleding" sizes="220px" alt=""></span>
+              <span class="body">
+                <span class="titel">Gevelbekleding of panelen</span>
+                <span class="uitleg">Niet alleen het kozijn zelf</span>
+              </span>
+            </span>
+          </label>
+
+          <label class="keuze meervoud">
+            <input type="checkbox" name="klachten" value="anders">
+            <span class="vlak">
+              <span class="titel">Iets anders</span>
+              <span class="uitleg">Beschrijf het straks bij de toelichting, of stuur een foto mee.</span>
+            </span>
+          </label>
+        </fieldset>
+      </section>
+
+      <!-- 2 ------------------------------------------------------------- -->
+      <section class="stap-paneel" data-titel="Wat moet er gebeuren?" data-verplicht="onderdelen"
+               data-melding="Kies minstens één onderdeel." hidden>
+        <h2>Welke delen moeten hersteld worden?</h2>
+        <p class="toelichting">Dit scheelt het meest in de prijs. Alleen de dorpels is
+        een kleine klus; alle draaiende delen erbij is een heel andere.</p>
+        <fieldset class="keuzes">
+          <legend class="sr-only">Welke delen moeten hersteld worden?</legend>
+          <label class="keuze meervoud">
+            <input type="checkbox" name="onderdelen" value="onderdorpels">
+            <span class="vlak">
+              <span class="titel">Alleen de onderdorpels</span>
+              <span class="uitleg">De horizontale onderkant. Hier begint het meestal, want daar staat het water op.</span>
+            </span>
+          </label>
+          <label class="keuze meervoud">
+            <input type="checkbox" name="onderdelen" value="vaste-delen">
+            <span class="vlak">
+              <span class="titel">Het vaste kozijn, buitenzijde</span>
+              <span class="uitleg">Het hele kozijn rondom. Puur buitenwerk — we hoeven niet binnen te komen.</span>
+            </span>
+          </label>
+          <label class="keuze meervoud">
+            <input type="checkbox" name="onderdelen" value="draaiende-delen">
+            <span class="vlak">
+              <span class="titel">De draaiende delen</span>
+              <span class="uitleg">Ramen en deuren die opengaan. Hiervoor komen we wél binnen: ze moeten open.</span>
+            </span>
+          </label>
+          <label class="keuze meervoud">
+            <input type="checkbox" name="onderdelen" value="deur">
+            <span class="vlak">
+              <span class="titel">Voordeur of achterdeur</span>
+              <span class="uitleg">Deurpaneel en deurkozijn, eventueel in een andere kleur dan de rest.</span>
+            </span>
+          </label>
+          <label class="keuze meervoud">
+            <input type="checkbox" name="onderdelen" value="gevelbekleding">
+            <span class="vlak">
+              <span class="titel">Gevelbekleding of boeidelen</span>
+              <span class="uitleg">Kunststof panelen naast of boven de kozijnen.</span>
+            </span>
+          </label>
+          <label class="keuze meervoud">
+            <input type="checkbox" name="onderdelen" value="weet-niet">
+            <span class="vlak">
+              <span class="titel">Weet ik niet — kijk maar mee</span>
+              <span class="uitleg">Prima. Stuur wat foto's mee, dan adviseren wij wat verstandig is.</span>
+            </span>
+          </label>
+        </fieldset>
+      </section>
+
+      <!-- 3 ------------------------------------------------------------- -->
+      <section class="stap-paneel" data-titel="Hoeveel kozijnen?" data-verplicht="omvang"
+               data-melding="Kies een omvang — een ruwe schatting is genoeg." hidden>
+        <h2>Om hoeveel kozijnen gaat het?</h2>
+        <p class="toelichting">Tel gewoon de kozijnen waar iets aan moet gebeuren. Een
+        ruwe schatting is genoeg, we meten het toch na.</p>
+        <fieldset class="keuzes smal">
+          <legend class="sr-only">Om hoeveel kozijnen gaat het?</legend>
+          <label class="keuze">
+            <input type="radio" name="omvang" value="1">
+            <span class="vlak"><span class="titel">Eén kozijn</span>
+            <span class="uitleg">Ook daarvoor komen we.</span></span>
+          </label>
+          <label class="keuze">
+            <input type="radio" name="omvang" value="2-4">
+            <span class="vlak"><span class="titel">2 tot 4</span>
+            <span class="uitleg">De meest voorkomende klus.</span></span>
+          </label>
+          <label class="keuze">
+            <input type="radio" name="omvang" value="5-10">
+            <span class="vlak"><span class="titel">5 tot 10</span>
+            <span class="uitleg">Vaak een hele woning.</span></span>
+          </label>
+          <label class="keuze">
+            <input type="radio" name="omvang" value="meer-dan-10">
+            <span class="vlak"><span class="titel">Meer dan 10</span>
+            <span class="uitleg">Of meerdere woningen. We komen opnemen.</span></span>
+          </label>
+        </fieldset>
+
+        <div class="prijsblok" hidden>
+          <p class="opschrift">Ruwe indicatie</p>
+          <p class="bedrag"></p>
+          <p class="prijs-uitleg"></p>
+          <div class="waarschuwing" hidden></div>
+        </div>
+      </section>
+
+      <!-- 4 ------------------------------------------------------------- -->
+      <section class="stap-paneel" data-titel="Bereikbaarheid" data-verplicht="bereikbaar"
+               data-melding="Kies hoe de kozijnen bereikbaar zijn." hidden>
+        <h2>Hoe goed zijn de kozijnen bereikbaar?</h2>
+        <p class="toelichting">We vragen dit omdat het echt uitmaakt: voor een dorpel op
+        de begane grond hebben we niets nodig, hoger dan de eerste verdieping komt er
+        materieel bij. Dat zetten we apart in de offerte.</p>
+        <fieldset class="keuzes smal">
+          <legend class="sr-only">Hoe goed zijn de kozijnen bereikbaar?</legend>
+          <label class="keuze">
+            <input type="radio" name="bereikbaar" value="begane-grond">
+            <span class="vlak"><span class="titel">Begane grond</span>
+            <span class="uitleg">Vanaf de stoep of de tuin te doen.</span></span>
+          </label>
+          <label class="keuze">
+            <input type="radio" name="bereikbaar" value="eerste">
+            <span class="vlak"><span class="titel">Eerste verdieping</span>
+            <span class="uitleg">Met een ladder bereikbaar.</span></span>
+          </label>
+          <label class="keuze">
+            <input type="radio" name="bereikbaar" value="hoger">
+            <span class="vlak"><span class="titel">Hoger dan dat</span>
+            <span class="uitleg">Steiger of hoogwerker nodig.</span></span>
+          </label>
+          <label class="keuze">
+            <input type="radio" name="bereikbaar" value="gemengd">
+            <span class="vlak"><span class="titel">Door elkaar</span>
+            <span class="uitleg">Beneden én boven.</span></span>
+          </label>
+        </fieldset>
+
+        <div class="prijsblok" hidden>
+          <p class="opschrift">Ruwe indicatie</p>
+          <p class="bedrag"></p>
+          <p class="prijs-uitleg"></p>
+          <div class="waarschuwing" hidden></div>
+        </div>
+      </section>
+
+      <!-- 5 ------------------------------------------------------------- -->
+      <section class="stap-paneel" data-titel="Kleur" data-verplicht="kleur"
+               data-melding="Kies een kleur, of geef aan dat je het nog niet weet." hidden>
+        <h2>Welke kleur wordt het?</h2>
+        <p class="toelichting">Renolit folie bestaat in honderden kleuren en decors,
+        inclusief houtnerf. Dit zijn de vier waar het meestal op uitkomt. Weet je het
+        nog niet, dan nemen we stalen mee.</p>
+        <fieldset class="keuzes">
+          <legend class="sr-only">Welke kleur wordt het?</legend>
+          <label class="keuze kleur">
+            <input type="radio" name="kleur" value="zelfde">
+            <span class="vlak">
+              <span class="staal" style="background:linear-gradient(135deg,#f2efe6,#e6e1d3)" aria-hidden="true"></span>
+              <span class="titel">Dezelfde kleur als nu</span>
+            </span>
+          </label>
+          <label class="keuze kleur">
+            <input type="radio" name="kleur" value="ral9001">
+            <span class="vlak">
+              <span class="staal" style="background:#e9e0d2" aria-hidden="true"></span>
+              <span class="titel">Crèmewit <span class="uitleg">RAL 9001</span></span>
+            </span>
+          </label>
+          <label class="keuze kleur">
+            <input type="radio" name="kleur" value="ral9010">
+            <span class="vlak">
+              <span class="staal" style="background:#f5f3ee" aria-hidden="true"></span>
+              <span class="titel">Zuiver wit <span class="uitleg">RAL 9010</span></span>
+            </span>
+          </label>
+          <label class="keuze kleur">
+            <input type="radio" name="kleur" value="ral7016">
+            <span class="vlak">
+              <span class="staal" style="background:#383e42" aria-hidden="true"></span>
+              <span class="titel">Antracietgrijs <span class="uitleg">RAL 7016</span></span>
+            </span>
+          </label>
+          <label class="keuze kleur">
+            <input type="radio" name="kleur" value="houtnerf">
+            <span class="vlak">
+              <span class="staal" style="background:linear-gradient(100deg,#6b4426,#8a5c33 40%,#5d3a20)" aria-hidden="true"></span>
+              <span class="titel">Houtnerf <span class="uitleg">Bijvoorbeeld noten of eiken</span></span>
+            </span>
+          </label>
+          <label class="keuze kleur">
+            <input type="radio" name="kleur" value="weet-niet">
+            <span class="vlak">
+              <span class="staal" style="background:repeating-linear-gradient(45deg,#e8e5df,#e8e5df 6px,#f7f6f3 6px,#f7f6f3 12px)" aria-hidden="true"></span>
+              <span class="titel">Weet ik nog niet</span>
+            </span>
+          </label>
+        </fieldset>
+        <div class="callout">
+          <p>Wil je eerst rondkijken in het complete kleuren- en decoroverzicht? Dat
+          staat op <a href="https://houtnerffolie.nl" rel="noopener">houtnerffolie.nl</a>,
+          onze eigen kennissite over de folie.</p>
+        </div>
+      </section>
+
+      <!-- 6 ------------------------------------------------------------- -->
+      <section class="stap-paneel" data-titel="Foto's en gegevens" hidden>
+        <h2>Foto's en je gegevens</h2>
+        <p class="toelichting">Met een paar foto's kunnen we vrijwel altijd een prijs
+        geven zonder eerst langs te komen. Fotografeer van een meter afstand én een
+        close-up van de schade.</p>
+
+        <div class="dropzone" tabindex="0" role="button" aria-label="Foto's toevoegen">
+          <strong>Sleep je foto's hierheen of klik om te kiezen</strong>
+          <span>Maximaal 6 foto's, elk tot 5 MB. JPG of PNG.</span>
+          <input type="file" accept="image/*" multiple>
+        </div>
+        <ul class="bestandenlijst"></ul>
+
+        <div class="veldrij" style="margin-top:24px">
+          <div class="veld">
+            <label for="naam">Naam</label>
+            <input id="naam" name="naam" type="text" autocomplete="name" required>
+          </div>
+          <div class="veld">
+            <label for="email">E-mailadres</label>
+            <input id="email" name="email" type="email" autocomplete="email" required>
+          </div>
+        </div>
+        <div class="veldrij">
+          <div class="veld">
+            <label for="telefoon">Telefoonnummer <span class="hint">handig als we iets willen navragen</span></label>
+            <input id="telefoon" name="telefoon" type="tel" autocomplete="tel" required>
+          </div>
+          <div class="veld">
+            <label for="plaats">Plaats</label>
+            <input id="plaats" name="plaats" type="text" autocomplete="address-level2" required>
+          </div>
+        </div>
+        <div class="veldrij">
+          <div class="veld">
+            <label for="postcode">Postcode</label>
+            <input id="postcode" name="postcode" type="text" autocomplete="postal-code"
+                   inputmode="text" placeholder="1234 AB" required>
+          </div>
+          <div class="veld">
+            <label for="huisnummer">Huisnummer</label>
+            <input id="huisnummer" name="huisnummer" type="text" autocomplete="address-line1" required>
+          </div>
+        </div>
+
+        <fieldset class="keuzes smal" style="margin:8px 0 20px">
+          <legend class="veld"><label>Wanneer zou het je schikken?</label></legend>
+          <label class="keuze">
+            <input type="radio" name="wanneer" value="zo-snel-mogelijk">
+            <span class="vlak"><span class="titel">Zo snel mogelijk</span></span>
+          </label>
+          <label class="keuze">
+            <input type="radio" name="wanneer" value="paar-maanden">
+            <span class="vlak"><span class="titel">Binnen een paar maanden</span></span>
+          </label>
+          <label class="keuze">
+            <input type="radio" name="wanneer" value="orienterend">
+            <span class="vlak"><span class="titel">Ik oriënteer me nog</span></span>
+          </label>
+        </fieldset>
+
+        <div class="veld" style="margin-bottom:8px">
+          <label for="toelichting">Iets wat we moeten weten? <span class="hint">optioneel</span></label>
+          <textarea id="toelichting" name="toelichting"
+            placeholder="Bijvoorbeeld: via welke kozijndealer je bij ons komt, het merk van je kozijn, of iets wat op de foto's niet goed te zien is."></textarea>
+        </div>
+
+        <div class="samenvatting">
+          <h3>Dit sturen we mee</h3>
+          <dl></dl>
+        </div>
+
+        <p class="toelichting" style="font-size:.86rem">
+          We gebruiken je gegevens alleen om je aanvraag te beantwoorden en er een
+          offerte van te maken. Niets anders, en we verkopen niets door.
+        </p>
+      </section>
+
+      <div class="stap-nav">
+        <button type="button" class="terug" hidden>Vorige</button>
+        <button type="button" class="knop knop-primair verder">Volgende stap</button>
+        <button type="submit" class="knop knop-primair versturen" hidden>Aanvraag versturen</button>
+        <p class="melding" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+
+    <!-- Zonder JavaScript: een gewoon formulier dat hetzelfde vraagt. -->
+    <noscript>
+      <div class="geen-js" style="display:block">
+        <h2>Offerte aanvragen</h2>
+        <p>Je browser voert geen JavaScript uit, dus de stapsgewijze versie werkt niet.
+        Mail ons gerust rechtstreeks — vermeld dan even wat je ziet, om hoeveel kozijnen
+        het gaat, welke delen hersteld moeten worden en hoe hoog ze zitten. Foto's
+        graag als bijlage.</p>
+        <p><a class="knop knop-primair" href="mailto:{{bedrijf.email}}?subject=Offerteaanvraag%20kozijnherstel">Mail naar {{bedrijf.email}}</a>
+        <a class="knop knop-tweede" href="tel:{{bedrijf.telefoon_tel}}">Bel {{bedrijf.telefoon}}</a></p>
+      </div>
+    </noscript>
+  </div>
+
+  <div class="naast-formulier">
+    <div class="kaart">
+      <h3>Liever even bellen?</h3>
+      <p>Dat mag ook. Op dinsdag, woensdag en donderdag zijn we meestal op locatie, dus
+      dan kan het even duren voor we opnemen. Spreek gerust iets in.</p>
+      <p><a href="tel:{{bedrijf.telefoon_tel}}"><strong>{{bedrijf.telefoon}}</strong></a><br>
+      <a href="mailto:{{bedrijf.email}}">{{bedrijf.email}}</a></p>
+    </div>
+    <div class="kaart">
+      <h3>Wat gebeurt er daarna?</h3>
+      <p>We kijken je foto's na en sturen je {{feit.reactietijd}} een prijs. Kunnen we
+      iets niet goed beoordelen, dan bellen we even. Pas als de offerte akkoord is,
+      plannen we een datum.</p>
+    </div>
+    <div class="kaart">
+      <h3>Kan het bij mij wel?</h3>
+      <p>In verreweg de meeste gevallen wel — maar niet altijd. Op de pagina
+      <a href="/kunststof-kozijn-herstellen">kozijnherstel</a> staat precies wanneer
+      folie de goede oplossing is en wanneer niet.</p>
+    </div>
+  </div>
+</div>

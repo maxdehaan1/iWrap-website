@@ -1,0 +1,120 @@
+<!-- {
+  "title": "Over iWrap — specialist in kozijnherstel | iWrap",
+  "description": "iWrap is een klein, gespecialiseerd bedrijf uit Hilversum dat al meer dan tien jaar niets anders doet dan kunststof kozijnen herstellen met Renolit folie.",
+  "ogtitle": "Over iWrap",
+  "bodyclass": "tekstpagina",
+  "css": ["content", "home"],
+  "js": ["main"],
+  "kruimels": [["Over iWrap", "/over-iwrap"]],
+  "ogimage": "/images/werk-monteur-aan-het-werk-1000.webp",
+  "schema": [{"@type": "AboutPage", "name": "Over iWrap"}]
+} -->
+
+<section class="pagina-hero">
+  <div class="wrap">
+    <nav class="kruimels" aria-label="Kruimelpad">
+      <ol><li><a href="/">Home</a></li><li>Over iWrap</li></ol>
+    </nav>
+    <p class="opschrift">Over ons</p>
+    <h1>Eén vak, al meer dan tien jaar</h1>
+    <p class="lede">iWrap is een klein bedrijf uit {{bedrijf.plaats}} dat één ding
+    doet: kunststof kozijnen herstellen met Renolit folie. Geen schilderwerk erbij,
+    geen kozijnen verkopen, geen aanbouw. Alleen dit.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap zij-indeling">
+    <div class="tekst">
+      <h2>Waarom we niets anders doen</h2>
+      <p>Folie op een kozijn aanbrengen lijkt eenvoudig tot je het een keer ziet
+      misgaan. Een luchtbel die je pas de volgende ochtend ziet. Een hoek die niet strak
+      omgezet is en waar binnen een jaar water achter loopt. Een lijmlaag die niet goed
+      genoeg verwijderd is, zodat de nieuwe folie er binnen twee seizoenen weer af komt.</p>
+      <p>Dat zijn allemaal dingen die je pas leert door het honderden keren te doen. Dus
+      doen we niets anders. Wij zijn niet het bedrijf dat ook je dakkapel kan doen — wij
+      zijn het bedrijf dat je belt als er folie op je kozijn moet.</p>
+
+      <figure>
+        <x-beeld src="werk-monteur-aan-het-werk" sizes="(max-width:940px) 100vw, 360px" alt="Monteur van iWrap werkt aan een kunststof kozijn aan de buitenzijde van een woning">
+        <figcaption>Eigen monteurs, in vaste dienst en gecertificeerd.</figcaption>
+      </figure>
+
+      <h2>Gecertificeerd, en waarom dat er toe doet</h2>
+      <p>We werken met gecertificeerde monteurs in vaste dienst. Dat klinkt als een
+      formaliteit, maar het is precies de reden dat we {{feit.garantie_montage}} durven
+      te geven: garantie op montage kun je alleen geven als je weet wie het gemonteerd
+      heeft en hoe die persoon is opgeleid. Bij inhuur per klus kan dat niet.</p>
+      <ul class="vinklijst">
+        <li><strong>VCA</strong> — veiligheidscertificering, vereist door de meeste woningcorporaties</li>
+        <li><strong>Specialist Facade Installer</strong> — de Avery-opleiding voor gevel- en kozijnfolie</li>
+        <li><strong>Renolit</strong> — we werken uitsluitend met dit materiaal</li>
+        <li><strong>Avery Dennison, 3M en Sikkens</strong> — materialen en hulpstoffen</li>
+      </ul>
+
+      <h2>Klein en dat blijft zo</h2>
+      <p>We hebben geen groeiambitie. De planning zit ruim vol, de reviews zijn goed en
+      het vak laat zich slecht uitbesteden. Wat we wel doen, is onze eigen boel zo
+      efficiënt mogelijk regelen — vandaar ook het
+      <a href="/offerte">aanvraagformulier</a> op deze site: hoe completer een aanvraag
+      binnenkomt, hoe sneller jij je offerte hebt en hoe minder tijd wij kwijt zijn aan
+      heen en weer mailen.</p>
+
+      <div class="callout">
+        <h3>Wanneer we er zijn</h3>
+        <p>Dinsdag, woensdag en donderdag zijn we op locatie aan het werk. Maandag is
+        onze kantoordag: dan gaan de offertes, de planning en de mail eruit. Vrijdag zijn
+        we er in principe niet. Stuur je aanvraag dus gerust op een uitvoerdag — hij komt
+        maandag sowieso aan de beurt.</p>
+      </div>
+
+      <h2>Drie sites, één bedrijf</h2>
+      <p>Naast deze site houden we nog twee sites bij, en dat is geen marketingtruc maar
+      een praktische keuze: het zijn verschillende vragen die verschillende antwoorden
+      verdienen.</p>
+      <ul>
+        <li><strong>iwrap.nl</strong> — deze site. Hier vraag je een offerte aan en hier
+        staat wat wij doen.</li>
+        <li><strong><a href="https://kozijnwrap.nl" rel="noopener">kozijnwrap.nl</a></strong>
+        — voor wie nog niet weet of herstellen of vervangen verstandiger is. Met een
+        keuzehulp die ook &lsquo;vervangen&rsquo; als uitkomst kan geven.</li>
+        <li><strong><a href="https://houtnerffolie.nl" rel="noopener">houtnerffolie.nl</a></strong>
+        — alles over Renolit folie zelf: de varianten, de decors, de specificaties.</li>
+      </ul>
+      <p>Dat we ze alle drie maken, staat er gewoon op. Wat op die sites staat, klopt ook
+      als je uiteindelijk niet bij ons uitkomt.</p>
+    </div>
+
+    <aside class="zij">
+      <div class="zijkaart">
+        <h3>{{bedrijf.reviews_score}} uit {{bedrijf.reviews_aantal}} reviews</h3>
+        <p>Wat klanten het vaakst noemen: netjes werken, meedenken en alles opruimen.</p>
+        <a class="knop knop-tweede" href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener">Lees ze op Google</a>
+      </div>
+      <div class="zijkaart">
+        <h3>Contact</h3>
+        <p><a href="tel:{{bedrijf.telefoon_tel}}"><strong>{{bedrijf.telefoon}}</strong></a><br>
+        <a href="mailto:{{bedrijf.email}}">{{bedrijf.email}}</a><br>
+        {{bedrijf.plaats}} &middot; werkgebied heel Nederland</p>
+        <a class="knop knop-primair" href="/offerte">Offerte aanvragen</a>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="vlak-donker">
+  <div class="wrap">
+    <div class="sectie-kop">
+      <p class="opschrift">Certificering</p>
+      <h2>Waar we mee werken en voor opgeleid zijn</h2>
+    </div>
+    <div class="keurmerken verschijn">
+      <span class="keurmerk">VCA</span>
+      <span class="keurmerk">Specialist Facade Installer</span>
+      <span class="keurmerk">Renolit</span>
+      <span class="keurmerk">Avery Dennison</span>
+      <span class="keurmerk">3M</span>
+      <span class="keurmerk">Sikkens</span>
+    </div>
+  </div>
+</section>

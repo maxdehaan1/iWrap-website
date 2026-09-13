@@ -1,0 +1,80 @@
+<!-- {
+  "title": "Werkgebied — kozijnherstel door heel Nederland | iWrap",
+  "description": "iWrap zit in Hilversum en herstelt kunststof kozijnen door heel Nederland, van Groningen tot Zeeland. Zo plannen we klussen buiten de regio in.",
+  "ogtitle": "Werkgebied — kozijnherstel door heel Nederland",
+  "bodyclass": "tekstpagina",
+  "css": ["content", "home"],
+  "js": ["main"],
+  "prioriteit": "0.6",
+  "kruimels": [["Werkgebied", "/werkgebied"]]
+} -->
+
+<section class="pagina-hero breed">
+  <div class="wrap">
+    <nav class="kruimels" aria-label="Kruimelpad">
+      <ol><li><a href="/">Home</a></li><li>Werkgebied</li></ol>
+    </nav>
+    <p class="opschrift">Werkgebied</p>
+    <h1>Wij komen door heel Nederland</h1>
+    <p class="lede">We zitten in {{bedrijf.plaats}} en werken van Groningen tot Zeeland.
+    Dat is geen verkooppraatje: de meeste van onze klussen liggen gewoon buiten de
+    Randstad, omdat deze specialisatie nu eenmaal dun gezaaid is.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sectie-kop">
+      <h2>Plaatsen waar we gewerkt hebben</h2>
+      <p>Geen lijst met alle Nederlandse gemeenten — alleen plaatsen waar we
+      daadwerkelijk zijn geweest. Staat jouw plaats er niet bij, dan komen we er ook.</p>
+    </div>
+    <div class="verschijn">{{regios}}</div>
+  </div>
+</section>
+
+<section class="vlak-wit">
+  <div class="wrap zij-indeling">
+    <div class="tekst">
+      <h2>Hoe we klussen buiten de regio inplannen</h2>
+      <p>Een monteur met bus en materiaal van Hilversum naar Maastricht sturen voor twee
+      onderdorpels is voor niemand een goede deal. Daarom werken we zo:</p>
+      <ul class="vinklijst">
+        <li><strong>We bundelen per regio.</strong> Komen er meerdere aanvragen uit
+        dezelfde hoek van het land, dan plannen we die achter elkaar. Soms betekent dat
+        een paar weken wachten, maar het scheelt je in de reiskosten.</li>
+        <li><strong>Reiskosten staan apart in de offerte.</strong> Geen verborgen opslag
+        die je pas op de factuur ziet.</li>
+        <li><strong>Grotere klussen gaan voor.</strong> Bij een woning met meerdere
+        kozijnen wegen de reiskosten nauwelijks mee; bij één dorpel op 200 kilometer
+        wel. Dat zeggen we eerlijk als je aanvraag binnenkomt.</li>
+      </ul>
+
+      <div class="callout">
+        <h3>Woon je ver weg en gaat het om een kleine klus?</h3>
+        <p>Vraag het gewoon. Als het op korte termijn niet uitkomt, zetten we je op de
+        lijst voor als we in die regio zijn. Dat werkt al jaren zo en niemand heeft er
+        ooit spijt van gehad.</p>
+      </div>
+
+      <h2>VvE's en corporaties buiten de Randstad</h2>
+      <p>Voor projecten met meerdere woningen is afstand vrijwel geen factor: dan werken
+      we een aaneengesloten periode in dezelfde straat. Zie
+      <a href="/vve-en-woningcorporaties">VvE's en woningcorporaties</a>.</p>
+    </div>
+
+    <aside class="zij">
+      <div class="zijkaart">
+        <h3>Kom je in mijn plaats?</h3>
+        <p>Vul je postcode in bij de aanvraag, dan zeggen we meteen wat er mogelijk is.</p>
+        <a class="knop knop-primair" href="/offerte">Offerte aanvragen</a>
+      </div>
+      <div class="zijkaart">
+        <h3>iWrap</h3>
+        <p>{{bedrijf.plaats}}<br>
+        <a href="tel:{{bedrijf.telefoon_tel}}">{{bedrijf.telefoon}}</a><br>
+        <a href="mailto:{{bedrijf.email}}">{{bedrijf.email}}</a></p>
+      </div>
+    </aside>
+  </div>
+</section>
