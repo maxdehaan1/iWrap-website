@@ -147,24 +147,19 @@ kan dat rechtstreeks uitlezen zonder de tekst te hoeven ontleden — dan komt ee
 als kaart in je CRM te staan in plaats van als mailtje. Wil je het meteen zo:
 vervang de `fetch`-aanroep onderin `js/offerte.js` door je Make-webhook-URL.
 
-## Live zetten via GitHub en Vercel
+## Live: waar hij staat
 
-Zelfde volgorde als bij kozijnwrap.nl en houtnerffolie.nl: **eerst GitHub, dan Vercel
-importeren.** Andersom kan ook, maar dan moet je de koppeling achteraf alsnog leggen.
+**https://iwrap-website.vercel.app** — hier kun je hem altijd live bekijken.
 
-1. **Maak een lege repo** op github.com: naam `iwrap-website`, publiek (net als de andere
-   twee), en zet géén README, .gitignore of licentie aan — die zitten hier al in.
-2. **Push deze map.** De remote staat al ingesteld:
-   ```bash
-   cd ~/Downloads/iwrap-project
-   git push -u origin main
-   ```
-3. **Importeer in Vercel.** Add New → Project → Import Git Repository → `iwrap-website`.
-   Framework preset op **Other**, build command en output directory leeg laten: de HTML
-   in de repo is al gebouwd, Vercel hoeft alleen te serveren. Deploy.
+- GitHub: `maxdehaan1/iWrap-website`, productiebranch `main`
+- Vercel: project `iwrap-website` in team Max, gekoppeld aan die repo
 
-Je krijgt dan een adres als `iwrap-website.vercel.app` waar je hem steeds live kunt
-bekijken. Het domein iwrap.nl blijft ongemoeid tot je het zelf koppelt.
+Zelfde opzet als kozijnwrap.nl en houtnerffolie.nl, en dezelfde volgorde waarin het is
+gedaan: **eerst de GitHub-repo, dan die repo importeren in Vercel.** Andersom kan ook,
+maar dan moet je de koppeling achteraf alsnog leggen.
+
+Het domein iwrap.nl blijft ongemoeid tot je het zelf koppelt. Doe dat in Vercel onder
+Settings → Domains van dit project.
 
 ### Daarna: elke wijziging live krijgen
 
