@@ -83,6 +83,7 @@ NAV = [
 FOOTER_KOLOMMEN = [
     ("Kozijnherstel", [
         ("kunststof-kozijn-herstellen", "Kunststof kozijn herstellen"),
+        ("dakkapel-kozijnen", "Dakkapel kozijnen"),
         ("werkwijze", "Onze werkwijze"),
         ("kosten", "Wat kost het"),
         ("voorbeelden", "Voorbeelden"),
