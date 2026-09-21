@@ -133,16 +133,28 @@ Vier stappen: **het werk, de hoogte, de kleur, en gegevens met foto's.**
 Het hart van het formulier. Eén **blok** per soort werk, met drie genummerde vragen:
 
 1. Wat voor element is het? (kozijn / draairaam / deur / schuifpui / dakkapelkozijn)
-2. Wat moet eraan gebeuren? (het hele element, of bepaalde delen — dan verschijnen de
+2. Zit er iets in dat opengaat? — aantal draairamen en deuren **in dit kozijn**
+3. Wat moet eraan gebeuren? (het hele element, of bepaalde delen — dan verschijnen de
    vinkjes voor onder-, boven- en tussendorpels en voor linker, rechter en tussenstijlen)
-3. Bij hoeveel elementen? (plus een vrij veld voor waar ze staan)
+4. Bij hoeveel kozijnen? (plus een vrij veld voor waar ze staan)
 
 Dat levert dit op in de mail:
 
 ```
-3× kozijn      — onderdorpel + tussenstijl  (voorkant)   [2 foto's]
-1× deur        — compleet rondom
+2× kozijn met 2 draairamen en 1 deur — compleet rondom  (voorkant)   [2 foto's]
+1× deur                              — compleet rondom
+
+Samen 2 kozijnen, 4 draairamen en 2 deuren
 ```
+
+**Draairamen en deuren horen bij het kozijn waar ze in zitten**, niet in een eigen blok.
+Vraag 2 verschijnt daarom alleen bij een kozijn, schuifpui of dakkapelkozijn; kies je een
+los draairaam of een losse deur, dan is dat element zelf al het draaiende deel en verdwijnt
+de vraag (de nummering loopt dan gewoon door van 1 naar 3). Het totaal onderaan telt de
+inhoud mee: twee kozijnen met elk twee draairamen zijn vier draairamen.
+
+Vraag 4 leest mee met het gekozen soort — "Bij hoeveel kozijnen?" in plaats van "Bij
+hoeveel elementen?" — want zodra er draairamen in zitten is dat laatste dubbelzinnig.
 
 **De volgorde van die drie vragen is belangrijk.** Het aantal stond eerst vooraan, naast
 de knop "nog een regel toevoegen", en dan is onduidelijk welke van de twee je moet

@@ -39,10 +39,11 @@
       <section class="stap-paneel" data-titel="Het werk" data-verplicht="werklijst"
                data-melding="Vul minstens &eacute;&eacute;n blok in: kies een element en wat eraan moet gebeuren." >
         <h2>Wat moet er precies gebeuren?</h2>
-        <p class="toelichting">Beschrijf hieronder &eacute;&eacute;n soort werk. Moet er aan meerdere
-        kozijnen <em>precies hetzelfde</em> gebeuren, dan vul je onderaan het aantal in.
-        Is er ook nog <em>ander</em> werk &mdash; een deur bijvoorbeeld, of een kozijn waar
-        meer aan moet &mdash; dan voeg je daar een nieuw blok voor toe.</p>
+        <p class="toelichting">Beschrijf hieronder &eacute;&eacute;n soort werk. Zitten er
+        draairamen of een deur in het kozijn, dan geef je dat in hetzelfde blok aan &mdash;
+        die horen immers bij elkaar. Moet er aan meerdere kozijnen <em>precies hetzelfde</em>
+        gebeuren, dan vul je onderaan het aantal in. Is er ook nog <em>ander</em> werk, dan
+        voeg je daar een nieuw blok voor toe.</p>
 
         <div class="werklijst"></div>
 
@@ -64,7 +65,7 @@
           </div>
 
           <div class="regel-vraag">
-            <span class="regel-vraag-label">1 &middot; Wat voor element is het?</span>
+            <span class="regel-vraag-label"><b class="vraag-nr"></b> Wat voor element is het?</span>
             <div class="regel-soorten">
               <label class="omvangchip"><input type="radio" data-veld="soort" value="kozijn"><span>Kozijn</span></label>
               <label class="omvangchip"><input type="radio" data-veld="soort" value="draairaam"><span>Draairaam</span></label>
@@ -74,8 +75,34 @@
             </div>
           </div>
 
+          <div class="regel-vraag regel-inhoud" hidden>
+            <span class="regel-vraag-label"><b class="vraag-nr"></b> Zit er iets in dat opengaat?</span>
+            <p class="regel-vraag-hint">Draairamen en deuren horen bij het kozijn waar ze in
+            zitten. Laat op nul staan als er alleen vast glas in zit.</p>
+            <div class="inhoud-tellers">
+              <div class="inhoud-teller">
+                <span class="inhoud-naam">Draairamen</span>
+                <div class="regel-aantal">
+                  <button type="button" class="teller-min" aria-label="Minder draairamen">&minus;</button>
+                  <input type="number" data-veld="draairamen" value="0" min="0" max="20"
+                         inputmode="numeric" aria-label="Aantal draairamen in dit kozijn">
+                  <button type="button" class="teller-plus" aria-label="Meer draairamen">+</button>
+                </div>
+              </div>
+              <div class="inhoud-teller">
+                <span class="inhoud-naam">Deuren</span>
+                <div class="regel-aantal">
+                  <button type="button" class="teller-min" aria-label="Minder deuren">&minus;</button>
+                  <input type="number" data-veld="deuren" value="0" min="0" max="20"
+                         inputmode="numeric" aria-label="Aantal deuren in dit kozijn">
+                  <button type="button" class="teller-plus" aria-label="Meer deuren">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="regel-vraag">
-            <span class="regel-vraag-label">2 &middot; Wat moet eraan gebeuren?</span>
+            <span class="regel-vraag-label"><b class="vraag-nr"></b> Wat moet eraan gebeuren?</span>
             <div class="regel-omvang">
               <label class="omvangchip">
                 <input type="radio" data-veld="omvang" value="compleet">
@@ -110,7 +137,7 @@
 
           <div class="regel-vraag regel-slot">
             <div class="regel-aantalvraag">
-              <span class="regel-vraag-label">3 &middot; Bij hoeveel elementen?</span>
+              <span class="regel-vraag-label"><b class="vraag-nr"></b> Bij hoeveel <span class="aantal-soort">elementen</span>?</span>
               <div class="regel-aantal">
                 <button type="button" class="teller-min" aria-label="Eentje minder">&minus;</button>
                 <input type="number" data-veld="aantal" value="1" min="1" max="99"

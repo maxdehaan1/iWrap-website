@@ -255,6 +255,20 @@
 
 .regel-soorten,.regel-omvang{display:flex;flex-wrap:wrap;gap:8px;}
 
+/* Wat er in het kozijn zit. Twee tellers naast elkaar, want draairamen en
+   deuren horen bij het kozijn waar ze in zitten. */
+.regel-vraag-hint{
+  margin:-6px 0 12px;font-size:.84rem;color:var(--sub);line-height:1.45;max-width:52ch;
+}
+.regel-inhoud[hidden]{display:none;}
+.inhoud-tellers{display:flex;flex-wrap:wrap;gap:12px 28px;}
+.inhoud-teller{display:flex;align-items:center;gap:12px;}
+.inhoud-naam{
+  font-family:var(--kop);font-weight:600;font-size:.88rem;color:var(--ink-soft);
+  min-width:84px;
+}
+.vraag-nr{font-weight:700;color:var(--mint-deep);margin-right:2px;}
+
 .omvangchip{position:relative;cursor:pointer;}
 .omvangchip input{position:absolute;opacity:0;width:0;height:0;}
 .omvangchip span{

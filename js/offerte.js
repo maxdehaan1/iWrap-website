@@ -70,15 +70,29 @@
     return Array.prototype.slice.call(werklijst.querySelectorAll('.werkregel'));
   }
 
+  // Soorten waar draairamen of een deur in kunnen zitten. Een los draairaam of
+  // een losse deur is zelf al het draaiende deel, dus daar vragen we het niet.
+  var MET_INHOUD = ['kozijn', 'dakkapelkozijn', 'schuifpui'];
+
+  function getal(regel, veld) {
+    var el = regel.querySelector('[data-veld=' + veld + ']');
+    var n = el ? parseInt(el.value, 10) : 0;
+    return isNaN(n) || n < 0 ? 0 : n;
+  }
+
   function leesRegel(regel) {
     var omvang = regel.querySelector('[data-veld=omvang]:checked');
+    var soort = (regel.querySelector('[data-veld=soort]:checked') || {}).value || '';
+    var heeftInhoud = MET_INHOUD.indexOf(soort) > -1;
     var delen = Array.prototype.slice
       .call(regel.querySelectorAll('[data-deel]:checked'))
       .map(function (v) { return v.dataset.deel; });
     var n = parseInt(regel.querySelector('[data-veld=aantal]').value, 10);
     return {
       fotos: regel.fotos || [],
-      soort: (regel.querySelector('[data-veld=soort]:checked') || {}).value || '',
+      soort: soort,
+      draairamen: heeftInhoud ? getal(regel, 'draairamen') : 0,
+      deuren: heeftInhoud ? getal(regel, 'deuren') : 0,
       aantal: isNaN(n) || n < 1 ? 1 : n,
       omvang: omvang ? omvang.value : '',
       plek: regel.querySelector('[data-veld=plek]').value.trim(),
@@ -103,25 +117,56 @@
     var wat = r.omvang === 'compleet'
       ? 'compleet rondom'
       : r.delen.map(function (d) { return DELEN[d]; }).join(' + ');
-    return r.aantal + '\u00d7 ' + soort + ' \u2014 ' + wat +
+    var inhoud = [];
+    if (r.draairamen) {
+      inhoud.push(r.draairamen + ' ' + (r.draairamen === 1 ? 'draairaam' : 'draairamen'));
+    }
+    if (r.deuren) {
+      inhoud.push(r.deuren + ' ' + (r.deuren === 1 ? 'deur' : 'deuren'));
+    }
+    var met = inhoud.length ? ' met ' + inhoud.join(' en ') : '';
+    return r.aantal + '\u00d7 ' + soort + met + ' \u2014 ' + wat +
            (r.plek ? ' (' + r.plek + ')' : '') +
            (r.fotos.length ? '  [' + r.fotos.length + ' foto' +
             (r.fotos.length === 1 ? '' : "'s") + ']' : '');
   }
 
   function totaalElementen() {
-    return leesWerklijst().reduce(function (som, r) { return som + r.aantal; }, 0);
+    return leesWerklijst().reduce(function (som, r) {
+      return som + r.aantal * (1 + r.draairamen + r.deuren);
+    }, 0);
+  }
+
+  // Alles bij elkaar opgeteld per soort, zodat onderaan staat wat er in totaal
+  // gedaan moet worden -- inclusief de draairamen en deuren in de kozijnen.
+  function totalenPerSoort() {
+    var totaal = {};
+    leesWerklijst().forEach(function (r) {
+      totaal[r.soort] = (totaal[r.soort] || 0) + r.aantal;
+      if (r.draairamen) {
+        totaal.draairaam = (totaal.draairaam || 0) + r.aantal * r.draairamen;
+      }
+      if (r.deuren) totaal.deur = (totaal.deur || 0) + r.aantal * r.deuren;
+    });
+    return totaal;
+  }
+
+  function totaalInTekst() {
+    var totaal = totalenPerSoort();
+    var delen = Object.keys(totaal).map(function (soort) {
+      var n = totaal[soort];
+      return n + ' ' + (SOORTEN[soort] || ['element', 'elementen'])[n === 1 ? 0 : 1];
+    });
+    if (!delen.length) return '';
+    if (delen.length === 1) return delen[0];
+    return delen.slice(0, -1).join(', ') + ' en ' + delen[delen.length - 1];
   }
 
   function tekenTotaal() {
     if (!totaalregel) return;
-    var n = totaalElementen();
-    var aantalRegels = leesWerklijst().length;
-    totaalregel.textContent = n
-      ? 'Samen ' + n + (n === 1 ? ' element' : ' elementen') +
-        (aantalRegels > 1 ? ', in ' + aantalRegels + ' blokken' : '')
-      : '';
-    totaalregel.hidden = !n;
+    var tekst = totaalInTekst();
+    totaalregel.textContent = tekst ? 'Samen ' + tekst : '';
+    totaalregel.hidden = !tekst;
   }
 
   function nummerRegels() {
@@ -137,14 +182,22 @@
     var regel = sjabloon.content.firstElementChild.cloneNode(true);
 
     var aantalVeld = regel.querySelector('[data-veld=aantal]');
-    function pas(richting) {
-      var n = parseInt(aantalVeld.value, 10);
-      if (isNaN(n)) n = 1;
-      aantalVeld.value = Math.max(1, Math.min(99, n + richting));
-      aantalVeld.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-    regel.querySelector('.teller-min').addEventListener('click', function () { pas(-1); });
-    regel.querySelector('.teller-plus').addEventListener('click', function () { pas(1); });
+
+    // Elk blok heeft meerdere tellers (aantal, draairamen, deuren); ze worden
+    // hier allemaal op dezelfde manier bediend.
+    Array.prototype.forEach.call(regel.querySelectorAll('.regel-aantal'), function (teller) {
+      var veld = teller.querySelector('input');
+      var laagste = parseInt(veld.min, 10) || 0;
+      var hoogste = parseInt(veld.max, 10) || 99;
+      function pas(richting) {
+        var n = parseInt(veld.value, 10);
+        if (isNaN(n)) n = laagste;
+        veld.value = Math.max(laagste, Math.min(hoogste, n + richting));
+        veld.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      teller.querySelector('.teller-min').addEventListener('click', function () { pas(-1); });
+      teller.querySelector('.teller-plus').addEventListener('click', function () { pas(1); });
+    });
 
     // De deelvakjes verschijnen pas als iemand 'bepaalde delen' kiest. Gaat het
     // om complete kozijnen, dan is die hele lijst niet nodig.
@@ -160,6 +213,37 @@
     }
     Array.prototype.forEach.call(regel.querySelectorAll('[data-veld=omvang]'),
       function (v) { v.addEventListener('change', tekenDelen); });
+
+    // De vraag "zit er iets in dat opengaat" slaat alleen op kozijnen, puien en
+    // dakkapelkozijnen. Een los draairaam of een losse deur is zelf al dat deel.
+    var inhoudblok = regel.querySelector('.regel-inhoud');
+    function tekenInhoud() {
+      var gekozen = regel.querySelector('[data-veld=soort]:checked');
+      var toon = gekozen && MET_INHOUD.indexOf(gekozen.value) > -1;
+      inhoudblok.hidden = !toon;
+      if (!toon) {
+        Array.prototype.forEach.call(inhoudblok.querySelectorAll('input[type=number]'),
+          function (v) { v.value = '0'; });
+      }
+      // "Bij hoeveel elementen" is dubbelzinnig zodra er draairamen in zitten:
+      // bedoel je de kozijnen of alles bij elkaar? Met de soort erin staat het
+      // er letterlijk: "Bij hoeveel kozijnen?"
+      var soortLabel = regel.querySelector('.aantal-soort');
+      if (soortLabel) {
+        soortLabel.textContent = gekozen
+          ? (SOORTEN[gekozen.value] || ['element', 'elementen'])[1]
+          : 'elementen';
+      }
+      // Vraagnummers lopen door over de vragen die zichtbaar zijn.
+      var nr = 1;
+      Array.prototype.forEach.call(regel.querySelectorAll('.regel-vraag'), function (vraag) {
+        var teller = vraag.querySelector('.vraag-nr');
+        if (!teller) return;
+        teller.textContent = vraag.hidden ? '' : (nr++) + ' \u00b7';
+      });
+    }
+    Array.prototype.forEach.call(regel.querySelectorAll('[data-veld=soort]'),
+      function (v) { v.addEventListener('change', tekenInhoud); });
 
     // Radio's binnen één regel moeten een eigen groep vormen, anders zetten de
     // regels elkaar uit. De naam wordt hier gezet omdat hij uniek moet zijn.
@@ -238,6 +322,8 @@
       }
       aantalVeld.value = gegevens.aantal || 1;
       regel.querySelector('[data-veld=plek]').value = gegevens.plek || '';
+      if (gegevens.draairamen) regel.querySelector('[data-veld=draairamen]').value = gegevens.draairamen;
+      if (gegevens.deuren) regel.querySelector('[data-veld=deuren]').value = gegevens.deuren;
       if (gegevens.omvang) {
         var keuze = regel.querySelector('[data-veld=omvang][value="' + gegevens.omvang + '"]');
         if (keuze) keuze.checked = true;
@@ -249,6 +335,7 @@
     }
 
     werklijst.appendChild(regel);
+    tekenInhoud();
     tekenDelen();
     regel.tekenFotos();
     tekenSamenvatting();
@@ -583,6 +670,7 @@
       var d = { stap: nu, bereikt: bereikt, velden: {},
                 werk: leesWerklijst().map(function (r) {
                   return { soort: r.soort, aantal: r.aantal, omvang: r.omvang,
+                           draairamen: r.draairamen, deuren: r.deuren,
                            plek: r.plek, delen: r.delen };
                 }) };
       form.querySelectorAll('input,textarea,select').forEach(function (el) {
@@ -687,9 +775,11 @@
     ['bereikbaar', 'kleur'].forEach(function (n) { d[n] = waarden(n); });
     d.werklijst = leesWerklijst().map(function (r) {
       return { soort: r.soort, aantal: r.aantal, omvang: r.omvang,
+               draairamen: r.draairamen, deuren: r.deuren,
                plek: r.plek, delen: r.delen, aantal_fotos: r.fotos.length };
     });
     d.totaal_elementen = totaalElementen();
+    d.totalen_per_soort = totalenPerSoort();
     d.kleur_anders = waarde('kleur_anders');
     d.via_de_site = vanaf;
     d.aantal_overzichtsfotos = bestanden.length;

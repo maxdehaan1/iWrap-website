@@ -24,8 +24,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="/css/style.css?v=fafa43f5">
-<link rel="stylesheet" href="/css/offerte.css?v=fafa43f5">
+<link rel="stylesheet" href="/css/style.css?v=8f7cd1d7">
+<link rel="stylesheet" href="/css/offerte.css?v=8f7cd1d7">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"HomeAndConstructionBusiness","@id":"https://www.iwrap.nl/#bedrijf","name":"iWrap","legalName":"iWrap VOF","url":"https://www.iwrap.nl/","email":"info@iwrap.nl","telephone":"+31614415877","image":"https://www.iwrap.nl/images/na-herstelde-onderdorpel-1600.webp","logo":"https://www.iwrap.nl/images/logo/iwrap-mark-512.png","address":{"@type":"PostalAddress","streetAddress":"Neuweg 128","postalCode":"1214 GZ","addressLocality":"Hilversum","addressRegion":"Noord-Holland","addressCountry":"NL"},"geo":{"@type":"GeoCoordinates","latitude":"52.2165193","longitude":"5.1715531"},"areaServed":{"@type":"Country","name":"Nederland"},"sameAs":["https://www.instagram.com/iwrap.nl/","https://maps.app.goo.gl/C77mS69nK3GGyqz9A?g_st=ic"],"description":"iWrap herstelt kunststof kozijnen met Renolit folie: de aangetaste toplaag eraf, een nieuwe folie erop. Duurzamer en vaak flink goedkoper dan vervangen.","aggregateRating":{"@type":"AggregateRating","ratingValue":"4.9","reviewCount":"82","bestRating":"5"},"review":[{"@type":"Review","author":{"@type":"Person","name":"Daan"},"reviewRating":{"@type":"Rating","ratingValue":"5","bestRating":"5"},"reviewBody":"Max van iWrap is vandaag gekomen om onze onderdorpel opnieuw van een mooie folie te voorzien. Na ca. 20 jaar was er een scheur in gekomen door de volle zon. Snel en netjes uitgevoerd, ik ben er heel blij mee."},{"@type":"Review","author":{"@type":"Person","name":"Michel Blok"},"reviewRating":{"@type":"Rating","ratingValue":"5","bestRating":"5"},"reviewBody":"Wij hebben een zeer goede ervaring gehad met iWrap. Max de eigenaar heeft zeer goed werk afgeleverd met het wrappen van al onze kozijnen. Wij raden iWrap zeker aan."},{"@type":"Review","author":{"@type":"Person","name":"José"},"reviewRating":{"@type":"Rating","ratingValue":"5","bestRating":"5"},"reviewBody":"Wat een top service! De kunststof kozijnen zijn professioneel gewrapt en het resultaat is geweldig. De afwerking is super strak, fris, netjes en tot in de details verzorgd. Prettige communicatie, snel en helder."},{"@type":"Review","author":{"@type":"Person","name":"Rig Hehenkamp"},"reviewRating":{"@type":"Rating","ratingValue":"5","bestRating":"5"},"reviewBody":"Max heeft onze garagedeuren perfect gewrapt, in dezelfde kleur als onze nieuwe kunststof kozijnen van de rest van het huis. Nu is het weer een geheel. Het contact verliep super en vriendelijk."},{"@type":"Review","author":{"@type":"Person","name":"Marianne van Broekhoven"},"reviewRating":{"@type":"Rating","ratingValue":"5","bestRating":"5"},"reviewBody":"Zeer tevreden over iWrap. Twee jaar geleden al eens gebruikgemaakt van de goede service. Werkt netjes en komt afspraken na. Weer blij met het resultaat en de goede adviezen."},{"@type":"Review","author":{"@type":"Person","name":"Jörgen Kok"},"reviewRating":{"@type":"Rating","ratingValue":"5","bestRating":"5"},"reviewBody":"Geweldig bedrijf, goed verzorgd, Max heeft mooi werk afgeleverd!"}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.iwrap.nl/"},{"@type":"ListItem","position":2,"name":"Offerte aanvragen","item":"https://www.iwrap.nl/offerte"}]}]}</script>
 </head>
 <body class="offertepagina">
@@ -77,10 +77,11 @@
       <section class="stap-paneel" data-titel="Het werk" data-verplicht="werklijst"
                data-melding="Vul minstens &eacute;&eacute;n blok in: kies een element en wat eraan moet gebeuren." >
         <h2>Wat moet er precies gebeuren?</h2>
-        <p class="toelichting">Beschrijf hieronder &eacute;&eacute;n soort werk. Moet er aan meerdere
-        kozijnen <em>precies hetzelfde</em> gebeuren, dan vul je onderaan het aantal in.
-        Is er ook nog <em>ander</em> werk &mdash; een deur bijvoorbeeld, of een kozijn waar
-        meer aan moet &mdash; dan voeg je daar een nieuw blok voor toe.</p>
+        <p class="toelichting">Beschrijf hieronder &eacute;&eacute;n soort werk. Zitten er
+        draairamen of een deur in het kozijn, dan geef je dat in hetzelfde blok aan &mdash;
+        die horen immers bij elkaar. Moet er aan meerdere kozijnen <em>precies hetzelfde</em>
+        gebeuren, dan vul je onderaan het aantal in. Is er ook nog <em>ander</em> werk, dan
+        voeg je daar een nieuw blok voor toe.</p>
 
         <div class="werklijst"></div>
 
@@ -102,7 +103,7 @@
           </div>
 
           <div class="regel-vraag">
-            <span class="regel-vraag-label">1 &middot; Wat voor element is het?</span>
+            <span class="regel-vraag-label"><b class="vraag-nr"></b> Wat voor element is het?</span>
             <div class="regel-soorten">
               <label class="omvangchip"><input type="radio" data-veld="soort" value="kozijn"><span>Kozijn</span></label>
               <label class="omvangchip"><input type="radio" data-veld="soort" value="draairaam"><span>Draairaam</span></label>
@@ -112,8 +113,34 @@
             </div>
           </div>
 
+          <div class="regel-vraag regel-inhoud" hidden>
+            <span class="regel-vraag-label"><b class="vraag-nr"></b> Zit er iets in dat opengaat?</span>
+            <p class="regel-vraag-hint">Draairamen en deuren horen bij het kozijn waar ze in
+            zitten. Laat op nul staan als er alleen vast glas in zit.</p>
+            <div class="inhoud-tellers">
+              <div class="inhoud-teller">
+                <span class="inhoud-naam">Draairamen</span>
+                <div class="regel-aantal">
+                  <button type="button" class="teller-min" aria-label="Minder draairamen">&minus;</button>
+                  <input type="number" data-veld="draairamen" value="0" min="0" max="20"
+                         inputmode="numeric" aria-label="Aantal draairamen in dit kozijn">
+                  <button type="button" class="teller-plus" aria-label="Meer draairamen">+</button>
+                </div>
+              </div>
+              <div class="inhoud-teller">
+                <span class="inhoud-naam">Deuren</span>
+                <div class="regel-aantal">
+                  <button type="button" class="teller-min" aria-label="Minder deuren">&minus;</button>
+                  <input type="number" data-veld="deuren" value="0" min="0" max="20"
+                         inputmode="numeric" aria-label="Aantal deuren in dit kozijn">
+                  <button type="button" class="teller-plus" aria-label="Meer deuren">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="regel-vraag">
-            <span class="regel-vraag-label">2 &middot; Wat moet eraan gebeuren?</span>
+            <span class="regel-vraag-label"><b class="vraag-nr"></b> Wat moet eraan gebeuren?</span>
             <div class="regel-omvang">
               <label class="omvangchip">
                 <input type="radio" data-veld="omvang" value="compleet">
@@ -148,7 +175,7 @@
 
           <div class="regel-vraag regel-slot">
             <div class="regel-aantalvraag">
-              <span class="regel-vraag-label">3 &middot; Bij hoeveel elementen?</span>
+              <span class="regel-vraag-label"><b class="vraag-nr"></b> Bij hoeveel <span class="aantal-soort">elementen</span>?</span>
               <div class="regel-aantal">
                 <button type="button" class="teller-min" aria-label="Eentje minder">&minus;</button>
                 <input type="number" data-veld="aantal" value="1" min="1" max="99"
@@ -405,7 +432,7 @@
     gaat over de folie zelf.</p>
   </div>
 </footer>
-<script src="/js/main.js?v=fafa43f5" defer></script>
-<script src="/js/offerte.js?v=fafa43f5" defer></script>
+<script src="/js/main.js?v=8f7cd1d7" defer></script>
+<script src="/js/offerte.js?v=8f7cd1d7" defer></script>
 </body>
 </html>
