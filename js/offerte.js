@@ -416,7 +416,7 @@
         : '<p>Je aanvraag is binnen. We kijken je foto's na en laten je weten wat ' +
           'het gaat kosten. Zijn er dingen die we niet goed kunnen zien, dan bellen we ' +
           'je even.</p>') +
-      '<div class="knoprij"><a class="knop knop-tweede" href="/resultaten">Bekijk ons werk</a>' +
+      '<div class="knoprij"><a class="knop knop-tweede" href="/voorbeelden">Bekijk ons werk</a>' +
       '<a class="knop knop-tweede" href="/veelgestelde-vragen">Veelgestelde vragen</a></div>' +
       '</div>';
     kaart.scrollIntoView({ behavior: 'smooth', block: 'center' });

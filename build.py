@@ -75,7 +75,7 @@ FEITEN = {
 NAV = [
     ("kunststof-kozijn-herstellen", "Kozijnherstel"),
     ("werkwijze", "Werkwijze"),
-    ("resultaten", "Resultaten"),
+    ("voorbeelden", "Voorbeelden"),
     ("kosten", "Kosten"),
     ("over-iwrap", "Over iWrap"),
 ]
@@ -85,7 +85,7 @@ FOOTER_KOLOMMEN = [
         ("kunststof-kozijn-herstellen", "Kunststof kozijn herstellen"),
         ("werkwijze", "Onze werkwijze"),
         ("kosten", "Wat kost het"),
-        ("resultaten", "Resultaten"),
+        ("voorbeelden", "Voorbeelden"),
         ("kozijnmerken/index", "Per kozijnmerk"),
     ]),
     ("Voor wie", [
@@ -656,7 +656,38 @@ def main():
         doel.write_text(substitueer(render(slug, meta, substitueer(inhoud), ver)), encoding="utf-8")
 
     schrijf_sitemap([(s, m) for s, m, _ in paginas])
+    opgeruimd = ruim_op([s for s, _, _ in paginas])
     print(f"{len(paginas)} pagina's gebouwd (css/js-versie {ver})")
+    for weg in opgeruimd:
+        print(f"  opgeruimd: {weg} (geen bron meer)")
+
+
+def ruim_op(slugs):
+    """Pagina's weghalen die we eerder genereerden maar nu niet meer.
+
+    Zonder dit blijft er na het hernoemen van een bron een verweesde HTML in de
+    root staan, die gewoon bereikbaar blijft. We houden een lijst bij van wat we
+    zelf geschreven hebben, zodat we nooit iets weghalen dat niet van ons is.
+    """
+    lijst = ROOT / ".gegenereerd"
+    nu = {s + ".html" for s in slugs}
+    eerder = set()
+    if lijst.exists():
+        eerder = {r.strip() for r in lijst.read_text(encoding="utf-8").split("\n") if r.strip()}
+    weg = []
+    for naam in sorted(eerder - nu):
+        # Nooit aan de bron komen, wat er ook in de lijst staat.
+        if naam.startswith("src/") or naam.startswith("."):
+            continue
+        pad = ROOT / naam
+        if pad.exists():
+            pad.unlink()
+            weg.append(naam)
+        ouder = pad.parent
+        if ouder != ROOT and ouder.exists() and not any(ouder.iterdir()):
+            ouder.rmdir()
+    lijst.write_text("\n".join(sorted(nu)) + "\n", encoding="utf-8")
+    return weg
 
 
 def merkpagina(merk, sjabloon):

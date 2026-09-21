@@ -100,22 +100,22 @@
     },
     {
       "source": "/projecten",
-      "destination": "/resultaten",
+      "destination": "/voorbeelden",
       "permanent": true
     },
     {
       "source": "/portfolio",
-      "destination": "/resultaten",
+      "destination": "/voorbeelden",
       "permanent": true
     },
     {
       "source": "/portfolio/:pad*",
-      "destination": "/resultaten",
+      "destination": "/voorbeelden",
       "permanent": true
     },
     {
       "source": "/portfolio_cat/:pad*",
-      "destination": "/resultaten",
+      "destination": "/voorbeelden",
       "permanent": true
     },
     {
@@ -131,6 +131,11 @@
     {
       "source": "/wp-sitemap.xml",
       "destination": "/sitemap.xml",
+      "permanent": true
+    },
+    {
+      "source": "/resultaten",
+      "destination": "/voorbeelden",
       "permanent": true
     }
   ]

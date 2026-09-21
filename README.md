@@ -94,7 +94,7 @@ offerte.html              Het aanvraagformulier — de kern       (gegenereerd)
 kunststof-kozijn-herstellen.html  De belangrijkste SEO-pagina   (gegenereerd)
 werkwijze.html            Zes stappen met foto's                (gegenereerd)
 kosten.html               Prijzen en waar ze vandaan komen      (gegenereerd)
-resultaten.html           Voor/na-schuifbalken                  (gegenereerd)
+voorbeelden.html          Voorbeelden van ons werk              (gegenereerd)
 veelgestelde-vragen.html  Alle vragen op één plek               (gegenereerd)
 werkgebied.html           Regio's waar je gewerkt hebt          (gegenereerd)
 vve-en-woningcorporaties.html                                   (gegenereerd)
@@ -242,7 +242,7 @@ site serveert. Deze opzet houdt de site snel en de reviews in je eigen beheer.
 
 **Later, als je zin hebt:**
 
-- **Echte projecten op `/resultaten`.** Nu staan er vijf voor/na-paren van één klus. Elke
+- **Echte projecten op `/voorbeelden`.** Nu staan er vijf voor/na-paren van één klus. Elke
   nieuwe klus met een fatsoenlijke voor- en na-foto kun je erbij zetten — mét plaatsnaam,
   want dat is precies waar "kunststof kozijnen herstellen [plaats]" op gaat ranken.
 - **Meer merkpagina's.** Eén regel in `MERKEN` per merk. Kandidaten: Rehau, Deceuninck,
