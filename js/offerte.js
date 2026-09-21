@@ -50,19 +50,36 @@
     }
   };
 
+  var TELVELDEN = ['aantal_kozijnen', 'aantal_draairamen',
+                   'aantal_deuren', 'aantal_schuifpuien'];
+
+  function aantal(naam) {
+    var el = form.querySelector('[name="' + naam + '"]');
+    if (!el) return 0;
+    var rij = el.closest('.teller');
+    if (rij && rij.hidden) return 0;
+    var n = parseInt(el.value, 10);
+    return isNaN(n) || n < 0 ? 0 : n;
+  }
+
+  function totaalAantal() {
+    return TELVELDEN.reduce(function (som, n) { return som + aantal(n); }, 0);
+  }
+
   function bedrag() {
-    var omvang = waarde('omvang');
-    var delen = waarden('onderdelen');
-    if (!omvang) return null;
-    if (omvang === 'meer-dan-10') return PRIJS.groot;
-    var alleenDorpels = delen.length === 1 && delen[0] === 'onderdorpels';
-    if (alleenDorpels && (omvang === '1' || omvang === '2-4')) return PRIJS.klein;
+    var totaal = totaalAantal();
+    if (!totaal) return null;
+    // Een schuifpui is fors groter dan een kozijn en telt daarom dubbel mee.
+    var gewicht = totaal + aantal('aantal_schuifpuien');
+    if (gewicht > 10) return PRIJS.groot;
+    if (waarde('omvangsoort') === 'delen' && gewicht <= 4) return PRIJS.klein;
     return PRIJS.middel;
   }
 
   function prijsNoten() {
     var noten = [];
-    if (waarden('onderdelen').indexOf('draaiende-delen') > -1) {
+    if (waarden('onderdelen').indexOf('draaiende-delen') > -1 ||
+        aantal('aantal_draairamen') || aantal('aantal_deuren')) {
       noten.push('Voor de draaiende delen komen we ook binnen: die moeten open om de folie netjes om de rand te kunnen zetten.');
     }
     return noten;
@@ -169,6 +186,8 @@
     if (melding) melding.textContent = '';
     if (laatste) vulSamenvatting();
     toonPrijs();
+    tekenVervolgvelden();
+    tekenTellers();
     // Focus naar de kop van de nieuwe stap, anders weten schermlezers niet
     // dat er iets veranderd is.
     var kop = panelen[nu].querySelector('h2');
@@ -187,12 +206,21 @@
       var namen = eis.split(',');
       for (var i = 0; i < namen.length; i++) {
         var naam = namen[i].trim();
-        var gekozen = form.querySelectorAll('[name="' + naam + '"]:checked').length;
+        var gekozen = naam === 'aantallen'
+          ? totaalAantal()
+          : form.querySelectorAll('[name="' + naam + '"]:checked').length;
         if (!gekozen) {
           zeg(paneel.dataset.melding || 'Kies hierboven een antwoord om verder te gaan.');
           return false;
         }
       }
+    }
+    // Kiest iemand een andere kleur, dan willen we ook weten welke.
+    if (paneel.querySelector('[name="kleur"]') &&
+        waarde('kleur') === 'anders' && !waarde('kleur_anders')) {
+      zeg('Zet er even bij welke kleur je in gedachten hebt.');
+      form.querySelector('[name="kleur_anders"]').focus();
+      return false;
     }
     var velden = paneel.querySelectorAll('input[required],textarea[required],select[required]');
     for (var j = 0; j < velden.length; j++) {
@@ -211,6 +239,47 @@
   if (verder) verder.addEventListener('click', function () { if (geldig()) toon(nu + 1, true); });
   if (terug) terug.addEventListener('click', function () { toon(nu - 1, true); });
 
+  /* Tellers ----------------------------------------------------------------
+     Plus- en minknoppen naast een gewoon getalveld: sneller aan te tikken op een
+     telefoon, en wie liever typt kan dat gewoon doen. */
+
+  Array.prototype.forEach.call(form.querySelectorAll('.teller'), function (teller) {
+    var invoer = teller.querySelector('input');
+    function pas(richting) {
+      var n = parseInt(invoer.value, 10);
+      if (isNaN(n)) n = 0;
+      invoer.value = Math.max(0, Math.min(99, n + richting));
+      invoer.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    teller.querySelector('.teller-min').addEventListener('click', function () { pas(-1); });
+    teller.querySelector('.teller-plus').addEventListener('click', function () { pas(1); });
+  });
+
+  function tekenTellers() {
+    var gekozen = waarden('onderdelen');
+    Array.prototype.forEach.call(form.querySelectorAll('.teller'), function (teller) {
+      // Alleen de soorten tonen die bij stap 1 zijn aangevinkt. Anders kun je
+      // 'alleen kozijnen' kiezen en daarna toch deuren tellen, en dan spreekt
+      // de aanvraag zichzelf tegen.
+      var hoort = !teller.dataset.bij || gekozen.indexOf(teller.dataset.bij) > -1;
+      teller.hidden = !hoort;
+      var invoer = teller.querySelector('input');
+      if (!hoort && invoer.value !== '0') invoer.value = '0';
+      teller.dataset.gevuld = parseInt(invoer.value, 10) > 0 ? 'ja' : 'nee';
+    });
+  }
+
+  /* Vervolgvelden ----------------------------------------------------------
+     Velden die pas verschijnen zodra een bepaalde keuze gemaakt is, zodat het
+     formulier niet voller oogt dan het is. */
+
+  function tekenVervolgvelden() {
+    Array.prototype.forEach.call(form.querySelectorAll('.vervolgveld'), function (veld) {
+      var deel = (veld.dataset.toonBij || '').split('=');
+      veld.hidden = waarde(deel[0]) !== deel[1];
+    });
+  }
+
   function bijwerken(e) {
     if (!e.target.name) return;
     zeg('');
@@ -218,6 +287,8 @@
     // Op de laatste stap staat de samenvatting in beeld; die moet meelopen met
     // wat er nog wordt ingevuld, anders klopt hij niet met wat er verstuurd wordt.
     if (nu === panelen.length - 1) vulSamenvatting();
+    tekenVervolgvelden();
+    tekenTellers();
     bewaar();
   }
   form.addEventListener('change', bijwerken);
@@ -288,11 +359,34 @@
 
   /* Samenvatting ----------------------------------------------------------- */
 
+  // Enkelvoud en meervoud, zodat er in de mail geen '1 deuren' staat.
+  var TELNAMEN = {
+    aantal_kozijnen: ['kozijn', 'kozijnen'],
+    aantal_draairamen: ['draairaam', 'draairamen'],
+    aantal_deuren: ['deur', 'deuren'],
+    aantal_schuifpuien: ['schuifpui', 'schuifpuien']
+  };
+
   var VELDEN = [
-    ['Te herstellen', function () { return labels('onderdelen').join(', '); }, 0],
-    ['Omvang', function () { return labels('omvang').join(', '); }, 1],
-    ['Bereikbaarheid', function () { return labels('bereikbaar').join(', '); }, 2],
-    ['Kleur', function () { return labels('kleur').join(', '); }, 3],
+    ['Werk', function () {
+      var soort = labels('omvangsoort').join('');
+      var welke = waarde('welke_delen');
+      return soort + (welke ? ' (' + welke + ')' : '');
+    }, 0],
+    ['Onderdelen', function () { return labels('onderdelen').join(', '); }, 0],
+    ['Aantallen', function () {
+      return TELVELDEN.filter(function (n) { return aantal(n); })
+        .map(function (n) {
+          var k = aantal(n);
+          return k + ' ' + TELNAMEN[n][k === 1 ? 0 : 1];
+        }).join(', ');
+    }, 1],
+    ['Waar', function () { return labels('bereikbaar').join(', '); }, 2],
+    ['Kleur', function () {
+      return waarde('kleur') === 'anders'
+        ? 'Andere kleur: ' + (waarde('kleur_anders') || 'nog te bepalen')
+        : 'Dezelfde kleur houden';
+    }, 3],
     ['Adres', function () {
       var p = waarde('postcode'), h = waarde('huisnummer'), pl = waarde('plaats');
       return [p, h, pl].filter(Boolean).join(' ');
@@ -443,8 +537,11 @@
     var d = {};
     ['naam', 'email', 'telefoon', 'postcode', 'huisnummer', 'plaats', 'toelichting']
       .forEach(function (n) { d[n] = waarde(n); });
-    ['onderdelen', 'omvang', 'bereikbaar', 'kleur', 'wanneer']
+    ['onderdelen', 'omvangsoort', 'bereikbaar', 'kleur', 'wanneer']
       .forEach(function (n) { d[n] = waarden(n); });
+    TELVELDEN.forEach(function (n) { d[n] = aantal(n); });
+    d.welke_delen = waarde('welke_delen');
+    d.kleur_anders = waarde('kleur_anders');
     d.via_de_site = vanaf;
     var p = bedrag();
     d.indicatie = p ? p.bedrag : '';

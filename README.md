@@ -124,82 +124,41 @@ images/                   Elke foto als webp op drie breedtes, met een jpg als t
 - **Letters.** Montserrat voor koppen en knoppen (dat is je bestaande huisstijl, en het
   iWrap-blok op kozijnwrap.nl leent hem bewust), Inter voor de lopende tekst.
 
-## Het offerteformulier laten verzenden
-
-Op dit moment staat in `js/offerte.js` bovenaan:
-
-```js
-var ACCESS_KEY = 'VERVANG_MET_JE_WEB3FORMS_KEY';
-```
-
-Zolang die plaatshouder er staat, opent het formulier bij verzenden de mailclient van
-de bezoeker met de complete samenvatting erin. Dat werkt, maar foto's moet hij dan zelf
-als bijlage toevoegen. Om het echt te laten binnenkomen:
-
-1. Vraag op [web3forms.com](https://web3forms.com) een gratis access key aan met
-   info@iwrap.nl.
-2. Zet die key in `js/offerte.js` en draai `python3 build.py`.
-3. Klaar — inzendingen komen met foto's en al in je mailbox.
-
-**Richting een CRM.** Het formulier stuurt naast de leesbare samenvatting ook een veld
-`gegevens_json` mee met alle antwoorden los. Een Make.com-scenario (of straks je CRM)
-kan dat rechtstreeks uitlezen zonder de tekst te hoeven ontleden — dan komt een aanvraag
-als kaart in je CRM te staan in plaats van als mailtje. Wil je het meteen zo:
-vervang de `fetch`-aanroep onderin `js/offerte.js` door je Make-webhook-URL.
-
-## Live: waar hij staat
-
-**https://iwrap-website.vercel.app** — hier kun je hem altijd live bekijken.
-
-- GitHub: `maxdehaan1/iWrap-website`, productiebranch `main`
-- Vercel: project `iwrap-website` in team Max, gekoppeld aan die repo
-
-Zelfde opzet als kozijnwrap.nl en houtnerffolie.nl, en dezelfde volgorde waarin het is
-gedaan: **eerst de GitHub-repo, dan die repo importeren in Vercel.** Andersom kan ook,
-maar dan moet je de koppeling achteraf alsnog leggen.
-
-Het domein iwrap.nl blijft ongemoeid tot je het zelf koppelt. Doe dat in Vercel onder
-Settings → Domains van dit project.
-
-### Daarna: elke wijziging live krijgen
-
-```bash
-python3 build.py            # de HTML in de root opnieuw genereren
-git add -A && git commit -m "wat je veranderd hebt"
-git push
-```
-
-Vercel bouwt automatisch opnieuw bij elke push naar `main`. **Vergeet `build.py` niet** —
-Vercel draait hem niet, het is de gegenereerde HTML in de repo die geserveerd wordt.
-
-### Twee dingen om te weten
-
-- **De canonicals wijzen naar `https://www.iwrap.nl`**, ook op het vercel.app-adres. Dat is
-  precies de bedoeling: Google ziet dan dat de echte versie op je eigen domein staat en
-  behandelt het voorbeeld niet als een concurrerende kopie. Niet weghalen.
-- **De repo is publiek**, dus de Web3Forms-key die je er straks in zet is voor iedereen te
-  zien. Dat is bij Web3Forms normaal — die key hoort client-side te staan — maar zet in je
-  Web3Forms-account wél de domeinbeperking aan, anders kan iemand anders formulieren naar
-  jouw mailbox sturen.
-
 ## Het offerteformulier
 
-Vijf stappen, opgebouwd rond wat de prijs bepaalt: **welk werk, hoeveel kozijnen, hoe
-hoog, welke kleur, gegevens en foto's.**
+Vijf stappen, in de volgorde waarin een offerte ontstaat:
 
-Wat er bewust *niet* in zit is een vraag naar het soort schade. De herstelwerkzaamheden
-zijn hetzelfde of de folie nu verweerd is, loslaat of blaasjes heeft — dus die stap kostte
-de bezoeker tijd zonder dat er een betere offerte uit kwam. Klikt iemand op de homepage
-wél op een klacht, dan wordt dat via `?klacht=` stil meegestuurd en staat het in de mail
-onder "Via de site". De foto's vertellen de rest.
+1. **Het werk** — bepaalde delen of complete kozijnen, en aan welke onderdelen
+   (kozijnen en/of draaiende delen). Bij "bepaalde delen" verschijnt een vrij veld
+   voor welke delen precies.
+2. **Aantallen** — tellers voor kozijnen, draairamen, deuren en schuifpuien. Er worden
+   alleen soorten getoond die bij stap 1 zijn aangevinkt; verborgen tellers gaan op nul
+   en tellen niet mee. Zo kan een aanvraag zichzelf niet tegenspreken.
+3. **Hoogte** — meerdere antwoorden mogelijk (begane grond, eerste, tweede of hoger,
+   dakkapel), want een woning heeft ze vaak door elkaar.
+4. **Kleur** — "dezelfde kleur houden" staat voorgeselecteerd, want dat is wat iWrap
+   aanraadt. Kiest iemand een andere kleur, dan verschijnt een veld om die in te typen,
+   en dat veld is dan verplicht.
+5. **Gegevens** — foto's, contactgegevens, wanneer het schikt, toelichting.
+
+**Er wordt niet gevraagd naar het soort schade.** De herstelwerkzaamheden zijn hetzelfde
+of de folie nu verweerd is, loslaat of blaasjes heeft — die vraag kostte de bezoeker tijd
+zonder dat er een betere offerte uit kwam. Klikt iemand op de homepage wél op een klacht,
+dan gaat dat via `?klacht=` stil mee en staat het in de mail onder "Via de site". De
+foto's vertellen de rest.
+
+De prijsindicatie rekent met de echte aantallen: een schuifpui telt dubbel omdat hij
+fors groter is dan een kozijn. Bij meer dan tien eenheden valt hij terug op "opname op
+locatie".
 
 De stappenbalk bovenin wordt door `offerte.js` uit de panelen zelf opgebouwd. Een stap
-toevoegen of weghalen is dus één `<section class="stap-paneel" data-titel="...">` erbij of
-eraf; de balk, de nummering en de opslag volgen vanzelf. Je kunt terugklikken naar elke
-stap die je al gezien hebt; vooruit gaat via de knop, want daar hoort de controle bij.
+toevoegen of weghalen is dus één `<section class="stap-paneel" data-titel="...">` erbij
+of eraf; de balk, de nummering en de opslag volgen vanzelf. Je kunt terugklikken naar
+elke stap die je al gezien hebt; vooruit gaat via de knop, want daar hoort de controle
+bij.
 
 **Na elke wijziging in `js/`: open `/offerte` en kijk in de console.** `build.py`
-controleert wel of alle strings netjes afgesloten zijn (die fout heeft de site een keer
+controleert of alle strings netjes afgesloten zijn (die fout heeft de site een keer
 stilgelegd), maar een typefout in een functienaam merk je alleen door het te draaien.
 
 ## Reviews
