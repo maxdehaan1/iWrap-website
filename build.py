@@ -28,18 +28,25 @@ SITE = "https://www.iwrap.nl"
 # telefoon of het werkgebied, dan hoeft alleen dit blok aangepast te worden:
 # het werkt door in de header, de footer, de structured data en de contactpagina.
 # ---------------------------------------------------------------------------
+# Score, aantal en de reviewteksten komen uit reviews.json. Dat bestand wordt
+# ververst met `python3 reviews.py` (Google Places API) en is de enige plek waar
+# reviewgegevens staan — header, footer, homepage en structured data lezen er
+# allemaal uit.
+REVIEWS = json.loads((ROOT / "reviews.json").read_text(encoding="utf-8"))
+
 BEDRIJF = {
     "naam": "iWrap",
     "juridisch": "iWrap VOF",
     "plaats": "Hilversum",
+    "straat": "Neuweg 128",
+    "postcode": "1214 GZ",
+    "lat": "52.2165193",
+    "lon": "5.1715531",
     "email": "info@iwrap.nl",
     "telefoon": "+31 6 1441 5877",
     "telefoon_tel": "+31614415877",
     "whatsapp": "31614415877",
     "instagram": "https://www.instagram.com/iwrap.nl/",
-    "reviews_score": "4,9",
-    "reviews_score_getal": "4.9",
-    "reviews_aantal": "81",
     "reviews_url": "https://maps.app.goo.gl/C77mS69nK3GGyqz9A?g_st=ic",
     "ervaring_jaren": "10",
     # TODO Max: KvK-nummer en btw-id invullen -- horen op de contactpagina te staan
@@ -199,6 +206,11 @@ REGIOS = [
     ("Noord-Nederland en Limburg", ["Groningen", "Leeuwarden", "Assen", "Maastricht", "Venlo", "Roermond"]),
 ]
 
+# Afgeleid uit reviews.json, zodat de sjablonen er niets van hoeven te weten.
+BEDRIJF["reviews_score"] = str(REVIEWS["score"]).replace(".", ",")
+BEDRIJF["reviews_score_getal"] = str(REVIEWS["score"])
+BEDRIJF["reviews_aantal"] = str(REVIEWS["aantal"])
+
 FAVICON = "/images/logo/iwrap-mark-64.png"
 
 LOGO = (
@@ -237,7 +249,10 @@ def beeldmaten(src):
     grootste = max(beschikbaar)
     with Image.open(ROOT / "images" / f"{src}-{grootste}.webp") as im:
         w, h = im.size
-    return beschikbaar, w, h
+    jpgs = [b for b in BREEDTES if (ROOT / "images" / f"{src}-{b}.jpg").exists()]
+    if not jpgs:
+        raise SystemExit(f"terugval ontbreekt: images/{src}-*.jpg")
+    return beschikbaar, w, h, max(jpgs)
 
 
 def render_regios():
@@ -263,6 +278,25 @@ def render_merkkaarten():
     return '<div class="merkkaarten">' + "".join(uit) + "</div>"
 
 
+def render_reviews(aantal, vanaf=0):
+    """Reviewkaarten uit reviews.json. Zo staat er nergens meer een review in
+    de bronpagina's en is `python3 reviews.py` genoeg om ze te verversen."""
+    uit = []
+    for r in REVIEWS["reviews"][vanaf:vanaf + aantal]:
+        wanneer = r["wanneer"] or "Google-review"
+        initiaal = r["naam"].strip()[:1].upper()
+        uit.append(
+            '<article class="review">'
+            '<div class="sterren" aria-label="5 van de 5 sterren">'
+            "&#9733;&#9733;&#9733;&#9733;&#9733;</div>"
+            f'<p>{r["tekst"]}</p>'
+            f'<div class="wie"><span class="avatar" aria-hidden="true">{initiaal}</span>'
+            f'<div><b>{r["naam"]}</b><small>{wanneer}</small></div></div>'
+            "</article>"
+        )
+    return "\n".join(uit)
+
+
 def render_beeld(m):
     attrs = dict(
         (a.group(1), a.group(2) if a.group(2) is not None else "")
@@ -272,7 +306,7 @@ def render_beeld(m):
     alt = attrs.get("alt", "")
     sizes = attrs.get("sizes", "100vw")
     klasse = attrs.get("class", "")
-    breedtes, w, h = beeldmaten(src)
+    breedtes, w, h, jpg = beeldmaten(src)
     srcset = ", ".join(f"/images/{src}-{b}.webp {b}w" for b in breedtes)
     laden = (
         ' fetchpriority="high" decoding="async"'
@@ -282,7 +316,7 @@ def render_beeld(m):
     return (
         "<picture>"
         f'<source type="image/webp" srcset="{srcset}" sizes="{sizes}">'
-        f'<img src="/images/{src}-1000.jpg" width="{w}" height="{h}" alt="{alt}"'
+        f'<img src="/images/{src}-{jpg}.jpg" width="{w}" height="{h}" alt="{alt}"'
         + (f' class="{klasse}"' if klasse else "")
         + laden
         + "></picture>"
@@ -397,9 +431,16 @@ def localbusiness():
         "priceRange": "€€",
         "address": {
             "@type": "PostalAddress",
+            "streetAddress": b["straat"],
+            "postalCode": b["postcode"],
             "addressLocality": b["plaats"],
             "addressRegion": "Noord-Holland",
             "addressCountry": "NL",
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": b["lat"],
+            "longitude": b["lon"],
         },
         "areaServed": {"@type": "Country", "name": "Nederland"},
         "sameAs": [b["instagram"], b["reviews_url"]],
@@ -414,6 +455,16 @@ def localbusiness():
             "reviewCount": b["reviews_aantal"],
             "bestRating": "5",
         },
+        "review": [
+            {
+                "@type": "Review",
+                "author": {"@type": "Person", "name": r["naam"]},
+                "reviewRating": {"@type": "Rating", "ratingValue": "5",
+                                 "bestRating": "5"},
+                "reviewBody": r["tekst"],
+            }
+            for r in REVIEWS["reviews"]
+        ],
     }
 
 
@@ -574,6 +625,9 @@ def substitueer(tekst):
     tekst = re.sub(r"\{\{(bedrijf|feit)\.([a-z_]+)\}\}", rep, tekst)
     tekst = tekst.replace("{{regios}}", render_regios())
     tekst = tekst.replace("{{merkkaarten}}", render_merkkaarten())
+    tekst = re.sub(r"\{\{reviews:(\d+)(?::(\d+))?\}\}",
+                   lambda m: render_reviews(int(m.group(1)), int(m.group(2) or 0)),
+                   tekst)
     return BEELD_RE.sub(render_beeld, tekst)
 
 

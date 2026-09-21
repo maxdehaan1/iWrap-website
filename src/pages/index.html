@@ -8,8 +8,8 @@
   "prioriteit": "1.0",
   "changefreq": "weekly",
   "preload": {
-    "src": "/images/voor-vergeelde-onderdorpel-1000.webp",
-    "srcset": "/images/voor-vergeelde-onderdorpel-640.webp 640w, /images/voor-vergeelde-onderdorpel-1000.webp 1000w, /images/voor-vergeelde-onderdorpel-1600.webp 1600w",
+    "src": "/images/voor-gebarsten-dorpel-1000.webp",
+    "srcset": "/images/voor-gebarsten-dorpel-640.webp 640w, /images/voor-gebarsten-dorpel-1000.webp 1000w",
     "sizes": "(max-width:900px) 100vw, 560px"
   },
   "schema": [
@@ -44,10 +44,10 @@
     <div>
       <p class="opschrift">Al meer dan {{bedrijf.ervaring_jaren}} jaar dezelfde specialisatie</p>
       <h1>Kunststof kozijnen herstellen met <em>Renolit folie</em></h1>
-      <p class="hero-lede">Verkleurd, vergeeld of laat de folie los? Het kozijn zelf is
-      bijna nooit op — alleen de toplaag eroverheen. Die halen we eraf en brengen we
-      opnieuw aan. Je kozijnen zien er weer uit als nieuw, voor een fractie van wat
-      vervangen kost.</p>
+      <p class="hero-lede">Dof geworden, gebarsten of laat de folie los? Het kozijn
+      zelf is bijna nooit op — alleen de toplaag eroverheen. Die halen we eraf en
+      brengen we opnieuw aan. Je kozijnen zien er weer uit als nieuw, voor een fractie
+      van wat vervangen kost.</p>
       <div class="knoprij">
         <a class="knop knop-primair" href="/offerte">Offerte aanvragen</a>
         <a class="knop knop-tweede" href="/kosten">Wat kost het?</a>
@@ -61,9 +61,9 @@
 
     <figure class="hero-fig">
       <div class="vergelijk" style="--pos:50%">
-        <x-beeld src="voor-vergeelde-onderdorpel" eager sizes="(max-width:900px) 100vw, 560px" alt="Onderdorpel van een kunststof kozijn waarvan de folie vergeeld en verweerd is">
+        <x-beeld src="voor-gebarsten-dorpel" eager sizes="(max-width:900px) 100vw, 560px" alt="Onderdorpel van een kunststof kozijn waarvan de folie is gebarsten en opgekruld">
         <div class="na">
-          <x-beeld src="na-herstelde-onderdorpel" sizes="(max-width:900px) 100vw, 560px" alt="Dezelfde onderdorpel na het aanbrengen van nieuwe Renolit folie: strak en egaal wit">
+          <x-beeld src="na-gebarsten-dorpel-hersteld" sizes="(max-width:900px) 100vw, 560px" alt="Dezelfde onderdorpel na het aanbrengen van nieuwe Renolit folie: strak en egaal">
         </div>
         <span class="label label-voor">Voor</span>
         <span class="label label-na">Na</span>
@@ -86,11 +86,11 @@
     </div>
 
     <div class="klachten verschijn">
-      <a class="klacht" href="/offerte?klacht=verkleurd">
-        <div class="beeld"><x-beeld src="klacht-verkleurd" sizes="(max-width:700px) 100vw, 320px" alt="Vergeelde folie op een kunststof onderdorpel"></div>
+      <a class="klacht" href="/offerte?klacht=dof">
+        <div class="beeld"><x-beeld src="klacht-dof" sizes="(max-width:700px) 100vw, 320px" alt="Dof en grauw geworden folie op een kunststof onderdorpel"></div>
         <div class="tekst">
-          <h3>Verkleurd of vergeeld</h3>
-          <p>Wit dat naar crème of geel trekt, meestal het ergst aan de zonkant.</p>
+          <h3>Dof of verkleurd</h3>
+          <p>De glans is eraf en het oppervlak blijft grauw, meestal het ergst aan de zonkant.</p>
           <span class="pijl">Dit herken ik</span>
         </div>
       </a>
@@ -110,11 +110,11 @@
           <span class="pijl">Dit herken ik</span>
         </div>
       </a>
-      <a class="klacht" href="/offerte?klacht=lijmresten">
-        <div class="beeld"><x-beeld src="klacht-lijmresten" sizes="(max-width:700px) 100vw, 320px" alt="Bruine lijmresten en verweerde randen op een kunststof onderdorpel"></div>
+      <a class="klacht" href="/offerte?klacht=lijmlaag">
+        <div class="beeld"><x-beeld src="klacht-lijmlaag" sizes="(max-width:700px) 100vw, 320px" alt="Losgescheurde witte folie met de gele lijmlaag eronder zichtbaar"></div>
         <div class="tekst">
-          <h3>Lijmresten of bruine randen</h3>
-          <p>Donkere strepen langs de naden die er niet meer uit te poetsen zijn.</p>
+          <h3>Je ziet er iets geels onder</h3>
+          <p>Dat is de lijmlaag, zichtbaar geworden waar de folie is losgescheurd.</p>
           <span class="pijl">Dit herken ik</span>
         </div>
       </a>
@@ -150,10 +150,10 @@
       <div class="kaart wel">
         <h3>Dit lossen we op</h3>
         <ul class="vinklijst">
-          <li>Folie die verkleurd, vergeeld of dof is</li>
+          <li>Folie die dof, grauw of verkleurd is</li>
           <li>Folie die loslaat, bobbelt of bladdert</li>
           <li>Krassen, scheuren en stootschade in de toplaag</li>
-          <li>Lijmresten en bruine randen langs de naden</li>
+          <li>Losgescheurde folie waar de lijmlaag onder zichtbaar is</li>
           <li>Een kleur die je gewoon niet meer mooi vindt</li>
           <li>Kunststof gevelbekleding, boeidelen en deurpanelen</li>
         </ul>
@@ -299,24 +299,7 @@
       <h2>{{bedrijf.reviews_score}} uit {{bedrijf.reviews_aantal}} Google-reviews</h2>
     </div>
     <div class="raster raster-3 verschijn">
-      <article class="review">
-        <div class="sterren" aria-label="5 van de 5 sterren">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <p>Max van iWrap is vandaag gekomen om onze onderdorpel opnieuw van een mooie
-        folie te voorzien. Netjes en vakkundig werk geleverd.</p>
-        <div class="wie"><span class="avatar" aria-hidden="true">D</span><div><b>Daan</b><small>Google-review</small></div></div>
-      </article>
-      <article class="review">
-        <div class="sterren" aria-label="5 van de 5 sterren">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <p>Zeer tevreden over iWrap. Twee jaar geleden al eens gebruikgemaakt van de
-        goede service. Werkt netjes en denkt goed mee.</p>
-        <div class="wie"><span class="avatar" aria-hidden="true">M</span><div><b>Marianne</b><small>Google-review</small></div></div>
-      </article>
-      <article class="review">
-        <div class="sterren" aria-label="5 van de 5 sterren">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <p>Keurig werk en netjes alle rotzooi opgeruimd en geveegd na afloop. Aanrader
-        voor iedereen met een verkleurd kozijn.</p>
-        <div class="wie"><span class="avatar" aria-hidden="true">S</span><div><b>Simon Kater</b><small>Google-review</small></div></div>
-      </article>
+      {{reviews:3}}
     </div>
     <div class="knoprij" style="margin-top:32px;justify-content:center">
       <a class="score" href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener">

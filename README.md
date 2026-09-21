@@ -182,6 +182,35 @@ Vercel draait hem niet, het is de gegenereerde HTML in de repo die geserveerd wo
   Web3Forms-account wél de domeinbeperking aan, anders kan iemand anders formulieren naar
   jouw mailbox sturen.
 
+## Reviews
+
+Score, aantal en de reviewteksten staan in **`reviews.json`** en nergens anders. Header,
+homepage, footer en de structured data lezen daar allemaal uit.
+
+```bash
+python3 reviews.py     # haalt de actuele Google-reviews op
+python3 build.py       # zet ze op de site
+```
+
+`reviews.py` doet zonder API-sleutel niets — dan blijft `reviews.json` gewoon staan en
+bouwt de site door met de laatst opgehaalde reviews. Een build gaat dus nooit stuk omdat
+Google even niet bereikbaar is.
+
+**Verversen aanzetten:** maak in console.cloud.google.com een project, zet de *Places API
+(New)* aan, maak een API-sleutel en beperk hem tot die ene API. Zet hem daarna in je
+omgeving — **niet in de repo, die is openbaar**:
+
+```bash
+echo 'export GOOGLE_PLACES_API_KEY="AIza..."' >> ~/.zshrc
+```
+
+Kosten zijn in de praktijk nul: je haalt ze een paar keer per maand op en Google geeft
+maandelijks $200 gratis tegoed.
+
+**Waarom niet de Trustindex-widget?** Die draait op je huidige site en is wél live, maar
+het is een extern script dat de pagina vertraagt en dat verdwijnt zodra iwrap.nl deze
+site serveert. Deze opzet houdt de site snel en de reviews in je eigen beheer.
+
 ## Wat er nog moet gebeuren
 
 **Voordat de site live gaat:**

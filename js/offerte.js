@@ -68,7 +68,7 @@
     }
     var b = waarde('bereikbaar');
     if (b === 'hoger' || b === 'gemengd') {
-      noten.push('Boven de eerste verdieping komt er een ladder, steiger of hoogwerker bij. Dat zetten we apart in de offerte, zodat je ziet wat het kost.');
+      noten.push('Boven de eerste verdieping komt er een ladder, steiger of hoogwerker bij. Dat telt mee in de prijs die je van ons krijgt.');
     }
     return noten;
   }
