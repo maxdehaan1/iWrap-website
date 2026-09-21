@@ -14,6 +14,17 @@
    hoeken netjes te krijgen, maar het schakelt position:sticky in de kaart uit
    en dan blijft de knoppenbalk onderaan niet meer in beeld. De hoeken worden
    daarom op het eerste en het laatste kind afgerond. */
+/* De uitweg voor wie het formulier niet ziet zitten. Bewust bovenaan en in
+   gewone taal: wie afhaakt op een formulier, haakt ook af op een verwijzing
+   die pas onderaan staat. */
+.liever-mailen{
+  margin:0 0 16px;padding:14px 20px;
+  background:var(--mint-wash);border:1px solid var(--mint);border-radius:var(--radius);
+  font-size:.93rem;color:var(--ink-soft);
+}
+.liever-mailen a{font-weight:600;color:var(--mint-deep);}
+.uitweg-kaart{border-color:var(--mint);}
+
 .offerte-kaart{
   background:var(--white);border:1px solid var(--line);border-radius:var(--radius-lg);
   box-shadow:var(--shadow-lg);
@@ -200,76 +211,50 @@
 .bestandenlijst .weg:hover{color:var(--rust);background:var(--rust-wash);}
 
 /* Werklijst ---------------------------------------------------------------
-   Eén kaart per regel werk. De kop is een rij (nummer, soort, aantal, plek,
-   weghalen), daaronder de delen als aan/uit-chips. Op een telefoon stapelt de
-   kop; de chips blijven altijd naast elkaar aflopen. */
+   Eén blok per soort werk, met drie genummerde vragen. Het aantal staat
+   bewust als derde vraag, ná de beschrijving: "bij hoeveel van deze elementen"
+   is dan vanzelf duidelijk, en de knop eronder gaat over ánder werk. */
 
-.werklijst{display:grid;gap:14px;margin:0 0 16px;}
+.werklijst{display:grid;gap:18px;margin:0 0 16px;}
 
 .werkregel{
   border:1.5px solid var(--line);border-radius:var(--radius);background:var(--white);
-  padding:16px 18px;transition:border-color .2s ease,background .2s ease;
+  overflow:hidden;transition:border-color .2s ease;
 }
-.werkregel:has([data-veld=omvang]:checked){border-color:var(--mint-ink);background:var(--mint-wash);}
+.werkregel:has([data-veld=omvang]:checked){border-color:var(--mint);}
 
-.werkregel-kop{
-  display:grid;
-  grid-template-columns:auto minmax(130px,1fr) auto minmax(120px,1.2fr) auto;
-  align-items:center;gap:10px;
+.werkregel-balk{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 18px;background:var(--paper);border-bottom:1px solid var(--line);
 }
 .regel-nr{
   width:26px;height:26px;border-radius:50%;flex-shrink:0;
   background:var(--ink);color:#fff;display:grid;place-items:center;
   font-family:var(--kop);font-weight:700;font-size:.78rem;
 }
-.werkregel .veld{gap:0;}
-.werkregel select,
-.werkregel .regel-plek input{
-  font-family:var(--tekst);font-size:.95rem;color:var(--ink);width:100%;
-  border:1.5px solid var(--line-strong);border-radius:10px;padding:9px 12px;
-  background:var(--white);
+.regel-samenvatting{
+  flex:1;min-width:0;font-family:var(--kop);font-weight:600;font-size:.92rem;color:var(--ink);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
-.werkregel select{
-  appearance:none;padding-right:30px;cursor:pointer;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2322262a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 11px center;
-}
-.werkregel select:focus,.werkregel input:focus{
-  outline:none;border-color:var(--mint-ink);box-shadow:0 0 0 3px var(--mint-soft);
-}
-
-.regel-aantal{
-  display:flex;align-items:center;gap:2px;
-  border:1.5px solid var(--line-strong);border-radius:999px;padding:2px;background:var(--white);
-}
-.regel-aantal button{
-  width:30px;height:30px;border-radius:50%;border:0;background:var(--paper);
-  font-size:1.05rem;line-height:1;color:var(--ink);cursor:pointer;display:grid;place-items:center;
-  transition:background .15s ease;
-}
-.regel-aantal button:hover{background:var(--mint);}
-.regel-aantal input{
-  width:36px;border:0;background:none;text-align:center;padding:0;
-  font-family:var(--kop);font-weight:600;font-size:1rem;color:var(--ink);
-  font-variant-numeric:tabular-nums;-moz-appearance:textfield;
-}
-.regel-aantal input::-webkit-outer-spin-button,
-.regel-aantal input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
-
+.regel-samenvatting[data-leeg="ja"]{color:var(--sub);font-weight:500;font-style:italic;}
 .regel-weg{
-  width:32px;height:32px;border-radius:50%;border:0;background:none;
+  width:30px;height:30px;border-radius:50%;border:0;background:none;flex-shrink:0;
   color:var(--sub);font-size:1.3rem;line-height:1;cursor:pointer;
   display:grid;place-items:center;transition:background .15s ease,color .15s ease;
 }
 .regel-weg:hover{background:var(--rust-wash);color:var(--rust);}
 .regel-weg[hidden]{display:none;}
 
-/* De hoofdkeuze per regel: compleet of bepaalde delen. Twee stevige knoppen,
-   want dit is de vraag die het meest in de prijs scheelt. */
-.regel-omvang{
-  display:flex;flex-wrap:wrap;gap:8px;
-  margin-top:14px;padding-top:13px;border-top:1px solid var(--line);
+.regel-vraag{padding:16px 18px;border-bottom:1px solid var(--line);}
+.regel-vraag:last-of-type{border-bottom:none;}
+.regel-vraag-label{
+  display:block;margin-bottom:10px;
+  font-family:var(--kop);font-weight:600;font-size:.86rem;color:var(--ink);
 }
+.regel-vraag-label .hint{font-weight:400;color:var(--sub);}
+
+.regel-soorten,.regel-omvang{display:flex;flex-wrap:wrap;gap:8px;}
+
 .omvangchip{position:relative;cursor:pointer;}
 .omvangchip input{position:absolute;opacity:0;width:0;height:0;}
 .omvangchip span{
@@ -279,26 +264,27 @@
   transition:border-color .15s ease,background .15s ease,color .15s ease;
 }
 .omvangchip:hover span{border-color:var(--mint);}
-.omvangchip input:checked + span{
-  border-color:var(--ink);background:var(--ink);color:#fff;
-}
+.omvangchip input:checked + span{border-color:var(--ink);background:var(--ink);color:#fff;}
 .omvangchip input:focus-visible + span{outline:3px solid var(--mint-ink);outline-offset:2px;}
 
-.regel-delen{
-  display:flex;flex-wrap:wrap;align-items:center;gap:8px;
-  margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);
-}
+.regel-delen{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);}
 .regel-delen[hidden]{display:none;}
 .regel-delen-label{
-  font-family:var(--kop);font-size:.8rem;font-weight:600;color:var(--sub);
-  margin-right:2px;
+  display:block;margin-bottom:12px;
+  font-family:var(--kop);font-size:.82rem;font-weight:600;color:var(--sub);
+}
+.deelgroep{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px;}
+.deelgroep:last-child{margin-bottom:0;}
+.deelgroep-kop{
+  width:62px;flex-shrink:0;font-size:.78rem;color:var(--sub);
+  font-family:var(--kop);font-weight:600;
 }
 .deelchip{position:relative;cursor:pointer;}
 .deelchip input{position:absolute;opacity:0;width:0;height:0;}
 .deelchip span{
   display:inline-block;padding:7px 14px;border-radius:999px;
   border:1.5px solid var(--line-strong);background:var(--white);
-  font-size:.86rem;color:var(--ink-soft);
+  font-size:.85rem;color:var(--ink-soft);
   transition:border-color .15s ease,background .15s ease,color .15s ease;
 }
 .deelchip:hover span{border-color:var(--mint);}
@@ -307,18 +293,61 @@
 }
 .deelchip input:focus-visible + span{outline:3px solid var(--mint-ink);outline-offset:2px;}
 
+/* Twee vragen naast elkaar op een ruim scherm, onder elkaar op een smal. Geen
+   grid hier: op 375px viel de labelkolom zo smal uit dat de vraag over vier
+   regels brak. */
+.regel-slot{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:flex-start;}
+.regel-aantalvraag{flex:0 0 auto;}
+.regel-slot .regel-plek{flex:1 1 220px;min-width:0;}
+.regel-aantalvraag{display:block;}
+.regel-aantal{
+  display:inline-flex;align-items:center;gap:2px;
+  border:1.5px solid var(--line-strong);border-radius:999px;padding:3px;background:var(--white);
+}
+.regel-aantal button{
+  width:34px;height:34px;border-radius:50%;border:0;background:var(--paper);
+  font-size:1.1rem;line-height:1;color:var(--ink);cursor:pointer;display:grid;place-items:center;
+  transition:background .15s ease;
+}
+.regel-aantal button:hover{background:var(--mint);}
+.regel-aantal input{
+  width:42px;border:0;background:none;text-align:center;padding:0;
+  font-family:var(--kop);font-weight:600;font-size:1.05rem;color:var(--ink);
+  font-variant-numeric:tabular-nums;-moz-appearance:textfield;
+}
+.regel-aantal input::-webkit-outer-spin-button,
+.regel-aantal input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.regel-plek input{
+  font-family:var(--tekst);font-size:.95rem;color:var(--ink);width:100%;
+  border:1.5px solid var(--line-strong);border-radius:10px;padding:10px 13px;background:var(--white);
+}
+.regel-plek input:focus{outline:none;border-color:var(--mint-ink);box-shadow:0 0 0 3px var(--mint-soft);}
+
 .regel-toevoegen{
   display:inline-flex;align-items:center;gap:9px;
   background:none;border:1.5px dashed var(--line-strong);border-radius:var(--radius);
-  padding:13px 20px;width:100%;justify-content:center;cursor:pointer;
+  padding:14px 20px;width:100%;justify-content:center;cursor:pointer;
   font-family:var(--kop);font-weight:600;font-size:.92rem;color:var(--mint-ink);
-  transition:border-color .18s ease,background .18s ease,color .18s ease;
+  transition:border-color .18s ease,background .18s ease;
 }
 .regel-toevoegen:hover{border-color:var(--mint-ink);background:var(--mint-wash);}
 .regel-toevoegen span{font-size:1.1rem;line-height:1;}
 
+.werklijst-totaal{
+  margin:16px 0 0;font-family:var(--kop);font-size:.88rem;font-weight:600;color:var(--sub);
+}
+.werklijst-totaal[hidden]{display:none;}
+
+@media (max-width:620px){
+  .regel-slot{flex-direction:column;}
+  .regel-slot .regel-plek{width:100%;flex:1 1 auto;}
+  .deelgroep-kop{width:100%;margin-bottom:-2px;}
+  .regel-vraag{padding:14px;}
+  .werkregel-balk{padding:12px 14px;}
+}
+
 /* Foto's bij een werkregel ------------------------------------------------ */
-.regel-fotos{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:12px;}
+.regel-fotos{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:14px 18px;background:var(--paper);}
 .regel-foto-knop{position:relative;cursor:pointer;}
 .regel-foto-knop input{position:absolute;opacity:0;width:0;height:0;}
 .regel-foto-knop span{

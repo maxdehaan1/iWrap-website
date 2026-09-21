@@ -22,6 +22,12 @@
 </section>
 
 <div class="wrap offerte-schil">
+  <p class="liever-mailen">
+    Lukt het formulier u niet? Stuur ons gewoon een mail op
+    <a class="mail-uitweg" href="mailto:{{bedrijf.email}}?subject=Offerteaanvraag%20kozijnherstel&amp;body=Goedemiddag%2C%0A%0AIk%20zou%20graag%20een%20offerte%20ontvangen.%0A%0AWat%20er%20moet%20gebeuren%3A%0A%0A%0AOm%20hoeveel%20kozijnen%2C%20ramen%20of%20deuren%20gaat%20het%3A%0A%0A%0AAdres%3A%0A%0A%0ATelefoonnummer%3A%0A%0A%0A%28Foto%27s%20kunt%20u%20als%20bijlage%20meesturen%20%E2%80%94%20eentje%20van%20een%20meter%20afstand%20en%20eentje%20van%20dichtbij.%29">{{bedrijf.email}}</a>,
+    of bel <a href="tel:{{bedrijf.telefoon_tel}}">{{bedrijf.telefoon}}</a>. Dat mag net zo goed.
+  </p>
+
   <div class="offerte-kaart">
     <form id="offerteformulier" data-mailbox="{{bedrijf.email}}" novalidate>
 
@@ -31,73 +37,97 @@
 
       <!-- 1 ------------------------------------------------------------- -->
       <section class="stap-paneel" data-titel="Het werk" data-verplicht="werklijst"
-               data-melding="Vul minstens &eacute;&eacute;n regel in: kies een soort, een aantal en welke delen.">
+               data-melding="Vul minstens &eacute;&eacute;n blok in: kies een element en wat eraan moet gebeuren." >
         <h2>Wat moet er precies gebeuren?</h2>
-        <p class="toelichting">Zet per soort werk een regel neer. Gaat het om complete
-        kozijnen, dan is &eacute;&eacute;n regel met het aantal erbij genoeg. Moeten er alleen
-        bepaalde delen gedaan worden, dan vink je aan welke &mdash; en wijkt er eentje af,
-        dan zet je die op een eigen regel.</p>
+        <p class="toelichting">Beschrijf hieronder &eacute;&eacute;n soort werk. Moet er aan meerdere
+        kozijnen <em>precies hetzelfde</em> gebeuren, dan vul je onderaan het aantal in.
+        Is er ook nog <em>ander</em> werk &mdash; een deur bijvoorbeeld, of een kozijn waar
+        meer aan moet &mdash; dan voeg je daar een nieuw blok voor toe.</p>
 
         <div class="werklijst"></div>
 
         <button type="button" class="regel-toevoegen">
-          <span aria-hidden="true">+</span> Nog een regel toevoegen
+          <span aria-hidden="true">+</span> Er moet nog iets anders gebeuren
         </button>
 
         <p class="werklijst-totaal" aria-live="polite"></p>
       </section>
 
-      <!-- Sjabloon voor een werkregel. offerte.js kloont dit; zo staat de opmaak
+      <!-- Sjabloon voor een werkblok. offerte.js kloont dit; zo staat de opmaak
            op &eacute;&eacute;n plek en hoeft er in het script geen HTML te staan. -->
       <template id="werkregel-sjabloon">
         <div class="werkregel">
-          <div class="werkregel-kop">
+          <div class="werkregel-balk">
             <span class="regel-nr" aria-hidden="true"></span>
-            <label class="veld regel-soort">
-              <span class="sr-only">Soort</span>
-              <select data-veld="soort">
-                <option value="kozijn">Kozijn</option>
-                <option value="draairaam">Draairaam</option>
-                <option value="deur">Deur</option>
-                <option value="schuifpui">Schuifpui</option>
-                <option value="dakkapelkozijn">Dakkapelkozijn</option>
-              </select>
-            </label>
-            <div class="regel-aantal">
-              <span class="sr-only-label">Aantal</span>
-              <button type="button" class="teller-min" aria-label="Eentje minder">&minus;</button>
-              <input type="number" data-veld="aantal" value="1" min="1" max="99"
-                     inputmode="numeric" aria-label="Aantal">
-              <button type="button" class="teller-plus" aria-label="Eentje meer">+</button>
+            <span class="regel-samenvatting"></span>
+            <button type="button" class="regel-weg" aria-label="Dit blok verwijderen">&times;</button>
+          </div>
+
+          <div class="regel-vraag">
+            <span class="regel-vraag-label">1 &middot; Wat voor element is het?</span>
+            <div class="regel-soorten">
+              <label class="omvangchip"><input type="radio" data-veld="soort" value="kozijn"><span>Kozijn</span></label>
+              <label class="omvangchip"><input type="radio" data-veld="soort" value="draairaam"><span>Draairaam</span></label>
+              <label class="omvangchip"><input type="radio" data-veld="soort" value="deur"><span>Deur</span></label>
+              <label class="omvangchip"><input type="radio" data-veld="soort" value="schuifpui"><span>Schuifpui</span></label>
+              <label class="omvangchip"><input type="radio" data-veld="soort" value="dakkapelkozijn"><span>Dakkapelkozijn</span></label>
+            </div>
+          </div>
+
+          <div class="regel-vraag">
+            <span class="regel-vraag-label">2 &middot; Wat moet eraan gebeuren?</span>
+            <div class="regel-omvang">
+              <label class="omvangchip">
+                <input type="radio" data-veld="omvang" value="compleet">
+                <span>Het hele element</span>
+              </label>
+              <label class="omvangchip">
+                <input type="radio" data-veld="omvang" value="delen">
+                <span>Alleen bepaalde delen</span>
+              </label>
+            </div>
+            <div class="regel-delen" role="group" hidden>
+              <span class="regel-delen-label">Welke delen?</span>
+              <div class="deelgroep">
+                <span class="deelgroep-kop">Dorpels</span>
+                <label class="deelchip"><input type="checkbox" data-deel="onderdorpel"><span>Onderdorpel</span></label>
+                <label class="deelchip"><input type="checkbox" data-deel="bovendorpel"><span>Bovendorpel</span></label>
+                <label class="deelchip"><input type="checkbox" data-deel="tussendorpel"><span>Tussendorpel</span></label>
+                <label class="deelchip"><input type="checkbox" data-deel="tussendorpels"><span>Meerdere tussendorpels</span></label>
+              </div>
+              <div class="deelgroep">
+                <span class="deelgroep-kop">Stijlen</span>
+                <label class="deelchip"><input type="checkbox" data-deel="linker-stijl"><span>Linker stijl</span></label>
+                <label class="deelchip"><input type="checkbox" data-deel="rechter-stijl"><span>Rechter stijl</span></label>
+                <label class="deelchip"><input type="checkbox" data-deel="tussenstijl"><span>Tussenstijl</span></label>
+                <label class="deelchip"><input type="checkbox" data-deel="tussenstijlen"><span>Meerdere tussenstijlen</span></label>
+              </div>
+              <div class="deelgroep">
+                <label class="deelchip"><input type="checkbox" data-deel="anders"><span>Iets anders</span></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="regel-vraag regel-slot">
+            <div class="regel-aantalvraag">
+              <span class="regel-vraag-label">3 &middot; Bij hoeveel elementen?</span>
+              <div class="regel-aantal">
+                <button type="button" class="teller-min" aria-label="Eentje minder">&minus;</button>
+                <input type="number" data-veld="aantal" value="1" min="1" max="99"
+                       inputmode="numeric" aria-label="Aantal elementen">
+                <button type="button" class="teller-plus" aria-label="Eentje meer">+</button>
+              </div>
             </div>
             <label class="veld regel-plek">
-              <span class="sr-only">Waar staan ze?</span>
-              <input type="text" data-veld="plek" placeholder="Waar? (optioneel)">
-            </label>
-            <button type="button" class="regel-weg" aria-label="Deze regel verwijderen">&times;</button>
-          </div>
-          <div class="regel-omvang" role="radiogroup">
-            <label class="omvangchip">
-              <input type="radio" data-veld="omvang" value="compleet">
-              <span>Compleet rondom</span>
-            </label>
-            <label class="omvangchip">
-              <input type="radio" data-veld="omvang" value="delen">
-              <span>Alleen bepaalde delen</span>
+              <span class="regel-vraag-label">Waar? <span class="hint">optioneel</span></span>
+              <input type="text" data-veld="plek" placeholder="Bijvoorbeeld: voorkant, of de slaapkamer">
             </label>
           </div>
-          <div class="regel-delen" role="group" hidden>
-            <span class="regel-delen-label">Welke delen?</span>
-            <label class="deelchip"><input type="checkbox" data-deel="onderdorpel"><span>Onderdorpel</span></label>
-            <label class="deelchip"><input type="checkbox" data-deel="bovendorpel"><span>Bovendorpel</span></label>
-            <label class="deelchip"><input type="checkbox" data-deel="linker-stijl"><span>Linker stijl</span></label>
-            <label class="deelchip"><input type="checkbox" data-deel="rechter-stijl"><span>Rechter stijl</span></label>
-            <label class="deelchip"><input type="checkbox" data-deel="anders"><span>Iets anders</span></label>
-          </div>
+
           <div class="regel-fotos">
             <label class="regel-foto-knop">
               <input type="file" accept="image/*" multiple>
-              <span><span aria-hidden="true">&#128247;</span> Foto bij deze regel</span>
+              <span><span aria-hidden="true">&#128247;</span> Foto hierbij toevoegen</span>
             </label>
             <ul class="regel-fotolijst"></ul>
           </div>
@@ -262,8 +292,8 @@
   </div>
 
   <div class="naast-formulier">
-    <div class="kaart">
-      <h3>Liever even bellen?</h3>
+    <div class="kaart uitweg-kaart">
+      <h3>Liever even bellen of mailen?</h3>
       <p>Dat mag ook. Op dinsdag, woensdag en donderdag zijn we meestal op locatie, dus
       dan kan het even duren voor we opnemen. Spreek gerust iets in.</p>
       <p><a href="tel:{{bedrijf.telefoon_tel}}"><strong>{{bedrijf.telefoon}}</strong></a><br>

@@ -130,32 +130,45 @@ Vier stappen: **het werk, de hoogte, de kleur, en gegevens met foto's.**
 
 ### De werklijst (stap 1)
 
-Het hart van het formulier. Elke regel is een soort werk:
+Het hart van het formulier. Eén **blok** per soort werk, met drie genummerde vragen:
+
+1. Wat voor element is het? (kozijn / draairaam / deur / schuifpui / dakkapelkozijn)
+2. Wat moet eraan gebeuren? (het hele element, of bepaalde delen — dan verschijnen de
+   vinkjes voor onder-, boven- en tussendorpels en voor linker, rechter en tussenstijlen)
+3. Bij hoeveel elementen? (plus een vrij veld voor waar ze staan)
+
+Dat levert dit op in de mail:
 
 ```
-1.  4× kozijn      — compleet rondom
-2.  2× kozijn      — onderdorpel + rechter stijl  (voorkant links)   [2 foto's]
-3.  1× schuifpui   — compleet rondom
+3× kozijn      — onderdorpel + tussenstijl  (voorkant)   [2 foto's]
+1× deur        — compleet rondom
 ```
 
-Per regel: soort, aantal, waar (optioneel), en of het om het complete element gaat of om
-bepaalde delen. **Bij "compleet rondom" blijft de delenlijst verborgen** — dan is die
-detaillering niet nodig. Pas bij "alleen bepaalde delen" verschijnen de vinkjes voor
-onderdorpel, bovendorpel, linker en rechter stijl.
+**De volgorde van die drie vragen is belangrijk.** Het aantal stond eerst vooraan, naast
+de knop "nog een regel toevoegen", en dan is onduidelijk welke van de twee je moet
+gebruiken voor meerdere kozijnen. Door het aantal pas ná de beschrijving te vragen — "bij
+hoeveel elementen moet *dit* gebeuren" — is het verschil vanzelf duidelijk, en gaat de
+knop eronder zichtbaar over ánder werk. Verplaats die vraag dus niet terug naar boven.
 
-Het groeperen is expres: vier identieke kozijnen zijn één regel met aantal 4, niet vier
-regels. Wie alles apart wil opsommen maakt regels van 1. Dat levert dezelfde opsomming op
-met een fractie van het klikwerk.
+De kop van elk blok leest mee met wat er ingevuld is, zodat je bij drie blokken in één
+oogopslag ziet welk blok welk werk beschrijft.
 
-**Per regel kunnen foto's mee.** Die krijgen bij het versturen het regelnummer in hun
+**Per blok kunnen foto's mee.** Die krijgen bij het versturen het blocknummer in hun
 bestandsnaam (`regel-2-kozijn-1.jpg`), zodat in de mailbox meteen te zien is bij welk
-stuk werk ze horen. De dropzone in stap 4 is daarnaast bedoeld voor overzichtsfoto's van
-de gevel.
+stuk werk ze horen. De dropzone in de laatste stap is voor overzichtsfoto's van de gevel.
 
 Er wordt **niet** gevraagd naar het soort schade: de herstelwerkzaamheden zijn hetzelfde
 of de folie nu verweerd is, loslaat of blaasjes heeft. Klikt iemand op de homepage wél op
 een klacht, dan gaat dat via `?klacht=` stil mee en staat het in de mail onder "Via de
 site".
+
+### De uitweg
+
+Boven het formulier staat in gewone taal: *"Lukt het formulier u niet? Stuur ons gewoon
+een mail."* Die mailtolink is **voorgevuld** met een kort lijstje (wat er moet gebeuren,
+om hoeveel het gaat, adres, telefoonnummer), zodat ook een aanvraag buiten het formulier
+om bruikbaar binnenkomt. Die regel staat bewust bovenaan: wie afhaakt op een formulier,
+haakt ook af op een verwijzing die pas onderaan staat.
 
 ### Navigatie
 

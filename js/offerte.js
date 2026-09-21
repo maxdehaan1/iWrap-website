@@ -51,8 +51,12 @@
   var DELEN = {
     onderdorpel: 'onderdorpel',
     bovendorpel: 'bovendorpel',
+    tussendorpel: 'tussendorpel',
+    tussendorpels: 'meerdere tussendorpels',
     'linker-stijl': 'linker stijl',
     'rechter-stijl': 'rechter stijl',
+    tussenstijl: 'tussenstijl',
+    tussenstijlen: 'meerdere tussenstijlen',
     anders: 'iets anders'
   };
 
@@ -74,7 +78,7 @@
     var n = parseInt(regel.querySelector('[data-veld=aantal]').value, 10);
     return {
       fotos: regel.fotos || [],
-      soort: regel.querySelector('[data-veld=soort]').value,
+      soort: (regel.querySelector('[data-veld=soort]:checked') || {}).value || '',
       aantal: isNaN(n) || n < 1 ? 1 : n,
       omvang: omvang ? omvang.value : '',
       plek: regel.querySelector('[data-veld=plek]').value.trim(),
@@ -85,6 +89,7 @@
   // Een regel telt pas mee als duidelijk is wát er moet gebeuren: compleet, of
   // bepaalde delen met minstens één deel aangevinkt.
   function regelCompleet(r) {
+    if (!r.soort) return false;
     return r.omvang === 'compleet' || (r.omvang === 'delen' && r.delen.length > 0);
   }
 
@@ -94,7 +99,7 @@
 
   function regelInTekst(r) {
     // Met het maalteken ervoor hoort het enkelvoud: "4x kozijn", niet "4x kozijnen".
-    var soort = SOORTEN[r.soort][0];
+    var soort = (SOORTEN[r.soort] || ['element'])[0];
     var wat = r.omvang === 'compleet'
       ? 'compleet rondom'
       : r.delen.map(function (d) { return DELEN[d]; }).join(' + ');
@@ -114,7 +119,7 @@
     var aantalRegels = leesWerklijst().length;
     totaalregel.textContent = n
       ? 'Samen ' + n + (n === 1 ? ' element' : ' elementen') +
-        (aantalRegels > 1 ? ', in ' + aantalRegels + ' regels' : '')
+        (aantalRegels > 1 ? ', in ' + aantalRegels + ' blokken' : '')
       : '';
     totaalregel.hidden = !n;
   }
@@ -158,9 +163,11 @@
 
     // Radio's binnen één regel moeten een eigen groep vormen, anders zetten de
     // regels elkaar uit. De naam wordt hier gezet omdat hij uniek moet zijn.
-    var groep = 'omvang_' + Math.random().toString(36).slice(2, 9);
+    var sleutel = Math.random().toString(36).slice(2, 9);
     Array.prototype.forEach.call(regel.querySelectorAll('[data-veld=omvang]'),
-      function (v) { v.name = groep; });
+      function (v) { v.name = 'omvang_' + sleutel; });
+    Array.prototype.forEach.call(regel.querySelectorAll('[data-veld=soort]'),
+      function (v) { v.name = 'soort_' + sleutel; });
 
     // Foto's die bij deze regel horen. Zo weet Max meteen welke foto bij welk
     // stuk werk hoort, in plaats van een stapel losse plaatjes bij de aanvraag.
@@ -200,6 +207,7 @@
       });
       fotoInvoer.value = '';
       tekenRegelFotos();
+      if (regel.tekenSamenvatting) regel.tekenSamenvatting();
     });
 
     regel.querySelector('.regel-weg').addEventListener('click', function () {
@@ -209,8 +217,25 @@
       bewaar();
     });
 
+    // De kop van het blok leest mee met wat er ingevuld is, zodat je bij drie
+    // blokken in een oogopslag ziet welk blok welk werk beschrijft.
+    var samenvatting = regel.querySelector('.regel-samenvatting');
+    function tekenSamenvatting() {
+      var r = leesRegel(regel);
+      samenvatting.textContent = regelCompleet(r)
+        ? regelInTekst(r)
+        : 'Nog in te vullen';
+      samenvatting.dataset.leeg = regelCompleet(r) ? 'nee' : 'ja';
+    }
+    regel.tekenSamenvatting = tekenSamenvatting;
+    regel.addEventListener('change', tekenSamenvatting);
+    regel.addEventListener('input', tekenSamenvatting);
+
     if (gegevens) {
-      regel.querySelector('[data-veld=soort]').value = gegevens.soort || 'kozijn';
+      if (gegevens.soort) {
+        var soortKeuze = regel.querySelector('[data-veld=soort][value="' + gegevens.soort + '"]');
+        if (soortKeuze) soortKeuze.checked = true;
+      }
       aantalVeld.value = gegevens.aantal || 1;
       regel.querySelector('[data-veld=plek]').value = gegevens.plek || '';
       if (gegevens.omvang) {
@@ -226,6 +251,7 @@
     werklijst.appendChild(regel);
     tekenDelen();
     regel.tekenFotos();
+    tekenSamenvatting();
     nummerRegels();
     return regel;
   }
@@ -408,7 +434,9 @@
   }
 
   function bijwerken(e) {
-    if (!e.target.name) return;
+    // Velden binnen een werkblok hebben geen name-attribuut (ze worden per blok
+    // uitgelezen), dus die moeten hier expliciet doorgelaten worden.
+    if (!e.target.name && !e.target.closest('.werkregel')) return;
     zeg('');
     // Op de laatste stap staat de samenvatting in beeld; die moet meelopen met
     // wat er nog wordt ingevuld, anders klopt hij niet met wat er verstuurd wordt.
