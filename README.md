@@ -153,9 +153,18 @@ locatie".
 
 De stappenbalk bovenin wordt door `offerte.js` uit de panelen zelf opgebouwd. Een stap
 toevoegen of weghalen is dus één `<section class="stap-paneel" data-titel="...">` erbij
-of eraf; de balk, de nummering en de opslag volgen vanzelf. Je kunt terugklikken naar
-elke stap die je al gezien hebt; vooruit gaat via de knop, want daar hoort de controle
-bij.
+of eraf; de balk, de nummering en de opslag volgen vanzelf.
+
+**Elke stap in die balk is klikbaar, vooruit en terug.** Terug mag altijd. Vooruit loopt
+`spring()` elke tussenliggende stap na en gaat zo ver als mag: ontbreekt er iets, dan
+land je op díe stap met de bijbehorende melding, in plaats van dat er niets gebeurt. Een
+stap krijgt pas een vinkje als je er langs bent geweest én hij klopt — anders zou Kleur
+meteen afgevinkt staan, omdat "dezelfde kleur" voorgeselecteerd is.
+
+De knoppenbalk onderaan plakt (`position:sticky`) zodat "Volgende stap" ook op een lange
+stap in beeld blijft. **Zet daarom geen `overflow:hidden` op `.offerte-kaart`** — dat is
+de makkelijke manier om de ronde hoeken te krijgen, maar het schakelt sticky uit. De
+hoeken worden op het eerste en laatste kind afgerond.
 
 **Na elke wijziging in `js/`: open `/offerte` en kijk in de console.** `build.py`
 controleert of alle strings netjes afgesloten zijn (die fout heeft de site een keer

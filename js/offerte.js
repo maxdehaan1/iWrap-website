@@ -93,10 +93,7 @@
       knop.innerHTML =
         '<span class="nr" aria-hidden="true">' + (i + 1) + '</span>' +
         '<span class="lab">' + (paneel.dataset.titel || 'Stap ' + (i + 1)) + '</span>';
-      knop.addEventListener('click', function () {
-        if (i <= bereikt) toon(i, true);
-        else zeg('Vul eerst de stappen hiervoor in.');
-      });
+      knop.addEventListener('click', function () { spring(i); });
       li.appendChild(knop);
       lijst.appendChild(li);
     });
@@ -107,24 +104,28 @@
     if (!stapbalk) return;
     var knoppen = stapbalk.querySelectorAll('.stapknop');
     Array.prototype.forEach.call(knoppen, function (knop, i) {
-      // Vier standen: waar je bent, wat je af hebt, wat je al gezien hebt maar
-      // verderop ligt (ook klikbaar), en wat nog niet aan de beurt is.
+      // Drie standen: waar je bent, wat al ingevuld is, en wat nog moet. Alle
+      // drie blijven klikbaar -- vooruit springen controleert onderweg zelf.
+      // 'klaar' alleen voor stappen waar je langs bent geweest én die kloppen.
+      // Anders krijgt Kleur meteen een vinkje, omdat 'dezelfde kleur' al
+      // voorgeselecteerd staat -- en dan lijkt een stap af die je nooit zag.
       var staat = i === nu ? 'nu'
-                : i < nu ? 'klaar'
-                : i <= bereikt ? 'bezocht'
-                : 'later';
+                : (i <= bereikt && geldig(i)) ? 'klaar'
+                : 'open';
       knop.dataset.staat = staat;
-      knop.disabled = i > bereikt;
+      knop.disabled = false;
       if (i === nu) knop.setAttribute('aria-current', 'step');
       else knop.removeAttribute('aria-current');
       knop.setAttribute('aria-label',
-        'Stap ' + (i + 1) + ' van ' + panelen.length + ': ' +
+        'Ga naar stap ' + (i + 1) + ' van ' + panelen.length + ': ' +
         (panelen[i].dataset.titel || '') +
         (staat === 'nu' ? ', hier ben je nu' :
-         staat === 'later' ? ', nog niet beschikbaar' : ', ingevuld'));
+         staat === 'klaar' ? ', ingevuld' : ', nog in te vullen'));
     });
     stapbalk.style.setProperty('--stappen', String(panelen.length));
     stapbalk.style.setProperty('--vordering-f', String(nu / (panelen.length - 1)));
+    var teller = form.querySelector('.stap-teller');
+    if (teller) teller.textContent = 'Stap ' + (nu + 1) + ' van ' + panelen.length;
   }
 
   /* Stappen ---------------------------------------------------------------- */
@@ -134,7 +135,7 @@
     if (nu > bereikt) bereikt = nu;
     panelen.forEach(function (p, k) { p.hidden = k !== nu; });
     tekenStapbalk();
-    if (terug) terug.hidden = nu === 0;
+    if (terug) terug.classList.toggle('onzichtbaar', nu === 0);
     var laatste = nu === panelen.length - 1;
     if (verder) verder.hidden = laatste;
     if (versturen) versturen.hidden = !laatste;
@@ -153,8 +154,8 @@
     bewaar();
   }
 
-  function geldig() {
-    var paneel = panelen[nu];
+  function geldig(index) {
+    var paneel = panelen[index === undefined ? nu : index];
     var eis = paneel.dataset.verplicht;
     if (eis) {
       var namen = eis.split(',');
@@ -179,11 +180,31 @@
     var velden = paneel.querySelectorAll('input[required],textarea[required],select[required]');
     for (var j = 0; j < velden.length; j++) {
       if (!velden[j].checkValidity()) {
-        velden[j].reportValidity();
+        // reportValidity werkt alleen op wat in beeld staat
+        if (!paneel.hidden) velden[j].reportValidity();
         return false;
       }
     }
     return true;
+  }
+
+  /* Springen naar een stap ------------------------------------------------
+     Terug mag altijd. Vooruit loopt elke tussenliggende stap na en gaat zo ver
+     als mag: is er iets niet ingevuld, dan landt de bezoeker op die stap met de
+     bijbehorende melding in plaats van op een foutloze blokkade. */
+
+  function spring(doel) {
+    if (doel <= nu) { toon(doel, true); return; }
+    for (var i = nu; i < doel; i++) {
+      if (!geldig(i)) {
+        // toon() wist de melding, dus die zetten we er daarna pas op: anders
+        // land je op een eerdere stap zonder te zien waarom je daar bent.
+        if (i !== nu) toon(i, true);
+        zeg(panelen[i].dataset.melding || 'Vul deze stap eerst in om verder te kunnen.');
+        return;
+      }
+    }
+    toon(doel, true);
   }
 
   function zeg(tekst) {
