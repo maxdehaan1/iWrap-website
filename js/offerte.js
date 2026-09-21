@@ -32,27 +32,210 @@
   var bereikt = 0;   // verste stap die de bezoeker heeft gezien
   var bestanden = [];
 
-  /* Aantallen --------------------------------------------------------------
-     De tellers bepalen samen de omvang van de klus. Er wordt bewust geen
-     prijsindicatie meer getoond: die was alleen betrouwbaar bij een paar
-     strekkende meter, en daarboven gaf hij mensen een bedrag waar ze niets aan
-     hadden. De prijs komt uit de offerte, op basis van de foto's. */
+  /* Werklijst --------------------------------------------------------------
+     De kern van het formulier. Elke regel is een soort werk: "2x kozijn,
+     onderdorpel en rechter stijl". Wie alles apart wil opsommen maakt regels
+     van 1; wie vier identieke kozijnen heeft, doet dat in één regel. Dat levert
+     dezelfde opsomming op met een fractie van het klikwerk. */
 
-  var TELVELDEN = ['aantal_kozijnen', 'aantal_draairamen',
-                   'aantal_deuren', 'aantal_schuifpuien'];
+  var MAX_PER_REGEL = 4;
+  var MAXBYTES = 5 * 1024 * 1024;
 
-  function aantal(naam) {
-    var el = form.querySelector('[name="' + naam + '"]');
-    if (!el) return 0;
-    var rij = el.closest('.teller');
-    if (rij && rij.hidden) return 0;
-    var n = parseInt(el.value, 10);
-    return isNaN(n) || n < 0 ? 0 : n;
+  var SOORTEN = {
+    kozijn: ['kozijn', 'kozijnen'],
+    draairaam: ['draairaam', 'draairamen'],
+    deur: ['deur', 'deuren'],
+    schuifpui: ['schuifpui', 'schuifpuien'],
+    dakkapelkozijn: ['dakkapelkozijn', 'dakkapelkozijnen']
+  };
+  var DELEN = {
+    onderdorpel: 'onderdorpel',
+    bovendorpel: 'bovendorpel',
+    'linker-stijl': 'linker stijl',
+    'rechter-stijl': 'rechter stijl',
+    anders: 'iets anders'
+  };
+
+  // Let op de naam: 'lijst' is verderop al in gebruik voor de fotolijst, en met
+  // var is dat dezelfde variabele in de hele functie. Vandaar 'werklijst'.
+  var werklijst = form.querySelector('.werklijst');
+  var sjabloon = document.getElementById('werkregel-sjabloon');
+  var totaalregel = form.querySelector('.werklijst-totaal');
+
+  function regels() {
+    return Array.prototype.slice.call(werklijst.querySelectorAll('.werkregel'));
   }
 
-  function totaalAantal() {
-    return TELVELDEN.reduce(function (som, n) { return som + aantal(n); }, 0);
+  function leesRegel(regel) {
+    var omvang = regel.querySelector('[data-veld=omvang]:checked');
+    var delen = Array.prototype.slice
+      .call(regel.querySelectorAll('[data-deel]:checked'))
+      .map(function (v) { return v.dataset.deel; });
+    var n = parseInt(regel.querySelector('[data-veld=aantal]').value, 10);
+    return {
+      fotos: regel.fotos || [],
+      soort: regel.querySelector('[data-veld=soort]').value,
+      aantal: isNaN(n) || n < 1 ? 1 : n,
+      omvang: omvang ? omvang.value : '',
+      plek: regel.querySelector('[data-veld=plek]').value.trim(),
+      delen: delen
+    };
   }
+
+  // Een regel telt pas mee als duidelijk is wát er moet gebeuren: compleet, of
+  // bepaalde delen met minstens één deel aangevinkt.
+  function regelCompleet(r) {
+    return r.omvang === 'compleet' || (r.omvang === 'delen' && r.delen.length > 0);
+  }
+
+  function leesWerklijst() {
+    return regels().map(leesRegel).filter(regelCompleet);
+  }
+
+  function regelInTekst(r) {
+    // Met het maalteken ervoor hoort het enkelvoud: "4x kozijn", niet "4x kozijnen".
+    var soort = SOORTEN[r.soort][0];
+    var wat = r.omvang === 'compleet'
+      ? 'compleet rondom'
+      : r.delen.map(function (d) { return DELEN[d]; }).join(' + ');
+    return r.aantal + '\u00d7 ' + soort + ' \u2014 ' + wat +
+           (r.plek ? ' (' + r.plek + ')' : '') +
+           (r.fotos.length ? '  [' + r.fotos.length + ' foto' +
+            (r.fotos.length === 1 ? '' : "'s") + ']' : '');
+  }
+
+  function totaalElementen() {
+    return leesWerklijst().reduce(function (som, r) { return som + r.aantal; }, 0);
+  }
+
+  function tekenTotaal() {
+    if (!totaalregel) return;
+    var n = totaalElementen();
+    var aantalRegels = leesWerklijst().length;
+    totaalregel.textContent = n
+      ? 'Samen ' + n + (n === 1 ? ' element' : ' elementen') +
+        (aantalRegels > 1 ? ', in ' + aantalRegels + ' regels' : '')
+      : '';
+    totaalregel.hidden = !n;
+  }
+
+  function nummerRegels() {
+    var alle = regels();
+    alle.forEach(function (regel, i) {
+      regel.querySelector('.regel-nr').textContent = String(i + 1);
+      // De eerste regel mag niet weg: dan staat de stap helemaal leeg.
+      regel.querySelector('.regel-weg').hidden = alle.length < 2;
+    });
+  }
+
+  function voegRegelToe(gegevens) {
+    var regel = sjabloon.content.firstElementChild.cloneNode(true);
+
+    var aantalVeld = regel.querySelector('[data-veld=aantal]');
+    function pas(richting) {
+      var n = parseInt(aantalVeld.value, 10);
+      if (isNaN(n)) n = 1;
+      aantalVeld.value = Math.max(1, Math.min(99, n + richting));
+      aantalVeld.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    regel.querySelector('.teller-min').addEventListener('click', function () { pas(-1); });
+    regel.querySelector('.teller-plus').addEventListener('click', function () { pas(1); });
+
+    // De deelvakjes verschijnen pas als iemand 'bepaalde delen' kiest. Gaat het
+    // om complete kozijnen, dan is die hele lijst niet nodig.
+    var delenblok = regel.querySelector('.regel-delen');
+    function tekenDelen() {
+      var gekozen = regel.querySelector('[data-veld=omvang]:checked');
+      var toon = gekozen && gekozen.value === 'delen';
+      delenblok.hidden = !toon;
+      if (!toon) {
+        Array.prototype.forEach.call(regel.querySelectorAll('[data-deel]'),
+          function (v) { v.checked = false; });
+      }
+    }
+    Array.prototype.forEach.call(regel.querySelectorAll('[data-veld=omvang]'),
+      function (v) { v.addEventListener('change', tekenDelen); });
+
+    // Radio's binnen één regel moeten een eigen groep vormen, anders zetten de
+    // regels elkaar uit. De naam wordt hier gezet omdat hij uniek moet zijn.
+    var groep = 'omvang_' + Math.random().toString(36).slice(2, 9);
+    Array.prototype.forEach.call(regel.querySelectorAll('[data-veld=omvang]'),
+      function (v) { v.name = groep; });
+
+    // Foto's die bij deze regel horen. Zo weet Max meteen welke foto bij welk
+    // stuk werk hoort, in plaats van een stapel losse plaatjes bij de aanvraag.
+    regel.fotos = [];
+    var fotoInvoer = regel.querySelector('.regel-fotos input[type=file]');
+    var fotolijst = regel.querySelector('.regel-fotolijst');
+
+    function tekenRegelFotos() {
+      fotolijst.innerHTML = '';
+      regel.fotos.forEach(function (f, i) {
+        var li = document.createElement('li');
+        var mini = document.createElement('img');
+        mini.alt = '';
+        mini.src = URL.createObjectURL(f);
+        mini.onload = function () { URL.revokeObjectURL(mini.src); };
+        var weg = document.createElement('button');
+        weg.type = 'button';
+        weg.innerHTML = '&times;';
+        weg.setAttribute('aria-label', 'Foto verwijderen');
+        weg.addEventListener('click', function () {
+          regel.fotos.splice(i, 1);
+          tekenRegelFotos();
+        });
+        li.append(mini, weg);
+        fotolijst.append(li);
+      });
+      fotolijst.hidden = !regel.fotos.length;
+    }
+    regel.tekenFotos = tekenRegelFotos;
+
+    fotoInvoer.addEventListener('change', function () {
+      Array.prototype.forEach.call(fotoInvoer.files, function (f) {
+        if (regel.fotos.length >= MAX_PER_REGEL) return;
+        if (!/^image\//.test(f.type)) return;
+        if (f.size > MAXBYTES) { zeg(f.name + ' is groter dan 5 MB en is overgeslagen.'); return; }
+        regel.fotos.push(f);
+      });
+      fotoInvoer.value = '';
+      tekenRegelFotos();
+    });
+
+    regel.querySelector('.regel-weg').addEventListener('click', function () {
+      regel.remove();
+      nummerRegels();
+      tekenTotaal();
+      bewaar();
+    });
+
+    if (gegevens) {
+      regel.querySelector('[data-veld=soort]').value = gegevens.soort || 'kozijn';
+      aantalVeld.value = gegevens.aantal || 1;
+      regel.querySelector('[data-veld=plek]').value = gegevens.plek || '';
+      if (gegevens.omvang) {
+        var keuze = regel.querySelector('[data-veld=omvang][value="' + gegevens.omvang + '"]');
+        if (keuze) keuze.checked = true;
+      }
+      (gegevens.delen || []).forEach(function (d) {
+        var v = regel.querySelector('[data-deel="' + d + '"]');
+        if (v) v.checked = true;
+      });
+    }
+
+    werklijst.appendChild(regel);
+    tekenDelen();
+    regel.tekenFotos();
+    nummerRegels();
+    return regel;
+  }
+
+  form.querySelector('.regel-toevoegen').addEventListener('click', function () {
+    var regel = voegRegelToe();
+    regel.querySelector('[data-veld=soort]').focus();
+    tekenTotaal();
+    bewaar();
+  });
 
   /* Uitlezen --------------------------------------------------------------- */
 
@@ -142,7 +325,6 @@
     if (melding) melding.textContent = '';
     if (laatste) vulSamenvatting();
     tekenVervolgvelden();
-    tekenTellers();
     // Focus naar de kop van de nieuwe stap, anders weten schermlezers niet
     // dat er iets veranderd is.
     var kop = panelen[nu].querySelector('h2');
@@ -161,8 +343,8 @@
       var namen = eis.split(',');
       for (var i = 0; i < namen.length; i++) {
         var naam = namen[i].trim();
-        var gekozen = naam === 'aantallen'
-          ? totaalAantal()
+        var gekozen = naam === 'werklijst'
+          ? leesWerklijst().length
           : form.querySelectorAll('[name="' + naam + '"]:checked').length;
         if (!gekozen) {
           zeg(paneel.dataset.melding || 'Kies hierboven een antwoord om verder te gaan.');
@@ -214,36 +396,6 @@
   if (verder) verder.addEventListener('click', function () { if (geldig()) toon(nu + 1, true); });
   if (terug) terug.addEventListener('click', function () { toon(nu - 1, true); });
 
-  /* Tellers ----------------------------------------------------------------
-     Plus- en minknoppen naast een gewoon getalveld: sneller aan te tikken op een
-     telefoon, en wie liever typt kan dat gewoon doen. */
-
-  Array.prototype.forEach.call(form.querySelectorAll('.teller'), function (teller) {
-    var invoer = teller.querySelector('input');
-    function pas(richting) {
-      var n = parseInt(invoer.value, 10);
-      if (isNaN(n)) n = 0;
-      invoer.value = Math.max(0, Math.min(99, n + richting));
-      invoer.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-    teller.querySelector('.teller-min').addEventListener('click', function () { pas(-1); });
-    teller.querySelector('.teller-plus').addEventListener('click', function () { pas(1); });
-  });
-
-  function tekenTellers() {
-    var gekozen = waarden('onderdelen');
-    Array.prototype.forEach.call(form.querySelectorAll('.teller'), function (teller) {
-      // Alleen de soorten tonen die bij stap 1 zijn aangevinkt. Anders kun je
-      // 'alleen kozijnen' kiezen en daarna toch deuren tellen, en dan spreekt
-      // de aanvraag zichzelf tegen.
-      var hoort = !teller.dataset.bij || gekozen.indexOf(teller.dataset.bij) > -1;
-      teller.hidden = !hoort;
-      var invoer = teller.querySelector('input');
-      if (!hoort && invoer.value !== '0') invoer.value = '0';
-      teller.dataset.gevuld = parseInt(invoer.value, 10) > 0 ? 'ja' : 'nee';
-    });
-  }
-
   /* Vervolgvelden ----------------------------------------------------------
      Velden die pas verschijnen zodra een bepaalde keuze gemaakt is, zodat het
      formulier niet voller oogt dan het is. */
@@ -262,7 +414,7 @@
     // wat er nog wordt ingevuld, anders klopt hij niet met wat er verstuurd wordt.
     if (nu === panelen.length - 1) vulSamenvatting();
     tekenVervolgvelden();
-    tekenTellers();
+    tekenTotaal();
     bewaar();
   }
   form.addEventListener('change', bijwerken);
@@ -281,7 +433,7 @@
   var zone = form.querySelector('.dropzone');
   var invoer = form.querySelector('input[type=file]');
   var lijst = form.querySelector('.bestandenlijst');
-  var MAX = 6, MAXBYTES = 5 * 1024 * 1024;
+  var MAX = 8;
 
   function tekenBestanden() {
     if (!lijst) return;
@@ -334,40 +486,29 @@
   /* Samenvatting ----------------------------------------------------------- */
 
   // Enkelvoud en meervoud, zodat er in de mail geen '1 deuren' staat.
-  var TELNAMEN = {
-    aantal_kozijnen: ['kozijn', 'kozijnen'],
-    aantal_draairamen: ['draairaam', 'draairamen'],
-    aantal_deuren: ['deur', 'deuren'],
-    aantal_schuifpuien: ['schuifpui', 'schuifpuien']
-  };
-
   var VELDEN = [
-    ['Werk', function () {
-      var soort = labels('omvangsoort').join('');
-      var welke = waarde('welke_delen');
-      return soort + (welke ? ' (' + welke + ')' : '');
+    ['Het werk', function () {
+      return leesWerklijst().map(regelInTekst).join('\n');
     }, 0],
-    ['Onderdelen', function () { return labels('onderdelen').join(', '); }, 0],
-    ['Aantallen', function () {
-      return TELVELDEN.filter(function (n) { return aantal(n); })
-        .map(function (n) {
-          var k = aantal(n);
-          return k + ' ' + TELNAMEN[n][k === 1 ? 0 : 1];
-        }).join(', ');
-    }, 1],
-    ['Waar', function () { return labels('bereikbaar').join(', '); }, 2],
+    ['Waar', function () { return labels('bereikbaar').join(', '); }, 1],
     ['Kleur', function () {
       return waarde('kleur') === 'anders'
         ? 'Andere kleur: ' + (waarde('kleur_anders') || 'nog te bepalen')
         : 'Dezelfde kleur houden';
-    }, 3],
+    }, 2],
     ['Adres', function () {
       var p = waarde('postcode'), h = waarde('huisnummer'), pl = waarde('plaats');
       return [p, h, pl].filter(Boolean).join(' ');
-    }, 5],
-    ['Wanneer', function () { return labels('wanneer').join(', '); }, 5],
-    ["Foto's", function () { return bestanden.length ? bestanden.length + ' meegestuurd' : 'geen'; }, 5],
-    ['Toelichting', function () { return waarde('toelichting'); }, 4],
+    }, 3],
+    ["Foto's", function () {
+      var bijRegels = leesWerklijst().reduce(function (n, r) { return n + r.fotos.length; }, 0);
+      var delen = [];
+      if (bijRegels) delen.push(bijRegels + ' bij de werkregels');
+      if (bestanden.length) delen.push(bestanden.length + ' overzichtsfoto' +
+        (bestanden.length === 1 ? '' : "'s"));
+      return delen.join(', ') || 'geen';
+    }, 3],
+    ['Toelichting', function () { return waarde('toelichting'); }, 3],
     ['Via de site', function () { return vanaf; }, null]
   ];
 
@@ -411,7 +552,11 @@
 
   function bewaar() {
     try {
-      var d = { stap: nu, bereikt: bereikt, velden: {} };
+      var d = { stap: nu, bereikt: bereikt, velden: {},
+                werk: leesWerklijst().map(function (r) {
+                  return { soort: r.soort, aantal: r.aantal, omvang: r.omvang,
+                           plek: r.plek, delen: r.delen };
+                }) };
       form.querySelectorAll('input,textarea,select').forEach(function (el) {
         if (!el.name || el.type === 'file') return;
         if (el.type === 'radio' || el.type === 'checkbox') {
@@ -440,6 +585,7 @@
           if (el2) el2.value = v;
         }
       });
+      (d.werk || []).forEach(function (r) { voegRegelToe(r); });
       bereikt = d.bereikt || d.stap || 0;
       return d.stap || 0;
     } catch (e) { return 0; }
@@ -477,7 +623,17 @@
     // Losse velden erbij, zodat een CRM of Make.com-scenario ze kan uitlezen
     // zonder de tekst te hoeven ontleden.
     data.append('gegevens_json', JSON.stringify(gegevens()));
-    bestanden.forEach(function (f, i) { data.append('foto_' + (i + 1), f, f.name); });
+    bestanden.forEach(function (f, i) {
+      data.append('overzichtsfoto_' + (i + 1), f, 'overzicht-' + (i + 1) + '-' + f.name);
+    });
+    // Foto's per werkregel krijgen het regelnummer in hun bestandsnaam, zodat in
+    // de mailbox meteen te zien is bij welk stuk werk ze horen.
+    leesWerklijst().forEach(function (r, ri) {
+      r.fotos.forEach(function (f, fi) {
+        data.append('foto_regel' + (ri + 1) + '_' + (fi + 1), f,
+                    'regel-' + (ri + 1) + '-' + r.soort + '-' + (fi + 1) + '.jpg');
+      });
+    });
 
     versturen.disabled = true;
     versturen.textContent = 'Bezig met versturen…';
@@ -500,13 +656,15 @@
     var d = {};
     ['naam', 'email', 'telefoon', 'postcode', 'huisnummer', 'plaats', 'toelichting']
       .forEach(function (n) { d[n] = waarde(n); });
-    ['onderdelen', 'omvangsoort', 'bereikbaar', 'kleur', 'wanneer']
-      .forEach(function (n) { d[n] = waarden(n); });
-    TELVELDEN.forEach(function (n) { d[n] = aantal(n); });
-    d.welke_delen = waarde('welke_delen');
+    ['bereikbaar', 'kleur'].forEach(function (n) { d[n] = waarden(n); });
+    d.werklijst = leesWerklijst().map(function (r) {
+      return { soort: r.soort, aantal: r.aantal, omvang: r.omvang,
+               plek: r.plek, delen: r.delen, aantal_fotos: r.fotos.length };
+    });
+    d.totaal_elementen = totaalElementen();
     d.kleur_anders = waarde('kleur_anders');
     d.via_de_site = vanaf;
-    d.aantal_fotos = bestanden.length;
+    d.aantal_overzichtsfotos = bestanden.length;
     d.bron = document.referrer || '';
     return d;
   }
@@ -552,6 +710,8 @@
   bouwStapbalk();
 
   var startStap = herstel();
+  if (!regels().length) voegRegelToe();   // altijd één regel om mee te beginnen
+  tekenTotaal();
   toon(startStap, false);
 
   // Wie halverwege weggeklikt was, komt terug op de stap waar hij gebleven is.

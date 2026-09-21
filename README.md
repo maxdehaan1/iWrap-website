@@ -126,45 +126,57 @@ images/                   Elke foto als webp op drie breedtes, met een jpg als t
 
 ## Het offerteformulier
 
-Vijf stappen, in de volgorde waarin een offerte ontstaat:
+Vier stappen: **het werk, de hoogte, de kleur, en gegevens met foto's.**
 
-1. **Het werk** — bepaalde delen of complete kozijnen, en aan welke onderdelen
-   (kozijnen en/of draaiende delen). Bij "bepaalde delen" verschijnt een vrij veld
-   voor welke delen precies.
-2. **Aantallen** — tellers voor kozijnen, draairamen, deuren en schuifpuien. Er worden
-   alleen soorten getoond die bij stap 1 zijn aangevinkt; verborgen tellers gaan op nul
-   en tellen niet mee. Zo kan een aanvraag zichzelf niet tegenspreken.
-3. **Hoogte** — meerdere antwoorden mogelijk (begane grond, eerste, tweede of hoger,
-   dakkapel), want een woning heeft ze vaak door elkaar.
-4. **Kleur** — "dezelfde kleur houden" staat voorgeselecteerd, want dat is wat iWrap
-   aanraadt. Kiest iemand een andere kleur, dan verschijnt een veld om die in te typen,
-   en dat veld is dan verplicht.
-5. **Gegevens** — foto's, contactgegevens, wanneer het schikt, toelichting.
+### De werklijst (stap 1)
 
-**Er wordt niet gevraagd naar het soort schade.** De herstelwerkzaamheden zijn hetzelfde
-of de folie nu verweerd is, loslaat of blaasjes heeft — die vraag kostte de bezoeker tijd
-zonder dat er een betere offerte uit kwam. Klikt iemand op de homepage wél op een klacht,
-dan gaat dat via `?klacht=` stil mee en staat het in de mail onder "Via de site". De
-foto's vertellen de rest.
+Het hart van het formulier. Elke regel is een soort werk:
 
-De prijsindicatie rekent met de echte aantallen: een schuifpui telt dubbel omdat hij
-fors groter is dan een kozijn. Bij meer dan tien eenheden valt hij terug op "opname op
-locatie".
+```
+1.  4× kozijn      — compleet rondom
+2.  2× kozijn      — onderdorpel + rechter stijl  (voorkant links)   [2 foto's]
+3.  1× schuifpui   — compleet rondom
+```
 
-De stappenbalk bovenin wordt door `offerte.js` uit de panelen zelf opgebouwd. Een stap
-toevoegen of weghalen is dus één `<section class="stap-paneel" data-titel="...">` erbij
-of eraf; de balk, de nummering en de opslag volgen vanzelf.
+Per regel: soort, aantal, waar (optioneel), en of het om het complete element gaat of om
+bepaalde delen. **Bij "compleet rondom" blijft de delenlijst verborgen** — dan is die
+detaillering niet nodig. Pas bij "alleen bepaalde delen" verschijnen de vinkjes voor
+onderdorpel, bovendorpel, linker en rechter stijl.
 
-**Elke stap in die balk is klikbaar, vooruit en terug.** Terug mag altijd. Vooruit loopt
-`spring()` elke tussenliggende stap na en gaat zo ver als mag: ontbreekt er iets, dan
-land je op díe stap met de bijbehorende melding, in plaats van dat er niets gebeurt. Een
-stap krijgt pas een vinkje als je er langs bent geweest én hij klopt — anders zou Kleur
-meteen afgevinkt staan, omdat "dezelfde kleur" voorgeselecteerd is.
+Het groeperen is expres: vier identieke kozijnen zijn één regel met aantal 4, niet vier
+regels. Wie alles apart wil opsommen maakt regels van 1. Dat levert dezelfde opsomming op
+met een fractie van het klikwerk.
+
+**Per regel kunnen foto's mee.** Die krijgen bij het versturen het regelnummer in hun
+bestandsnaam (`regel-2-kozijn-1.jpg`), zodat in de mailbox meteen te zien is bij welk
+stuk werk ze horen. De dropzone in stap 4 is daarnaast bedoeld voor overzichtsfoto's van
+de gevel.
+
+Er wordt **niet** gevraagd naar het soort schade: de herstelwerkzaamheden zijn hetzelfde
+of de folie nu verweerd is, loslaat of blaasjes heeft. Klikt iemand op de homepage wél op
+een klacht, dan gaat dat via `?klacht=` stil mee en staat het in de mail onder "Via de
+site".
+
+### Navigatie
+
+De stappenbalk wordt door `offerte.js` uit de panelen zelf opgebouwd. Een stap toevoegen
+of weghalen is dus één `<section class="stap-paneel" data-titel="...">` erbij of eraf.
+
+**Elke stap is klikbaar, vooruit en terug.** Terug mag altijd. Vooruit loopt `spring()`
+elke tussenliggende stap na en gaat zo ver als mag: ontbreekt er iets, dan land je op díe
+stap met de bijbehorende melding. Een stap krijgt pas een vinkje als je er langs bent
+geweest én hij klopt.
 
 De knoppenbalk onderaan plakt (`position:sticky`) zodat "Volgende stap" ook op een lange
-stap in beeld blijft. **Zet daarom geen `overflow:hidden` op `.offerte-kaart`** — dat is
-de makkelijke manier om de ronde hoeken te krijgen, maar het schakelt sticky uit. De
-hoeken worden op het eerste en laatste kind afgerond.
+stap in beeld blijft. **Zet daarom geen `overflow:hidden` op `.offerte-kaart`** — dat
+schakelt sticky uit. De hoeken worden op het eerste en laatste kind afgerond.
+
+### Valkuil bij het bewerken
+
+`offerte.js` is één grote functie met `var`-declaraties. Die zijn functie-breed, dus
+**twee keer dezelfde naam is één variabele**. Dat ging een keer mis met `lijst`: de
+werklijst en de fotolijst deelden de naam, waardoor werkregels in de fotolijst
+belandden. Kies bij nieuwe code een naam die nergens anders voorkomt.
 
 **Na elke wijziging in `js/`: open `/offerte` en kijk in de console.** `build.py`
 controleert of alle strings netjes afgesloten zijn (die fout heeft de site een keer
