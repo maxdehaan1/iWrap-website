@@ -23,14 +23,13 @@
   var OPSLAG = 'iwrap-offerte-concept';
 
   var panelen = Array.prototype.slice.call(form.querySelectorAll('.stap-paneel'));
-  var balk = form.querySelector('.voortgang-balk i');
-  var teller = form.querySelector('.voortgang-nu');
-  var titelNu = form.querySelector('.voortgang-titel');
+  var stapbalk = form.querySelector('.stapbalk');
   var melding = form.querySelector('.stap-nav .melding');
   var terug = form.querySelector('.stap-nav .terug');
   var verder = form.querySelector('.stap-nav .verder');
   var versturen = form.querySelector('.stap-nav .versturen');
   var nu = 0;
+  var bereikt = 0;   // verste stap die de bezoeker heeft gezien
   var bestanden = [];
 
   /* Prijsindicatie --------------------------------------------------------
@@ -106,15 +105,63 @@
     );
   }
 
+  /* Stappenbalk ------------------------------------------------------------
+     Uit de panelen opgebouwd, zodat een stap erbij of eraf hier niets kost.
+     Je kunt terugklikken naar elke stap die je al gezien hebt; vooruit gaat via
+     de knop, want daar hoort de controle bij. */
+
+  function bouwStapbalk() {
+    if (!stapbalk) return;
+    var lijst = document.createElement('ol');
+    panelen.forEach(function (paneel, i) {
+      var li = document.createElement('li');
+      var knop = document.createElement('button');
+      knop.type = 'button';
+      knop.className = 'stapknop';
+      knop.innerHTML =
+        '<span class="nr" aria-hidden="true">' + (i + 1) + '</span>' +
+        '<span class="lab">' + (paneel.dataset.titel || 'Stap ' + (i + 1)) + '</span>';
+      knop.addEventListener('click', function () {
+        if (i <= bereikt) toon(i, true);
+        else zeg('Vul eerst de stappen hiervoor in.');
+      });
+      li.appendChild(knop);
+      lijst.appendChild(li);
+    });
+    stapbalk.appendChild(lijst);
+  }
+
+  function tekenStapbalk() {
+    if (!stapbalk) return;
+    var knoppen = stapbalk.querySelectorAll('.stapknop');
+    Array.prototype.forEach.call(knoppen, function (knop, i) {
+      // Vier standen: waar je bent, wat je af hebt, wat je al gezien hebt maar
+      // verderop ligt (ook klikbaar), en wat nog niet aan de beurt is.
+      var staat = i === nu ? 'nu'
+                : i < nu ? 'klaar'
+                : i <= bereikt ? 'bezocht'
+                : 'later';
+      knop.dataset.staat = staat;
+      knop.disabled = i > bereikt;
+      if (i === nu) knop.setAttribute('aria-current', 'step');
+      else knop.removeAttribute('aria-current');
+      knop.setAttribute('aria-label',
+        'Stap ' + (i + 1) + ' van ' + panelen.length + ': ' +
+        (panelen[i].dataset.titel || '') +
+        (staat === 'nu' ? ', hier ben je nu' :
+         staat === 'later' ? ', nog niet beschikbaar' : ', ingevuld'));
+    });
+    stapbalk.style.setProperty('--stappen', String(panelen.length));
+    stapbalk.style.setProperty('--vordering-f', String(nu / (panelen.length - 1)));
+  }
+
   /* Stappen ---------------------------------------------------------------- */
 
   function toon(i, verschuif) {
     nu = Math.max(0, Math.min(panelen.length - 1, i));
+    if (nu > bereikt) bereikt = nu;
     panelen.forEach(function (p, k) { p.hidden = k !== nu; });
-    var pct = ((nu + 1) / panelen.length) * 100;
-    if (balk) balk.style.width = pct + '%';
-    if (teller) teller.textContent = String(nu + 1);
-    if (titelNu) titelNu.textContent = panelen[nu].dataset.titel || '';
+    tekenStapbalk();
     if (terug) terug.hidden = nu === 0;
     var laatste = nu === panelen.length - 1;
     if (verder) verder.hidden = laatste;
@@ -242,18 +289,18 @@
   /* Samenvatting ----------------------------------------------------------- */
 
   var VELDEN = [
-    ['Wat je ziet', function () { return labels('klachten').join(', '); }, 0],
-    ['Te herstellen', function () { return labels('onderdelen').join(', '); }, 1],
-    ['Omvang', function () { return labels('omvang').join(', '); }, 2],
-    ['Bereikbaarheid', function () { return labels('bereikbaar').join(', '); }, 3],
-    ['Kleur', function () { return labels('kleur').join(', '); }, 4],
+    ['Te herstellen', function () { return labels('onderdelen').join(', '); }, 0],
+    ['Omvang', function () { return labels('omvang').join(', '); }, 1],
+    ['Bereikbaarheid', function () { return labels('bereikbaar').join(', '); }, 2],
+    ['Kleur', function () { return labels('kleur').join(', '); }, 3],
     ['Adres', function () {
       var p = waarde('postcode'), h = waarde('huisnummer'), pl = waarde('plaats');
       return [p, h, pl].filter(Boolean).join(' ');
     }, 5],
     ['Wanneer', function () { return labels('wanneer').join(', '); }, 5],
     ["Foto's", function () { return bestanden.length ? bestanden.length + ' meegestuurd' : 'geen'; }, 5],
-    ['Toelichting', function () { return waarde('toelichting'); }, 5]
+    ['Toelichting', function () { return waarde('toelichting'); }, 4],
+    ['Via de site', function () { return vanaf; }, null]
   ];
 
   function vulSamenvatting() {
@@ -267,12 +314,14 @@
       dt.textContent = v[0];
       var dd = document.createElement('dd');
       dd.textContent = tekst;
-      var knop = document.createElement('button');
-      knop.type = 'button';
-      knop.className = 'wijzig';
-      knop.textContent = 'wijzig';
-      knop.addEventListener('click', function () { toon(v[2], true); });
-      dd.append(knop);
+      if (v[2] !== null) {
+        var knop = document.createElement('button');
+        knop.type = 'button';
+        knop.className = 'wijzig';
+        knop.textContent = 'wijzig';
+        knop.addEventListener('click', function () { toon(v[2], true); });
+        dd.append(knop);
+      }
       dl.append(dt, dd);
     });
     var p = bedrag();
@@ -305,7 +354,7 @@
 
   function bewaar() {
     try {
-      var d = { stap: nu, velden: {} };
+      var d = { stap: nu, bereikt: bereikt, velden: {} };
       form.querySelectorAll('input,textarea,select').forEach(function (el) {
         if (!el.name || el.type === 'file') return;
         if (el.type === 'radio' || el.type === 'checkbox') {
@@ -334,6 +383,7 @@
           if (el2) el2.value = v;
         }
       });
+      bereikt = d.bereikt || d.stap || 0;
       return d.stap || 0;
     } catch (e) { return 0; }
   }
@@ -393,8 +443,9 @@
     var d = {};
     ['naam', 'email', 'telefoon', 'postcode', 'huisnummer', 'plaats', 'toelichting']
       .forEach(function (n) { d[n] = waarde(n); });
-    ['klachten', 'onderdelen', 'omvang', 'bereikbaar', 'kleur', 'wanneer']
+    ['onderdelen', 'omvang', 'bereikbaar', 'kleur', 'wanneer']
       .forEach(function (n) { d[n] = waarden(n); });
+    d.via_de_site = vanaf;
     var p = bedrag();
     d.indicatie = p ? p.bedrag : '';
     d.aantal_fotos = bestanden.length;
@@ -424,14 +475,25 @@
 
   /* Opstarten -------------------------------------------------------------- */
 
-  // Vanaf de homepage kan er al een klacht meegegeven zijn (?klacht=verkleurd).
-  var vraag = new URLSearchParams(window.location.search).get('klacht');
-  if (vraag) {
-    var vooraf = form.querySelector('[name="klachten"][value="' + CSS.escape(vraag) + '"]');
-    if (vooraf) vooraf.checked = true;
-  }
+  /* Opstarten -------------------------------------------------------------- */
 
-  var startStap = vraag ? 0 : herstel();
+  // Klikt iemand op de homepage op een klacht, dan onthouden we dat stilletjes.
+  // Voor de prijs maakt het niet uit -- de werkzaamheden zijn hetzelfde, wat er
+  // ook mis is -- maar het is voor ons wel prettig om te weten waarmee iemand
+  // binnenkomt. We laten de bezoeker er dus geen stap voor invullen.
+  var KLACHTEN = {
+    verweerd: 'verweerd of gebarsten',
+    'laat-los': 'folie laat los',
+    blaasjes: 'blaasjes of scheuren',
+    lijmlaag: 'gele lijmlaag zichtbaar',
+    spanningsplooien: 'plooien of kreukels',
+    scheuren: 'krassen of stootschade'
+  };
+  var vanaf = KLACHTEN[new URLSearchParams(window.location.search).get('klacht')] || '';
+
+  bouwStapbalk();
+
+  var startStap = herstel();
   toon(startStap, false);
 
   // Wie halverwege weggeklikt was, komt terug op de stap waar hij gebleven is.
@@ -451,6 +513,6 @@
       wisOpslag();
       window.location.href = window.location.pathname;
     });
-    form.querySelector('.voortgang').append(terugmelding);
+    stapbalk.appendChild(terugmelding);
   }
 })();

@@ -15,13 +15,72 @@
   box-shadow:var(--shadow-lg);overflow:hidden;
 }
 
-/* Voortgang --------------------------------------------------------------- */
+/* Stappenbalk -------------------------------------------------------------
+   Klikbaar: je kunt terug naar elke stap die je al gezien hebt. De lijn achter
+   de bolletjes loopt mee met waar je bent. --vordering wordt door offerte.js
+   gezet. */
 
-.voortgang{padding:22px 26px;border-bottom:1px solid var(--line);background:var(--paper);}
-.voortgang-balk{height:5px;border-radius:3px;background:var(--line);overflow:hidden;}
-.voortgang-balk i{display:block;height:100%;width:0;border-radius:3px;background:var(--mint-ink);transition:width .4s cubic-bezier(.4,0,.2,1);}
-.voortgang-tekst{display:flex;justify-content:space-between;gap:16px;margin-top:11px;font-family:var(--kop);font-size:.8rem;font-weight:600;color:var(--sub);}
-.voortgang-tekst b{color:var(--ink);font-weight:600;}
+.stapbalk{padding:22px 26px 20px;border-bottom:1px solid var(--line);background:var(--paper);}
+.stapbalk ol{
+  list-style:none;margin:0;padding:0;
+  display:grid;grid-auto-flow:column;grid-auto-columns:1fr;
+  position:relative;
+}
+/* De verbindingslijn, precies op de hoogte van het midden van de bolletjes */
+.stapbalk ol::before,
+.stapbalk ol::after{
+  content:"";position:absolute;top:15px;height:2px;border-radius:2px;
+  left:calc(50% / var(--stappen, 5));right:calc(50% / var(--stappen, 5));
+}
+.stapbalk ol::before{background:var(--line);}
+.stapbalk ol::after{
+  background:var(--mint-ink);right:auto;
+  width:calc((100% - 100% / var(--stappen, 5)) * var(--vordering-f, 0));
+  transition:width .35s cubic-bezier(.4,0,.2,1);
+}
+
+.stapknop{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  width:100%;padding:0 4px;background:none;border:0;cursor:pointer;
+  font-family:var(--kop);font-size:.78rem;font-weight:600;color:var(--sub);
+  transition:color .18s ease;
+}
+.stapknop .nr{
+  width:32px;height:32px;border-radius:50%;display:grid;place-items:center;
+  background:var(--white);border:2px solid var(--line);
+  font-size:.85rem;line-height:1;color:var(--sub);
+  transition:background .2s ease,border-color .2s ease,color .2s ease;
+}
+.stapknop .lab{line-height:1.2;text-align:center;}
+
+.stapknop[data-staat="klaar"]{color:var(--ink);}
+.stapknop[data-staat="klaar"] .nr{
+  background:var(--mint-ink);border-color:var(--mint-ink);color:#fff;
+  /* een vinkje in plaats van het cijfer zodra de stap achter je ligt */
+  font-size:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:center;
+}
+.stapknop[data-staat="bezocht"]{color:var(--ink-soft);}
+.stapknop[data-staat="bezocht"] .nr{
+  background:var(--mint-wash);border-color:var(--mint);color:var(--mint-deep);
+}
+.stapknop[data-staat="nu"]{color:var(--ink);}
+.stapknop[data-staat="nu"] .nr{
+  background:var(--ink);border-color:var(--ink);color:#fff;
+  box-shadow:0 0 0 4px var(--mint-soft);
+}
+.stapknop:not(:disabled):hover{color:var(--ink);}
+.stapknop:not(:disabled):hover .nr{border-color:var(--mint-ink);}
+.stapknop:disabled{cursor:default;}
+.stapknop:focus-visible{outline:3px solid var(--mint-ink);outline-offset:3px;border-radius:8px;}
+
+@media (max-width:560px){
+  .stapbalk{padding:18px 16px 16px;}
+  .stapknop .lab{display:none;}
+  .stapbalk ol::before,.stapbalk ol::after{top:15px;}
+}
 
 /* Melding bij een hervat concept */
 .hervat{margin:12px 0 0;font-size:.85rem;color:var(--sub);display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
@@ -42,8 +101,17 @@
 .keuzes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:0 0 8px;border:0;padding:0;}
 @media (max-width:820px){ .keuzes{grid-template-columns:repeat(2,1fr);} }
 @media (max-width:520px){ .keuzes{grid-template-columns:1fr;} }
-.keuzes.smal{grid-template-columns:repeat(auto-fit,minmax(170px,1fr));}
+/* Vier korte keuzes naast elkaar (omvang, hoogte); auto-fit gaf per stap een
+   ander aantal kolommen en dat maakt het doorlopen van het formulier onrustig. */
+.keuzes.vier{grid-template-columns:repeat(4,1fr);}
+@media (max-width:820px){ .keuzes.vier{grid-template-columns:repeat(2,1fr);} }
+@media (max-width:420px){ .keuzes.vier{grid-template-columns:1fr;} }
 .keuzes legend{padding:0;}
+.veldgroep{border:0;padding:0;margin:0 0 20px;}
+.veldgroep > legend{
+  padding:0;margin:0 0 10px;
+  font-family:var(--kop);font-weight:600;font-size:.86rem;color:var(--ink);
+}
 
 .keuze{position:relative;display:block;cursor:pointer;}
 .keuze input{position:absolute;opacity:0;width:0;height:0;}

@@ -14,10 +14,10 @@
 <section class="offerte-hero">
   <div class="wrap">
     <p class="opschrift">Offerte aanvragen</p>
-    <h1>Vertel ons wat je ziet</h1>
-    <p>Dit formulier stelt precies de vragen die we anders per mail zouden stellen.
-    Vul je het helemaal in, dan kunnen we er meteen een offerte van maken — zonder dat
-    er eerst iemand bij je langs hoeft te komen.</p>
+    <h1>Vier vragen en een paar foto&rsquo;s</h1>
+    <p>Dit zijn de vragen die bepalen wat een klus kost. Vul ze in, stuur een paar
+    foto's mee, en we maken er een vaste totaalprijs van — zonder dat er eerst iemand
+    bij je langs hoeft te komen.</p>
   </div>
 </section>
 
@@ -25,101 +25,12 @@
   <div class="offerte-kaart">
     <form id="offerteformulier" data-mailbox="{{bedrijf.email}}" novalidate>
 
-      <div class="voortgang">
-        <div class="voortgang-balk"><i></i></div>
-        <p class="voortgang-tekst">
-          <span><b class="voortgang-titel">Wat zie je?</b></span>
-          <span>Stap <b class="voortgang-nu">1</b> van 6</span>
-        </p>
-      </div>
+      <!-- offerte.js bouwt de stappenbalk op uit de panelen hieronder, zodat een
+           stap toevoegen of weghalen hier niets hoeft te veranderen. -->
+      <nav class="stapbalk" aria-label="Stappen in de aanvraag"></nav>
 
       <!-- 1 ------------------------------------------------------------- -->
-      <section class="stap-paneel" data-titel="Wat zie je?" data-verplicht="klachten"
-               data-melding="Kies minstens één klacht — of kies &lsquo;iets anders&rsquo; en beschrijf het later.">
-        <h2>Wat zie je aan je kozijnen?</h2>
-        <p class="toelichting">Meerdere antwoorden mogen. Dit bepaalt of herstel
-        überhaupt de goede oplossing is.</p>
-        <fieldset class="keuzes">
-          <legend class="sr-only">Wat zie je aan je kozijnen?</legend>
-
-          <label class="keuze meervoud met-foto">
-            <input type="checkbox" name="klachten" value="verweerd">
-            <span class="vlak">
-              <span class="beeld"><x-beeld src="voor-gebarsten-dorpel" sizes="220px" alt=""></span>
-              <span class="body">
-                <span class="titel">Verweerd of gebarsten</span>
-                <span class="uitleg">Ruw geworden, barst open</span>
-              </span>
-            </span>
-          </label>
-
-          <label class="keuze meervoud met-foto">
-            <input type="checkbox" name="klachten" value="laat-los">
-            <span class="vlak">
-              <span class="beeld"><x-beeld src="klacht-folie-los" sizes="220px" alt=""></span>
-              <span class="body">
-                <span class="titel">Folie laat los</span>
-                <span class="uitleg">Komt omhoog en krult op</span>
-              </span>
-            </span>
-          </label>
-
-          <label class="keuze meervoud met-foto">
-            <input type="checkbox" name="klachten" value="blaasjes">
-            <span class="vlak">
-              <span class="beeld"><x-beeld src="klacht-blaasjes" sizes="220px" alt=""></span>
-              <span class="body">
-                <span class="titel">Blaasjes of scheuren</span>
-                <span class="uitleg">Bobbels die openscheuren</span>
-              </span>
-            </span>
-          </label>
-
-          <label class="keuze meervoud met-foto">
-            <input type="checkbox" name="klachten" value="lijmlaag">
-            <span class="vlak">
-              <span class="beeld"><x-beeld src="klacht-lijmlaag" sizes="220px" alt=""></span>
-              <span class="body">
-                <span class="titel">Gele lijmlaag zichtbaar</span>
-                <span class="uitleg">Daar is de folie losgescheurd</span>
-              </span>
-            </span>
-          </label>
-
-          <label class="keuze meervoud met-foto">
-            <input type="checkbox" name="klachten" value="spanningsplooien">
-            <span class="vlak">
-              <span class="beeld"><x-beeld src="klacht-spanningsplooien" sizes="220px" alt=""></span>
-              <span class="body">
-                <span class="titel">Plooien of kreukels</span>
-                <span class="uitleg">Rond scharnieren en klinken</span>
-              </span>
-            </span>
-          </label>
-
-          <label class="keuze meervoud met-foto">
-            <input type="checkbox" name="klachten" value="scheuren">
-            <span class="vlak">
-              <span class="beeld"><x-beeld src="klacht-scheuren" sizes="220px" alt=""></span>
-              <span class="body">
-                <span class="titel">Krassen of stootschade</span>
-                <span class="uitleg">Kras, barst, hoek eruit</span>
-              </span>
-            </span>
-          </label>
-
-          <label class="keuze meervoud">
-            <input type="checkbox" name="klachten" value="anders">
-            <span class="vlak">
-              <span class="titel">Iets anders</span>
-              <span class="uitleg">Beschrijf het straks bij de toelichting, of stuur een foto mee.</span>
-            </span>
-          </label>
-        </fieldset>
-      </section>
-
-      <!-- 2 ------------------------------------------------------------- -->
-      <section class="stap-paneel" data-titel="Wat moet er gebeuren?" data-verplicht="onderdelen"
+      <section class="stap-paneel" data-titel="Het werk" data-verplicht="onderdelen"
                data-melding="Kies minstens één onderdeel." hidden>
         <h2>Welke delen moeten hersteld worden?</h2>
         <p class="toelichting">Dit scheelt het meest in de prijs. Alleen de dorpels is
@@ -171,13 +82,13 @@
         </fieldset>
       </section>
 
-      <!-- 3 ------------------------------------------------------------- -->
-      <section class="stap-paneel" data-titel="Hoeveel kozijnen?" data-verplicht="omvang"
+      <!-- 2 ------------------------------------------------------------- -->
+      <section class="stap-paneel" data-titel="Omvang" data-verplicht="omvang"
                data-melding="Kies een omvang — een ruwe schatting is genoeg." hidden>
         <h2>Om hoeveel kozijnen gaat het?</h2>
         <p class="toelichting">Tel gewoon de kozijnen waar iets aan moet gebeuren. Een
         ruwe schatting is genoeg, we meten het toch na.</p>
-        <fieldset class="keuzes smal">
+        <fieldset class="keuzes vier">
           <legend class="sr-only">Om hoeveel kozijnen gaat het?</legend>
           <label class="keuze">
             <input type="radio" name="omvang" value="1">
@@ -209,14 +120,14 @@
         </div>
       </section>
 
-      <!-- 4 ------------------------------------------------------------- -->
-      <section class="stap-paneel" data-titel="Bereikbaarheid" data-verplicht="bereikbaar"
+      <!-- 3 ------------------------------------------------------------- -->
+      <section class="stap-paneel" data-titel="Hoogte" data-verplicht="bereikbaar"
                data-melding="Kies hoe de kozijnen bereikbaar zijn." hidden>
         <h2>Hoe goed zijn de kozijnen bereikbaar?</h2>
         <p class="toelichting">Dit vragen we zodat we weten wat we mee moeten nemen.
         Voor een dorpel op de begane grond hebben we niets nodig; hoger op is er een
         ladder, steiger of hoogwerker nodig.</p>
-        <fieldset class="keuzes smal">
+        <fieldset class="keuzes vier">
           <legend class="sr-only">Hoe goed zijn de kozijnen bereikbaar?</legend>
           <label class="keuze">
             <input type="radio" name="bereikbaar" value="begane-grond">
@@ -248,7 +159,7 @@
         </div>
       </section>
 
-      <!-- 5 ------------------------------------------------------------- -->
+      <!-- 4 ------------------------------------------------------------- -->
       <section class="stap-paneel" data-titel="Kleur" data-verplicht="kleur"
                data-melding="Kies een kleur, of geef aan dat je het nog niet weet." hidden>
         <h2>Welke kleur wordt het?</h2>
@@ -307,8 +218,8 @@
         </div>
       </section>
 
-      <!-- 6 ------------------------------------------------------------- -->
-      <section class="stap-paneel" data-titel="Foto's en gegevens" hidden>
+      <!-- 5 ------------------------------------------------------------- -->
+      <section class="stap-paneel" data-titel="Gegevens" hidden>
         <h2>Foto's en je gegevens</h2>
         <p class="toelichting">Met een paar foto's kunnen we vrijwel altijd een prijs
         geven zonder eerst langs te komen. Fotografeer van een meter afstand én een
@@ -353,8 +264,8 @@
           </div>
         </div>
 
-        <fieldset class="keuzes smal" style="margin:8px 0 20px">
-          <legend class="veld"><label>Wanneer zou het je schikken?</label></legend>
+        <fieldset class="keuzes veldgroep" style="grid-template-columns:repeat(3,1fr)">
+          <legend>Wanneer zou het je schikken?</legend>
           <label class="keuze">
             <input type="radio" name="wanneer" value="zo-snel-mogelijk">
             <span class="vlak"><span class="titel">Zo snel mogelijk</span></span>

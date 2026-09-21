@@ -182,6 +182,26 @@ Vercel draait hem niet, het is de gegenereerde HTML in de repo die geserveerd wo
   Web3Forms-account wél de domeinbeperking aan, anders kan iemand anders formulieren naar
   jouw mailbox sturen.
 
+## Het offerteformulier
+
+Vijf stappen, opgebouwd rond wat de prijs bepaalt: **welk werk, hoeveel kozijnen, hoe
+hoog, welke kleur, gegevens en foto's.**
+
+Wat er bewust *niet* in zit is een vraag naar het soort schade. De herstelwerkzaamheden
+zijn hetzelfde of de folie nu verweerd is, loslaat of blaasjes heeft — dus die stap kostte
+de bezoeker tijd zonder dat er een betere offerte uit kwam. Klikt iemand op de homepage
+wél op een klacht, dan wordt dat via `?klacht=` stil meegestuurd en staat het in de mail
+onder "Via de site". De foto's vertellen de rest.
+
+De stappenbalk bovenin wordt door `offerte.js` uit de panelen zelf opgebouwd. Een stap
+toevoegen of weghalen is dus één `<section class="stap-paneel" data-titel="...">` erbij of
+eraf; de balk, de nummering en de opslag volgen vanzelf. Je kunt terugklikken naar elke
+stap die je al gezien hebt; vooruit gaat via de knop, want daar hoort de controle bij.
+
+**Na elke wijziging in `js/`: open `/offerte` en kijk in de console.** `build.py`
+controleert wel of alle strings netjes afgesloten zijn (die fout heeft de site een keer
+stilgelegd), maar een typefout in een functienaam merk je alleen door het te draaien.
+
 ## Reviews
 
 Score, aantal en de reviewteksten staan in **`reviews.json`** en nergens anders. Header,
