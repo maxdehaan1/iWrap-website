@@ -235,20 +235,31 @@ site serveert. Deze opzet houdt de site snel en de reviews in je eigen beheer.
 ## Feiten die op meerdere sites staan
 
 Deze staan óók op kozijnwrap.nl en houtnerffolie.nl. Verander je ze hier, verander ze
-daar dan mee — drie sites die verschillende bedragen of garantietermijnen noemen is voor
-een klant alleen maar verwarrend. Ze staan hier op één plek, in `FEITEN` in `build.py`:
+daar dan mee — drie sites die verschillende garantietermijnen noemen is voor een klant
+alleen maar verwarrend. Ze staan hier op één plek, in `FEITEN` in `build.py`:
 
-- Een paar dorpels: rond de €500
-- Meerdere kozijnen of een woning: €500 – €3.000
-- Vervangen ter vergelijking: €1.200 – €2.500 per kozijn, en dat is *alléén* het kozijn
-  met glas en montage — stucwerk, schilderwerk, vensterbanken en afvoer komen erbij
 - Tien jaar fabrieksgarantie op de folie, vijf jaar op de montage
 - Kunststof profiel gaat 50 tot 75 jaar mee
 - Doorlooptijd: een tot twee dagen
-- Reactie binnen één werkdag
 
-De prijsindicatie in het formulier gebruikt dezelfde bedragen, maar staat apart in
-`js/offerte.js` in de constante `PRIJS`. Pas je `FEITEN` aan, loop dan even langs `PRIJS`.
+## Wat er níet op de site mag
+
+Drie dingen die er ooit op stonden en er bewust af zijn. Zet ze er niet opnieuw in:
+
+- **Geen bedragen.** Niet in de teksten, niet in het formulier, niet in de structured
+  data. Alleen bij een paar strekkende meter is een bedrag betrouwbaar; daarboven is het
+  niet in te schatten, en een indicatie die niet klopt is verwarrend en schrikt af bij
+  klussen die juist overzichtelijk zijn. Wat er wél staat: een vaste totaalprijs op basis
+  van foto's, en waar die prijs vanaf hangt. Ook geen bandbreedte dus.
+- **Geen reactietijd.** Er stond "reactie binnen één werkdag"; dat kan iWrap niet
+  garanderen.
+- **Geen gespecificeerde offerte.** Het is een opsomming van de werkzaamheden met
+  daaronder één totaalprijs. Schrijf dus nergens dat steiger, reiskosten of
+  bereikbaarheid apart in de offerte staan — dat gebeurt niet.
+
+**Let op bij kozijnwrap.nl:** daar staan de bedragen nog wél (de keuzehulp noemt €500 en
+€500–€3.000, en het kostenartikel noemt €1.200–€2.500 voor vervangen). Die site linkt
+hierheen. Overleg met Max of die er daar ook af moeten.
 
 ## Verhouding tot de andere twee sites
 
