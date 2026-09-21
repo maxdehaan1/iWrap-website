@@ -413,7 +413,7 @@
       (viaMail
         ? '<p>Je mailprogramma is geopend met de aanvraag erin. Controleer hem even, ' +
           "voeg je foto's toe als bijlage en verstuur hem — dan komt hij bij ons binnen.</p>"
-        : '<p>Je aanvraag is binnen. We kijken je foto's na en laten je weten wat ' +
+        : "<p>Je aanvraag is binnen. We kijken je foto's na en laten je weten wat " +
           'het gaat kosten. Zijn er dingen die we niet goed kunnen zien, dan bellen we ' +
           'je even.</p>') +
       '<div class="knoprij"><a class="knop knop-tweede" href="/voorbeelden">Bekijk ons werk</a>' +

@@ -74,6 +74,7 @@ FEITEN = {
 # ---------------------------------------------------------------------------
 NAV = [
     ("kunststof-kozijn-herstellen", "Kozijnherstel"),
+    ("dakkapel-kozijnen", "Dakkapellen"),
     ("werkwijze", "Werkwijze"),
     ("voorbeelden", "Voorbeelden"),
     ("kosten", "Kosten"),
@@ -630,7 +631,54 @@ def substitueer(tekst):
     return BEELD_RE.sub(render_beeld, tekst)
 
 
+def controleer_js():
+    """Kijkt of elke string in de scripts netjes afgesloten is.
+
+    Dit vangt de fout waar de site al een keer op stukging: een apostrof in een
+    Nederlandse tekst ('foto's') binnen een string met enkele quotes. De browser
+    geeft dan een SyntaxError, het hele bestand draait niet, en op de pagina zie
+    je alleen dat er niets gebeurt -- precies het soort fout dat je pas ontdekt
+    als een klant het formulier niet kan versturen.
+    """
+    for bestand in sorted((ROOT / "js").glob("*.js")):
+        tekst = bestand.read_text(encoding="utf-8")
+        regel, kolom, i, n = 1, 1, 0, len(tekst)
+        quote = None      # welke string we in zitten
+        start = None      # waar die begon
+        commentaar = None # "//" of "/*"
+        while i < n:
+            c = tekst[i]
+            volgend = tekst[i + 1] if i + 1 < n else ""
+            if c == "\n":
+                regel, kolom = regel + 1, 0
+                if commentaar == "//":
+                    commentaar = None
+                if quote in ("'", '"'):
+                    raise SystemExit(
+                        f"{bestand.name}: string op regel {start} is niet afgesloten "
+                        f"-- waarschijnlijk een apostrof in de tekst. Gebruik daar "
+                        f'dubbele aanhalingstekens ("...") omheen.'
+                    )
+            if commentaar:
+                if commentaar == "/*" and c == "*" and volgend == "/":
+                    commentaar, i, kolom = None, i + 1, kolom + 1
+            elif quote:
+                if c == "\\":
+                    i, kolom = i + 1, kolom + 1
+                elif c == quote:
+                    quote, start = None, None
+            elif c in "'\"`":
+                quote, start = c, regel
+            elif c == "/" and volgend in "/*":
+                commentaar = "//" if volgend == "/" else "/*"
+                i, kolom = i + 1, kolom + 1
+            i, kolom = i + 1, kolom + 1
+        if quote:
+            raise SystemExit(f"{bestand.name}: string op regel {start} is niet afgesloten")
+
+
 def main():
+    controleer_js()
     ver = css_version()
     paginas = []
 

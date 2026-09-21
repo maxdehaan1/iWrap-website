@@ -100,7 +100,7 @@ header.site{
 .brand:hover .logo-img{opacity:.72;}
 
 .navlinks{display:flex;align-items:center;gap:26px;font-family:var(--kop);font-size:.875rem;font-weight:500;}
-.navlinks a{color:var(--ink-soft);text-decoration:none;position:relative;padding:6px 0;transition:color .18s ease;}
+.navlinks a{color:var(--ink-soft);text-decoration:none;position:relative;padding:6px 0;white-space:nowrap;transition:color .18s ease;}
 .navlinks a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:2px;background:var(--mint);border-radius:2px;transition:right .24s ease;}
 .navlinks a:hover{color:var(--ink);}
 .navlinks a:hover::after{right:0;}
@@ -117,7 +117,10 @@ header.site{
 
 .nav-toggle{display:none;}
 
-@media (max-width:940px){
+/* Zes navigatie-items passen pas vanaf ongeveer 1080px naast het logo en de
+   offerteknop. Daaronder klappen we in: anders loopt de balk over de rand.
+   Wijzig je de items in NAV in build.py, controleer dan ook dit getal. */
+@media (max-width:1080px){
   /* flex-wrap is hier essentieel: de navigatie krijgt flex-basis:100% en
      moet op een eigen regel onder het logo komen, niet ernaast. */
   .nav{padding:10px 18px;gap:12px;flex-wrap:wrap;}

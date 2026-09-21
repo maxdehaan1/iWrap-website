@@ -23,7 +23,7 @@
 
 /* Lopende tekst ----------------------------------------------------------- */
 
-.tekst{max-width:none;}
+.tekst{max-width:none;min-width:0;}
 .tekst-kolom{max-width:68ch;}
 .tekst h2{margin-top:2em;}
 .tekst h2:first-child{margin-top:0;}
@@ -38,7 +38,10 @@
 .zij-indeling{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:clamp(30px,4vw,56px);align-items:start;}
 .zij{position:sticky;top:92px;display:grid;gap:18px;}
 @media (max-width:940px){
-  .zij-indeling{grid-template-columns:1fr;}
+  /* minmax(0,1fr) en niet 1fr: een losse 1fr-track krijgt min-width:auto en
+     wordt dan opengeduwd door de brede tabellen erin, ook al scrollen die in
+     hun eigen .tabel-wrap. Dat gaf op een telefoon 171px horizontale overloop. */
+  .zij-indeling{grid-template-columns:minmax(0,1fr);}
   .zij{position:static;}
 }
 
