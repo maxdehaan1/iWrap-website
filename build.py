@@ -60,8 +60,6 @@ BEDRIJF = {
 # garantietermijnen noemen is voor een klant alleen maar verwarrend.
 # ---------------------------------------------------------------------------
 FEITEN = {
-    "prijs_klein": "rond de €500",
-    "prijs_vervangen": "€1.200 tot €2.500 per kozijn",
     "garantie_folie": "tien jaar fabrieksgarantie op de folie",
     "garantie_montage": "vijf jaar op de montage",
     "levensduur_profiel": "50 tot 75 jaar",
@@ -428,7 +426,6 @@ def localbusiness():
         "telephone": b["telefoon_tel"],
         "image": SITE + "/images/na-herstelde-onderdorpel-1600.webp",
         "logo": SITE + "/images/logo/iwrap-mark-512.png",
-        "priceRange": "€€",
         "address": {
             "@type": "PostalAddress",
             "streetAddress": b["straat"],
@@ -617,7 +614,7 @@ META_RE = re.compile(r"^\s*<!--\s*(\{.*?\})\s*-->\s*", re.S)
 
 
 def substitueer(tekst):
-    """{{bedrijf.telefoon}} en {{feit.prijs_klein}} in de bron vervangen."""
+    """{{bedrijf.telefoon}} en {{feit.doorlooptijd}} in de bron vervangen."""
     def rep(m):
         groep, sleutel = m.group(1), m.group(2)
         bron = {"bedrijf": BEDRIJF, "feit": FEITEN}[groep]

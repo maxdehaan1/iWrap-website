@@ -32,23 +32,11 @@
   var bereikt = 0;   // verste stap die de bezoeker heeft gezien
   var bestanden = [];
 
-  /* Prijsindicatie --------------------------------------------------------
-     De bedragen zijn dezelfde als op kozijnwrap.nl en in de offertes. Wijzig
-     ze hier én daar, anders lezen klanten twee verschillende verhalen. */
-  var PRIJS = {
-    klein: {
-      bedrag: 'Meestal rond de €500',
-      uitleg: 'Een paar dorpels is precies het soort klus waar we in één dagdeel klaar mee zijn. Kleine opdrachten zijn welkom — daar doen we niet moeilijk over.'
-    },
-    middel: {
-      bedrag: 'Hier maken we een prijs van op basis van je foto\u0027s',
-      uitleg: 'Bij meerdere kozijnen loopt het te ver uiteen om er nu een bedrag aan te hangen: afmetingen, aantal en hoeveel er per kozijn moet gebeuren schelen zomaar een factor drie. Met je foto\u0027s erbij geven we je een vaste totaalprijs.'
-    },
-    groot: {
-      bedrag: 'Hiervoor komen we langs voor een opname',
-      uitleg: 'Bij meer dan tien kozijnen loopt een inschatting op afstand te ver uiteen om er een eerlijk bedrag aan te hangen. We meten het op locatie in en sturen daarna een vaste prijs.'
-    }
-  };
+  /* Aantallen --------------------------------------------------------------
+     De tellers bepalen samen de omvang van de klus. Er wordt bewust geen
+     prijsindicatie meer getoond: die was alleen betrouwbaar bij een paar
+     strekkende meter, en daarboven gaf hij mensen een bedrag waar ze niets aan
+     hadden. De prijs komt uit de offerte, op basis van de foto's. */
 
   var TELVELDEN = ['aantal_kozijnen', 'aantal_draairamen',
                    'aantal_deuren', 'aantal_schuifpuien'];
@@ -64,39 +52,6 @@
 
   function totaalAantal() {
     return TELVELDEN.reduce(function (som, n) { return som + aantal(n); }, 0);
-  }
-
-  function bedrag() {
-    var totaal = totaalAantal();
-    if (!totaal) return null;
-    // Een schuifpui is fors groter dan een kozijn en telt daarom dubbel mee.
-    var gewicht = totaal + aantal('aantal_schuifpuien');
-    if (gewicht > 10) return PRIJS.groot;
-    if (waarde('omvangsoort') === 'delen' && gewicht <= 4) return PRIJS.klein;
-    return PRIJS.middel;
-  }
-
-  function prijsNoten() {
-    var noten = [];
-    if (waarden('onderdelen').indexOf('draaiende-delen') > -1 ||
-        aantal('aantal_draairamen') || aantal('aantal_deuren')) {
-      noten.push('Voor de draaiende delen komen we ook binnen: die moeten open om de folie netjes om de rand te kunnen zetten.');
-    }
-    return noten;
-  }
-
-  function toonPrijs() {
-    var blok = form.querySelector('.prijsblok');
-    if (!blok) return;
-    var p = bedrag();
-    if (!p) { blok.hidden = true; return; }
-    blok.hidden = false;
-    blok.querySelector('.bedrag').textContent = p.bedrag;
-    blok.querySelector('.prijs-uitleg').textContent = p.uitleg;
-    var noten = prijsNoten();
-    var notenEl = blok.querySelector('.waarschuwing');
-    notenEl.innerHTML = noten.map(function (n) { return '<p>' + n + '</p>'; }).join('');
-    notenEl.hidden = noten.length === 0;
   }
 
   /* Uitlezen --------------------------------------------------------------- */
@@ -185,7 +140,6 @@
     if (versturen) versturen.hidden = !laatste;
     if (melding) melding.textContent = '';
     if (laatste) vulSamenvatting();
-    toonPrijs();
     tekenVervolgvelden();
     tekenTellers();
     // Focus naar de kop van de nieuwe stap, anders weten schermlezers niet
@@ -283,7 +237,6 @@
   function bijwerken(e) {
     if (!e.target.name) return;
     zeg('');
-    toonPrijs();
     // Op de laatste stap staat de samenvatting in beeld; die moet meelopen met
     // wat er nog wordt ingevuld, anders klopt hij niet met wat er verstuurd wordt.
     if (nu === panelen.length - 1) vulSamenvatting();
@@ -418,14 +371,6 @@
       }
       dl.append(dt, dd);
     });
-    var p = bedrag();
-    if (p) {
-      var dt2 = document.createElement('dt');
-      dt2.textContent = 'Indicatie';
-      var dd2 = document.createElement('dd');
-      dd2.textContent = p.bedrag;
-      dl.append(dt2, dd2);
-    }
   }
 
   function samenvattingTekst() {
@@ -438,9 +383,6 @@
       var t = v[1]();
       if (t) regels.push((v[0] + ':').padEnd(11) + t);
     });
-    var p = bedrag();
-    if (p) { regels.push('', 'Indicatie: ' + p.bedrag); }
-    prijsNoten().forEach(function (n) { regels.push('Let op:    ' + n); });
     return regels.join('\n');
   }
 
@@ -543,8 +485,6 @@
     d.welke_delen = waarde('welke_delen');
     d.kleur_anders = waarde('kleur_anders');
     d.via_de_site = vanaf;
-    var p = bedrag();
-    d.indicatie = p ? p.bedrag : '';
     d.aantal_fotos = bestanden.length;
     d.bron = document.referrer || '';
     return d;
