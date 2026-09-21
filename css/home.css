@@ -74,6 +74,9 @@
 .welniet .wel h3::before{background-color:var(--mint);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%2322262a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");}
 .welniet .niet h3::before{background-color:#e8e5df;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%23646b73' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E");}
 .welniet ul{margin-bottom:0;}
+/* Waar we het op doen staat boven de klachtenlijst: dat is een andere soort
+   uitspraak dan de klachten zelf en hoort er niet tussen te staan. */
+.welniet .waarop{font-size:.88rem;color:var(--sub);margin:-.3em 0 1.1em;padding-bottom:.9em;border-bottom:1px solid var(--line);}
 
 /* Stappen ----------------------------------------------------------------- */
 
