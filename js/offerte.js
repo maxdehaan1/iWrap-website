@@ -42,8 +42,8 @@
       uitleg: 'Een paar dorpels is precies het soort klus waar we in één dagdeel klaar mee zijn. Kleine opdrachten zijn welkom — daar doen we niet moeilijk over.'
     },
     middel: {
-      bedrag: 'Doorgaans tussen de €500 en €3.000',
-      uitleg: 'Waar je precies uitkomt hangt af van het aantal kozijnen, de afmetingen en hoeveel er per kozijn hersteld moet worden.'
+      bedrag: 'Hier maken we een prijs van op basis van je foto\u0027s',
+      uitleg: 'Bij meerdere kozijnen loopt het te ver uiteen om er nu een bedrag aan te hangen: afmetingen, aantal en hoeveel er per kozijn moet gebeuren schelen zomaar een factor drie. Met je foto\u0027s erbij geven we je een vaste totaalprijs.'
     },
     groot: {
       bedrag: 'Hiervoor komen we langs voor een opname',
@@ -65,10 +65,6 @@
     var noten = [];
     if (waarden('onderdelen').indexOf('draaiende-delen') > -1) {
       noten.push('Voor de draaiende delen komen we ook binnen: die moeten open om de folie netjes om de rand te kunnen zetten.');
-    }
-    var b = waarde('bereikbaar');
-    if (b === 'hoger' || b === 'gemengd') {
-      noten.push('Boven de eerste verdieping komt er een ladder, steiger of hoogwerker bij. Dat telt mee in de prijs die je van ons krijgt.');
     }
     return noten;
   }
@@ -417,9 +413,9 @@
       (viaMail
         ? '<p>Je mailprogramma is geopend met de aanvraag erin. Controleer hem even, ' +
           "voeg je foto's toe als bijlage en verstuur hem — dan komt hij bij ons binnen.</p>"
-        : '<p>Je aanvraag is binnen. We kijken hem na en sturen je binnen één werkdag ' +
-          "een reactie. Zijn er dingen die we op de foto's niet goed kunnen zien, dan " +
-          'bellen we je even.</p>') +
+        : '<p>Je aanvraag is binnen. We kijken je foto's na en laten je weten wat ' +
+          'het gaat kosten. Zijn er dingen die we niet goed kunnen zien, dan bellen we ' +
+          'je even.</p>') +
       '<div class="knoprij"><a class="knop knop-tweede" href="/resultaten">Bekijk ons werk</a>' +
       '<a class="knop knop-tweede" href="/veelgestelde-vragen">Veelgestelde vragen</a></div>' +
       '</div>';

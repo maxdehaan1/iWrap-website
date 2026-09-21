@@ -61,13 +61,11 @@ BEDRIJF = {
 # ---------------------------------------------------------------------------
 FEITEN = {
     "prijs_klein": "rond de €500",
-    "prijs_middel": "tussen de €500 en €3.000",
     "prijs_vervangen": "€1.200 tot €2.500 per kozijn",
     "garantie_folie": "tien jaar fabrieksgarantie op de folie",
     "garantie_montage": "vijf jaar op de montage",
     "levensduur_profiel": "50 tot 75 jaar",
     "doorlooptijd": "een tot twee dagen",
-    "reactietijd": "binnen één werkdag",
 }
 
 # ---------------------------------------------------------------------------

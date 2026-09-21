@@ -1,6 +1,6 @@
 <!-- {
   "title": "Offerte aanvragen voor kozijnherstel | iWrap",
-  "description": "Vraag in een paar minuten een offerte aan voor kozijnherstel. Je ziet meteen een prijsindicatie en krijgt binnen één werkdag antwoord.",
+  "description": "Vraag in een paar minuten een offerte aan voor kozijnherstel. Vier vragen en een paar foto's, daar maken wij een vaste totaalprijs van.",
   "ogtitle": "Offerte aanvragen voor kozijnherstel",
   "bodyclass": "offertepagina",
   "css": ["offerte"],
@@ -16,8 +16,8 @@
     <p class="opschrift">Offerte aanvragen</p>
     <h1>Vertel ons wat je ziet</h1>
     <p>Dit formulier stelt precies de vragen die we anders per mail zouden stellen.
-    Vul je het helemaal in, dan kunnen we er meteen een offerte van maken — meestal
-    {{feit.reactietijd}}.</p>
+    Vul je het helemaal in, dan kunnen we er meteen een offerte van maken — zonder dat
+    er eerst iemand bij je langs hoeft te komen.</p>
   </div>
 </section>
 
@@ -43,12 +43,12 @@
           <legend class="sr-only">Wat zie je aan je kozijnen?</legend>
 
           <label class="keuze meervoud met-foto">
-            <input type="checkbox" name="klachten" value="dof">
+            <input type="checkbox" name="klachten" value="verweerd">
             <span class="vlak">
-              <span class="beeld"><x-beeld src="klacht-dof" sizes="220px" alt=""></span>
+              <span class="beeld"><x-beeld src="voor-gebarsten-dorpel" sizes="220px" alt=""></span>
               <span class="body">
-                <span class="titel">Dof of verkleurd</span>
-                <span class="uitleg">De glans is eraf, blijft grauw</span>
+                <span class="titel">Verweerd of gebarsten</span>
+                <span class="uitleg">Ruw geworden, barst open</span>
               </span>
             </span>
           </label>
@@ -56,21 +56,21 @@
           <label class="keuze meervoud met-foto">
             <input type="checkbox" name="klachten" value="laat-los">
             <span class="vlak">
-              <span class="beeld"><x-beeld src="klacht-laat-los" sizes="220px" alt=""></span>
+              <span class="beeld"><x-beeld src="klacht-folie-los" sizes="220px" alt=""></span>
               <span class="body">
                 <span class="titel">Folie laat los</span>
-                <span class="uitleg">Bobbelt, bladdert of komt omhoog</span>
+                <span class="uitleg">Komt omhoog en krult op</span>
               </span>
             </span>
           </label>
 
           <label class="keuze meervoud met-foto">
-            <input type="checkbox" name="klachten" value="scheuren">
+            <input type="checkbox" name="klachten" value="blaasjes">
             <span class="vlak">
-              <span class="beeld"><x-beeld src="klacht-scheuren" sizes="220px" alt=""></span>
+              <span class="beeld"><x-beeld src="klacht-blaasjes" sizes="220px" alt=""></span>
               <span class="body">
-                <span class="titel">Scheuren of stootschade</span>
-                <span class="uitleg">Krassen, barsten, een kapotte hoek</span>
+                <span class="titel">Blaasjes of scheuren</span>
+                <span class="uitleg">Bobbels die openscheuren</span>
               </span>
             </span>
           </label>
@@ -87,12 +87,12 @@
           </label>
 
           <label class="keuze meervoud met-foto">
-            <input type="checkbox" name="klachten" value="vuil">
+            <input type="checkbox" name="klachten" value="scheuren">
             <span class="vlak">
-              <span class="beeld"><x-beeld src="klacht-vuil" sizes="220px" alt=""></span>
+              <span class="beeld"><x-beeld src="klacht-scheuren" sizes="220px" alt=""></span>
               <span class="body">
-                <span class="titel">Niet meer schoon te krijgen</span>
-                <span class="uitleg">Blijft dof en grauw, hoe je ook poetst</span>
+                <span class="titel">Krassen of stootschade</span>
+                <span class="uitleg">Kras, barst, hoek eruit</span>
               </span>
             </span>
           </label>
@@ -213,9 +213,9 @@
       <section class="stap-paneel" data-titel="Bereikbaarheid" data-verplicht="bereikbaar"
                data-melding="Kies hoe de kozijnen bereikbaar zijn." hidden>
         <h2>Hoe goed zijn de kozijnen bereikbaar?</h2>
-        <p class="toelichting">We vragen dit omdat het echt uitmaakt: voor een dorpel op
-        de begane grond hebben we niets nodig, hoger dan de eerste verdieping komt er
-        materieel bij. Dat telt mee in de prijs.</p>
+        <p class="toelichting">Dit vragen we zodat we weten wat we mee moeten nemen.
+        Voor een dorpel op de begane grond hebben we niets nodig; hoger op is er een
+        ladder, steiger of hoogwerker nodig.</p>
         <fieldset class="keuzes smal">
           <legend class="sr-only">Hoe goed zijn de kozijnen bereikbaar?</legend>
           <label class="keuze">
@@ -418,9 +418,9 @@
     </div>
     <div class="kaart">
       <h3>Wat gebeurt er daarna?</h3>
-      <p>We kijken je foto's na en sturen je {{feit.reactietijd}} een prijs. Kunnen we
-      iets niet goed beoordelen, dan bellen we even. Pas als de offerte akkoord is,
-      plannen we een datum.</p>
+      <p>We kijken je foto's na en laten je weten wat het gaat kosten. Kunnen we iets
+      niet goed beoordelen, dan bellen we even. Pas als de offerte akkoord is, plannen we
+      een datum.</p>
     </div>
     <div class="kaart">
       <h3>Kan het bij mij wel?</h3>
