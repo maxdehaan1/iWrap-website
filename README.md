@@ -147,6 +147,12 @@ Dat levert dit op in de mail:
 Samen 2 kozijnen, 4 draairamen en 2 deuren
 ```
 
+**Kies je een los draairaam of een losse deur**, dan verschijnt de spiegelvraag: hoort het
+kozijn eromheen erbij, of gaat het alleen om de deur of het raam zelf? Soms is alleen het
+draaiende deel aangetast en is het kozijn nog goed, en dat scheelt in het werk. Zonder
+antwoord op die vraag telt het blok niet mee — zonder dat gegeven is de klus niet te
+begroten.
+
 **Draairamen en deuren horen bij het kozijn waar ze in zitten**, niet in een eigen blok.
 Vraag 2 verschijnt daarom alleen bij een kozijn, schuifpui of dakkapelkozijn; kies je een
 los draairaam of een losse deur, dan is dat element zelf al het draaiende deel en verdwijnt
@@ -173,6 +179,14 @@ Er wordt **niet** gevraagd naar het soort schade: de herstelwerkzaamheden zijn h
 of de folie nu verweerd is, loslaat of blaasjes heeft. Klikt iemand op de homepage wél op
 een klacht, dan gaat dat via `?klacht=` stil mee en staat het in de mail onder "Via de
 site".
+
+### Waar dit op gekalibreerd is
+
+**Een typische klus is een woning met maximaal zes kozijnen.** Daar is het formulier op
+afgestemd: zo'n woning kost in de praktijk twee blokken en ongeveer elf handelingen
+(bijvoorbeeld "4× kozijn — onderdorpel" en "2× kozijn met 1 draairaam — compleet
+rondom"). Bouw dus geen bulkinvoer of importfuncties voor grote aantallen; voor VvE's en
+complexen komt iWrap sowieso langs voor een opname.
 
 ### De uitweg
 

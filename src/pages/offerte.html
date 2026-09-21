@@ -37,7 +37,7 @@
 
       <!-- 1 ------------------------------------------------------------- -->
       <section class="stap-paneel" data-titel="Het werk" data-verplicht="werklijst"
-               data-melding="Vul minstens &eacute;&eacute;n blok in: kies een element en wat eraan moet gebeuren." >
+               data-melding="Maak minstens &eacute;&eacute;n blok af &mdash; bovenin elk blok staat of het nog ingevuld moet worden." >
         <h2>Wat moet er precies gebeuren?</h2>
         <p class="toelichting">Beschrijf hieronder &eacute;&eacute;n soort werk. Zitten er
         draairamen of een deur in het kozijn, dan geef je dat in hetzelfde blok aan &mdash;
@@ -98,6 +98,22 @@
                   <button type="button" class="teller-plus" aria-label="Meer deuren">+</button>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div class="regel-vraag regel-omkader" hidden>
+            <span class="regel-vraag-label"><b class="vraag-nr"></b> Hoort het kozijn eromheen erbij?</span>
+            <p class="regel-vraag-hint">Soms is alleen <span class="omkader-soort">de deur</span>
+            zelf aangetast en is het kozijn eromheen nog goed. Dat scheelt in het werk.</p>
+            <div class="regel-omvang">
+              <label class="omvangchip">
+                <input type="radio" data-veld="omkader" value="alleen">
+                <span>Alleen <span class="omkader-soort">de deur</span> zelf</span>
+              </label>
+              <label class="omvangchip">
+                <input type="radio" data-veld="omkader" value="ook-kozijn">
+                <span>Ook het kozijn eromheen</span>
+              </label>
             </div>
           </div>
 

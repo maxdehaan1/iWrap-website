@@ -74,6 +74,10 @@
   // een losse deur is zelf al het draaiende deel, dus daar vragen we het niet.
   var MET_INHOUD = ['kozijn', 'dakkapelkozijn', 'schuifpui'];
 
+  // De spiegelvraag: kiest iemand een los draairaam of een losse deur, dan
+  // willen we weten of het kozijn eromheen ook mee moet. Dat scheelt in het werk.
+  var LOSSE_DELEN = ['draairaam', 'deur'];
+
   function getal(regel, veld) {
     var el = regel.querySelector('[data-veld=' + veld + ']');
     var n = el ? parseInt(el.value, 10) : 0;
@@ -84,6 +88,8 @@
     var omvang = regel.querySelector('[data-veld=omvang]:checked');
     var soort = (regel.querySelector('[data-veld=soort]:checked') || {}).value || '';
     var heeftInhoud = MET_INHOUD.indexOf(soort) > -1;
+    var isLosDeel = LOSSE_DELEN.indexOf(soort) > -1;
+    var omkader = regel.querySelector('[data-veld=omkader]:checked');
     var delen = Array.prototype.slice
       .call(regel.querySelectorAll('[data-deel]:checked'))
       .map(function (v) { return v.dataset.deel; });
@@ -93,6 +99,7 @@
       soort: soort,
       draairamen: heeftInhoud ? getal(regel, 'draairamen') : 0,
       deuren: heeftInhoud ? getal(regel, 'deuren') : 0,
+      omkader: isLosDeel && omkader ? omkader.value : '',
       aantal: isNaN(n) || n < 1 ? 1 : n,
       omvang: omvang ? omvang.value : '',
       plek: regel.querySelector('[data-veld=plek]').value.trim(),
@@ -104,6 +111,9 @@
   // bepaalde delen met minstens één deel aangevinkt.
   function regelCompleet(r) {
     if (!r.soort) return false;
+    // Bij een los draairaam of een losse deur moet ook duidelijk zijn of het
+    // kozijn eromheen meegaat; zonder dat antwoord is de klus niet te begroten.
+    if (LOSSE_DELEN.indexOf(r.soort) > -1 && !r.omkader) return false;
     return r.omvang === 'compleet' || (r.omvang === 'delen' && r.delen.length > 0);
   }
 
@@ -125,6 +135,8 @@
       inhoud.push(r.deuren + ' ' + (r.deuren === 1 ? 'deur' : 'deuren'));
     }
     var met = inhoud.length ? ' met ' + inhoud.join(' en ') : '';
+    if (r.omkader === 'ook-kozijn') met = ' met kozijn';
+    else if (r.omkader === 'alleen') met = ' (zonder kozijn)';
     return r.aantal + '\u00d7 ' + soort + met + ' \u2014 ' + wat +
            (r.plek ? ' (' + r.plek + ')' : '') +
            (r.fotos.length ? '  [' + r.fotos.length + ' foto' +
@@ -143,6 +155,9 @@
     var totaal = {};
     leesWerklijst().forEach(function (r) {
       totaal[r.soort] = (totaal[r.soort] || 0) + r.aantal;
+      if (r.omkader === 'ook-kozijn') {
+        totaal.kozijn = (totaal.kozijn || 0) + r.aantal;
+      }
       if (r.draairamen) {
         totaal.draairaam = (totaal.draairaam || 0) + r.aantal * r.draairamen;
       }
@@ -217,6 +232,7 @@
     // De vraag "zit er iets in dat opengaat" slaat alleen op kozijnen, puien en
     // dakkapelkozijnen. Een los draairaam of een losse deur is zelf al dat deel.
     var inhoudblok = regel.querySelector('.regel-inhoud');
+    var omkaderblok = regel.querySelector('.regel-omkader');
     function tekenInhoud() {
       var gekozen = regel.querySelector('[data-veld=soort]:checked');
       var toon = gekozen && MET_INHOUD.indexOf(gekozen.value) > -1;
@@ -224,6 +240,18 @@
       if (!toon) {
         Array.prototype.forEach.call(inhoudblok.querySelectorAll('input[type=number]'),
           function (v) { v.value = '0'; });
+      }
+
+      // De spiegelvraag voor een los draairaam of een losse deur.
+      var losDeel = gekozen && LOSSE_DELEN.indexOf(gekozen.value) > -1;
+      omkaderblok.hidden = !losDeel;
+      if (!losDeel) {
+        Array.prototype.forEach.call(omkaderblok.querySelectorAll('[data-veld=omkader]'),
+          function (v) { v.checked = false; });
+      } else {
+        var woord = gekozen.value === 'deur' ? 'de deur' : 'het raam';
+        Array.prototype.forEach.call(regel.querySelectorAll('.omkader-soort'),
+          function (e) { e.textContent = woord; });
       }
       // "Bij hoeveel elementen" is dubbelzinnig zodra er draairamen in zitten:
       // bedoel je de kozijnen of alles bij elkaar? Met de soort erin staat het
@@ -250,6 +278,8 @@
     var sleutel = Math.random().toString(36).slice(2, 9);
     Array.prototype.forEach.call(regel.querySelectorAll('[data-veld=omvang]'),
       function (v) { v.name = 'omvang_' + sleutel; });
+    Array.prototype.forEach.call(regel.querySelectorAll('[data-veld=omkader]'),
+      function (v) { v.name = 'omkader_' + sleutel; });
     Array.prototype.forEach.call(regel.querySelectorAll('[data-veld=soort]'),
       function (v) { v.name = 'soort_' + sleutel; });
 
@@ -322,6 +352,10 @@
       }
       aantalVeld.value = gegevens.aantal || 1;
       regel.querySelector('[data-veld=plek]').value = gegevens.plek || '';
+      if (gegevens.omkader) {
+        var omkaderKeuze = regel.querySelector('[data-veld=omkader][value="' + gegevens.omkader + '"]');
+        if (omkaderKeuze) omkaderKeuze.checked = true;
+      }
       if (gegevens.draairamen) regel.querySelector('[data-veld=draairamen]').value = gegevens.draairamen;
       if (gegevens.deuren) regel.querySelector('[data-veld=deuren]').value = gegevens.deuren;
       if (gegevens.omvang) {
@@ -671,7 +705,7 @@
                 werk: leesWerklijst().map(function (r) {
                   return { soort: r.soort, aantal: r.aantal, omvang: r.omvang,
                            draairamen: r.draairamen, deuren: r.deuren,
-                           plek: r.plek, delen: r.delen };
+                           omkader: r.omkader, plek: r.plek, delen: r.delen };
                 }) };
       form.querySelectorAll('input,textarea,select').forEach(function (el) {
         if (!el.name || el.type === 'file') return;
@@ -775,7 +809,7 @@
     ['bereikbaar', 'kleur'].forEach(function (n) { d[n] = waarden(n); });
     d.werklijst = leesWerklijst().map(function (r) {
       return { soort: r.soort, aantal: r.aantal, omvang: r.omvang,
-               draairamen: r.draairamen, deuren: r.deuren,
+               draairamen: r.draairamen, deuren: r.deuren, omkader: r.omkader,
                plek: r.plek, delen: r.delen, aantal_fotos: r.fotos.length };
     });
     d.totaal_elementen = totaalElementen();

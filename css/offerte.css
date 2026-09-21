@@ -236,7 +236,12 @@
   flex:1;min-width:0;font-family:var(--kop);font-weight:600;font-size:.92rem;color:var(--ink);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
+/* Een blok dat nog niet af is, zegt dat zelf in zijn kop. */
 .regel-samenvatting[data-leeg="ja"]{color:var(--sub);font-weight:500;font-style:italic;}
+.werkregel:has(.regel-samenvatting[data-leeg="ja"]) .werkregel-balk{
+  background:var(--rust-wash);
+}
+.werkregel:has(.regel-samenvatting[data-leeg="ja"]) .regel-nr{background:var(--rust);}
 .regel-weg{
   width:30px;height:30px;border-radius:50%;border:0;background:none;flex-shrink:0;
   color:var(--sub);font-size:1.3rem;line-height:1;cursor:pointer;
