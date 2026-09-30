@@ -1,0 +1,97 @@
+{
+  "_uitleg": [
+    "Het assortiment en de VERKOOPprijzen van kozijnhorren.nl. De winkel, de kassa",
+    "en de mails lezen allemaal hieruit. Na een wijziging:",
+    "python3 kozijnhorren/build.py, en deployen.",
+    "",
+    "Eén soort hor, de inklemhor, in twee uitvoeringen: basis en luxe. Meten gaat",
+    "voor allebei precies hetzelfde. Bewust weinig keuzes: de klant kiest alleen",
+    "de uitvoering, de kleur, de maat en het aantal.",
+    "",
+    "Prijzen inclusief 21% btw, per stuk, in hele euro's. Rijen zijn breedtes,",
+    "kolommen hoogtes: zoek de eerste stap die groter of gelijk is aan de maat.",
+    "Inkoopprijzen staan hier NIET in: de repo is openbaar. Zie prijslijst.py.",
+    "",
+    "voorbeeldprijzen: zolang dit true is, staat er een proefbalk op de winkel en",
+    "weigert de kassa een echte (live) Mollie-betaling."
+  ],
+  "voorbeeldprijzen": true,
+  "btw": 0.21,
+
+  "maatgrenzen": {
+    "breedte": {"min": 300, "max": 1500},
+    "hoogte": {"min": 300, "max": 2200},
+    "max_oppervlak_m2": 3.0,
+    "middenregel_vanaf_hoogte": 1500,
+    "max_uitsteek_mm": 19,
+    "min_aanslag_mm": 13
+  },
+
+  "producten": {
+    "basis": {
+      "naam": "Kozijnhor Basis",
+      "kort": "De inklemhor die past. Zwart gaas, in de vier meest gekozen kozijnkleuren.",
+      "gaas": "Zwart glasvezelgaas",
+      "gaas_uitleg": "Zwart gaas valt het minst op: je kijkt er dwars doorheen.",
+      "kleuren": "standaard",
+      "kenmerken": ["Zwart gaas", "4 kozijnkleuren", "Pasgarantie"],
+      "prijstabel": {
+        "breedtes": [500, 750, 1000, 1250, 1500],
+        "hoogtes": [750, 1000, 1250, 1500, 1750, 2000, 2200],
+        "prijzen": [
+          [76, 81, 87, 92, 97, 102, 107],
+          [84, 92, 100, 108, 116, 123, 130],
+          [92, 102, 113, 123, 134, 144, 153],
+          [100, 113, 126, 139, 152, 165, 176],
+          [108, 123, 139, 155, 171, 186, 199]
+        ]
+      }
+    },
+    "luxe": {
+      "naam": "Kozijnhor Luxe",
+      "kort": "Dezelfde hor, met bijna onzichtbaar gaas en in elke kleur die je kozijn heeft.",
+      "gaas": "Bijna onzichtbaar premiumgaas",
+      "gaas_uitleg": "Fijner en dunner gaas: je ziet het nauwelijks, en er komt meer frisse lucht door.",
+      "kleuren": "alle",
+      "kenmerken": ["Bijna onzichtbaar gaas", "Elke RAL-kleur", "Pasgarantie"],
+      "prijstabel": {
+        "breedtes": [500, 750, 1000, 1250, 1500],
+        "hoogtes": [750, 1000, 1250, 1500, 1750, 2000, 2200],
+        "prijzen": [
+          [111, 116, 122, 127, 132, 137, 142],
+          [119, 127, 135, 143, 151, 158, 165],
+          [127, 137, 148, 158, 169, 179, 188],
+          [135, 148, 161, 174, 187, 200, 211],
+          [143, 158, 174, 190, 206, 221, 234]
+        ]
+      }
+    }
+  },
+
+  "kleuren": {
+    "standaard": [
+      {"code": "9016", "naam": "Wit", "hex": "#f1f0ea"},
+      {"code": "9001", "naam": "Crèmewit", "hex": "#e9e0c9"},
+      {"code": "7016", "naam": "Antracietgrijs", "hex": "#383e42"},
+      {"code": "9005", "naam": "Zwart", "hex": "#101113"}
+    ],
+    "ral_extra_werkdagen": 10
+  },
+
+  "pasgarantie": {
+    "aan": true,
+    "melden_binnen_dagen": 14
+  },
+
+  "levering": {
+    "verzendkosten": 0,
+    "werkdagen": [7, 12],
+    "hoogseizoen_maanden": [4, 5, 6, 7],
+    "hoogseizoen_extra_werkdagen": 5,
+    "wintermaanden": [11, 12, 1, 2],
+    "voorjaar_vanaf": "03-02"
+  },
+
+  "max_regels": 30,
+  "max_aantal_per_regel": 20
+}

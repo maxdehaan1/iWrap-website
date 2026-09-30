@@ -1,0 +1,95 @@
+<!-- {
+  "title": "De kozijnhor: inklemhor op maat, Basis of Luxe | Kozijnhorren",
+  "description": "Inklemhor op maat voor draaikiepramen, zonder boren. Basis met zwart gaas in vier kleuren, of Luxe met bijna onzichtbaar gaas in elke kleur. Alle prijzen per maat.",
+  "ogtitle": "De kozijnhor: Basis of Luxe",
+  "product": true
+} -->
+
+<section class="pagina-kop">
+  <div class="breed twee-kolom">
+    <div>
+      <p class="kruimels"><a href="/">Home</a> / De hor</p>
+      <h1>Eén hor, gekozen omdat hij altijd past</h1>
+      <p class="lead">We verkopen één soort hor: de inklemhor. Niet omdat er niets anders is, maar omdat
+      dit de hor is die het meest vergeeft als je zelf meet.</p>
+    </div>
+    <div class="productkaart" style="pointer-events:none;background:var(--wit)">
+      <div class="beeld">{{svg.hor:kop}}</div>
+    </div>
+  </div>
+</section>
+
+<section class="blok">
+  <div class="breed twee-kolom">
+    <div>
+      <h2>Waarom deze hor</h2>
+    </div>
+    <div class="tekst">
+      <p>Een inklemhor zit <strong>ín de opening van je kozijn</strong>, waar het raam in dichtvalt. Aan de
+      zijkanten zitten veerclips die hem tegen het kozijn klemmen. Die clips vangen een paar millimeter
+      verschil op. Meet je een millimeter of twee anders dan een ander zou doen, dan past hij nog steeds.</p>
+      <p>Er is ook maar <strong>één maat</strong> nodig: de breedte en de hoogte van die opening. Geen
+      klemdiepte, geen profielmaat, geen keuze uit montagesets. Minder vragen betekent minder kans op een
+      fout.</p>
+      <p>En hij werkt ook als er een ventilatierooster of een lekdorpel op je raam zit, zolang die niet meer
+      dan {{maat.uitsteek}} mm uitsteekt. Dat is bij de meeste ramen zo.</p>
+      <ul class="vinklijst">
+        <li>Zonder boren of schroeven: geen gaten in je kozijn</li>
+        <li>Je raam draait en kiept gewoon achter de hor langs</li>
+        <li>In de herfst haal je hem er met het treklipje in een paar seconden uit</li>
+        <li>Van {{maat.breedte_min}} tot {{maat.breedte_max}} cm breed en tot {{maat.hoogte_max}} cm hoog, vanaf {{maat.middenregel}} cm hoog met een middenregel</li>
+      </ul>
+      <div class="tip">
+        <h3>En past hij toch niet?</h3>
+        <p>Dan maken we een nieuwe. Dat is de <a href="/levering-en-retour#pasgarantie">pasgarantie</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="blok blok-beige" id="vergelijk">
+  <div class="breed">
+    <div class="sectiekop"><div><h2>Basis of Luxe?</h2><p>Dezelfde hor, dezelfde pasvorm, hetzelfde meten.
+    Het verschil zit in het gaas en in de kleuren.</p></div></div>
+    <div class="productkaarten" style="margin-bottom:28px">
+      <a class="productkaart" href="/bestellen?uitvoering=basis">
+        <div class="beeld">{{svg.hor:vbasis}}</div>
+        <div class="tekst"><h3>Kozijnhor Basis</h3><p class="prijs">Vanaf {{prijs.vanaf}}</p></div>
+        <div class="strook">{{icoon.meter}}<div><b>{{basis.gaas}}</b><span>{{basis.gaas_uitleg}}</span></div></div>
+      </a>
+      <a class="productkaart luxe" href="/bestellen?uitvoering=luxe">
+        <div class="beeld">{{svg.hor:vluxe}}</div>
+        <div class="tekst"><h3>Kozijnhor Luxe</h3><p class="prijs">Vanaf {{prijs.luxe_vanaf}}</p></div>
+        <div class="strook">{{icoon.kleur}}<div><b>{{luxe.gaas}}</b><span>{{luxe.gaas_uitleg}}</span></div></div>
+      </a>
+    </div>
+    <div class="tabel-wrap">
+      <table class="vergelijk-tabel">
+        <thead><tr><th></th><th>Basis</th><th>Luxe</th></tr></thead>
+        <tbody>
+          <tr><td>Pasvorm en meten</td><td>Hetzelfde</td><td>Hetzelfde</td></tr>
+          <tr><td>Gaas</td><td>Zwart glasvezelgaas</td><td>Bijna onzichtbaar premiumgaas</td></tr>
+          <tr><td>Uitzicht en frisse lucht</td><td>Goed</td><td>Beter: fijner en dunner gaas</td></tr>
+          <tr><td>Kleuren</td><td>Wit, crème, antraciet, zwart</td><td>Elke RAL-kleur</td></tr>
+          <tr><td>Pasgarantie</td><td>&#10003;</td><td>&#10003;</td></tr>
+          <tr><td>Vanaf</td><td>{{prijs.vanaf}}</td><td>{{prijs.luxe_vanaf}}</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Twijfel je? Heeft je kozijn een van de vier standaardkleuren, dan is de Basis prima. Heeft het een
+    andere kleur, of wil je de hor zo min mogelijk zien, kies dan de Luxe.</p>
+  </div>
+</section>
+
+<section class="blok" id="prijzen">
+  <div class="breed">
+    <div class="sectiekop"><div><h2>Alle prijzen</h2><p>Zoek de kolom en de rij waar je maat onder valt.
+    Of vul je maat in bij bestellen, dan zie je het meteen.</p></div>
+    <a class="knop knop-koraal" href="/bestellen">Bereken je prijs</a></div>
+    {{prijsvoorbeelden}}
+    <h3 style="margin-top:34px">Kozijnhor Basis</h3>
+    {{prijstabel.basis}}
+    <h3>Kozijnhor Luxe</h3>
+    {{prijstabel.luxe}}
+  </div>
+</section>

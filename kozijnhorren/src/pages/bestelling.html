@@ -1,0 +1,22 @@
+<!-- {
+  "title": "Je bestelling | Kozijnhorren",
+  "description": "De status van je bestelling.",
+  "noindex": true,
+  "js": ["bestelling"]
+} -->
+
+<section class="blok">
+  <div class="smal">
+    <div class="statuskaart" id="status">
+      <p class="melding">Je bestelling wordt opgehaald&hellip;</p>
+    </div>
+    <div class="samenvatting" id="details" hidden style="position:static;margin-top:18px;background:var(--wit);border:1px solid var(--lijn)">
+      <h2>Wat je besteld hebt</h2>
+      <ul class="mand-lijst" id="bestellijst"></ul>
+      <div class="regel-totaal groot"><span>Totaal, incl. btw</span><b id="totaal"></b></div>
+      <p class="mand-levertijd" id="adres" style="margin-top:12px"></p>
+    </div>
+    <p style="text-align:center;margin-top:22px;color:var(--sub)">Vragen? <a href="{{whatsapp}}">WhatsApp</a> of
+    <a href="mailto:{{winkel.email}}">{{winkel.email}}</a>.</p>
+  </div>
+</section>

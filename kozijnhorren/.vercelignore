@@ -1,0 +1,7 @@
+# De horrenwinkel is een statische site; alleen de gebouwde HTML, css, js en
+# afbeeldingen hoeven online. De bron en de generator niet.
+src
+build.py
+serve.py
+README.md
+__pycache__

@@ -1,0 +1,74 @@
+{
+  "_uitleg": [
+    "De zes onderdelen van de kozijncheck. De Max-modus, het rapport en de",
+    "uitlegpagina iwrap.nl/kozijncheck lezen allemaal hieruit, dus een tekst",
+    "aanpassen is hier één keer doen en daarna python3 build.py.",
+    "",
+    "advies: de standaardzin die de klant ziet bij oranje of rood. Max kan er per",
+    "klant een eigen notitie onder zetten."
+  ],
+  "disclaimer": "Visuele controle tijdens onze werkzaamheden, geen keuring en geen garantie.",
+  "onderdelen": [
+    {
+      "sleutel": "rubbers",
+      "naam": "Rubbers",
+      "kijkt": "Veerkracht, scheurtjes en of ze goed aansluiten",
+      "groen": "Soepel en sluitend",
+      "oranje": "Iets verhard, sluit nog",
+      "rood": "Gescheurd, los of tocht",
+      "advies_oranje": "De rubbers zijn wat harder geworden, maar sluiten nog. Over een paar jaar is vervangen verstandig; tot die tijd hoeft er niets.",
+      "advies_rood": "Er zijn rubbers gescheurd of los, en daar komt tocht of water langs. Nieuwe rubbers lossen dat op en zijn meestal snel vervangen."
+    },
+    {
+      "sleutel": "kitwerk",
+      "naam": "Kitwerk",
+      "kijkt": "De aansluiting van het kozijn op de muur en op het glas",
+      "groen": "Elastisch en hecht goed",
+      "oranje": "Verkleurd of licht gekrompen",
+      "rood": "Gescheurd of open naden",
+      "advies_oranje": "De kit is verkleurd of iets gekrompen, maar sluit nog af. Houd het in de gaten; over een paar jaar is opnieuw kitten logisch.",
+      "advies_rood": "Er zitten scheuren of open naden in de kit. Daar kan water achter komen. Laat dit opnieuw afkitten voordat er schade ontstaat."
+    },
+    {
+      "sleutel": "glas",
+      "naam": "Glas",
+      "kijkt": "Beschadigingen en condens tussen de ruiten",
+      "groen": "Helder en heel",
+      "oranje": "Lichte krassen",
+      "rood": "Condens tussen de ruiten of een barst",
+      "advies_oranje": "Er zitten wat lichte krassen in het glas. Dat is cosmetisch; de ruit isoleert gewoon.",
+      "advies_rood": "Condens tussen de ruiten betekent dat de ruit lek is en minder isoleert. Dat is niet te repareren: alleen die ruit vervangen lost het op. Een barst moet sowieso vervangen worden."
+    },
+    {
+      "sleutel": "beslag",
+      "naam": "Hang- en sluitwerk",
+      "kijkt": "Sluiten, speling en roest",
+      "groen": "Sluit soepel",
+      "oranje": "Stroef, moet worden afgesteld",
+      "rood": "Sluit niet goed",
+      "advies_oranje": "Een of meer ramen of deuren lopen wat stroef. Afstellen en smeren is meestal genoeg.",
+      "advies_rood": "Een raam of deur sluit niet goed meer. Dat kost warmte en is minder inbraakveilig. Laat het afstellen, of het beslag vervangen als afstellen niet helpt."
+    },
+    {
+      "sleutel": "horren",
+      "naam": "Horren",
+      "kijkt": "Pasvorm, het gaas, en de kleur naast het nieuwe kozijn",
+      "groen": "Past en oogt goed",
+      "oranje": "Verouderd of verkleurd",
+      "rood": "Kapot, past niet of ontbreekt",
+      "advies_oranje": "De horren doen het nog, maar vallen naast het nieuwe kozijn uit de toon. Nieuwe horren in de kleur van je kozijn maken het af.",
+      "advies_rood": "De horren zijn kapot, passen niet meer of ontbreken. Nieuwe horren op maat, in de kleur van je kozijn, lossen dat op."
+    },
+    {
+      "sleutel": "rolluiken",
+      "naam": "Rolluiken",
+      "optioneel": true,
+      "kijkt": "Werking en lamellen",
+      "groen": "Werkt goed",
+      "oranje": "Loopt zwaar",
+      "rood": "Defect",
+      "advies_oranje": "Een rolluik loopt zwaar. Vaak helpt het schoonmaken en smeren van de geleiders al.",
+      "advies_rood": "Een rolluik werkt niet (goed) meer. Dat is werk voor een rolluikspecialist."
+    }
+  ]
+}

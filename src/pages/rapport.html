@@ -1,0 +1,104 @@
+<!-- {
+  "title": "Je opleverrapport | iWrap",
+  "description": "Je persoonlijke opleverrapport van iWrap: wat we gedaan hebben, je garantie en de kozijncheck.",
+  "noindex": true,
+  "kaal": "Opleverrapport",
+  "bodyclass": "rapport-body",
+  "css": ["rapport"],
+  "js": ["rapport"]
+} -->
+
+<div class="rapport-pagina" data-folie-jaren="{{feit.garantie_folie_jaren}}" data-montage-jaren="{{feit.garantie_montage_jaren}}"
+     data-whatsapp="{{bedrijf.whatsapp}}" data-reviews="{{bedrijf.reviews_url}}">
+  <div class="wrap-smal">
+
+    <div id="rapport-laden" class="rapport-melding" role="status">
+      <span class="laadbolletje" aria-hidden="true"></span> Je rapport wordt geladen&hellip;
+    </div>
+
+    <div id="rapport-fout" class="rapport-melding" hidden>
+      <h1>Dit rapport kunnen we niet vinden</h1>
+      <p>Controleer of de link helemaal goed is overgenomen. Komt het niet goed? Stuur ons even
+      een berichtje, dan sturen we hem opnieuw.</p>
+      <p><a class="knop knop-tweede" href="https://wa.me/{{bedrijf.whatsapp}}">WhatsApp iWrap</a></p>
+    </div>
+
+    <article id="rapport" hidden>
+      <p class="concept-balk" id="concept-balk" hidden>Concept: de klant ziet dit pas als je het rapport klaarzet.</p>
+
+      <header class="rapport-kop">
+        <p class="opschrift">Opleverrapport en kozijncheck</p>
+        <h1 data-veld="adres"></h1>
+        <p class="rapport-meta"><span data-veld="naam"></span><span data-veld="datum-zin"></span></p>
+        <div class="knoprij rapport-acties">
+          <button type="button" class="knop knop-tweede" id="bewaar-pdf">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg>
+            Bewaar als PDF
+          </button>
+        </div>
+      </header>
+
+      <section class="rapport-blok" id="blok-werk">
+        <h2>Wat we gedaan hebben</h2>
+        <p data-veld="werk" class="werk-tekst"></p>
+        <dl class="rapport-feiten">
+          <div id="rij-folie"><dt>Folie</dt><dd data-veld="folie"></dd></div>
+          <div><dt>Opgeleverd</dt><dd data-veld="datum"></dd></div>
+          <div><dt>Garantie folie</dt><dd data-veld="garantie-folie"></dd></div>
+          <div><dt>Garantie montage</dt><dd data-veld="garantie-montage"></dd></div>
+        </dl>
+        <p class="bijschrift">Bewaar dit rapport: het is je bewijs van oplevering. Verkoop je ooit
+        je huis, dan zie je hier wanneer en met welke folie de kozijnen hersteld zijn.</p>
+      </section>
+
+      <section class="rapport-blok" id="blok-check">
+        <h2>Kozijncheck</h2>
+        <p class="check-samenvatting" data-veld="samenvatting"></p>
+        <ul class="checklijst" id="checklijst"></ul>
+        <p class="rk-disclaimer" data-veld="disclaimer"></p>
+      </section>
+
+      <section class="rapport-blok horren-blok" id="blok-horren" hidden>
+        <p class="opschrift">Tip</p>
+        <h2>Nieuwe horren in de kleur van je kozijn</h2>
+        <p>Je horren vallen naast je herstelde kozijnen uit de toon. Op <strong data-veld="winkel-domein"></strong>
+        bestel je inklemhorren op maat <span data-veld="kleur-zin"></span>. Je vult zelf de breedte
+        en de hoogte in en ziet meteen de prijs.</p>
+        <div class="kleurtip" id="kleurtip" hidden>
+          <span class="kleurstaal" id="kleurtip-staal" aria-hidden="true"></span>
+          <span data-veld="kleurtip"></span>
+        </div>
+        <a class="knop knop-primair" id="bestel-knop" href="#">Bekijk horren in jouw kleur</a>
+        <ul class="horren-beloftes">
+          <li>Pasgarantie: past er een niet, dan krijg je een nieuwe</li>
+          <li>Plaatsen zonder boren of schroeven</li>
+          <li>Rechtstreeks thuisbezorgd</li>
+        </ul>
+      </section>
+
+      <section class="rapport-blok" id="blok-onderhoud">
+        <h2>Zo blijft je folie mooi</h2>
+        <ul class="vinklijst">
+          <li>Was je kozijnen twee keer per jaar met lauw water, een zachte doek of spons en een
+          scheutje milde zeep, zoals afwasmiddel.</li>
+          <li>Gebruik geen schuurmiddel, schuursponsje, oplosmiddel (aceton, thinner, terpentine)
+          of agressieve reiniger met ammoniak of chloor.</li>
+          <li>Richt een hogedrukreiniger niet van dichtbij op de randen van de folie.</li>
+          <li>Plak geen tape of stickers op de folie.</li>
+          <li>Houd de afwateringsgaatjes in de onderdorpels vrij, zodat regenwater weg kan.</li>
+        </ul>
+      </section>
+
+      <section class="rapport-blok rapport-slot" id="blok-review">
+        <h2>Tevreden?</h2>
+        <p>Dan helpt een Google-review ons enorm. Wij zijn een klein bedrijf, en de meeste
+        klanten vinden ons via wat anderen over ons schrijven.</p>
+        <div class="knoprij">
+          <a class="knop knop-primair" href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener">Schrijf een review</a>
+          <a class="knop knop-tweede" href="https://wa.me/{{bedrijf.whatsapp}}" id="vraag-knop">Een vraag over je rapport</a>
+        </div>
+        <p class="bijschrift">iWrap &middot; {{bedrijf.straat}}, {{bedrijf.plaats}} &middot; {{bedrijf.email}} &middot; {{bedrijf.telefoon}}</p>
+      </section>
+    </article>
+  </div>
+</div>

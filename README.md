@@ -102,15 +102,30 @@ voor-kozijnbedrijven.html Het verwijzingsmodel                  (gegenereerd)
 over-iwrap.html           (gegenereerd)
 contact.html              (gegenereerd)
 kozijnmerken/             Hub + 8 merkpagina's                  (gegenereerd)
+kozijncheck.html          Uitleg van de gratis kozijncheck      (gegenereerd)
+rapport.html              Het opleverrapport, op /r/<id>        (gegenereerd, noindex)
+max.html                  De Max-modus, op /max                 (gegenereerd, noindex)
 404.html                  (gegenereerd)
 
 css/style.css             Gedeeld: kleuren, typografie, knoppen, kaarten, header, footer
 css/home.css              Alleen de homepage
 css/content.css           Tekstpagina's
 css/offerte.css           Alleen het formulier
+css/rapport.css           Het rapport en de kozijncheck-pagina
+css/max.css               De Max-modus
 js/main.js                Menu, voor/na-schuif, scroll-animaties
 js/offerte.js             Het stappenformulier
+js/rapport.js             Vult het rapport vanuit de API
+js/max.js                 De Max-modus
+js/vendor/                QR-code-bibliotheek (MIT), ongewijzigd
 images/                   Elke foto als webp op drie breedtes, met een jpg als terugval
+
+api/index.py              Vercel-ingang van de achterkant
+backend/                  De achterkant: rapporten, kassa, mails (zie hieronder)
+backend/data/             Kozijncheck, horren, prijzen, kleuren, winkelgegevens
+tests/test_backend.py     Loopt de hele stroom door, van klus tot "past alles?"
+prijslijst.py             Inkoopprijzen + marge -> verkoopprijzen voor de winkel
+kozijnhorren/             kozijnhorren.nl: eigen site, eigen Vercel-project
 ```
 
 ## Huisstijl
@@ -221,6 +236,111 @@ belandden. Kies bij nieuwe code een naam die nergens anders voorkomt.
 controleert of alle strings netjes afgesloten zijn (die fout heeft de site een keer
 stilgelegd), maar een typefout in een functienaam merk je alleen door het te draaien.
 
+## Kozijncheck, Max-modus en het opleverrapport
+
+Uitgewerkt uit het productplan "Horren op maat + kozijncheck" (september 2026). Bij elke
+klus vult Max op zijn telefoon in tien minuten een kozijncheck in. De klant krijgt bij de
+oplevering een persoonlijk rapport via een link of een QR-code.
+
+| Waar | Voor wie | Wat |
+|---|---|---|
+| `/kozijncheck` | iedereen | Uitleg: zes onderdelen, stoplicht, voorbeeldrapport. Extra reden om voor iWrap te kiezen. |
+| `/max` | Max | Invulscherm voor op locatie, plus de bestellingen van kozijnhorren.nl. Wachtwoord. |
+| `/r/<id>` | de klant | Het opleverrapport. Niet vindbaar in Google, alleen met de link. |
+
+**De zes onderdelen** (rubbers, kitwerk, glas, hang- en sluitwerk, horren, rolluiken) met
+hun groen/oranje/rood en de adviestekst staan in `backend/data/kozijncheck.json`. De
+Max-modus, het rapport én de uitlegpagina lezen daaruit. Een tekst aanpassen is daar één
+keer doen en `python3 build.py`.
+
+**Het rapport is meer dan de check.** Het is ook het opleverbewijs: wat er gedaan is,
+welke folie, de opleverdatum en tot wanneer de garantie loopt (de termijnen komen uit
+`FEITEN` in `build.py`). Daarnaast onderhoudstips voor de folie, een reviewknop (het
+moment na de oplevering is het beste moment om een review te vragen) en, als de horren op
+oranje of rood staan, een tip met een link naar kozijnhorren.nl. In die link zit de
+horkleur die bij de folie hoort (`/bestellen?kleur=6009`, en bij een niet-standaardkleur
+meteen de Luxe). De klant vult daar zelf de maten in; horren worden niet meer in de
+Max-modus ingemeten. Het rapport noemt geen prijzen.
+
+**Eerlijk invullen.** Bij de meeste klanten is bijna alles groen, en dat moet het rapport
+ook laten zien; juist daardoor wordt een rood advies geloofd. De knop "Rest op groen" is
+daarom een snelkoppeling voor wat je bekeken hebt, geen standaard.
+
+### Zo werkt de Max-modus op locatie
+
+1. `/max`, inloggen (de telefoon onthoudt het 120 dagen). **Nieuwe klus.**
+2. Klant, oplevering (datum, wat gedaan, welke folie). De folie bepaalt ook de horkleur in
+   de link naar kozijnhorren.nl, via de kleurentabel in `backend/data/folies.json`.
+3. Kozijncheck: één tik per onderdeel. Bij oranje of rood een notitie en een foto.
+4. **Rapport klaarzetten.** Daarna: laat de klant de QR-code scannen, of stuur de link
+   via WhatsApp of mail.
+
+Alles slaat vanzelf op. Zonder bereik bewaart de telefoon het en gaat het later alsnog
+naar de server; de balk bovenin zegt wat er aan de hand is.
+
+Wil je bij de klant meteen horren bestellen, doe dat dan gewoon op kozijnhorren.nl: vul
+de maten in, en reken samen met de klant af of stuur de winkelmand via "Bestelling
+bewaren of doorsturen" als link naar de klant. De bestelling verschijnt daarna in de
+Max-modus onder "Kozijnhorren".
+
+## De achterkant (`api/` en `backend/`)
+
+Eén kleine Python-app zonder externe pakketten, voor iwrap.nl én kozijnhorren.nl:
+rapporten, foto's, prijsberekening, bestellingen, betalen (Mollie), mails en een
+dagelijkse taak voor herinneringen. Alle routes staan bovenin `backend/app.py`.
+
+- **Lokaal** hangt `serve.py` hem onder `/api`. Zonder instellingen werkt alles: opslag
+  in `.data/`, mails als HTML in `.data/uitbak/`, betalen via een testkassa, Max-modus
+  op wachtwoord `test`. Lokale geheimen kun je in een bestand `.env` zetten.
+- **Op Vercel** draait hij als functie (`api/index.py`) en slaat hij op in Upstash Redis.
+- **Testen:** `python3 tests/test_backend.py` loopt de hele stroom door, van klus tot
+  "past alles?", tegen een lege tijdelijke map.
+
+Belangrijke keuzes:
+
+- De kassa rekent de prijs altijd zelf opnieuw uit; wat de browser zegt telt niet.
+- Betaalde bestellingen gaan **niet** vanzelf naar de leverancier zolang
+  `LEVERANCIER_AUTOMATISCH` op `nee` staat. Max drukt op "Naar leverancier". Zet het pas
+  op `ja` als de eerste twintig bestellingen goed gegaan zijn.
+- Zolang er geen leverancier gekozen is, gaat de leveranciersmail naar Max zelf.
+- Automatische mails: bevestiging na betaling, "onderweg" als Max op verzonden zet, en
+  "past alles?" vijf dagen later.
+
+## Livegang: in deze volgorde
+
+Nu draait alles lokaal. Om het echt te gebruiken:
+
+1. **iwrap.nl naar Vercel** (stond al op de lijst). De API moet op www.iwrap.nl bereikbaar
+   zijn: de `*.vercel.app`-adressen zitten achter de Vercel-login, en daar kunnen de
+   winkel, Mollie en de klant niet bij.
+2. **Opslag:** Vercel > project iwrap-website > Storage > Upstash for Redis (gratis
+   laag) > koppelen. Dat zet `KV_REST_API_URL` en `KV_REST_API_TOKEN` vanzelf.
+3. **Omgevingsvariabelen** in Vercel (Settings > Environment Variables):
+
+   | Naam | Wat |
+   |---|---|
+   | `MAX_WACHTWOORD` | Je wachtwoord voor de Max-modus |
+   | `GEHEIM` | Een lange willekeurige tekst (40+ tekens); ondertekent de inlog |
+   | `CRON_SECRET` | Een willekeurige tekst; Vercel stuurt hem mee met de dagelijkse taak |
+   | `MOLLIE_API_KEY` | Eerst de `test_`-sleutel, later de `live_`-sleutel |
+   | `MAIL_WEBHOOK_URL` | Het webhookadres van het Make-scenario (zie hieronder) |
+   | `LEVERANCIER_NAAM`, `LEVERANCIER_EMAIL` | Zodra je een leverancier hebt |
+   | `LEVERANCIER_AUTOMATISCH` | `nee` (standaard) of `ja` |
+   | `SHOP_URL` | Het adres van de winkel: `https://kozijnhorren.nl` |
+
+4. **Mail via Make.** Eén scenario: *Webhooks > Custom webhook* > *Microsoft 365 Email >
+   Send an email*. Vul in: To = `aan`, Subject = `onderwerp`, Body type HTML, Content =
+   `html`, Reply-To = `antwoord_aan`. Dan komen de mails uit je eigen Outlook, en staan
+   ze in je verzonden items. De site maakt de hele mail zelf; Make verstuurt alleen.
+5. **Mollie** in testmodus, en één keer de hele stroom doorlopen: klus in de Max-modus,
+   rapport openen op je telefoon, via de tip naar kozijnhorren.nl, bestellen,
+   testbetaling, mail, Naar leverancier, Verzonden.
+6. **kozijnhorren.nl online** als tweede Vercel-project: zie `kozijnhorren/README.md`.
+7. **Echte prijzen** (`prijslijst.py`), dan `voorbeeldprijzen` op `false`, dan de
+   `live_`-sleutel van Mollie.
+8. **Voorwaarden en privacy** laten nakijken (staan als concept in `kozijnhorren/src/pages/`),
+   en KvK en btw-id invullen in `build.py` én `backend/data/winkel.json`.
+
 ## Reviews
 
 Score, aantal en de reviewteksten staan in **`reviews.json`** en nergens anders. Header,
@@ -327,6 +447,10 @@ hierheen. Overleg met Max of die er daar ook af moeten.
 - **kozijnwrap.nl** — vangt wie nog niet weet dat folieherstel bestaat, en doet de
   diagnose herstellen-of-vervangen. Stuurt door hierheen.
 - **houtnerffolie.nl** — de diepte over de folie zelf: decors, kleuren, specificaties.
+- **kozijnhorren.nl** (`kozijnhorren/`) — verkoopt horren in de kleur van het kozijn. Een
+  zelfstandige winkel met prijzen, want het is een product met een vaste prijs per maat.
+  De iWrap-klant komt er via de tip in het opleverrapport; de achterkant deelt hij met deze
+  site. De kleurentabel folie > horkleur staat dáár, niet hier.
 
 Bouw op deze site dus géén kleurenoverzicht en géén keuzehulp — dan gaan de drie sites
 met elkaar concurreren in plaats van elkaar aanvullen. Waar het onderwerp langskomt,

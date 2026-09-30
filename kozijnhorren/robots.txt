@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /afrekenen
+Disallow: /bestelling
+
+Sitemap: https://kozijnhorren.nl/sitemap.xml

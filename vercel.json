@@ -138,5 +138,27 @@
       "destination": "/voorbeelden",
       "permanent": true
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/r/:id",
+      "destination": "/rapport"
+    },
+    {
+      "source": "/api/:pad*",
+      "destination": "/api/index?pad=:pad*"
+    }
+  ],
+  "functions": {
+    "api/index.py": {
+      "maxDuration": 30,
+      "excludeFiles": "{images/**,kozijnhorren/**,src/**,css/**,js/**,kozijnmerken/**,tests/**,.data/**,prive/**,*.html,*.xml,*.md}"
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/cron",
+      "schedule": "0 7 * * *"
+    }
   ]
 }

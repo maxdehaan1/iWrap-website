@@ -1,0 +1,64 @@
+<!-- {
+  "title": "Afrekenen | Kozijnhorren",
+  "description": "Je gegevens en betalen met iDEAL.",
+  "noindex": true,
+  "zonder_vertrouwen": true,
+  "bodyclass": "afrekenpagina",
+  "js": ["afrekenen"]
+} -->
+
+<div class="breed">
+  <div class="afreken">
+    <form id="afrekenen" novalidate>
+      <p class="kruimels"><a href="/bestellen">Terug naar bestellen</a></p>
+      <h1>Afrekenen</h1>
+      <ul class="foutlijst" id="fouten" hidden></ul>
+
+      <h2>Waar bezorgen we je horren?</h2>
+      <div class="velden">
+        <div class="veld vol"><label for="naam">Naam</label><input id="naam" type="text" autocomplete="name" required></div>
+        <div class="veld vol"><label for="straat">Straat en huisnummer</label><input id="straat" type="text" autocomplete="street-address" required></div>
+        <div class="veld"><label for="postcode">Postcode</label><input id="postcode" type="text" autocomplete="postal-code" required maxlength="7"></div>
+        <div class="veld"><label for="plaats">Plaats</label><input id="plaats" type="text" autocomplete="address-level2" required></div>
+        <div class="veld"><label for="email">E-mail</label><input id="email" type="email" autocomplete="email" required>
+          <p class="hulp">Voor je bevestiging.</p></div>
+        <div class="veld"><label for="telefoon">Telefoon</label><input id="telefoon" type="tel" autocomplete="tel" required>
+          <p class="hulp">Voor de bezorger.</p></div>
+      </div>
+      <div class="honing" aria-hidden="true"><label for="website">Laat dit veld leeg</label><input id="website" type="text" tabindex="-1" autocomplete="off"></div>
+
+      <div id="lever-keuze" hidden>
+        <h2>Wanneer wil je ze hebben?</h2>
+        <div class="leverkeuze">
+          <label><input type="radio" name="voorjaar" value="nee" checked><span><b>Zo snel mogelijk</b><br><small id="lever-snel"></small></span></label>
+          <label><input type="radio" name="voorjaar" value="ja"><span><b>Begin maart</b><br><small>Je bestelt nu, ze komen als het muggenseizoen begint.</small></span></label>
+        </div>
+      </div>
+
+      <div class="akkoord">
+        <label><input type="checkbox" id="gemeten"><span>Ik heb gemeten zoals in de <a href="/meetinstructie" target="_blank">meetinstructie</a>. Past een hor toch niet, dan geldt de pasgarantie.</span></label>
+        <label><input type="checkbox" id="voorwaarden"><span>Ik ga akkoord met de <a href="/voorwaarden" target="_blank">voorwaarden</a>. Ik weet dat horren op maat niet retour kunnen.</span></label>
+      </div>
+
+      <button type="submit" class="knop knop-koraal knop-groot knop-vol" id="betaal" disabled>Betalen met iDEAL</button>
+      <p class="veilig">Je betaalt veilig via Mollie. Je bankgegevens zien wij niet.</p>
+    </form>
+
+    <aside class="samenvatting">
+      <h2>Je bestelling</h2>
+      <p class="melding" id="laden">Laden&hellip;</p>
+      <ul class="mand-lijst" id="overzicht"></ul>
+      <div id="totaal-blok" hidden>
+        <div class="regel-totaal"><span>Bezorgen</span><span id="verzend">Gratis</span></div>
+        <div class="regel-totaal"><span>Waarvan btw</span><span id="btw"></span></div>
+        <div class="regel-totaal groot"><span>Totaal</span><b id="totaal"></b></div>
+        <p class="mand-levertijd" id="levertijd" style="margin:10px 0 0"></p>
+      </div>
+      <ul class="beloftes" style="grid-template-columns:1fr;margin-top:18px">
+        <li>{{icoon.pas}}Pasgarantie: past hij niet, dan maken we een nieuwe</li>
+        <li>{{icoon.bus}}Gratis thuisbezorgd</li>
+      </ul>
+    </aside>
+  </div>
+</div>
+<div class="blok" style="padding:40px 0 0"></div>

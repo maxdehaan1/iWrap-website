@@ -1,0 +1,140 @@
+/* ---------------------------------------------------------------------------
+   Max-modus. Gemaakt voor een telefoon op de steiger: grote tikvlakken (minstens
+   44px), één kolom, weinig tekst. Het stoplicht gebruikt dezelfde kleuren als
+   het rapport, zodat wat Max tikt er precies zo uitziet als wat de klant ziet.
+   --------------------------------------------------------------------------- */
+
+:root{--groen:#4f9a86;--oranje:#d08a1f;--rood:var(--rust);}
+
+.max-body{background:#efede8;}
+header.site.kaal .nav{padding-top:8px;padding-bottom:8px;}
+.kaal-label{font-family:var(--kop);font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);}
+
+.max-app{max-width:720px;margin:0 auto;padding:14px 12px 90px;font-size:16px;}
+.max-laden,.max-leeg{color:var(--sub);text-align:center;padding:30px 10px;}
+.max-fout{color:var(--rust);font-weight:500;}
+.max-voet{text-align:center;margin:26px 0 0;}
+
+.linkknop{background:none;border:0;padding:6px;color:var(--mint-ink);font:inherit;text-decoration:underline;cursor:pointer;}
+.linkknop.gevaar,.gevaar{color:var(--rust);}
+
+.max-kaart{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:18px 16px;margin:0 0 12px;box-shadow:0 1px 2px rgba(34,38,42,.05);}
+.max-kaart h2{font-size:1.12rem;margin:0 0 12px;}
+.max-kaart .uitleg{font-size:.88rem;color:var(--sub);margin:-6px 0 12px;}
+.kaart-kop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
+.kaart-kop h2{margin:0;}
+.knop-klein{font:600 .84rem var(--kop);background:var(--mint-wash);border:1px solid var(--mint);color:var(--ink);border-radius:999px;padding:9px 14px;cursor:pointer;min-height:40px;}
+.knop.breed{width:100%;}
+
+/* Inloggen */
+.max-login{max-width:380px;margin:40px auto;display:grid;gap:10px;}
+.max-login h1{font-size:1.5rem;margin:0;}
+.max-login p{margin:0 0 6px;color:var(--sub);}
+
+/* Velden */
+.velden{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;}
+.veld{display:flex;flex-direction:column;gap:4px;min-width:0;}
+.veld.breed{grid-column:1/-1;}
+.veld label,.label{font-size:.8rem;font-weight:600;color:var(--ink-soft);}
+.max-app input:not([type=checkbox]),.max-app select,.max-app textarea{
+  font:inherit;font-size:16px;/* 16px: anders zoomt iOS in */
+  width:100%;padding:11px 12px;border:1px solid var(--line-strong);border-radius:10px;background:#fff;color:var(--ink);min-height:46px;
+}
+.max-app textarea{min-height:0;resize:vertical;}
+.max-app input:focus,.max-app select:focus,.max-app textarea:focus{outline:none;border-color:var(--mint-ink);box-shadow:0 0 0 3px var(--mint-soft);}
+.max-app input.klein{width:auto;min-width:0;display:inline-block;padding:8px 10px;min-height:40px;}
+.max-app input.klein:not(.ral){width:64px;}
+.max-app input.ongeldig{border-color:var(--rust);background:var(--rust-wash);}
+
+/* Tabs en lijsten */
+.max-tabs{display:flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px;margin:0 0 12px;}
+.max-tabs a{flex:1;text-align:center;padding:11px 8px;border-radius:9px;font:600 .9rem var(--kop);color:var(--sub);text-decoration:none;}
+.max-tabs a.actief{background:var(--ink);color:#fff;}
+.max-nieuw{width:100%;margin:0 0 14px;padding:17px;font-size:1.02rem;}
+.max-lijst{display:grid;gap:8px;}
+.max-regel{display:grid;gap:3px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 15px;text-decoration:none;color:var(--ink);}
+.max-regel:active{background:var(--mint-wash);}
+.max-regel-titel{font-weight:600;}
+.max-regel-sub{font-size:.86rem;color:var(--sub);}
+.max-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+.chip{font-size:.72rem;font-weight:600;padding:3px 9px;border-radius:999px;background:#eceae5;color:var(--ink-soft);}
+.chip-groen{background:var(--mint-soft);color:var(--mint-deep);}
+.chip-oranje{background:#fbecd2;color:#7a4e0c;}
+.chip-rood{background:var(--rust-wash);color:var(--rust);}
+
+.max-status{background:#fff;border:1px solid var(--line);border-radius:12px;padding:0 14px;margin:0 0 12px;font-size:.88rem;}
+.max-status.let{border-color:#ecc988;background:#fffaf0;}
+.max-status summary{cursor:pointer;padding:11px 0;font-weight:600;}
+.max-status ul{margin:0 0 10px;padding-left:18px;color:#6d4a0f;}
+.max-status dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0 0 12px;}
+.max-status dt{color:var(--sub);}
+.max-status dd{margin:0;}
+
+/* Balk bovenin een klus */
+.max-balk{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:rgba(239,237,232,.94);backdrop-filter:blur(8px);margin:-14px -12px 12px;padding:10px 12px;border-bottom:1px solid var(--line);}
+.terug{font:600 .95rem var(--kop);color:var(--ink);text-decoration:none;padding:8px 4px;}
+.opslagstatus{font-size:.8rem;font-weight:600;padding:5px 10px;border-radius:999px;background:#fff;border:1px solid var(--line);color:var(--sub);}
+.opslagstatus.klaar::before{content:"\2713  ";color:var(--mint-ink);}
+.opslagstatus.offline{background:#fbecd2;border-color:#ecc988;color:#7a4e0c;}
+
+/* Kozijncheck */
+.check-rij{border-top:1px solid var(--line);padding:12px 0;display:grid;grid-template-columns:1fr auto;gap:8px 10px;align-items:center;}
+.check-rij:first-child{border-top:0;padding-top:0;}
+.check-naam b{display:block;font-weight:600;}
+.check-naam small{display:block;color:var(--sub);font-size:.8rem;line-height:1.35;}
+.stoplicht{display:flex;gap:6px;}
+.sl{min-width:52px;min-height:44px;border-radius:10px;border:2px solid var(--line-strong);background:#fff;font:600 .8rem var(--kop);color:var(--sub);cursor:pointer;padding:0 8px;}
+.sl-groen.aan{background:var(--groen);border-color:var(--groen);color:#fff;}
+.sl-oranje.aan{background:var(--oranje);border-color:var(--oranje);color:#fff;}
+.sl-rood.aan{background:var(--rood);border-color:var(--rood);color:#fff;}
+.sl-nvt.aan{background:#8b9197;border-color:#8b9197;color:#fff;}
+.check-detail{grid-column:1/-1;display:grid;gap:8px;}
+.check-hint{margin:0;font-size:.85rem;color:var(--ink-soft);font-style:italic;}
+@media (max-width:460px){
+  .check-rij{grid-template-columns:1fr;}
+  .stoplicht .sl{flex:1;}
+}
+
+/* Foto's */
+.foto-strook{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.foto-duim{position:relative;width:64px;height:64px;}
+.foto-duim img{width:64px;height:64px;object-fit:cover;border-radius:9px;border:1px solid var(--line);}
+.foto-duim button{position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:50%;border:0;background:var(--ink);color:#fff;font-size:1rem;line-height:1;cursor:pointer;}
+.foto-knop{min-height:44px;padding:0 14px;border-radius:10px;border:1px dashed var(--line-strong);background:#fafaf8;font:600 .85rem var(--kop);color:var(--ink-soft);cursor:pointer;}
+
+/* Afronden */
+.afronden{border-color:var(--mint);}
+.afvinklijst{list-style:none;padding:0;margin:0 0 14px;display:grid;gap:6px;font-size:.92rem;}
+.afvinklijst li{color:var(--sub);padding-left:26px;position:relative;}
+.afvinklijst li::before{content:"";position:absolute;left:0;top:4px;width:16px;height:16px;border-radius:50%;border:2px solid var(--line-strong);}
+.afvinklijst li.ok{color:var(--ink);}
+.afvinklijst li.ok::before{background:var(--groen);border-color:var(--groen);}
+.klaar-melding{font-weight:600;}
+.qr{background:#fff;padding:10px;border-radius:12px;width:min(260px,70vw);margin:6px auto;}
+.qr svg{display:block;width:100%;height:auto;}
+.link{text-align:center;font-size:.85rem;word-break:break-all;}
+.deelknoppen{display:grid;gap:8px;margin:12px 0;}
+.deelknoppen .knop{width:100%;}
+.qr-laag{position:fixed;inset:0;z-index:300;background:rgba(20,22,24,.92);display:grid;place-items:center;padding:20px;}
+.qr-groot{background:#fff;border-radius:22px;padding:22px;text-align:center;width:min(420px,92vw);}
+.qr-groot p{font:600 1.1rem var(--kop);margin:0 0 6px;}
+.qr-groot .qr{width:100%;padding:0;}
+.qr-groot small{color:var(--sub);}
+
+/* Bestellingen */
+.bestelregels{list-style:none;padding:0;margin:0 0 14px;border-top:1px solid var(--line);}
+.bestelregels li{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);font-size:.9rem;}
+.bestelregels li > span:nth-child(2){flex:1;}
+.bestelregels .prijs{font-weight:600;white-space:nowrap;}
+.bestel-acties{display:grid;gap:8px;}
+.verzend-rij{display:grid;grid-template-columns:1fr auto;gap:8px;}
+@media (max-width:460px){.verzend-rij{grid-template-columns:1fr;}}
+.leverancier-tekst{font:13px/1.5 Menlo,Consolas,monospace!important;margin:0 0 10px;}
+.historie{list-style:none;padding:0;margin:12px 0 0;font-size:.85rem;color:var(--ink-soft);display:grid;gap:4px;}
+.historie time{color:var(--sub);font-variant-numeric:tabular-nums;}
+
+/* Meldingen */
+.max-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:400;background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-size:.92rem;box-shadow:var(--shadow-lg);transition:opacity .4s ease,transform .4s ease;max-width:90vw;}
+.max-toast.fout{background:var(--rust);}
+.max-toast.weg{opacity:0;transform:translate(-50%,10px);}

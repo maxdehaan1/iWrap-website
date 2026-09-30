@@ -1,0 +1,25 @@
+{
+  "_uitleg": [
+    "De webwinkel kozijnhorren.nl. Naam, domein en contactgegevens staan alleen",
+    "hier. Na een wijziging: python3 kozijnhorren/build.py.",
+    "",
+    "email: zolang er geen info@kozijnhorren.nl bestaat, blijft dit info@iwrap.nl.",
+    "Maak in Microsoft 365 een alias info@kozijnhorren.nl aan en zet hem dan hier.",
+    "juridisch/adres: de winkel is een handelsnaam van iWrap VOF. Dat moet op de",
+    "site en in de bevestigingsmail staan (wie verkoopt er), ook al draagt de",
+    "winkel een eigen naam."
+  ],
+  "naam": "Kozijnhorren",
+  "domein": "kozijnhorren.nl",
+  "tagline": "Horren in de kleur van je kozijn",
+  "email": "info@iwrap.nl",
+  "telefoon": "+31 6 1441 5877",
+  "telefoon_tel": "+31614415877",
+  "whatsapp": "31614415877",
+  "juridisch": "iWrap VOF",
+  "adres": "Neuweg 128, 1214 GZ Hilversum",
+  "kvk": "",
+  "btw": "",
+  "reviews_url": "",
+  "meetvideo_url": ""
+}

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Afrekenen | Kozijnhorren</title>
+<meta name="description" content="Je gegevens en betalen met iDEAL.">
+<link rel="canonical" href="https://kozijnhorren.nl/afrekenen">
+<meta name="robots" content="noindex">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Kozijnhorren">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:title" content="Afrekenen | Kozijnhorren">
+<meta property="og:description" content="Je gegevens en betalen met iDEAL.">
+<meta property="og:url" content="https://kozijnhorren.nl/afrekenen">
+<meta name="theme-color" content="#f6f3ed">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script>document.documentElement.className+=" js";</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="/css/winkel.css?v=9eeb5b4d">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"OnlineStore","@id":"https://kozijnhorren.nl/#winkel","name":"Kozijnhorren","url":"https://kozijnhorren.nl/","email":"info@iwrap.nl","telephone":"+31614415877","slogan":"Horren in de kleur van je kozijn","areaServed":{"@type":"Country","name":"Nederland"}}]}</script>
+</head>
+<body class="afrekenpagina">
+<a class="skip" href="#inhoud">Naar de inhoud</a>
+<div class="proefbalk">Proefversie: de prijzen zijn nog voorbeeldprijzen en betalen gaat via een testkassa.</div>
+<div class="aankondiging" aria-label="Voordelen">
+  <button type="button" class="ak-vorige" aria-label="Vorige">&lsaquo;</button>
+  <ul><li class="aan">Past hij niet? Dan maken we een nieuwe</li><li>Gratis thuisbezorgd in heel Nederland</li><li>Zonder boren of schroeven geplaatst</li><li>Klaar in 7 tot 12 werkdagen</li></ul>
+  <button type="button" class="ak-volgende" aria-label="Volgende">&rsaquo;</button>
+</div>
+<header class="kop">
+  <div class="kop-binnen">
+    <button class="menu-knop" aria-expanded="false" aria-controls="menu"><span class="streepjes" aria-hidden="true"></span><span class="sr-only">Menu</span></button>
+    <a class="merk" href="/" aria-label="Kozijnhorren, naar de homepage"><svg class="logo-teken" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="26" height="26" rx="6"/><rect x="9" y="9" width="14" height="14" rx="1.5" class="logo-binnen"/><path d="M13 9v14M17 9v14M21 9v14M9 13h14M9 17h14M9 21h14" class="logo-gaas"/></svg><span>kozijnhorren</span></a>
+    <nav class="menu" id="menu" aria-label="Hoofdmenu">
+      <a href="/bestellen">Bestellen</a>
+      <a href="/inklemhor">De hor</a>
+      <a href="/meetinstructie">Meten</a>
+      <a href="/kleuren">Kleuren</a>
+      <a href="/veelgestelde-vragen">Hulp</a>
+    </nav>
+    <button type="button" class="mand-knop" aria-label="Winkelmand">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+      <span class="mand-teller" hidden></span>
+    </button>
+  </div>
+</header>
+<main id="inhoud">
+<div class="breed">
+  <div class="afreken">
+    <form id="afrekenen" novalidate>
+      <p class="kruimels"><a href="/bestellen">Terug naar bestellen</a></p>
+      <h1>Afrekenen</h1>
+      <ul class="foutlijst" id="fouten" hidden></ul>
+
+      <h2>Waar bezorgen we je horren?</h2>
+      <div class="velden">
+        <div class="veld vol"><label for="naam">Naam</label><input id="naam" type="text" autocomplete="name" required></div>
+        <div class="veld vol"><label for="straat">Straat en huisnummer</label><input id="straat" type="text" autocomplete="street-address" required></div>
+        <div class="veld"><label for="postcode">Postcode</label><input id="postcode" type="text" autocomplete="postal-code" required maxlength="7"></div>
+        <div class="veld"><label for="plaats">Plaats</label><input id="plaats" type="text" autocomplete="address-level2" required></div>
+        <div class="veld"><label for="email">E-mail</label><input id="email" type="email" autocomplete="email" required>
+          <p class="hulp">Voor je bevestiging.</p></div>
+        <div class="veld"><label for="telefoon">Telefoon</label><input id="telefoon" type="tel" autocomplete="tel" required>
+          <p class="hulp">Voor de bezorger.</p></div>
+      </div>
+      <div class="honing" aria-hidden="true"><label for="website">Laat dit veld leeg</label><input id="website" type="text" tabindex="-1" autocomplete="off"></div>
+
+      <div id="lever-keuze" hidden>
+        <h2>Wanneer wil je ze hebben?</h2>
+        <div class="leverkeuze">
+          <label><input type="radio" name="voorjaar" value="nee" checked><span><b>Zo snel mogelijk</b><br><small id="lever-snel"></small></span></label>
+          <label><input type="radio" name="voorjaar" value="ja"><span><b>Begin maart</b><br><small>Je bestelt nu, ze komen als het muggenseizoen begint.</small></span></label>
+        </div>
+      </div>
+
+      <div class="akkoord">
+        <label><input type="checkbox" id="gemeten"><span>Ik heb gemeten zoals in de <a href="/meetinstructie" target="_blank">meetinstructie</a>. Past een hor toch niet, dan geldt de pasgarantie.</span></label>
+        <label><input type="checkbox" id="voorwaarden"><span>Ik ga akkoord met de <a href="/voorwaarden" target="_blank">voorwaarden</a>. Ik weet dat horren op maat niet retour kunnen.</span></label>
+      </div>
+
+      <button type="submit" class="knop knop-koraal knop-groot knop-vol" id="betaal" disabled>Betalen met iDEAL</button>
+      <p class="veilig">Je betaalt veilig via Mollie. Je bankgegevens zien wij niet.</p>
+    </form>
+
+    <aside class="samenvatting">
+      <h2>Je bestelling</h2>
+      <p class="melding" id="laden">Laden&hellip;</p>
+      <ul class="mand-lijst" id="overzicht"></ul>
+      <div id="totaal-blok" hidden>
+        <div class="regel-totaal"><span>Bezorgen</span><span id="verzend">Gratis</span></div>
+        <div class="regel-totaal"><span>Waarvan btw</span><span id="btw"></span></div>
+        <div class="regel-totaal groot"><span>Totaal</span><b id="totaal"></b></div>
+        <p class="mand-levertijd" id="levertijd" style="margin:10px 0 0"></p>
+      </div>
+      <ul class="beloftes" style="grid-template-columns:1fr;margin-top:18px">
+        <li><span class="icoon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17 17 3l4 4L7 21H3z"/><path d="m7 13 2 2M10 10l2 2M13 7l2 2"/></svg></span>Pasgarantie: past hij niet, dan maken we een nieuwe</li>
+        <li><span class="icoon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v10H3zM14 9h4l3 3v4h-7z"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg></span>Gratis thuisbezorgd</li>
+      </ul>
+    </aside>
+  </div>
+</div>
+<div class="blok" style="padding:40px 0 0"></div>
+
+</main>
+<footer class="voet">
+  <div class="breed voet-raster">
+    <div class="vcol voet-merk">
+      <a class="merk licht" href="/"><svg class="logo-teken" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="26" height="26" rx="6"/><rect x="9" y="9" width="14" height="14" rx="1.5" class="logo-binnen"/><path d="M13 9v14M17 9v14M21 9v14M9 13h14M9 17h14M9 21h14" class="logo-gaas"/></svg><span>kozijnhorren</span></a>
+      <p>Horren in de kleur van je kozijn. Op maat gemaakt, zonder boren geplaatst, en als hij niet past maken we een nieuwe.</p>
+      <p class="voet-contact"><a href="https://wa.me/31614415877">WhatsApp +31 6 1441 5877</a><br>
+      <a href="mailto:info@iwrap.nl">info@iwrap.nl</a></p>
+    </div>
+    <div class="vcol"><h2>Winkel</h2><ul><li><a href="/bestellen">Bestel je horren</a></li><li><a href="/inklemhor">Basis of Luxe</a></li><li><a href="/kleuren">Kleuren</a></li></ul></div><div class="vcol"><h2>Hulp</h2><ul><li><a href="/meetinstructie">Meten en plaatsen</a></li><li><a href="/veelgestelde-vragen">Veelgestelde vragen</a></li><li><a href="/levering-en-retour">Levering en pasgarantie</a></li></ul></div><div class="vcol"><h2>Over</h2><ul><li><a href="/over-ons">Over Kozijnhorren</a></li><li><a href="/voorwaarden">Voorwaarden</a></li><li><a href="/privacy">Privacy</a></li></ul></div>
+  </div>
+  <div class="breed voet-onder">
+    <p>&copy; 2026 Kozijnhorren, een handelsnaam van iWrap VOF, Neuweg 128, 1214 GZ Hilversum</p>
+    <p class="betalen"><span class="betaal-label">iDEAL</span><span class="betaal-label">Mollie</span></p>
+  </div>
+</footer>
+<div class="mand-laag" hidden></div>
+<aside class="mand" id="mand" aria-label="Winkelmand" aria-hidden="true">
+  <div class="mand-kop">
+    <h2>Winkelmand</h2>
+    <button type="button" class="mand-sluit" aria-label="Sluiten">&times;</button>
+  </div>
+  <div class="mand-inhoud">
+    <ul class="mand-lijst"></ul>
+    <div class="mand-leeg">
+      <p>Je winkelmand is nog leeg.</p>
+      <a class="knop knop-merk" href="/bestellen">Bereken je prijs</a>
+    </div>
+  </div>
+  <div class="mand-voet" hidden>
+    <div class="mand-totaal"><span>Totaal <small>incl. btw, gratis bezorgd</small></span><b class="mand-bedrag"></b></div>
+    <p class="mand-levertijd"></p>
+    <a class="knop knop-koraal knop-vol" href="/afrekenen">Afrekenen</a>
+    <a class="mand-nog" href="/bestellen">+ Nog een raam toevoegen</a>
+    <details class="mand-delen">
+      <summary>Bestelling bewaren of doorsturen</summary>
+      <p>Een link met deze horren erin. Handig als je bij iemand anders hebt gemeten, of later wilt afrekenen.</p>
+      <div class="deel-knoppen">
+        <a class="knop knop-rand knop-klein deel-whatsapp" href="#" target="_blank" rel="noopener">Via WhatsApp</a>
+        <button type="button" class="knop knop-rand knop-klein deel-kopieer">Kopieer link</button>
+      </div>
+    </details>
+  </div>
+</aside>
+<div class="toast" role="status" aria-live="polite" hidden></div>
+<script src="/js/catalogus.js?v=9eeb5b4d"></script>
+<script src="/js/winkel.js?v=9eeb5b4d" defer></script>
+<script src="/js/afrekenen.js?v=9eeb5b4d" defer></script>
+</body>
+</html>

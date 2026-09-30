@@ -1,0 +1,192 @@
+<!-- {
+  "title": "Kozijnhor op maat bestellen, direct je prijs | Kozijnhorren",
+  "description": "Kies Basis of Luxe, de kleur van je kozijn en vul de maat in: je ziet direct je prijs. Zonder boren geplaatst, gratis bezorgd, met pasgarantie.",
+  "ogtitle": "Bestel je kozijnhorren op maat",
+  "product": true,
+  "bodyclass": "bestelpagina",
+  "js": ["bestellen"]
+} -->
+
+<div class="breed">
+  <div class="pdp">
+    <div class="galerij" id="galerij">
+      <div class="galerij-groot">
+        <div data-beeld="hor">{{svg.hor:pdp}}</div>
+        <div data-beeld="raam" hidden>{{svg.raam:pdp}}</div>
+        <div data-beeld="gaas" class="gaas-groot" hidden><span class="duim-gaas"></span></div>
+        <span class="badge merk" id="badge">Basis</span>
+      </div>
+      <div class="galerij-duimen">
+        <button type="button" class="aan" data-toon="hor" aria-label="De hor">{{svg.hor:duim}}</button>
+        <button type="button" data-toon="raam" aria-label="In het kozijn">{{svg.raam:duim}}</button>
+        <button type="button" data-toon="gaas" aria-label="Het gaas van dichtbij"><span class="duim-gaas"></span></button>
+      </div>
+      <p class="galerij-onderschrift">Illustratie: de kleur verandert mee met je keuze.</p>
+    </div>
+
+    <form class="koop" id="koop" novalidate>
+      <p class="kruimels"><a href="/">Home</a> / Bestellen</p>
+      <h1 id="titel">Kozijnhor Basis</h1>
+      <p class="vanaf" id="vanaf">Vanaf {{prijs.vanaf}}</p>
+      <p class="intro">Een inklemhor op maat, die je zonder boren of schroeven in de kozijnopening klemt.
+      Voor ramen die naar binnen opendraaien. En past hij toch niet, dan maken we een nieuwe.</p>
+
+      <div class="optie">
+        <div class="optie-kop"><h2>1. Uitvoering</h2><a href="/inklemhor#vergelijk">Wat is het verschil?</a></div>
+        <div class="uitvoeringen" role="radiogroup" aria-label="Uitvoering">
+          <button type="button" class="uitvoering aan" data-uitvoering="basis" role="radio" aria-checked="true">
+            <b>Basis</b><small>Zwart gaas, in 4 kleuren</small><span class="u-prijs">vanaf {{prijs.vanaf}}</span>
+          </button>
+          <button type="button" class="uitvoering" data-uitvoering="luxe" role="radio" aria-checked="false">
+            <span class="u-badge">Onzichtbaar gaas</span>
+            <b>Luxe</b><small>Bijna onzichtbaar gaas, in elke kleur</small><span class="u-prijs">vanaf {{prijs.luxe_vanaf}}</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="optie">
+        <div class="optie-kop"><h2>2. Kleur</h2><span class="gekozen" id="kleur-naam"></span></div>
+        <div class="kleurkeuze" id="kleurkeuze" role="radiogroup" aria-label="Kleur"></div>
+        <div class="kleur-extra" id="kleur-extra" hidden>
+          <div class="veld">
+            <label for="folie">Kies de folie van je kozijn</label>
+            <select id="folie"><option value="">Kies een folie…</option></select>
+          </div>
+          <div class="veld">
+            <label for="ral">Of een RAL-code</label>
+            <input id="ral" type="text" inputmode="numeric" autocomplete="off" placeholder="Bijvoorbeeld 7021" maxlength="8">
+          </div>
+        </div>
+        <p class="hulp" id="kleur-hulp"></p>
+      </div>
+
+      <div class="optie">
+        <div class="optie-kop"><h2>3. Maat van je raam</h2><button type="button" id="meethulp-knop">Hoe meet ik?</button></div>
+        <div class="velden">
+          <div class="veld">
+            <label for="breedte">Breedte</label>
+            <div class="maatinvoer"><input id="breedte" type="text" inputmode="numeric" autocomplete="off" placeholder="0"><span>mm</span></div>
+            <p class="veldfout" id="breedte-fout" hidden></p>
+          </div>
+          <div class="veld">
+            <label for="hoogte">Hoogte</label>
+            <div class="maatinvoer"><input id="hoogte" type="text" inputmode="numeric" autocomplete="off" placeholder="0"><span>mm</span></div>
+            <p class="veldfout" id="hoogte-fout" hidden></p>
+          </div>
+        </div>
+        <p class="hulp">Meet de opening waar je raam in dichtvalt, op twee plekken, en vul de kleinste maat in.
+        Niets aftrekken: dat doen wij.</p>
+      </div>
+
+      <div class="optie">
+        <div class="optie-kop"><h2>4. Aantal</h2></div>
+        <div class="aantal-rij">
+          <div class="stapper">
+            <button type="button" id="minder" aria-label="Minder">&minus;</button>
+            <output id="aantal" aria-live="polite">1</output>
+            <button type="button" id="meer" aria-label="Meer">+</button>
+          </div>
+          <button type="button" class="naam-toggle" id="naam-toggle">Naam toevoegen, zoals "slaapkamer"</button>
+        </div>
+        <div class="veld" id="naam-veld" hidden style="margin-top:14px">
+          <label for="naam">Waar zit dit raam?</label>
+          <input id="naam" type="text" autocomplete="off" maxlength="60" placeholder="Bijvoorbeeld: slaapkamer voorkant">
+        </div>
+      </div>
+
+      <div class="koopvak">
+        <div class="prijs-rij">
+          <div id="prijs"><span class="melding">Vul de maat in, dan zie je je prijs</span></div>
+          <div class="bedrag-sub">incl. btw<br>gratis bezorgd</div>
+        </div>
+        <button type="submit" class="knop knop-koraal knop-groot knop-vol" id="in-mand" disabled>In winkelmand</button>
+      </div>
+      <ul class="beloftes">
+        <li>{{icoon.pas}}Pasgarantie</li>
+        <li>{{icoon.boor}}Zonder boren</li>
+        <li>{{icoon.klok}}<span id="levertijd-kort">Klaar in {{levertijd}}</span></li>
+        <li>{{icoon.bus}}Gratis bezorgd</li>
+      </ul>
+
+      <div class="accordeon">
+        <details>
+          <summary>Past hij op mijn raam?</summary>
+          <div class="binnen">
+            <ul class="vinklijst">
+              <li>Draaikiepramen die naar binnen opendraaien</li>
+              <li>Kunststof, houten en aluminium kozijnen</li>
+              <li>Van {{maat.breedte_min}} tot {{maat.breedte_max}} cm breed, tot {{maat.hoogte_max}} cm hoog</li>
+              <li>Ook met een rooster of lekdorpel, als die niet meer dan {{maat.uitsteek}} mm uitsteekt</li>
+            </ul>
+            <ul class="kruislijst">
+              <li>Ramen die naar buiten draaien, schuiframen, dakramen en deuren</li>
+            </ul>
+            <p>Twijfel je? <a href="{{whatsapp.twijfel}}">Stuur ons een foto</a>, dan kijken we mee.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Wat je krijgt</summary>
+          <div class="binnen">
+            <ul>
+              <li>Een aluminium kader, gepoedercoat in jouw kleur</li>
+              <li>Basis: {{basis.gaas}}. {{basis.gaas_uitleg}}</li>
+              <li>Luxe: {{luxe.gaas}}. {{luxe.gaas_uitleg}}</li>
+              <li>Veerclips aan de zijkanten, en een treklipje om hem eruit te halen</li>
+              <li>Vanaf {{maat.middenregel}} cm hoog een middenregel, zodat het gaas strak blijft</li>
+            </ul>
+          </div>
+        </details>
+        <details>
+          <summary>Pasgarantie</summary>
+          <div class="binnen">
+            <p>Je meet zelf, maar het risico ligt bij ons. Past een hor niet, terwijl je gemeten hebt zoals in
+            de meetinstructie? Laat het binnen {{pasgarantie.dagen}} dagen na levering weten met een foto,
+            dan maken we een nieuwe. <a href="/levering-en-retour#pasgarantie">Meer over de pasgarantie</a></p>
+          </div>
+        </details>
+        <details>
+          <summary>Levering en betalen</summary>
+          <div class="binnen">
+            <p>Gratis bezorgd door heel Nederland, rechtstreeks van de maker. Een standaardkleur is klaar in
+            {{levertijd}}, een eigen RAL-kleur ongeveer {{ral.extra_werkdagen}} werkdagen later. Je betaalt
+            met iDEAL.</p>
+          </div>
+        </details>
+      </div>
+    </form>
+  </div>
+</div>
+
+<section class="blok">
+  <div class="breed">
+    <div class="sectiekop"><h2>Veel ramen tegelijk?</h2>
+      <p>Voeg per raam een hor toe. Heb je ramen met precies dezelfde maat, zet dan het aantal hoger.
+      Je winkelmand kun je ook als link doorsturen, bijvoorbeeld naar degene die gaat betalen.</p></div>
+  </div>
+</section>
+
+<div class="lade-laag" id="meethulp-laag" hidden></div>
+<aside class="lade" id="meethulp" aria-hidden="true" aria-label="Zo meet je">
+  <div class="mand-kop"><h2>Zo meet je</h2><button type="button" class="mand-sluit" id="meethulp-sluit" aria-label="Sluiten">&times;</button></div>
+  <div class="binnen">
+    <svg viewBox="0 0 300 200" aria-hidden="true">
+      <rect x="60" y="14" width="180" height="176" rx="3" fill="#383e42"/>
+      <rect x="76" y="30" width="148" height="144" fill="#dfe9ee"/>
+      <g stroke="#cf452b" stroke-width="2.4" fill="#cf452b">
+        <path d="M80 52h140"/><path d="M80 52l8-5v10z"/><path d="M220 52l-8-5v10z"/>
+        <path d="M80 152h140"/><path d="M80 152l8-5v10z"/><path d="M220 152l-8-5v10z"/>
+        <path d="M104 34v136"/><path d="M104 34l-5 8h10z"/><path d="M104 170l-5-8h10z"/>
+        <path d="M196 34v136"/><path d="M196 34l-5 8h10z"/><path d="M196 170l-5-8h10z"/>
+      </g>
+    </svg>
+    <ol class="tekst">
+      <li><strong>Draai het raam open.</strong> Je meet de opening in het vaste kozijn, waar het raam in dichtvalt.</li>
+      <li><strong>Breedte:</strong> meet boven en onder, van kozijn tot kozijn. Rubbers niet indrukken.</li>
+      <li><strong>Hoogte:</strong> meet links en rechts.</li>
+      <li><strong>Vul de kleinste maat in,</strong> in millimeters. 81 cm en 4 mm is 814. Niets aftrekken.</li>
+    </ol>
+    <p><a href="/meetinstructie" target="_blank">De uitgebreide meetinstructie</a></p>
+    <div class="tip"><p>Twijfel je? <a href="{{whatsapp.meetcheck}}">Stuur een foto met de rolmaat erop</a>, dan
+    kijken we gratis mee voordat je bestelt.</p></div>
+  </div>
+</aside>

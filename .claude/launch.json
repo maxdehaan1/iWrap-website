@@ -6,6 +6,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["serve.py"],
       "port": 8010
+    },
+    {
+      "name": "kozijnhorren",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["kozijnhorren/serve.py"],
+      "port": 8020
     }
   ]
 }

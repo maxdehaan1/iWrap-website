@@ -1,0 +1,7 @@
+# Alleen voor het iwrap-project op Vercel. kozijnhorren.nl is een eigen
+# Vercel-project met als root directory kozijnhorren/ en een eigen .vercelignore.
+kozijnhorren
+tests
+prive
+.data
+.env

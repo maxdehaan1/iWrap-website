@@ -34,6 +34,10 @@ SITE = "https://www.iwrap.nl"
 # allemaal uit.
 REVIEWS = json.loads((ROOT / "reviews.json").read_text(encoding="utf-8"))
 
+# De kozijncheck: zes onderdelen met stoplicht. Staat in de achterkant omdat de
+# Max-modus en het rapport er ook uit lezen; hier alleen voor /kozijncheck.
+KOZIJNCHECK = json.loads((ROOT / "backend" / "data" / "kozijncheck.json").read_text(encoding="utf-8"))
+
 BEDRIJF = {
     "naam": "iWrap",
     "juridisch": "iWrap VOF",
@@ -62,6 +66,9 @@ BEDRIJF = {
 FEITEN = {
     "garantie_folie": "tien jaar fabrieksgarantie op de folie",
     "garantie_montage": "vijf jaar op de montage",
+    # Dezelfde termijnen als getal: het opleverrapport rekent er de einddatum mee uit.
+    "garantie_folie_jaren": "10",
+    "garantie_montage_jaren": "5",
     "levensduur_profiel": "50 tot 75 jaar",
     "doorlooptijd": "een tot twee dagen",
 }
@@ -84,6 +91,7 @@ FOOTER_KOLOMMEN = [
         ("kunststof-kozijn-herstellen", "Kunststof kozijn herstellen"),
         ("dakkapel-kozijnen", "Dakkapel kozijnen"),
         ("werkwijze", "Onze werkwijze"),
+        ("kozijncheck", "Gratis kozijncheck"),
         ("kosten", "Wat kost het"),
         ("voorbeelden", "Voorbeelden"),
         ("kozijnmerken/index", "Per kozijnmerk"),
@@ -264,6 +272,26 @@ def render_regios():
     return '<div class="regios">' + "".join(uit) + "</div>"
 
 
+def render_kozijncheck_tabel():
+    """De zes onderdelen met hun stoplicht, uit backend/data/kozijncheck.json.
+    Dezelfde bron als de Max-modus en het rapport, zodat de uitleg op de site
+    nooit iets anders zegt dan wat een klant in zijn rapport krijgt."""
+    rijen = []
+    for d in KOZIJNCHECK["onderdelen"]:
+        naam = d["naam"] + (' <small>(als je ze hebt)</small>' if d.get("optioneel") else "")
+        rijen.append(
+            f'<tr><td><strong>{naam}</strong><br><span class="check-kijkt">{d["kijkt"]}</span></td>'
+            f'<td><span class="stip stip-groen" aria-hidden="true"></span>{d["groen"]}</td>'
+            f'<td><span class="stip stip-oranje" aria-hidden="true"></span>{d["oranje"]}</td>'
+            f'<td><span class="stip stip-rood" aria-hidden="true"></span>{d["rood"]}</td></tr>'
+        )
+    return (
+        '<div class="tabel-wrap"><table class="checktabel">'
+        "<thead><tr><th>Onderdeel</th><th>Groen</th><th>Oranje</th><th>Rood</th></tr></thead>"
+        "<tbody>" + "".join(rijen) + "</tbody></table></div>"
+    )
+
+
 def render_merkkaarten():
     """De merkhub uit MERKEN, zodat een nieuw merk maar op één plek hoeft."""
     uit = []
@@ -361,6 +389,18 @@ def render_nav(slug):
 {links}
       <a class="nav-cta" href="/offerte">Offerte aanvragen</a>
     </nav>
+  </div>
+</header>"""
+
+
+def render_kale_kop(label):
+    """Voor het rapport en de Max-modus: alleen het logo en een label, geen
+    menu. Een klant die zijn rapport opent hoeft niet door de site te navigeren,
+    en op een telefoon op de steiger telt elke pixel."""
+    return f"""<header class="site kaal">
+  <div class="nav">
+    <a class="brand" href="/" aria-label="iWrap, naar de homepage">{LOGO}</a>
+    <span class="kaal-label">{label}</span>
   </div>
 </header>"""
 
@@ -603,9 +643,9 @@ def render(slug, meta, inhoud, ver):
         preload=preload,
         jsonld=jsonld,
         bodyclass=meta.get("bodyclass", ""),
-        nav=render_nav(slug),
+        nav=render_kale_kop(meta["kaal"]) if meta.get("kaal") else render_nav(slug),
         inhoud=inhoud,
-        footer=render_footer(),
+        footer="" if meta.get("kaal") else render_footer(),
         scripts=scripts,
     )
 
@@ -620,6 +660,8 @@ def substitueer(tekst):
         bron = {"bedrijf": BEDRIJF, "feit": FEITEN}[groep]
         return bron[sleutel]
     tekst = re.sub(r"\{\{(bedrijf|feit)\.([a-z_]+)\}\}", rep, tekst)
+    tekst = tekst.replace("{{kozijncheck_tabel}}", render_kozijncheck_tabel())
+    tekst = tekst.replace("{{kozijncheck_disclaimer}}", KOZIJNCHECK["disclaimer"])
     tekst = tekst.replace("{{regios}}", render_regios())
     tekst = tekst.replace("{{merkkaarten}}", render_merkkaarten())
     tekst = re.sub(r"\{\{reviews:(\d+)(?::(\d+))?\}\}",
@@ -628,7 +670,7 @@ def substitueer(tekst):
     return BEELD_RE.sub(render_beeld, tekst)
 
 
-def controleer_js():
+def controleer_js(map_=None):
     """Kijkt of elke string in de scripts netjes afgesloten is.
 
     Dit vangt de fout waar de site al een keer op stukging: een apostrof in een
@@ -637,7 +679,7 @@ def controleer_js():
     je alleen dat er niets gebeurt -- precies het soort fout dat je pas ontdekt
     als een klant het formulier niet kan versturen.
     """
-    for bestand in sorted((ROOT / "js").glob("*.js")):
+    for bestand in sorted((map_ or ROOT / "js").glob("*.js")):
         tekst = bestand.read_text(encoding="utf-8")
         regel, kolom, i, n = 1, 1, 0, len(tekst)
         quote = None      # welke string we in zitten
@@ -795,7 +837,8 @@ def schrijf_sitemap(paginas):
         encoding="utf-8",
     )
     (ROOT / "robots.txt").write_text(
-        f"User-agent: *\nAllow: /\n\nSitemap: {SITE}/sitemap.xml\n", encoding="utf-8"
+        f"User-agent: *\nAllow: /\nDisallow: /max\nDisallow: /r/\nDisallow: /api/\n\nSitemap: {SITE}/sitemap.xml\n",
+        encoding="utf-8"
     )
 
 

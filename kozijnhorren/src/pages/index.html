@@ -1,0 +1,184 @@
+<!-- {
+  "title": "Kozijnhorren | Horren op maat in de kleur van je kozijn",
+  "description": "Inklemhorren op maat in de kleur van je kozijn. Zonder boren geplaatst, gratis bezorgd, en past hij niet dan maken we een nieuwe. Vanaf {{prijs.vanaf}}.",
+  "ogtitle": "Horren in de kleur van je kozijn",
+  "bodyclass": "thuis",
+  "faq": [
+    {"v": "Wat als de hor niet past?", "a": "Dan maken we een nieuwe. Meet volgens de meetinstructie en meld het binnen {{pasgarantie.dagen}} dagen na levering met een foto; dat is de pasgarantie."},
+    {"v": "Moet ik boren?", "a": "Nee. De hor klemt met veerclips in de kozijnopening. Er komen geen gaten in je kozijn."},
+    {"v": "Wat is het verschil tussen Basis en Luxe?", "a": "Dezelfde hor, dezelfde pasvorm. De Basis heeft zwart gaas en is er in vier kleuren; de Luxe heeft bijna onzichtbaar gaas en kan in elke RAL-kleur."},
+    {"v": "Hoe snel heb ik mijn horren?", "a": "In een standaardkleur binnen {{levertijd}}. Een eigen RAL-kleur duurt ongeveer {{ral.extra_werkdagen}} werkdagen langer."}
+  ]
+} -->
+
+<section class="held">
+  <picture class="held-foto">
+    <source type="image/webp" srcset="/images/held-640.webp 640w, /images/held-1000.webp 1000w, /images/held-1672.webp 1672w" sizes="100vw">
+    <img src="/images/held-1000.jpg" width="1000" height="563" alt="Een vrouw zet een groene hor in de opening van haar draaikiepraam" fetchpriority="high">
+  </picture>
+  <div class="breed held-tekst">
+    <h1>Horren in de kleur van je kozijn</h1>
+    <p class="lead">Op maat gemaakt, zonder boren geplaatst. En past hij niet, dan maken we een nieuwe.</p>
+    <div class="knoprij">
+      <a class="knop knop-koraal knop-groot" href="/bestellen">Bereken je prijs</a>
+      <a class="knop knop-tekst" href="/meetinstructie">Zo meet je</a>
+    </div>
+    <p class="held-prijs">Vanaf <b>{{prijs.vanaf}}</b> per hor, gratis bezorgd</p>
+  </div>
+</section>
+{{usp}}
+
+<section class="blok">
+  <div class="breed">
+    <div class="sectiekop">
+      <div>
+        <h2>Kies je kozijnhor</h2>
+        <p>Eén hor, twee uitvoeringen. Meten gaat voor allebei precies hetzelfde.</p>
+      </div>
+      <a class="knop knop-rand" href="/inklemhor#vergelijk">Vergelijk</a>
+    </div>
+    <div class="productkaarten">
+      <a class="productkaart" href="/bestellen?uitvoering=basis">
+        <span class="badge">Meest gekozen</span>
+        <div class="beeld">{{svg.hor:kaartbasis}}</div>
+        <div class="tekst">
+          <h3>Kozijnhor Basis</h3>
+          <p class="prijs">Vanaf {{prijs.vanaf}}</p>
+          <div class="stippen">
+            <span class="stip" style="--kleur:#f1f0ea"></span><span class="stip" style="--kleur:#e9e0c9"></span>
+            <span class="stip" style="--kleur:#383e42"></span><span class="stip" style="--kleur:#101113"></span>
+          </div>
+        </div>
+        <span class="knop knop-merk knop-klein kies">Bereken je prijs</span>
+        <div class="strook">{{icoon.meter}}<div><b>Zwart gaas</b><span>Valt het minst op, in 4 kozijnkleuren</span></div></div>
+      </a>
+      <a class="productkaart luxe" href="/bestellen?uitvoering=luxe">
+        <span class="badge merk">Luxe</span>
+        <div class="beeld">{{svg.hor:kaartluxe}}</div>
+        <div class="tekst">
+          <h3>Kozijnhor Luxe</h3>
+          <p class="prijs">Vanaf {{prijs.luxe_vanaf}}</p>
+          <div class="stippen">
+            <span class="stip" style="--kleur:#27352a"></span><span class="stip" style="--kleur:#2f3234"></span>
+            <span class="stip" style="--kleur:#5e2028"></span><span class="stip" style="--kleur:#7e4b26"></span>
+            <span>+ elke RAL-kleur</span>
+          </div>
+        </div>
+        <span class="knop knop-merk knop-klein kies">Bereken je prijs</span>
+        <div class="strook">{{icoon.kleur}}<div><b>Bijna onzichtbaar gaas</b><span>Meer lucht, meer uitzicht, in elke kleur</span></div></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="blok blok-beige">
+  <div class="breed verschil">
+    <div class="beeldvak">{{svg.raam:demo}}</div>
+    <div>
+      <h2>Zie het verschil</h2>
+      <p class="lead">Wie zijn kozijnen een nieuwe kleur geeft, ziet het meteen: de oude witte hor past er niet meer bij.</p>
+      <div class="schakelaar" role="group" aria-label="Vergelijk">
+        <button type="button" data-modus="oud">Oude witte hor</button>
+        <button type="button" data-modus="kleur" class="aan">Hor in kleur</button>
+      </div>
+      <div class="kleurknoppen" role="group" aria-label="Kozijnkleur">
+        <button type="button" data-kleur="#383e42" style="--kleur:#383e42" aria-label="Antraciet"></button>
+        <button type="button" data-kleur="#101113" style="--kleur:#101113" aria-label="Zwart"></button>
+        <button type="button" data-kleur="#27352a" style="--kleur:#27352a" aria-label="Dennengroen"></button>
+        <button type="button" data-kleur="#e9e0c9" style="--kleur:#e9e0c9" aria-label="Crèmewit"></button>
+        <button type="button" data-kleur="#5a3826" style="--kleur:#5a3826" aria-label="Notenbruin"></button>
+      </div>
+      <p class="demo-uitleg" style="margin-top:16px;color:var(--sub)">Hor en kozijn in dezelfde kleur. De hor valt weg in het kozijn.</p>
+    </div>
+  </div>
+</section>
+
+<section class="blok">
+  <div class="breed">
+    <div class="sectiekop"><h2>Zo werkt het</h2></div>
+    <figure class="breedbeeld">
+      <picture>
+        <source type="image/webp" srcset="/images/held-buiten-640.webp 640w, /images/held-buiten-1000.webp 1000w, /images/held-buiten-1600.webp 1600w" sizes="(max-width:1320px) 100vw, 1260px">
+        <img src="/images/held-buiten-1000.jpg" width="1000" height="280" alt="Een hor wordt van buitenaf in een kozijn gezet" loading="lazy">
+      </picture>
+    </figure>
+    <div class="stappen">
+      <div class="stapkaart">
+        <h3>Meet je raam</h3>
+        <p>Twee maten, breedte en hoogte, in millimeters. Vijf minuten met een rolmaat. De winkel
+        controleert meteen of de maat kan.</p>
+      </div>
+      <div class="stapkaart">
+        <h3>Kies je kleur</h3>
+        <p>Wit, crème, antraciet of zwart, of met de Luxe elke kleur. Weet je welke folie er op je
+        kozijn zit? Kies die, dan kiezen wij de kleur.</p>
+      </div>
+      <div class="stapkaart">
+        <h3>Klik hem erin</h3>
+        <p>Je hor wordt op maat gemaakt en thuisbezorgd. Plaatsen gaat zonder gereedschap; eruit halen
+        in een paar seconden.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="blok" style="padding-top:0">
+  <div class="breed">
+    <div class="paneel">
+      <div>
+        <h2>Past hij niet? Dan maken we een nieuwe.</h2>
+        <p>Je meet zelf, maar het risico ligt bij ons. Meet je zoals in de meetinstructie en past de hor
+        toch niet, dan krijg je een nieuwe. Zonder gedoe.</p>
+        <a class="knop knop-rand" href="/levering-en-retour#pasgarantie">Zo werkt de pasgarantie</a>
+      </div>
+      <div class="paneel-kaarten">
+        <div class="paneel-kaart">{{icoon.hand}}<b>Eén soort hor, gekozen omdat hij vergeeft</b>
+          <span>Hij klemt ín de kozijnopening met veerclips. Die vangen een paar millimeter verschil op, dus
+          hij hoeft niet op de tiende millimeter.</span></div>
+        <div class="paneel-kaart">{{icoon.meter}}<b>Maten worden gecontroleerd</b>
+          <span>Een maat die niet kan, of die in centimeters lijkt, zie je meteen.</span></div>
+        <div class="paneel-kaart">{{icoon.pas}}<b>Twijfel? We kijken mee</b>
+          <span>Stuur een foto met de rolmaat, dan checken we je maten vooraf.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="blok blok-beige">
+  <div class="breed twee-kolom">
+    <div>
+      <h2>Welke kleur?</h2>
+      <p class="lead">Vier kleuren zijn standaard en het snelst. Met de Luxe kan elke RAL-kleur.</p>
+      <p><a class="knop knop-rand" href="/kleuren">Kleur bij je folie</a></p>
+    </div>
+    <div>{{kleuren}}</div>
+  </div>
+</section>
+
+<section class="blok">
+  <div class="smal">
+    <h2>Veelgestelde vragen</h2>
+    <div class="faq">
+      <details><summary>Wat als de hor niet past?</summary><div class="antwoord"><p>Dan maken we een nieuwe.
+      Meet volgens de meetinstructie en meld het binnen {{pasgarantie.dagen}} dagen na levering met een foto;
+      dat is de pasgarantie.</p></div></details>
+      <details><summary>Moet ik boren?</summary><div class="antwoord"><p>Nee. De hor klemt met veerclips
+      in de kozijnopening. Er komen geen gaten in je kozijn.</p></div></details>
+      <details><summary>Wat is het verschil tussen Basis en Luxe?</summary><div class="antwoord"><p>Dezelfde
+      hor, dezelfde pasvorm. De Basis heeft zwart gaas en is er in vier kleuren; de Luxe heeft bijna
+      onzichtbaar gaas en kan in elke RAL-kleur.</p></div></details>
+      <details><summary>Hoe snel heb ik mijn horren?</summary><div class="antwoord"><p>In een standaardkleur
+      binnen {{levertijd}}. Een eigen RAL-kleur duurt ongeveer {{ral.extra_werkdagen}} werkdagen langer.</p></div></details>
+    </div>
+    <p style="margin-top:22px"><a href="/veelgestelde-vragen">Alle vragen</a></p>
+  </div>
+</section>
+
+<section class="blok" style="padding-top:0">
+  <div class="breed">
+    <div class="slot">
+      <div><h2>Wat kost een hor voor jouw raam?</h2><p>Vul de maat in en je ziet het meteen.</p></div>
+      <a class="knop knop-koraal knop-groot" href="/bestellen">Bereken je prijs</a>
+    </div>
+  </div>
+</section>

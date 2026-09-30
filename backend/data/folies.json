@@ -1,0 +1,40 @@
+{
+  "_uitleg": [
+    "Kleurentabel: Renolit-folie naar de effen RAL-kleur die er in het echt het",
+    "beste naast staat. Dit is jouw kennisvoordeel: kies in de configurator of de",
+    "Max-modus de folie, en de juiste horkleur staat al klaar.",
+    "",
+    "Dit is een STARTLIJST met voorstellen. 'gecontroleerd' staat op false tot jij",
+    "de folie met een kleurstaal van de horlak naast elkaar hebt gehouden. Zet het",
+    "dan op true; zolang het false is, zegt de site 'onze suggestie' in plaats van",
+    "'past bij'. Voeg gerust folies toe en zet de Renolit-code erbij als je die weet.",
+    "",
+    "Houtnerf bestaat niet als horkleur. Daar staat de dichtstbijzijnde effen kleur."
+  ],
+  "folies": [
+    {"naam": "Wit (verkeerswit)", "code": "", "soort": "effen", "ral": "9016", "gecontroleerd": false},
+    {"naam": "Zuiver wit", "code": "", "soort": "effen", "ral": "9010", "gecontroleerd": false},
+    {"naam": "Crèmewit", "code": "", "soort": "effen", "ral": "9001", "gecontroleerd": false},
+    {"naam": "Grijswit", "code": "", "soort": "effen", "ral": "9002", "gecontroleerd": false},
+    {"naam": "Antracietgrijs", "code": "", "soort": "effen", "ral": "7016", "gecontroleerd": false},
+    {"naam": "Antracietgrijs structuur", "code": "", "soort": "structuur", "ral": "7016", "gecontroleerd": false},
+    {"naam": "Basaltgrijs", "code": "", "soort": "effen", "ral": "7012", "gecontroleerd": false},
+    {"naam": "Kwartsgrijs", "code": "", "soort": "effen", "ral": "7039", "gecontroleerd": false},
+    {"naam": "Zwartgrijs", "code": "", "soort": "effen", "ral": "7021", "gecontroleerd": false},
+    {"naam": "Leigrijs", "code": "", "soort": "effen", "ral": "7015", "gecontroleerd": false},
+    {"naam": "Lichtgrijs", "code": "", "soort": "effen", "ral": "7035", "gecontroleerd": false},
+    {"naam": "Zilvergrijs", "code": "", "soort": "effen", "ral": "7001", "gecontroleerd": false},
+    {"naam": "Achaatgrijs", "code": "", "soort": "effen", "ral": "7038", "gecontroleerd": false},
+    {"naam": "Metallic antraciet (DB 703)", "code": "", "soort": "metallic", "ral": "7016", "gecontroleerd": false},
+    {"naam": "Gitzwart", "code": "", "soort": "effen", "ral": "9005", "gecontroleerd": false},
+    {"naam": "Monumentengroen", "code": "", "soort": "effen", "ral": "6009", "gecontroleerd": false},
+    {"naam": "Donkergroen", "code": "", "soort": "effen", "ral": "6005", "gecontroleerd": false},
+    {"naam": "Staalblauw", "code": "", "soort": "effen", "ral": "5011", "gecontroleerd": false},
+    {"naam": "Wijnrood", "code": "", "soort": "effen", "ral": "3005", "gecontroleerd": false},
+    {"naam": "Donkerbruin", "code": "", "soort": "effen", "ral": "8014", "gecontroleerd": false},
+    {"naam": "Golden Oak", "code": "", "soort": "houtnerf", "ral": "8003", "gecontroleerd": false},
+    {"naam": "Noten", "code": "", "soort": "houtnerf", "ral": "8011", "gecontroleerd": false},
+    {"naam": "Mahonie", "code": "", "soort": "houtnerf", "ral": "8016", "gecontroleerd": false},
+    {"naam": "Donker eiken", "code": "", "soort": "houtnerf", "ral": "8014", "gecontroleerd": false}
+  ]
+}
