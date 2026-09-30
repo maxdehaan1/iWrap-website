@@ -12,7 +12,10 @@ from .horren import catalogus, datum_nl, euro, levertijd_tekst
 
 INKT = "#171717"
 IWRAP_MINT = "#3f7468"
-KH_GROEN = "#1f4a3d"
+# kozijnhorren.nl: het woordmerk in het felle oranje, knoppen en links in het
+# donkerdere oranje waar witte tekst wel goed op leesbaar is.
+KH_LOGO = "#ff5000"
+KH_ORANJE = "#d93d00"
 
 
 def _knop(url, label, kleur=INKT):
@@ -23,18 +26,27 @@ def _knop(url, label, kleur=INKT):
 
 def _opmaak(kop, inhoud, afzender, accent):
     return (
-        '<!doctype html><html lang="nl"><body style="margin:0;background:#f6f3ed;'
+        '<!doctype html><html lang="nl"><head><meta charset="utf-8"></head><body style="margin:0;background:#f8f3ee;'
         'font-family:-apple-system,Segoe UI,Arial,sans-serif;color:%s">'
         '<div style="max-width:600px;margin:0 auto;padding:28px 18px">'
         '<div style="background:#ffffff;border-radius:18px;padding:30px 28px;'
         'font-size:16px;line-height:1.6">'
-        '<p style="margin:0 0 18px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;'
-        'color:%s;font-weight:700">%s</p>'
+        '%s'
         '<h1 style="font-size:23px;line-height:1.25;margin:0 0 16px;font-weight:500">%s</h1>%s</div>'
         '<p style="font-size:12px;color:#8a8f94;margin:16px 6px 0">%s</p>'
         '</div></body></html>'
-        % (INKT, accent, escape(afzender), escape(kop), inhoud, _voet(afzender))
+        % (INKT, _afzender_kop(afzender, accent), escape(kop), inhoud, _voet(afzender))
     )
+
+
+def _afzender_kop(afzender, accent):
+    if afzender == "iWrap":
+        return ('<p style="margin:0 0 18px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;'
+                'color:%s;font-weight:700">%s</p>' % (accent, escape(afzender)))
+    # Het woordmerk van de winkel. Figtree heeft bijna geen mailprogramma; Arial
+    # Black komt er het dichtst bij.
+    return ('<p style="margin:0 0 20px;font-family:Figtree,\'Arial Black\',Arial,sans-serif;font-size:24px;'
+            'line-height:1;font-weight:900;letter-spacing:-.03em;color:%s">%s</p>' % (KH_LOGO, escape(afzender)))
 
 
 def _voet(afzender):
@@ -113,7 +125,7 @@ def _winkel():
 
 
 def _winkelmail(kop, delen):
-    return _opmaak(kop, "".join(delen), _winkel(), KH_GROEN)
+    return _opmaak(kop, "".join(delen), _winkel(), KH_ORANJE)
 
 
 # ---------------------------------------------------------------------------
@@ -163,8 +175,8 @@ def bevestiging(b, statuslink):
         delen.append(_p(_pasgarantie_zin()))
     delen += [
         _p('Plaatsen gaat zonder boren of schroeven. <a href="%s/meetinstructie#plaatsen" style="color:%s">Zo werkt het</a>.'
-           % (cfg.SHOP_URL, KH_GROEN)),
-        _knop(statuslink, "Bekijk je bestelling", KH_GROEN),
+           % (cfg.SHOP_URL, KH_ORANJE)),
+        _knop(statuslink, "Bekijk je bestelling", KH_ORANJE),
         _p("Bestelnummer: <b>%s</b>. Dit is je betaalbewijs; bewaar de mail." % b["nr"]),
     ]
     html = _winkelmail("Bestelling %s is binnen" % b["nr"], delen)
@@ -183,12 +195,12 @@ def voor_max(b, beheerlink):
         _p("Nieuwe betaalde bestelling. %s" % escape(stap)),
         _regels_html(b),
         _p("<b>Klant</b><br>%s<br>%s<br>%s" % (_adres_html(k), escape(k.get("email", "")), escape(k.get("telefoon", "")))),
-        _knop(beheerlink, "Open in de Max-modus", KH_GROEN),
+        _knop(beheerlink, "Open in de Max-modus", KH_ORANJE),
     ]
     html = _winkelmail("%s: %s" % (b["nr"], euro(b["totaal"])), delen)
     tekst = "Nieuwe bestelling %s, %s\n\n%s\n\n%s\n\n%s" % (
         b["nr"], euro(b["totaal"]), _regels_tekst(b), _adres(k), beheerlink)
-    return "Kozijnhorren: %s, %s (%s)" % (b["nr"], euro(b["totaal"]), k.get("plaats", "")), html, tekst
+    return "kozijnhorren.nl: %s, %s (%s)" % (b["nr"], euro(b["totaal"]), k.get("plaats", "")), html, tekst
 
 
 def leverancier_tekst(b):
@@ -220,7 +232,7 @@ def voor_leverancier(b):
     tekst = leverancier_tekst(b)
     html = _opmaak("Bestelling %s" % b["nr"],
                    '<pre style="font:14px/1.6 Menlo,Consolas,monospace;white-space:pre-wrap;margin:0">%s</pre>'
-                   % escape(tekst), cfg.WINKEL["naam"], KH_GROEN)
+                   % escape(tekst), cfg.WINKEL["naam"], KH_ORANJE)
     return "Bestelling %s, rechtstreeks leveren (%s)" % (b["nr"], b["klant"].get("plaats", "")), html, tekst
 
 
@@ -232,12 +244,12 @@ def verzonden(b, statuslink):
         _p("Je horren zijn onderweg naar %s." % escape(k.get("straat", "je adres"))),
     ]
     if track:
-        delen.append(_knop(track, "Volg je pakket", KH_GROEN))
+        delen.append(_knop(track, "Volg je pakket", KH_ORANJE))
     delen += [
         _p("<b>Even controleren bij ontvangst.</b> Pak de horren uit en kijk of er niets beschadigd is. "
            "Is er iets mis? Stuur dan binnen twee dagen een foto, dan regelen we een nieuwe."),
         _p('Plaatsen doe je zonder gereedschap. <a href="%s/meetinstructie#plaatsen" style="color:%s">Zo werkt het</a>.'
-           % (cfg.SHOP_URL, KH_GROEN)),
+           % (cfg.SHOP_URL, KH_ORANJE)),
     ]
     html = _winkelmail("Je horren zijn onderweg", delen)
     tekst = "%s\n\nJe horren zijn onderweg.%s\n\nIs er bij ontvangst iets beschadigd? Stuur binnen twee dagen een foto.\n\n%s" % (
@@ -252,11 +264,11 @@ def past_alles(b, reviewlink):
         _p(_aanhef(k.get("naam"))),
         _p("Je horren zijn een paar dagen binnen. Passen ze goed?"),
         _p('Zit er iets niet goed, antwoord dan op deze mail of <a href="%s" style="color:%s">stuur een '
-           "WhatsApp</a> met een foto. Dan lossen we het op; daar is de pasgarantie voor." % (wa, KH_GROEN)),
+           "WhatsApp</a> met een foto. Dan lossen we het op; daar is de pasgarantie voor." % (wa, KH_ORANJE)),
     ]
     if reviewlink:
         delen += [_p("Ben je tevreden? Dan zouden we het heel fijn vinden als je dat in een review zet."),
-                  _knop(reviewlink, "Schrijf een review", KH_GROEN)]
+                  _knop(reviewlink, "Schrijf een review", KH_ORANJE)]
     html = _winkelmail("Past alles?", delen)
     tekst = "%s\n\nJe horren zijn een paar dagen binnen. Passen ze goed? Zo niet, antwoord op deze mail.%s" % (
         _aanhef(k.get("naam")), ("\n\nTevreden? Een review helpt ons enorm: " + reviewlink) if reviewlink else "")

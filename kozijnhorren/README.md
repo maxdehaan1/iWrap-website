@@ -60,13 +60,17 @@ plaatshouder laat de build stoppen.
 
 ## Stijl
 
-Geïnspireerd op grote, rustige webwinkels (zoals stoov.com): wit met warm beige vlakken,
-grote koppen in een dunne letter (Outfit), pilvormige knoppen, productkaarten op een
-beige vlak, een draaiende aankondigingsbalk en een winkelmand die van rechts inschuift.
+In de stijl van stoov.com: wit met warme crème vlakken, grote koppen in een dunne letter
+(Outfit), pilvormige knoppen, productkaarten op een crème vlak, een oranje aankondigingsbalk
+en een winkelmand die van rechts inschuift.
 
-- `--merk` (diep kozijngroen) voor koppen en gewone knoppen.
-- `--koraal` alleen voor de belangrijkste knop per scherm (bestellen, afrekenen).
-  Donker genoeg voor witte tekst (4,6:1); maak hem niet lichter.
+- **Logo**: het woordmerk `kozijnhorren.nl`, gewoon tekst in Figtree 900, in `--oranje`
+  (#ff5000). Geen los beeldmerk; het favicon is een oranje vlak met een crème "k".
+- `--oranje` alleen voor het logo en grote vlakken met donkere tekst. Witte tekst erop is
+  slecht leesbaar (3,3:1).
+- `--oranje-knop` (#d93d00) voor de belangrijkste knop per scherm, labels en vlakken met
+  witte tekst (4,6:1). `--oranje-tekst` voor kleine oranje tekst. Maak ze niet lichter.
+- `--donker` (warm donkerbruin) voor koppen, gewone knoppen, het garantiepaneel en de footer.
 - De hor zelf is een SVG-tekening die van kleur wisselt (`--kleur`). Zodra er echte
   productfoto's zijn, kunnen die op de productkaarten en de bestelpagina in de plaats komen.
 

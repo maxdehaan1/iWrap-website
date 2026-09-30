@@ -52,7 +52,7 @@
     if (b.nr) doos.appendChild(el("p", "melding", "Bestelnummer " + b.nr));
 
     if (b.status === "open" || b.status === "mislukt") {
-      var terug = el("a", "knop knop-koraal", "Opnieuw proberen");
+      var terug = el("a", "knop knop-oranje", "Opnieuw proberen");
       terug.href = "/afrekenen";
       doos.appendChild(terug);
     }
@@ -66,7 +66,7 @@
       rij.style.justifyContent = "center";
       rij.style.marginTop = "24px";
       if (b.verzending && b.verzending.track) {
-        var a = el("a", "knop knop-merk", "Volg je pakket");
+        var a = el("a", "knop knop-donker", "Volg je pakket");
         a.href = b.verzending.track; a.target = "_blank"; a.rel = "noopener";
         rij.appendChild(a);
       }

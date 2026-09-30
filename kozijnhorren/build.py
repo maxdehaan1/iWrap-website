@@ -65,7 +65,7 @@ FOOTER_KOLOMMEN = [
         ("levering-en-retour", "Levering en pasgarantie"),
     ]),
     ("Over", [
-        ("over-ons", "Over Kozijnhorren"),
+        ("over-ons", "Over ons"),
         ("voorwaarden", "Voorwaarden"),
         ("privacy", "Privacy"),
     ]),
@@ -272,9 +272,9 @@ def render_vertrouwen():
 # Opbouw
 # ---------------------------------------------------------------------------
 
-LOGO = ('<svg class="logo-teken" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="26" height="26" rx="6"/>'
-        '<rect x="9" y="9" width="14" height="14" rx="1.5" class="logo-binnen"/>'
-        '<path d="M13 9v14M17 9v14M21 9v14M9 13h14M9 17h14M9 21h14" class="logo-gaas"/></svg>')
+# Het woordmerk: gewoon tekst in Figtree 900 (zie --logo in winkel.css). Het
+# lettertype wordt alleen voor deze letters geladen, dus het kost bijna niets.
+LOGO = "kozijnhorren.nl"
 
 MELDINGEN = [
     "Past hij niet? Dan maken we een nieuwe",
@@ -311,7 +311,7 @@ def render_kop(slug):
 <header class="kop">
   <div class="kop-binnen">
     <button class="menu-knop" aria-expanded="false" aria-controls="menu"><span class="streepjes" aria-hidden="true"></span><span class="sr-only">Menu</span></button>
-    <a class="merk" href="/" aria-label="{WINKEL['naam']}, naar de homepage">{LOGO}<span>kozijnhorren</span></a>
+    <a class="merk" href="/" aria-label="{WINKEL['naam']}, naar de homepage">{LOGO}</a>
     <nav class="menu" id="menu" aria-label="Hoofdmenu">
 {links}
     </nav>
@@ -334,13 +334,13 @@ def render_mand():
     <ul class="mand-lijst"></ul>
     <div class="mand-leeg">
       <p>Je winkelmand is nog leeg.</p>
-      <a class="knop knop-merk" href="/bestellen">Bereken je prijs</a>
+      <a class="knop knop-donker" href="/bestellen">Bereken je prijs</a>
     </div>
   </div>
   <div class="mand-voet" hidden>
     <div class="mand-totaal"><span>Totaal <small>incl. btw, gratis bezorgd</small></span><b class="mand-bedrag"></b></div>
     <p class="mand-levertijd"></p>
-    <a class="knop knop-koraal knop-vol" href="/afrekenen">Afrekenen</a>
+    <a class="knop knop-oranje knop-vol" href="/afrekenen">Afrekenen</a>
     <a class="mand-nog" href="/bestellen">+ Nog een raam toevoegen</a>
     <details class="mand-delen">
       <summary>Bestelling bewaren of doorsturen</summary>
@@ -365,7 +365,7 @@ def render_footer():
     return f"""<footer class="voet">
   <div class="breed voet-raster">
     <div class="vcol voet-merk">
-      <a class="merk licht" href="/">{LOGO}<span>kozijnhorren</span></a>
+      <a class="merk" href="/">{LOGO}</a>
       <p>{WINKEL['tagline']}. Op maat gemaakt, zonder boren geplaatst, en als hij niet past maken we een nieuwe.</p>
       <p class="voet-contact"><a href="{whatsapp()}">WhatsApp {WINKEL['telefoon']}</a><br>
       <a href="mailto:{WINKEL['email']}">{WINKEL['email']}</a></p>
@@ -393,12 +393,13 @@ HEAD = """<!DOCTYPE html>
 <meta property="og:title" content="{ogtitle}">
 <meta property="og:description" content="{description}">
 <meta property="og:url" content="{canonical}">
-<meta name="theme-color" content="#f6f3ed">
+<meta name="theme-color" content="#f8f3ee">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <script>document.documentElement.className+=" js";</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@900&display=block&text=kozijnhorren.nl">
 <link rel="stylesheet" href="/css/winkel.css?v={ver}">
 <script type="application/ld+json">{jsonld}</script>
 </head>

@@ -159,7 +159,7 @@
     voegToe(leeg(APP), [
       h("div.max-tabs", { role: "tablist" },
         h("a" + (tab === "klussen" ? ".actief" : ""), { href: "#", role: "tab" }, "Klussen"),
-        h("a" + (tab === "bestellingen" ? ".actief" : ""), { href: "#bestellingen", role: "tab" }, "Kozijnhorren")),
+        h("a" + (tab === "bestellingen" ? ".actief" : ""), { href: "#bestellingen", role: "tab" }, "kozijnhorren.nl")),
       statusBalk(),
       tab === "klussen" ? h("button.knop.knop-primair.max-nieuw", { type: "button", onclick: nieuweKlus }, "+ Nieuwe klus") : null,
       inhoud,
