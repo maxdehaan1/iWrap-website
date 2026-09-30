@@ -64,7 +64,7 @@ In de stijl van stoov.com: wit met warme crème vlakken, grote koppen in een dun
 (Outfit), pilvormige knoppen, productkaarten op een crème vlak, een oranje aankondigingsbalk
 en een winkelmand die van rechts inschuift.
 
-- **Logo**: het woordmerk `kozijnhorren.nl`, gewoon tekst in Figtree 900, in `--oranje`
+- **Logo**: het woordmerk `kozijnhorren.nl`, gewoon tekst in Nunito 800 (rond, met afgeronde hoeken), in `--oranje`
   (#ff5000). Geen los beeldmerk; het favicon is een oranje vlak met een crème "k".
 - `--oranje` alleen voor het logo en grote vlakken met donkere tekst. Witte tekst erop is
   slecht leesbaar (3,3:1).

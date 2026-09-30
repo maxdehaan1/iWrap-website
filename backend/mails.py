@@ -43,10 +43,10 @@ def _afzender_kop(afzender, accent):
     if afzender == "iWrap":
         return ('<p style="margin:0 0 18px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;'
                 'color:%s;font-weight:700">%s</p>' % (accent, escape(afzender)))
-    # Het woordmerk van de winkel. Figtree heeft bijna geen mailprogramma; Arial
-    # Black komt er het dichtst bij.
-    return ('<p style="margin:0 0 20px;font-family:Figtree,\'Arial Black\',Arial,sans-serif;font-size:24px;'
-            'line-height:1;font-weight:900;letter-spacing:-.03em;color:%s">%s</p>' % (KH_LOGO, escape(afzender)))
+    # Het woordmerk van de winkel. Nunito heeft bijna geen mailprogramma; Arial
+    # Rounded (Mac, Office) komt er het dichtst bij, anders Arial Black.
+    return ('<p style="margin:0 0 20px;font-family:Nunito,\'Arial Rounded MT Bold\',\'Arial Black\',Arial,sans-serif;font-size:24px;'
+            'line-height:1;font-weight:800;letter-spacing:-.02em;color:%s">%s</p>' % (KH_LOGO, escape(afzender)))
 
 
 def _voet(afzender):

@@ -272,7 +272,7 @@ def render_vertrouwen():
 # Opbouw
 # ---------------------------------------------------------------------------
 
-# Het woordmerk: gewoon tekst in Figtree 900 (zie --logo in winkel.css). Het
+# Het woordmerk: gewoon tekst in Nunito 800 (zie --logo in winkel.css). Het
 # lettertype wordt alleen voor deze letters geladen, dus het kost bijna niets.
 LOGO = "kozijnhorren.nl"
 
@@ -399,7 +399,7 @@ HEAD = """<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@900&display=block&text=kozijnhorren.nl">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@800&display=block&text=kozijnhorren.nl">
 <link rel="stylesheet" href="/css/winkel.css?v={ver}">
 <script type="application/ld+json">{jsonld}</script>
 </head>

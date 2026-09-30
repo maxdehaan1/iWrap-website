@@ -2,8 +2,8 @@
    kozijnhorren.nl
 
    Warm en rustig: wit en crème, donkerbruine tekst en één felle merkkleur,
-   oranje. Het woordmerk "kozijnhorren.nl" staat in een dikke, ronde letter
-   (Figtree 900), in de stijl van stoov. De kleuren van de horren zelf zijn de
+   oranje. Het woordmerk "kozijnhorren.nl" staat in een ronde letter met
+   afgeronde hoeken (Nunito 800), in de stijl van stoov. De kleuren van de horren zelf zijn de
    enige andere kleur op de pagina.
 
    --oranje is de logokleur: voor het woordmerk en grote vlakken met donkere
@@ -32,7 +32,7 @@
   --r:clamp(16px,1.6vw,26px);
   --r-klein:12px;
   --letter:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  --logo:'Figtree','Outfit',-apple-system,BlinkMacSystemFont,sans-serif;
+  --logo:'Nunito','Outfit',-apple-system,BlinkMacSystemFont,sans-serif;
 }
 
 *{box-sizing:border-box;}
@@ -98,7 +98,7 @@ small{font-size:.84em;}
 
 .kop{position:sticky;top:0;z-index:100;background:rgba(248,243,238,.94);backdrop-filter:saturate(1.2) blur(10px);border-bottom:1px solid var(--lijn);}
 .kop-binnen{max-width:1320px;margin:0 auto;padding:0 clamp(16px,2.4vw,32px);height:66px;display:flex;align-items:center;gap:34px;}
-.merk{display:inline-block;text-decoration:none;color:var(--oranje);font:900 1.62rem/1 var(--logo);letter-spacing:-.04em;white-space:nowrap;padding:4px 0 6px;}
+.merk{display:inline-block;text-decoration:none;color:var(--oranje);font:800 1.66rem/1 var(--logo);letter-spacing:-.025em;white-space:nowrap;padding:4px 0 6px;}
 .merk:hover{color:var(--oranje);}
 .voet .merk,.voet .merk:hover{font-size:2rem;color:var(--oranje);text-decoration:none;}
 .menu{display:flex;align-items:center;gap:28px;font-size:.98rem;margin-right:auto;}
@@ -112,7 +112,7 @@ small{font-size:.84em;}
 .menu-knop{display:none;}
 @media (max-width:900px){
   .kop-binnen{gap:12px;height:60px;}
-  .merk{margin-right:auto;font-size:1.42rem;}
+  .merk{margin-right:auto;font-size:1.46rem;}
   .menu-knop{display:inline-grid;place-items:center;width:44px;height:44px;border:0;background:none;cursor:pointer;margin-left:-8px;}
   .streepjes,.streepjes::before,.streepjes::after{display:block;width:20px;height:1.6px;background:var(--inkt);border-radius:2px;position:relative;transition:transform .2s ease;}
   .streepjes::before,.streepjes::after{content:"";position:absolute;left:0;}
