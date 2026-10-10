@@ -35,6 +35,22 @@
 .tekst figure img{border-radius:var(--radius);box-shadow:var(--shadow);}
 .tekst figcaption{margin-top:11px;font-size:.86rem;color:var(--sub);}
 
+/* Video onder de paginakop (/over-iwrap). De knop en het afspelen zitten in
+   style.css en main.js. */
+.video-sectie{padding-bottom:0;}
+.video{margin:0;}
+.video-beeld{position:relative;}
+.video video{
+  display:block;width:100%;height:auto;aspect-ratio:16/9;cursor:pointer;
+  background:#d4e3e6;border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);
+}
+.video .speelknop{position:absolute;right:18px;bottom:18px;}
+.video figcaption{margin-top:14px;font-size:.88rem;color:var(--sub);max-width:70ch;}
+@media (max-width:700px){
+  .video video{border-radius:var(--radius);}
+  .video .speelknop{right:10px;bottom:10px;width:40px;height:40px;}
+}
+
 .zij-indeling{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:clamp(30px,4vw,56px);align-items:start;}
 .zij{position:sticky;top:92px;display:grid;gap:18px;}
 @media (max-width:940px){

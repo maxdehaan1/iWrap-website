@@ -1,0 +1,94 @@
+/* ---------------------------------------------------------------------------
+   De film (src/film.html, js/film.js). Staat op de homepage in het donkere
+   werkwijzeblok en op /werkwijze op een licht vlak.
+   --------------------------------------------------------------------------- */
+
+/* Op een breed scherm een liggend beeld van 16:9 met de tekst links; alle maten lopen dan mee met de
+   breedte (cqw), zodat hij er op de site en in de MP4 hetzelfde uitziet. Op
+   een telefoon staat het beeld boven de tekst. */
+.film{
+  container-type:inline-size;
+  position:relative;display:grid;grid-template-columns:38fr 62fr;
+  aspect-ratio:16/9;margin:0 0 clamp(40px,5vw,60px);
+  background:var(--paper);color:var(--ink);
+  border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;
+  box-shadow:var(--shadow-lg);
+}
+/* Op het donkere vlak van de homepage een diepere schaduw en geen rand. */
+.vlak-donker .film{border-color:transparent;box-shadow:0 30px 70px -34px rgba(0,0,0,.7);}
+/* Op /werkwijze staat hij los onder de paginakop. */
+.film-sectie{padding-bottom:0;}
+.film-sectie .film{margin-bottom:0;}
+/* Zonder JavaScript is er geen film; de stappen eronder vertellen hetzelfde. */
+html:not(.js) .film,html:not(.js) .film-sectie{display:none;}
+
+.film-beeld{position:relative;min-width:0;background:#e6efeb;}
+.film-svg{position:absolute;inset:0;width:100%;height:100%;display:block;}
+
+.film-tekst{display:grid;align-items:center;padding:4cqw 3.4cqw 4cqw 4.6cqw;min-width:0;}
+/* Alle tekstblokken liggen op dezelfde plek; film.js laat ze om de beurt zien. */
+.film-tekst > *{grid-area:1/1;visibility:hidden;}
+.film .film-stap{
+  font-family:var(--kop);font-size:1.12cqw;font-weight:600;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--mint-ink);
+  display:flex;align-items:center;gap:.8em;margin:0 0 1.1em;
+}
+.film-stap::before{content:"";width:1.8em;height:.26em;border-radius:2px;background:var(--mint);flex-shrink:0;}
+.film .film-zin{
+  font-family:var(--kop);font-weight:700;font-size:3.15cqw;line-height:1.14;
+  letter-spacing:-.02em;color:var(--ink);margin:0;text-wrap:balance;
+}
+
+.film-slot .film-logo{width:15cqw;height:auto;margin:0 0 2.2cqw;}
+.film-slot ul{list-style:none;margin:0 0 1.9cqw;padding:0;display:grid;gap:.95cqw;}
+.film-slot li{
+  display:flex;align-items:center;gap:.7em;
+  font-family:var(--kop);font-weight:600;font-size:1.8cqw;line-height:1.2;color:var(--ink);
+}
+.film-slot li::before{
+  content:"";width:1.35em;height:1.35em;border-radius:50%;flex-shrink:0;
+  background:var(--mint) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2322262a' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/62% no-repeat;
+}
+.film .film-score{font-size:1.35cqw;color:var(--sub);margin:0 0 2.2cqw;}
+.film-score span{color:var(--ster);}
+.film-cta{font-size:1.2cqw;padding:1.05em 2em;justify-self:start;}
+.film-slot{display:grid;justify-items:start;}
+.film .film-adres{
+  display:none;margin:0;font-family:var(--kop);font-weight:700;font-size:1.8cqw;color:var(--mint-ink);
+}
+
+.film-label{
+  position:absolute;top:2.6cqw;left:2.6cqw;visibility:hidden;
+  font-family:var(--kop);font-weight:700;font-size:1.25cqw;letter-spacing:.02em;
+  padding:.5em 1.15em;border-radius:999px;
+}
+.film-voor{background:var(--rust);color:#fff;box-shadow:0 0 0 .2em #fff;}
+.film-na{background:var(--mint);color:var(--ink);box-shadow:0 0 0 .2em #fff;}
+
+.film-knop{position:absolute;right:2cqw;bottom:2.4cqw;}
+
+.film-voortgang{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(34,38,42,.08);}
+.film-voortgang span{display:block;height:100%;background:var(--mint-ink);transform-origin:0 50%;transform:scaleX(0);}
+
+/* Opname (video/opname.mjs): geen knoppen, wel het logo en het webadres --
+   een losse video moet zelf zeggen van wie hij is. */
+.film-merk{display:none;}
+.film.opname{border:0;border-radius:0;box-shadow:none;margin:0;}
+.film.opname .film-merk{display:block;position:absolute;top:3.4cqw;left:4.6cqw;width:10cqw;height:auto;visibility:hidden;}
+.film.opname .film-knop,.film.opname .film-voortgang,.film.opname .film-cta{display:none;}
+.film.opname .film-adres{display:block;}
+
+@media (max-width:700px){
+  .film{grid-template-columns:1fr;aspect-ratio:auto;border-radius:var(--radius);}
+  .film-beeld{order:-1;aspect-ratio:9/8;}
+  .film-tekst{padding:22px 22px 26px;min-height:13.5rem;}
+  .film .film-stap{font-size:.72rem;}
+  .film .film-zin{font-size:1.45rem;}
+  .film-slot .film-logo{display:none;}
+  .film-slot ul{gap:8px;margin-bottom:12px;}
+  .film-slot li{font-size:1rem;}
+  .film .film-score{font-size:.88rem;margin-bottom:16px;}
+  .film-cta{font-size:.92rem;}
+  .film-label{top:14px;left:14px;font-size:.8rem;}
+  .film-knop{right:12px;bottom:14px;}
+}

@@ -34,6 +34,15 @@
       ]
     },
     {
+      "source": "/media/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=2592000"
+        }
+      ]
+    },
+    {
       "source": "/css/(.*)",
       "headers": [
         {
@@ -152,7 +161,7 @@
   "functions": {
     "api/index.py": {
       "maxDuration": 30,
-      "excludeFiles": "{images/**,kozijnhorren/**,src/**,css/**,js/**,kozijnmerken/**,tests/**,.data/**,prive/**,*.html,*.xml,*.md}"
+      "excludeFiles": "{images/**,media/**,kozijnhorren/**,src/**,css/**,js/**,kozijnmerken/**,tests/**,.data/**,prive/**,*.html,*.xml,*.md}"
     }
   },
   "crons": [

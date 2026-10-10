@@ -1,0 +1,13 @@
+{
+  "name": "iwrap-film-opname",
+  "private": true,
+  "description": "Neemt de film van de homepage op als MP4. Zie README.md in deze map.",
+  "type": "module",
+  "scripts": {
+    "opname": "node opname.mjs"
+  },
+  "dependencies": {
+    "ffmpeg-static": "^5.2.0",
+    "puppeteer-core": "^23.11.1"
+  }
+}

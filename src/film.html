@@ -1,0 +1,40 @@
+<!-- De film van 15 seconden. Staat op de homepage en op /werkwijze via
+     {{film}} in de bron; build.py zet dit bestand daar neer.
+
+     js/film.js tekent het beeld en laat de blokken in .film-tekst in deze
+     volgorde zien, op de tijden in BLOKKEN bovenin film.js. Een tekst
+     aanpassen kan hier. Maak daarna ook de MP4 opnieuw: zie video/ en de
+     README. -->
+<figure class="film" data-film>
+  <img class="film-merk" src="/images/logo/iwrap-logo-donker-88.png" width="210" height="44" alt="">
+  <div class="film-tekst">
+    <div><p class="film-stap">Zo begint het</p><p class="film-zin">Je kozijn is niet op. De folie wel.</p></div>
+    <div><p class="film-stap">Stap 1 · Offerte</p><p class="film-zin">Stuur een foto. Je krijgt een vaste prijs.</p></div>
+    <div><p class="film-stap">Stap 2 · Afspraak</p><p class="film-zin">Je weet vooraf wie er komt, en wanneer.</p></div>
+    <div><p class="film-stap">Stap 3 · Verwijderen</p><p class="film-zin">Oude folie eraf. Het kozijn blijft gewoon zitten.</p></div>
+    <div><p class="film-stap">Stap 4 · Aanbrengen</p><p class="film-zin">Nieuwe folie erop. Meestal in één à twee dagen.</p></div>
+    <div><p class="film-stap">Klaar</p><p class="film-zin">Weer als nieuw.</p></div>
+    <div class="film-slot">
+      <img class="film-logo" src="/images/logo/iwrap-logo-donker-88.png" width="210" height="44" alt="iWrap">
+      <ul>
+        <li>Vaste prijs vooraf</li>
+        <li>10 jaar garantie op de folie</li>
+        <li>Opgeruimd achtergelaten</li>
+      </ul>
+      <p class="film-score"><span aria-hidden="true">★</span> {{bedrijf.reviews_score}} uit {{bedrijf.reviews_aantal}} Google-reviews</p>
+      <a class="knop knop-primair film-cta" href="/offerte">Offerte aanvragen</a>
+      <p class="film-adres">www.iwrap.nl</p>
+    </div>
+  </div>
+  <div class="film-beeld">
+    <svg class="film-svg" viewBox="0 0 900 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"></svg>
+    <span class="film-label film-voor" aria-hidden="true">Voor</span>
+    <span class="film-label film-na" aria-hidden="true">Na</span>
+    <button class="film-knop speelknop" type="button" aria-label="Film afspelen">
+      <svg class="icoon-pauze" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3v14H7zM14 5h3v14h-3z" fill="currentColor"/></svg>
+      <svg class="icoon-speel" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+      <svg class="icoon-opnieuw" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="film-voortgang" aria-hidden="true"><span></span></div>
+  </div>
+</figure>

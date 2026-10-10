@@ -88,6 +88,7 @@ serve.py                  Lokale server met schone URL's
 vercel.json               cleanUrls, cachekoppen, redirects van oude URL's
 src/pages/                De bron van elke pagina
 src/merk-sjabloon.html    Eén opmaak voor alle merkpagina's
+src/film.html             De film: teksten en opmaak, via {{film}} op een pagina
 
 index.html                Homepage                              (gegenereerd)
 offerte.html              Het aanvraagformulier — de kern       (gegenereerd)
@@ -113,12 +114,15 @@ css/content.css           Tekstpagina's
 css/offerte.css           Alleen het formulier
 css/rapport.css           Het rapport en de kozijncheck-pagina
 css/max.css               De Max-modus
+css/film.css              De film (homepage en /werkwijze)
 js/main.js                Menu, voor/na-schuif, scroll-animaties
+js/film.js                De film van 15 seconden op de homepage
 js/offerte.js             Het stappenformulier
 js/rapport.js             Vult het rapport vanuit de API
 js/max.js                 De Max-modus
 js/vendor/                QR-code-bibliotheek (MIT), ongewijzigd
 images/                   Elke foto als webp op drie breedtes, met een jpg als terugval
+media/                    Videobestanden die op de site staan (de werkdag-video)
 
 api/index.py              Vercel-ingang van de achterkant
 backend/                  De achterkant: rapporten, kassa, mails (zie hieronder)
@@ -126,6 +130,7 @@ backend/data/             Kozijncheck, horren, prijzen, kleuren, winkelgegevens
 tests/test_backend.py     Loopt de hele stroom door, van klus tot "past alles?"
 prijslijst.py             Inkoopprijzen + marge -> verkoopprijzen voor de winkel
 kozijnhorren/             kozijnhorren.nl: eigen site, eigen Vercel-project
+video/                    Neemt de film op als MP4 (niet op de site, niet in git)
 ```
 
 ## Huisstijl
@@ -369,6 +374,64 @@ maandelijks $200 gratis tegoed.
 **Waarom niet de Trustindex-widget?** Die draait op je huidige site en is wél live, maar
 het is een extern script dat de pagina vertraagt en dat verdwijnt zodra iwrap.nl deze
 site serveert. Deze opzet houdt de site snel en de reviews in je eigen beheer.
+
+## De film op de homepage
+
+Een getekende film van vijftien seconden: verweerd kozijn,
+foto sturen en vaste prijs, het busje voor de deur, oude folie eraf, nieuwe erop, en een
+eindkaart met de drie beloftes en het reviewcijfer. Het kozijn is crème (RAL 9001) met
+een dennengroen draairaam (RAL 6009), tegen een rode gevel. Vóór en ná dezelfde kleuren:
+de nieuwe folie maakt het niet anders, alleen weer strak. De kleuren staan in `CREME` en
+`GROEN` bovenin `js/film.js`. Hij speelt vanzelf af zodra hij in beeld komt, pauzeert als
+je wegscrolt en blijft aan het eind op de eindkaart staan. Wie op zijn telefoon "minder
+beweging" aan heeft staan, ziet meteen het eindbeeld met een afspeelknop.
+
+**Waar hij staat.** Op de homepage in het donkere werkwijzeblok, en dat blok staat bewust
+direct onder de hero: eerst het resultaat (de voor/na-schuif), meteen daarna hoe het gaat.
+Daarnaast bovenaan `/werkwijze`, als samenvatting vóór de zes stappen. Op beide plekken
+via `{{film}}` in de bron; build.py zet daar `src/film.html` neer. Elders erbij zetten is
+dus één regel `{{film}}` plus `"film"` in de css- en js-lijst van die pagina (hij kan maar
+één keer per pagina).
+
+- **Teksten** staan in `src/film.html`, als blokken in `.film-tekst`.
+- **Tijden** (wanneer welk blok komt) staan in `BLOKKEN` bovenin `js/film.js`.
+- **Het beeld** tekent `js/film.js` zelf, in SVG. Alles is een functie van de tijd:
+  `teken(t)`. Er zit dus geen videobestand op de site.
+
+**De MP4** (om te delen via WhatsApp, mail of met dealers) wordt uit precies die code
+opgenomen, zodat site en video nooit uit elkaar lopen. Na een wijziging:
+
+```bash
+python3 build.py
+cd video && npm install && npm run opname
+```
+
+Dat levert `video/iwrap-zo-werkt-het.mp4` op: 1920×1080, 16 seconden (de eindkaart
+blijft in de video een seconde langer staan), zonder geluid. Het script gebruikt je eigen
+Google Chrome en start zelf een server op poort 8011. Met `node opname.mjs --beelden 0,8,15`
+krijg je losse PNG's in `video/beelden/` om een moment te bekijken.
+
+## De werkdag-video op /over-iwrap
+
+Naast de film staat er nog een tweede animatie van vijftien seconden op de site: *een
+werkdag bij iWrap* (folie inladen, onderweg, aanbellen, steiger, eerst een bakje koffie,
+oude folie eraf, nieuwe erop, hand erop). Die gaat niet over wát er gebeurt maar over wíe
+er komt, en staat daarom bovenaan **Over iWrap**, direct onder de paginakop.
+
+- Het bestand is `media/iwrap-werkdag.mp4` (het origineel staat in
+  `Documents/iWrap/Offertes ICM/_media/`). De poster is `images/werkdag-poster.jpg`, het
+  eerste beeld van de video, zodat het starten naadloos gaat.
+- Hij laadt pas als hij in beeld komt (`preload="none"`), speelt dan zonder geluid af,
+  pauzeert als je wegscrolt en blijft aan het eind op de eindkaart staan. Dat gedrag zit
+  in `main.js` en werkt voor elke `<figure data-video>`, dus een tweede video ergens anders
+  is alleen opmaak.
+- In de structured data van de pagina staat een `VideoObject`, zodat Google hem als
+  video kan tonen. Vervang je de video, pas dan daar ook de `uploadDate` aan.
+- Vervangen: nieuw bestand onder dezelfde naam in `media/`, nieuwe poster eruit halen met
+  `video/node_modules/ffmpeg-static/ffmpeg -ss 0 -i media/iwrap-werkdag.mp4 -frames:v 1
+  -vf scale=1280:-1 -q:v 3 images/werkdag-poster.jpg`, en bouwen. Let op: `/media/` wordt
+  dertig dagen gecachet, dus wie hem al gezien heeft krijgt pas daarna de nieuwe. Wil je
+  dat meteen, geef het bestand dan een nieuwe naam.
 
 ## Wat er nog moet gebeuren
 

@@ -8,7 +8,16 @@
   "kruimels": [["Over iWrap", "/over-iwrap"]],
   "ogimage": "/images/werk-renolit-folie-aanbrengen-1600.webp",
   "ogalt": "Monteur van iWrap brengt nieuwe Renolit folie aan op een kunststof kozijn",
-  "schema": [{"@type": "AboutPage", "name": "Over iWrap"}]
+  "schema": [
+    {"@type": "AboutPage", "name": "Over iWrap"},
+    {"@type": "VideoObject",
+     "name": "Een werkdag bij iWrap",
+     "description": "Een werkdag van iWrap in vijftien seconden: folie inladen, op weg naar de klant, aanbellen, steiger opbouwen, eerst een bakje koffie, de oude folie eraf en nieuwe Renolit folie erop.",
+     "thumbnailUrl": "https://www.iwrap.nl/images/werkdag-poster.jpg",
+     "contentUrl": "https://www.iwrap.nl/media/iwrap-werkdag.mp4",
+     "uploadDate": "2026-10-10",
+     "duration": "PT15S"}
+  ]
 } -->
 
 <section class="pagina-hero">
@@ -21,6 +30,25 @@
     <p class="lede">iWrap is een klein bedrijf uit {{bedrijf.plaats}} dat één ding
     doet: kunststof kozijnen herstellen met Renolit folie. Geen schilderwerk erbij,
     geen kozijnen verkopen, geen aanbouw. Alleen dit.</p>
+  </div>
+</section>
+
+<section class="video-sectie">
+  <div class="wrap">
+    <figure class="video" data-video>
+      <div class="video-beeld">
+        <video src="/media/iwrap-werkdag.mp4" poster="/images/werkdag-poster.jpg" width="1920" height="1080"
+               muted playsinline preload="none" aria-label="Animatie: een werkdag bij iWrap"></video>
+        <button class="speelknop" type="button" data-stand="speel" aria-label="Video afspelen">
+          <svg class="icoon-pauze" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3v14H7zM14 5h3v14h-3z" fill="currentColor"/></svg>
+          <svg class="icoon-speel" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+          <svg class="icoon-opnieuw" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <figcaption>Een werkdag bij iWrap, in vijftien seconden: folie inladen in de
+      werkplaats, op weg, aanbellen, steiger opbouwen, eerst een bakje koffie &mdash; en
+      dan pas de oude folie eraf en de nieuwe erop.</figcaption>
+    </figure>
   </div>
 </section>
 

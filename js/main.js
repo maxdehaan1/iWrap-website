@@ -56,6 +56,44 @@
     });
   });
 
+  /* Video's ------------------------------------------------------------- */
+  /* Spelen vanzelf (zonder geluid) zodra ze goed in beeld zijn, pauzeren als je
+     wegscrolt en blijven aan het eind op het laatste beeld staan. Wie minder
+     beweging wil, krijgt alleen de afspeelknop. */
+  var weinigBeweging = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('[data-video]').forEach(function (blok) {
+    var video = blok.querySelector('video');
+    var speelknop = blok.querySelector('.speelknop');
+    var zelfGepauzeerd = false;
+    var LABELS = { pauze: 'Video pauzeren', speel: 'Video afspelen', opnieuw: 'Video opnieuw afspelen' };
+
+    function speel() {
+      var belofte = video.play();
+      if (belofte && belofte.catch) belofte.catch(function () {});
+    }
+    function werkKnop() {
+      var stand = !video.paused ? 'pauze' : video.ended ? 'opnieuw' : 'speel';
+      speelknop.setAttribute('data-stand', stand);
+      speelknop.setAttribute('aria-label', LABELS[stand]);
+    }
+    function wissel() {
+      if (video.paused) { zelfGepauzeerd = false; speel(); }
+      else { zelfGepauzeerd = true; video.pause(); }
+    }
+    ['play', 'pause', 'ended'].forEach(function (e) { video.addEventListener(e, werkKnop); });
+    speelknop.addEventListener('click', wissel);
+    video.addEventListener('click', wissel);
+    werkKnop();
+
+    if (weinigBeweging || !('IntersectionObserver' in window)) return;
+    new IntersectionObserver(function (rijen) {
+      rijen.forEach(function (rij) {
+        if (rij.isIntersecting && video.paused && !video.ended && !zelfGepauzeerd) speel();
+        else if (!rij.isIntersecting && !video.paused) video.pause();
+      });
+    }, { threshold: 0.55 }).observe(blok);
+  });
+
   /* Zachte intro --------------------------------------------------------- */
   var doelen = document.querySelectorAll('.verschijn');
   if (!doelen.length) return;

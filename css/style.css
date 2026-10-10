@@ -166,6 +166,19 @@ header.site{
 .knop svg{flex-shrink:0;}
 
 .knoprij{display:flex;flex-wrap:wrap;gap:14px;align-items:center;}
+
+/* Ronde afspeelknop op de film en op video's. data-stand (speel, pauze,
+   opnieuw) bepaalt welk van de drie iconen erin te zien is. */
+.speelknop{
+  width:44px;height:44px;border-radius:50%;display:grid;place-items:center;
+  border:0;cursor:pointer;background:rgba(255,255,255,.92);color:var(--ink);box-shadow:var(--shadow);
+  transition:transform .18s ease,background .18s ease;
+}
+.speelknop:hover{transform:scale(1.06);background:#fff;}
+.speelknop svg{display:none;}
+.speelknop[data-stand="pauze"] .icoon-pauze,
+.speelknop[data-stand="speel"] .icoon-speel,
+.speelknop[data-stand="opnieuw"] .icoon-opnieuw{display:block;}
 .knoprij .bijschrift{font-size:.87rem;color:var(--sub);}
 
 /* Secties ----------------------------------------------------------------- */
