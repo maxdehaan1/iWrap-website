@@ -175,12 +175,18 @@
 
 <section class="vlak-wit">
   <div class="wrap">
-    <div class="slot">
-      <h2>Kozijnen herstellen, en meteen weten hoe de rest ervoor staat</h2>
-      <p>Stuur een paar foto's, dan krijg je een vaste totaalprijs. De kozijncheck zit er altijd bij.</p>
-      <div class="knoprij">
-        <a class="knop knop-licht" href="/offerte">Offerte aanvragen</a>
-        <span class="bijschrift">Vier vragen en een paar foto's</span>
+    <div class="slot met-beeld">
+      <div class="slot-tekst">
+        <h2>Kozijnen herstellen, en meteen weten hoe de rest ervoor staat</h2>
+        <p>Stuur een paar foto's, dan krijg je een vaste totaalprijs. De kozijncheck zit er altijd bij.</p>
+        <div class="knoprij">
+          <a class="knop knop-licht" href="/offerte">Offerte aanvragen</a>
+          <span class="bijschrift">Vier vragen en een paar foto's</span>
+        </div>
+      </div>
+      <div class="slot-beeld">
+        <x-beeld src="werk-monteur-bij-kozijn" sizes="(max-width:820px) 100vw, 480px" alt="Monteur van iWrap aan het werk bij een kozijn">
+        <a class="slot-score" href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener"><span aria-hidden="true">★</span> {{bedrijf.reviews_score}} uit {{bedrijf.reviews_aantal}} Google-reviews</a>
       </div>
     </div>
   </div>

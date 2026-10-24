@@ -1,0 +1,101 @@
+<!-- De doorsnede: een onderdorpel in drie standen (verweerd, oude laag eraf,
+     nieuwe folie). Staat op de homepage en op /kunststof-kozijn-herstellen via
+     {{doorsnede}}; build.py zet dit bestand daar neer.
+
+     js/doorsnede.js zet data-stand op 1, 2 of 3; de overgangen zelf zitten in
+     css/doorsnede.css. Zonder JavaScript blijft hij op stand 3 staan, met alle
+     drie de stappen als gewone tekst eronder.
+
+     De folie is in de tekening veel dikker dan in het echt (een paar tienden
+     van een millimeter). Het bijschrift zegt dat ook; haal dat niet weg. -->
+<figure class="doorsnede" data-doorsnede data-stand="3">
+  <div class="ds-raster">
+  <div class="ds-beeld">
+    <svg viewBox="70 0 620 360" role="img" aria-labelledby="ds-titel">
+      <title id="ds-titel">Doorsnede van een onderdorpel: het kunststof profiel, de lijmlaag en de folie</title>
+      <g transform="translate(30 0)">
+        <!-- Glas en glaslat, alleen om te laten zien waar je naar kijkt -->
+        <rect class="ds-glas" x="384" y="16" width="36" height="148" rx="2"/>
+        <path class="ds-glas-lijn" d="M392 16v148M412 16v148"/>
+        <rect class="ds-rubber" x="372" y="118" width="12" height="34" rx="3"/>
+
+        <!-- De lagen, van buiten naar binnen: folie, lijm, profiel. Ze worden
+             achter het profiel getekend: van de dikke lijn blijft alleen het
+             deel buiten het profiel zichtbaar. -->
+        <g class="ds-oud">
+          <path class="ds-folie ds-folie-oud" d="M174 340H150V246"/>
+          <path class="ds-folie ds-folie-oud" d="M150 216V200L330 176V112H372"/>
+          <path class="ds-flap" d="M150 216c-20 4-30 14-24 30"/>
+        </g>
+        <path class="ds-folie ds-folie-nieuw" pathLength="100" d="M174 340H150V200L330 176V112H372"/>
+        <path class="ds-lijm" d="M174 340H150V200L330 176V112H372"/>
+
+        <path class="ds-profiel" d="M150 340V200L330 176V112H372V170H500V340Z"/>
+        <g class="ds-kamers">
+          <rect x="166" y="216" width="66" height="108" rx="6"/>
+          <rect x="246" y="200" width="70" height="124" rx="6"/>
+          <rect x="342" y="124" width="18" height="34" rx="4"/>
+          <rect x="332" y="184" width="74" height="140" rx="6"/>
+          <rect x="420" y="184" width="66" height="140" rx="6"/>
+        </g>
+        <rect class="ds-lat" x="420" y="130" width="26" height="40" rx="3"/>
+
+        <!-- Barstjes in de oude folie -->
+        <path class="ds-barst" d="M201 190l-1-9M256 183l-1-9M298 177l-1-9M150 300h-9M150 268h-9"/>
+      </g>
+
+      <!-- Uitleg bij de lagen -->
+      <g class="ds-uitleg">
+        <path class="ds-wijzer" d="M172 290H160"/>
+        <text class="ds-label" x="152" y="286" text-anchor="end">Folie</text>
+        <text class="ds-sub ds-sub-1" x="152" y="308" text-anchor="end">verweerd</text>
+        <text class="ds-sub ds-sub-2" x="152" y="308" text-anchor="end">eraf</text>
+        <text class="ds-sub ds-sub-3" x="152" y="308" text-anchor="end">nieuw</text>
+
+        <g class="ds-lijm-uitleg">
+          <path class="ds-wijzer" d="M300 182V112"/>
+          <text class="ds-label ds-label-lijm" x="300" y="100" text-anchor="middle">Lijm</text>
+        </g>
+
+        <!-- De zon, alleen in stand 1 -->
+        <g class="ds-zon">
+          <circle cx="150" cy="62" r="22"/>
+          <path d="M150 24v-12M150 112v-12M112 62h-12M200 62h-12M123 35l-8-8M185 97l-8-8M123 89l-8 8M185 27l-8 8"/>
+        </g>
+
+        <path class="ds-wijzer" d="M484 300H576"/>
+        <text class="ds-label" x="584" y="296">Profiel</text>
+        <text class="ds-sub" x="584" y="318">blijft zitten</text>
+      </g>
+    </svg>
+  </div>
+
+  <ol class="ds-stappen">
+    <li>
+      <button type="button" data-naar="1">
+        <span class="ds-nr">1</span>
+        <span><b>Na jaren zon</b>
+        De folie verweert, barst of laat los. Waar hij loslaat, zie je de gele lijmlaag.</span>
+      </button>
+    </li>
+    <li>
+      <button type="button" data-naar="2">
+        <span class="ds-nr">2</span>
+        <span><b>Oude laag eraf</b>
+        Met warmte en de juiste middelen halen we folie én lijm eraf. Het profiel blijft heel.</span>
+      </button>
+    </li>
+    <li>
+      <button type="button" data-naar="3">
+        <span class="ds-nr">3</span>
+        <span><b>Nieuwe Renolit folie</b>
+        Strak opgebracht en om de rand gezet. Tien jaar fabrieksgarantie op de folie.</span>
+      </button>
+    </li>
+  </ol>
+  </div>
+  <button type="button" class="ds-opnieuw">Nog een keer bekijken</button>
+
+  <figcaption>Doorsnede van een onderdorpel. De folie is hier veel dikker getekend dan
+  hij is: in het echt is het een laag van een paar tienden van een millimeter.</figcaption>
+</figure>

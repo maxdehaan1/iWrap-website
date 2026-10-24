@@ -102,6 +102,16 @@
   .resultaat{grid-template-columns:1fr;}
   .resultaat:nth-child(even) .resultaat-tekst{order:0;}
 }
+/* De drie werkstappen op /voorbeelden: naast elkaar, foto boven de tekst. De
+   foto's hebben elk een andere verhouding; zonder vaste maat stonden ze als
+   een rommelige zigzag onder elkaar. */
+.werkstappen{grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(22px,3vw,34px);}
+.werkstappen .resultaat{grid-template-columns:1fr;align-items:start;align-content:start;gap:20px;}
+.werkstappen .resultaat:nth-child(even) .resultaat-tekst{order:0;}
+.werkstappen figure{margin:0;}
+.werkstappen img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;box-shadow:var(--shadow);}
+.werkstappen p{font-size:.94rem;}
+@media (max-width:860px){ .werkstappen{grid-template-columns:1fr;} }
 
 /* Werkgebied -------------------------------------------------------------- */
 
@@ -125,3 +135,13 @@
 .merkkaart .land{font-size:.8rem;color:var(--sub);margin:0 0 12px;}
 .merkkaart p{font-size:.9rem;color:var(--ink-soft);margin:0;}
 
+
+/* Getekende illustratie in de lopende tekst (dakkapel) -------------------- */
+
+.tekst .illustratie{margin:26px 0 30px;}
+.illustratie svg{display:block;width:100%;height:auto;border-radius:var(--radius);box-shadow:var(--shadow);}
+.illustratie figcaption{margin-top:12px;font-size:.86rem;color:var(--sub);}
+.illustratie figcaption b{
+  display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;
+  background:var(--ink);color:#fff;font-family:var(--kop);font-size:.7rem;margin-right:3px;
+}

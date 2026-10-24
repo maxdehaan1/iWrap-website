@@ -1,0 +1,144 @@
+/* ---------------------------------------------------------------------------
+   De doorsnede (src/doorsnede.html, js/doorsnede.js): een onderdorpel in drie
+   standen. data-stand op de figure bepaalt wat je ziet; alle overgangen
+   staan hier.
+
+   De kleur is antraciet (RAL 7016), de meest voorkomende foliekleur. Oud is
+   dof en grauw, nieuw is diep en egaal -- hetzelfde verschil als op de foto's.
+   --------------------------------------------------------------------------- */
+
+.doorsnede{
+  container-type:inline-size;margin:0;
+  background:var(--white);border:1px solid var(--line);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-lg);padding:clamp(18px,3vw,34px);
+}
+.ds-raster{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:clamp(18px,3vw,40px);align-items:center;}
+@container (max-width:700px){
+  .ds-raster{grid-template-columns:1fr;}
+}
+.ds-beeld svg{display:block;width:100%;height:auto;}
+
+/* Het kozijn ------------------------------------------------------------- */
+
+.ds-glas{fill:#d6e7ee;}
+.ds-glas-lijn{stroke:#fff;stroke-width:2;fill:none;}
+.ds-rubber{fill:#2b2f33;}
+.ds-profiel,.ds-lat{fill:#eef0ef;stroke:#b5bbb9;stroke-width:2;stroke-linejoin:round;}
+.ds-kamers rect{fill:#fafbfa;stroke:#cdd2d0;stroke-width:1.5;}
+
+/* De lagen. Ze liggen achter het profiel: van de dikke lijn is alleen de
+   buitenste helft te zien, en dat is precies de laag op het profiel. */
+.ds-folie{fill:none;stroke-width:16;stroke-linejoin:round;}
+.ds-folie-oud,.ds-flap{stroke:#878c91;}
+.ds-flap{fill:none;stroke-width:7;stroke-linecap:round;}
+.ds-folie-nieuw{stroke:#33383d;stroke-dasharray:100 100;stroke-dashoffset:100;}
+.ds-lijm{fill:none;stroke:#c9a03c;stroke-width:5;stroke-linejoin:round;opacity:0;}
+.ds-barst{fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;}
+
+/* Standen ---------------------------------------------------------------- */
+
+.ds-oud,.ds-barst{
+  opacity:0;transform:translate(-18px,-12px);
+  transition:opacity .6s ease,transform .8s cubic-bezier(.3,.7,.3,1);
+}
+[data-stand="1"] .ds-oud,[data-stand="1"] .ds-barst{opacity:1;transform:none;}
+.ds-lijm{transition:opacity .45s ease .25s;}
+[data-stand="1"] .ds-lijm,[data-stand="3"] .ds-lijm{opacity:1;}
+[data-stand="3"] .ds-lijm{transition-delay:0s;}
+.ds-folie-nieuw{transition:stroke-dashoffset 1.3s cubic-bezier(.45,.1,.25,1) .35s;}
+[data-stand="3"] .ds-folie-nieuw{stroke-dashoffset:0;}
+/* Bij het klaarzetten springt hij zonder overgang naar stand 1. */
+.ds-direct *{transition:none!important;}
+
+/* Uitleg in de tekening -------------------------------------------------- */
+
+.ds-wijzer{stroke:var(--sub);stroke-width:1.5;fill:none;}
+.ds-label{font-family:var(--kop);font-weight:600;font-size:21px;fill:var(--ink);}
+.ds-sub{font-family:var(--tekst);font-size:17px;fill:var(--sub);}
+.ds-sub-1,.ds-sub-2,.ds-sub-3,.ds-lijm-uitleg{opacity:0;transition:opacity .35s ease;}
+[data-stand="1"] .ds-sub-1,[data-stand="2"] .ds-sub-2,[data-stand="3"] .ds-sub-3,
+[data-stand="1"] .ds-lijm-uitleg{opacity:1;}
+.ds-label-lijm{fill:#8a6a17;}
+.ds-zon{opacity:0;transition:opacity .5s ease;}
+.ds-zon circle{fill:#f2b66b;}
+.ds-zon path{stroke:#f2b66b;stroke-width:4;stroke-linecap:round;}
+[data-stand="1"] .ds-zon{opacity:1;}
+
+/* Stappen ---------------------------------------------------------------- */
+
+/* .doorsnede ervoor: op tekstpagina's zet .tekst ol er anders inspringing op. */
+.doorsnede .ds-stappen{list-style:none;margin:0;padding:0;display:grid;gap:10px;}
+.doorsnede .ds-stappen li{margin:0;}
+.ds-stappen button{
+  position:relative;overflow:hidden;width:100%;text-align:left;cursor:pointer;
+  display:flex;gap:14px;align-items:flex-start;
+  background:transparent;border:1px solid transparent;border-radius:var(--radius);
+  padding:14px 16px;font:inherit;font-size:.94rem;line-height:1.5;color:var(--sub);
+  transition:background .25s ease,border-color .25s ease,color .25s ease;
+}
+.ds-stappen button:hover{background:var(--paper);}
+.ds-stappen b{display:block;font-family:var(--kop);font-weight:600;font-size:1rem;color:var(--ink);margin-bottom:2px;}
+.ds-nr{
+  flex-shrink:0;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+  font-family:var(--kop);font-weight:700;font-size:.8rem;
+  background:var(--paper);color:var(--sub);border:1px solid var(--line);
+  transition:background .25s ease,color .25s ease,border-color .25s ease;
+}
+.ds-stappen [aria-current]{background:var(--mint-wash);border-color:var(--mint-soft);color:var(--ink-soft);}
+.ds-stappen [aria-current] .ds-nr{background:var(--mint-ink);border-color:var(--mint-ink);color:#fff;}
+/* Stap 1 is de schade: dat nummer in het terracotta van "voor". */
+.ds-stappen [data-naar="1"][aria-current]{background:var(--rust-wash);border-color:#efd9d1;}
+.ds-stappen [data-naar="1"][aria-current] .ds-nr{background:var(--rust);border-color:var(--rust);}
+/* Tijdens het afspelen loopt er onder de actieve stap een balkje vol. */
+.ds-speelt [aria-current]::after{
+  content:"";position:absolute;left:0;bottom:0;height:3px;width:100%;
+  background:currentColor;opacity:.25;transform-origin:left;
+  animation:ds-balk 2.6s linear both;
+}
+@keyframes ds-balk{from{transform:scaleX(0);}to{transform:scaleX(1);}}
+
+.ds-opnieuw{
+  display:inline-flex;align-items:center;gap:8px;margin:14px 0 0;padding:6px 0;
+  background:none;border:0;cursor:pointer;font-family:var(--kop);font-weight:600;
+  font-size:.83rem;color:var(--mint-ink);
+}
+.ds-opnieuw::before{
+  content:"";width:15px;height:15px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%233f7468' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5'/%3E%3C/svg%3E") center/15px no-repeat;
+}
+.ds-speelt .ds-opnieuw{visibility:hidden;}
+html:not(.js) .ds-opnieuw{display:none;}
+
+.doorsnede figcaption{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:.84rem;color:var(--sub);}
+
+/* Herstellen of een nieuw kozijn (src/vergelijking.html) ------------------
+   Staat altijd onder de doorsnede, dus de opmaak staat hier ook. Het
+   herstel-vlak is donker: dat is de kant waar we de lezer naartoe willen. */
+
+.vergelijking{
+  display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  align-items:stretch;margin-top:clamp(26px,4vw,44px);
+}
+.vg-kant{border-radius:var(--radius-lg);padding:clamp(24px,3vw,34px);}
+.vg-vervangen{background:var(--white);border:1px solid var(--line);}
+.vg-herstellen{background:var(--ink);color:#e8eaec;box-shadow:var(--shadow-lg);}
+.vg-kop{font-family:var(--kop);font-weight:600;font-size:1.12rem;letter-spacing:-.01em;margin:0 0 16px;}
+.vg-vervangen .vg-kop{color:var(--sub);}
+.vg-herstellen .vg-kop{color:#fff;}
+.vergelijking ul{list-style:none;margin:0;padding:0;display:grid;gap:11px;}
+.vergelijking li{margin:0;display:flex;gap:12px;align-items:flex-start;font-size:.97rem;line-height:1.5;}
+.vg-vervangen li{color:var(--ink-soft);}
+.vergelijking li::before{content:"";flex-shrink:0;width:20px;height:20px;margin-top:2px;border-radius:50%;background-position:center;background-repeat:no-repeat;background-size:12px;}
+.vg-vervangen li::before{background-color:var(--rust-wash);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a8523a' stroke-width='3.2' stroke-linecap='round'%3E%3Cpath d='M6 12h12'/%3E%3C/svg%3E");}
+.vg-herstellen li::before{background-color:var(--mint);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2322262a' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");}
+.vg-of{
+  align-self:center;z-index:1;margin:0 -22px;width:52px;height:52px;border-radius:50%;
+  display:grid;place-items:center;background:var(--mint);color:var(--ink);
+  font-family:var(--kop);font-weight:700;font-size:.9rem;
+  box-shadow:0 0 0 6px var(--paper);
+}
+.vlak-wit .vg-of{box-shadow:0 0 0 6px var(--white);}
+@media (max-width:760px){
+  .vergelijking{grid-template-columns:1fr;}
+  .vg-of{justify-self:center;margin:-22px 0;}
+}

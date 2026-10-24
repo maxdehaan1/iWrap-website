@@ -20,8 +20,12 @@
   font-size:.88rem;color:var(--sub);
 }
 .hero-bewijs b{color:var(--ink);font-weight:600;}
-.hero-bewijs span{display:inline-flex;align-items:center;gap:8px;}
-.hero-bewijs span::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--mint);flex-shrink:0;}
+.hero-bewijs > span{display:inline-flex;align-items:center;gap:8px;}
+/* Het reviewcijfer krijgt een eigen regel boven de drie beloftes. */
+.hero-score{flex-basis:100%;display:inline-flex;align-items:center;gap:9px;color:var(--ink-soft);text-decoration:none;font-size:.92rem;}
+.hero-score:hover{color:var(--ink);}
+.hero-score .sterren{color:var(--ster);letter-spacing:.08em;font-size:1rem;}
+.hero-bewijs > span::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--mint);flex-shrink:0;}
 
 .hero-fig{margin:0;}
 .hero-fig figcaption{margin-top:14px;font-size:.85rem;color:var(--sub);display:flex;align-items:center;gap:8px;}

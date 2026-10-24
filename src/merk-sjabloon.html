@@ -102,14 +102,20 @@
 
 <section class="vlak-wit">
   <div class="wrap">
-    <div class="slot">
-      <p class="opschrift">Volgende stap</p>
-      <h2>Laat ons even meekijken</h2>
-      <p>Stuur een paar foto's van je {{merk.naam}}-kozijn mee. We zeggen eerlijk of
-      herstel de goede oplossing is — en zo niet, waarom niet.</p>
-      <div class="knoprij">
-        <a class="knop knop-licht" href="/offerte">Offerte aanvragen</a>
-        <a class="knop knop-tweede" href="tel:{{bedrijf.telefoon_tel}}">{{bedrijf.telefoon}}</a>
+    <div class="slot met-beeld">
+      <div class="slot-tekst">
+        <p class="opschrift">Volgende stap</p>
+        <h2>Laat ons even meekijken</h2>
+        <p>Stuur een paar foto's van je {{merk.naam}}-kozijn mee. We zeggen eerlijk of
+        herstel de goede oplossing is — en zo niet, waarom niet.</p>
+        <div class="knoprij">
+          <a class="knop knop-licht" href="/offerte">Offerte aanvragen</a>
+          <a class="knop knop-tweede" href="tel:{{bedrijf.telefoon_tel}}">{{bedrijf.telefoon}}</a>
+        </div>
+      </div>
+      <div class="slot-beeld">
+        <x-beeld src="na-resultaat-kozijnhoek" sizes="(max-width:820px) 100vw, 480px" alt="Afgewerkte kozijnhoek na herstel met Renolit folie">
+        <a class="slot-score" href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener"><span aria-hidden="true">★</span> {{bedrijf.reviews_score}} uit {{bedrijf.reviews_aantal}} Google-reviews</a>
       </div>
     </div>
   </div>

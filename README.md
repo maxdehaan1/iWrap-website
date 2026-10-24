@@ -89,6 +89,8 @@ vercel.json               cleanUrls, cachekoppen, redirects van oude URL's
 src/pages/                De bron van elke pagina
 src/merk-sjabloon.html    Eén opmaak voor alle merkpagina's
 src/film.html             De film: teksten en opmaak, via {{film}} op een pagina
+src/doorsnede.html        De doorsnede van een onderdorpel, via {{doorsnede}}
+src/vergelijking.html     Nieuw kozijn of herstellen, via {{vergelijking}}
 
 index.html                Homepage                              (gegenereerd)
 offerte.html              Het aanvraagformulier — de kern       (gegenereerd)
@@ -115,8 +117,10 @@ css/offerte.css           Alleen het formulier
 css/rapport.css           Het rapport en de kozijncheck-pagina
 css/max.css               De Max-modus
 css/film.css              De film (homepage en /werkwijze)
+css/doorsnede.css         De doorsnede en de vergelijking eronder
 js/main.js                Menu, voor/na-schuif, scroll-animaties
 js/film.js                De film van 15 seconden op de homepage
+js/doorsnede.js           Speelt de doorsnede één keer af als hij in beeld komt
 js/offerte.js             Het stappenformulier
 js/rapport.js             Vult het rapport vanuit de API
 js/max.js                 De Max-modus
@@ -410,6 +414,25 @@ Dat levert `video/iwrap-zo-werkt-het.mp4` op: 1920×1080, 16 seconden (de eindka
 blijft in de video een seconde langer staan), zonder geluid. Het script gebruikt je eigen
 Google Chrome en start zelf een server op poort 8011. Met `node opname.mjs --beelden 0,8,15`
 krijg je losse PNG's in `video/beelden/` om een moment te bekijken.
+
+## De doorsnede en de vergelijking
+
+Op de homepage (blok "Waarom herstellen werkt") en op `/kunststof-kozijn-herstellen`
+staat een doorsnede van een onderdorpel in drie standen: verweerd (met de gele lijmlaag
+waar de folie los is), oude laag eraf, nieuwe folie om de rand. Hij speelt één keer af
+als hij in beeld komt en blijft dan op de nieuwe folie staan; een klik op een stap zet
+hem daar neer. Wie "minder beweging" aan heeft ziet meteen het eindbeeld.
+
+- De tekening en de stapteksten staan in `src/doorsnede.html`, de overgangen in
+  `css/doorsnede.css`. De kleur is antraciet, de meest voorkomende foliekleur.
+- De folie is veel dikker getekend dan hij is. Het bijschrift zegt dat; laat dat staan.
+- Daaronder staat `src/vergelijking.html`: een nieuw kozijn tegenover herstellen,
+  **zonder bedragen**. Elke regel daarin stond al elders op de site. Zet er geen nieuwe
+  beweringen bij die je niet zelf gecontroleerd hebt.
+
+Daarnaast heeft `/dakkapel-kozijnen` een getekende illustratie bij "Hoe we erbij
+komen" (valbeveiliging, ladder of steiger, een paar pannen eraf), en heeft elk donker
+afsluitblok (`.slot.met-beeld`) rechts een echte werkfoto met het reviewcijfer erop.
 
 ## De werkdag-video op /over-iwrap
 

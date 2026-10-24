@@ -659,10 +659,12 @@ def substitueer(tekst):
         groep, sleutel = m.group(1), m.group(2)
         bron = {"bedrijf": BEDRIJF, "feit": FEITEN}[groep]
         return bron[sleutel]
-    # Eerst de film: die bevat zelf ook plekhouders (het reviewcijfer).
-    if "{{film}}" in tekst:
-        film = (SRC.parent / "film.html").read_text(encoding="utf-8")
-        tekst = tekst.replace("{{film}}", re.sub(r"<!--.*?-->\n", "", film, count=1, flags=re.S).strip())
+    # Eerst de vaste blokken uit src/ (film, doorsnede, vergelijking): die bevatten
+    # zelf ook plekhouders, zoals het reviewcijfer.
+    for blok in ("film", "doorsnede", "vergelijking"):
+        if "{{%s}}" % blok in tekst:
+            bron = (SRC.parent / (blok + ".html")).read_text(encoding="utf-8")
+            tekst = tekst.replace("{{%s}}" % blok, re.sub(r"<!--.*?-->\n", "", bron, count=1, flags=re.S).strip())
     tekst = re.sub(r"\{\{(bedrijf|feit)\.([a-z_]+)\}\}", rep, tekst)
     tekst = tekst.replace("{{kozijncheck_tabel}}", render_kozijncheck_tabel())
     tekst = tekst.replace("{{kozijncheck_disclaimer}}", KOZIJNCHECK["disclaimer"])

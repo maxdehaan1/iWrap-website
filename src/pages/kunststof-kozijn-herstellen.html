@@ -3,8 +3,8 @@
   "description": "Verkleurde of loslatende folie op je kunststof kozijn? Wij vervangen alleen de toplaag met Renolit folie. Wanneer het kan, hoe het werkt en wat het kost.",
   "ogtitle": "Kunststof kozijn herstellen met Renolit folie",
   "bodyclass": "tekstpagina",
-  "css": ["content"],
-  "js": ["main"],
+  "css": ["content", "doorsnede"],
+  "js": ["main", "doorsnede"],
   "prioriteit": "0.9",
   "kruimels": [["Kozijnherstel", "/kunststof-kozijn-herstellen"]],
   "schema": [
@@ -71,10 +71,7 @@
       te vervangen dat alleen aan de buitenkant versleten is — je gooit een constructie
       weg die nog decennia meekan, om een laag van een paar tienden van een millimeter.</p>
 
-      <figure>
-        <x-beeld src="voor-gebarsten-dorpel" sizes="(max-width:940px) 100vw, 720px" alt="Onderdorpel van een kunststof kozijn waarvan de folie is gebarsten en opgekruld">
-        <figcaption>Een onderdorpel waar de folie op is. Het profiel eronder mankeert niets.</figcaption>
-      </figure>
+      {{doorsnede}}
 
       <h2>Wanneer folieherstel kan</h2>
       <p>De vuistregel is simpel: gaat het om hoe het kozijn er <em>uitziet</em>, dan
@@ -122,9 +119,8 @@
       draaiende delen ook mee — de ramen en deuren die opengaan — dan komen we wél
       binnen. Die moeten open om de folie netjes om de rand te kunnen zetten, anders zie
       je de naad zodra het raam op een kier staat.</p>
-      <p>Dat verschil is meteen het belangrijkste verschil met vervangen. Bij een nieuw
-      kozijn wordt het oude eruit gebroken: stucwerk aan de dagkanten kapot, vensterbank
-      eruit, binnen schilderwerk achteraf. Bij herstel gebeurt er binnen niets.</p>
+      <p>Dat is meteen het grootste verschil met vervangen:</p>
+      {{vergelijking}}
 
       <h2>Welke schade lossen we op</h2>
       <div class="tabel-wrap">
@@ -232,14 +228,20 @@
 
 <section class="vlak-wit">
   <div class="wrap">
-    <div class="slot">
-      <p class="opschrift">Volgende stap</p>
-      <h2>Laat ons even meekijken</h2>
-      <p>Stuur een paar foto's mee en we vertellen je eerlijk of herstel de goede
-      oplossing is. Kan het niet, dan hoor je dat ook — met uitleg waarom.</p>
-      <div class="knoprij">
-        <a class="knop knop-licht" href="/offerte">Offerte aanvragen</a>
-        <a class="knop knop-tweede" href="tel:{{bedrijf.telefoon_tel}}">{{bedrijf.telefoon}}</a>
+    <div class="slot met-beeld">
+      <div class="slot-tekst">
+        <p class="opschrift">Volgende stap</p>
+        <h2>Laat ons even meekijken</h2>
+        <p>Stuur een paar foto's mee en we vertellen je eerlijk of herstel de goede
+        oplossing is. Kan het niet, dan hoor je dat ook — met uitleg waarom.</p>
+        <div class="knoprij">
+          <a class="knop knop-licht" href="/offerte">Offerte aanvragen</a>
+          <a class="knop knop-tweede" href="tel:{{bedrijf.telefoon_tel}}">{{bedrijf.telefoon}}</a>
+        </div>
+      </div>
+      <div class="slot-beeld">
+        <x-beeld src="werk-folie-aandrukken" sizes="(max-width:820px) 100vw, 480px" alt="De nieuwe folie wordt op de onderdorpel aangedrukt">
+        <a class="slot-score" href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener"><span aria-hidden="true">★</span> {{bedrijf.reviews_score}} uit {{bedrijf.reviews_aantal}} Google-reviews</a>
       </div>
     </div>
   </div>

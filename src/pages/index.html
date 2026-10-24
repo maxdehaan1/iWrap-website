@@ -3,8 +3,8 @@
   "description": "Verkleurde of loslatende folie? iWrap vervangt alleen de toplaag met Renolit folie — het kozijn blijft zitten. Vaste totaalprijs op basis van je foto's, door heel Nederland.",
   "ogtitle": "Kunststof kozijnen herstellen met Renolit folie",
   "bodyclass": "home",
-  "css": ["home", "film"],
-  "js": ["main", "film"],
+  "css": ["home", "film", "doorsnede"],
+  "js": ["main", "film", "doorsnede"],
   "prioriteit": "1.0",
   "changefreq": "weekly",
   "preload": {
@@ -53,6 +53,10 @@
         <a class="knop knop-tweede" href="/kosten">Wat kost het?</a>
       </div>
       <div class="hero-bewijs">
+        <a class="hero-score" href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener">
+          <span class="sterren" aria-hidden="true">★★★★★</span>
+          <b>{{bedrijf.reviews_score}}</b> uit {{bedrijf.reviews_aantal}} Google-reviews
+        </a>
         <span>Vaste prijs vooraf</span>
         <span>Tien jaar garantie op de folie</span>
         <span>Door heel Nederland</span>
@@ -176,7 +180,21 @@
   </div>
 </section>
 
-<section>
+<section id="waarom-herstellen">
+  <div class="wrap">
+    <div class="sectie-kop">
+      <p class="opschrift">Waarom herstellen werkt</p>
+      <h2>Het kozijn is bijna nooit op. De toplaag wel.</h2>
+      <p>Een kunststof profiel gaat {{feit.levensduur_profiel}} mee. Wat de zon
+      kapotmaakt is de folie eroverheen — en die vervang je zonder het kozijn eruit
+      te halen.</p>
+    </div>
+    {{doorsnede}}
+    {{vergelijking}}
+  </div>
+</section>
+
+<section class="vlak-wit">
   <div class="wrap">
     <div class="sectie-kop">
       <p class="opschrift">Eerlijk over de grenzen</p>
@@ -218,7 +236,7 @@
   </div>
 </section>
 
-<section class="vlak-wit">
+<section>
   <div class="wrap">
     <div class="sectie-kop">
       <p class="opschrift">Voorbeelden</p>
@@ -238,7 +256,7 @@
   </div>
 </section>
 
-<section>
+<section class="vlak-wit">
   <div class="wrap">
     <div class="sectie-kop">
       <p class="opschrift">Kosten</p>
@@ -387,16 +405,22 @@
 
 <section>
   <div class="wrap">
-    <div class="slot verschijn">
-      <p class="opschrift">Offerte aanvragen</p>
-      <h2>Vier vragen en een paar foto's</h2>
-      <p>Ons aanvraagformulier stelt meteen de vragen die we anders per mail zouden
-      stellen. Zo kunnen we er direct een vaste prijs van maken, zonder dat er eerst
-      iemand langs hoeft te komen. Scheelt ons allebei drie mailtjes.</p>
-      <div class="knoprij">
-        <a class="knop knop-licht" href="/offerte">Start de aanvraag</a>
-        <a class="knop knop-tweede" href="tel:{{bedrijf.telefoon_tel}}">{{bedrijf.telefoon}}</a>
-        <span class="bijschrift">Je hoort van ons wat het kost</span>
+    <div class="slot verschijn met-beeld">
+      <div class="slot-tekst">
+        <p class="opschrift">Offerte aanvragen</p>
+        <h2>Vier vragen en een paar foto's</h2>
+        <p>Ons aanvraagformulier stelt meteen de vragen die we anders per mail zouden
+        stellen. Zo kunnen we er direct een vaste prijs van maken, zonder dat er eerst
+        iemand langs hoeft te komen. Scheelt ons allebei drie mailtjes.</p>
+        <div class="knoprij">
+          <a class="knop knop-licht" href="/offerte">Start de aanvraag</a>
+          <a class="knop knop-tweede" href="tel:{{bedrijf.telefoon_tel}}">{{bedrijf.telefoon}}</a>
+          <span class="bijschrift">Je hoort van ons wat het kost</span>
+        </div>
+      </div>
+      <div class="slot-beeld">
+        <x-beeld src="werk-renolit-folie-aanbrengen" sizes="(max-width:820px) 100vw, 480px" alt="Nieuwe Renolit folie wordt met een rakel op een onderdorpel aangebracht">
+        <a class="slot-score" href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener"><span aria-hidden="true">★</span> {{bedrijf.reviews_score}} uit {{bedrijf.reviews_aantal}} Google-reviews</a>
       </div>
     </div>
   </div>

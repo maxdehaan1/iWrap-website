@@ -62,6 +62,87 @@
       <h2>Hoe we erbij komen</h2>
       <p>Dit is waar mensen naar vragen, en terecht: het is een kozijn op hoogte, op een
       schuin dak. Zo doen we dat.</p>
+      <figure class="illustratie">
+        <svg viewBox="0 0 800 470" role="img" aria-labelledby="dk-titel">
+          <title id="dk-titel">Een monteur aan de valbeveiliging bij een dakkapel, met een ladder tegen de goot en een paar dakpannen tijdelijk weggehaald</title>
+          <defs>
+            <!-- Golfpannen: elke pan een bolle en een holle helft, met de
+                 onderrand als golf eroverheen. -->
+            <pattern id="dk-pannen" width="44" height="22" patternUnits="userSpaceOnUse" y="86">
+              <rect width="44" height="22" fill="#a9512f"/>
+              <path d="M0 0H22V19Q11 11 0 19Z" fill="#bd6440"/>
+              <path d="M5 6Q11 2 17 6" stroke="#d98a66" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+              <path d="M0 19Q11 11 22 19T44 19" stroke="#7f3a22" stroke-width="2.5" fill="none"/>
+            </pattern>
+            <pattern id="dk-steen" width="60" height="22" patternUnits="userSpaceOnUse" y="384">
+              <rect width="60" height="22" fill="#c48a6c"/>
+              <path d="M0 11H60M0 22H60M15 0V11M45 11V22" stroke="#e9dccf" stroke-width="2"/>
+            </pattern>
+          </defs>
+          <rect width="800" height="470" fill="#e6efeb"/>
+          <rect y="86" width="800" height="290" fill="url(#dk-pannen)"/>
+          <rect x="-10" y="74" width="820" height="16" rx="8" fill="#8d4330"/>
+          <rect y="384" width="800" height="86" fill="url(#dk-steen)"/>
+          <rect x="-10" y="370" width="820" height="16" rx="4" fill="#5d666e"/>
+
+          <!-- 3: een paar pannen weg, en die liggen ernaast -->
+          <rect x="288" y="326" width="88" height="20" fill="#5b3f30"/>
+          <path d="M288 332H376M288 341H376" stroke="#c8a27a" stroke-width="3"/>
+          <g fill="#bd6440" stroke="#7f3a22" stroke-width="2">
+            <path d="M150 334h44v-8q-11-6-22 0t-22 0z"/>
+            <path d="M154 322h44v-8q-11-6-22 0t-22 0z"/>
+            <path d="M148 310h44v-8q-11-6-22 0t-22 0z"/>
+          </g>
+
+          <!-- De dakkapel -->
+          <polygon points="226,322 574,322 564,304 236,304" fill="#7d8287"/>
+          <rect x="236" y="146" width="328" height="160" fill="#ddd7c9"/>
+          <rect x="226" y="128" width="348" height="24" rx="3" fill="#2f3337"/>
+          <rect x="256" y="160" width="288" height="138" rx="2" fill="#33383d"/>
+          <g fill="#cfe3ec">
+            <rect x="268" y="172" width="82" height="114"/>
+            <rect x="366" y="176" width="76" height="106"/>
+            <rect x="456" y="172" width="76" height="114"/>
+          </g>
+          <rect x="360" y="170" width="88" height="118" fill="none" stroke="#24282c" stroke-width="3"/>
+          <rect x="433" y="220" width="5" height="16" rx="2" fill="#c9ccce"/>
+          <path d="M278 210l30-30M290 226l46-46M376 214l30-30M466 210l30-30M478 226l40-40" stroke="#fff" stroke-width="5" stroke-opacity=".55" stroke-linecap="round"/>
+
+          <!-- 2: de ladder tegen de goot -->
+          <g stroke="#b9c0c4" stroke-width="7" stroke-linecap="round">
+            <path d="M668 480L676 334M708 480L716 334"/>
+            <path d="M670 448H710M671 424H711M673 400H713M674 376H714M675 352H715" stroke-width="5"/>
+          </g>
+
+          <!-- 1: de monteur aan de valbeveiliging -->
+          <circle cx="560" cy="82" r="8" fill="#2f3337"/>
+          <circle cx="560" cy="82" r="13" fill="none" stroke="#2f3337" stroke-width="3"/>
+          <path d="M562 94C600 140 640 170 640 236" fill="none" stroke="#e8833a" stroke-width="4" stroke-linecap="round"/>
+          <g>
+            <rect x="598" y="272" width="17" height="58" rx="8" fill="#1f2a44"/>
+            <rect x="617" y="274" width="17" height="56" rx="8" fill="#1f2a44"/>
+            <rect x="592" y="210" width="48" height="74" rx="17" fill="#1f2a44"/>
+            <rect x="592" y="256" width="48" height="7" fill="#e8833a"/>
+            <path d="M596 216L636 256" stroke="#e8833a" stroke-width="4"/>
+            <circle cx="607" cy="236" r="3" fill="#a3cdc2"/><circle cx="615" cy="236" r="3" fill="#a3cdc2"/><circle cx="623" cy="236" r="3" fill="#a3cdc2"/>
+            <path d="M598 224L560 240" stroke="#1f2a44" stroke-width="14" stroke-linecap="round"/>
+            <circle cx="555" cy="242" r="8" fill="#e9b99a"/>
+            <rect x="538" y="232" width="13" height="20" rx="2" fill="#b23a2f"/>
+            <circle cx="617" cy="192" r="16" fill="#e9b99a"/>
+            <path d="M601 190a16 16 0 0 1 32 0z" fill="#c8a77a"/>
+            <path d="M603 189H588" stroke="#c8a77a" stroke-width="5" stroke-linecap="round"/>
+          </g>
+
+          <!-- Nummers, gelijk aan het lijstje -->
+          <g class="dk-nummers" font-family="Montserrat, sans-serif" font-weight="700" font-size="17" text-anchor="middle">
+            <circle cx="522" cy="44" r="17" fill="#22262a"/><text x="522" y="50" fill="#fff">1</text>
+            <circle cx="744" cy="330" r="17" fill="#22262a"/><text x="744" y="336" fill="#fff">2</text>
+            <circle cx="400" cy="336" r="17" fill="#22262a"/><text x="400" y="342" fill="#fff">3</text>
+          </g>
+        </svg>
+        <figcaption><b>1</b> Gecertificeerde valbeveiliging · <b>2</b> Een ladder of een steiger ·
+        <b>3</b> Soms tijdelijk een paar dakpannen eraf</figcaption>
+      </figure>
       <ul class="vinklijst">
         <li><strong>Gecertificeerde valbeveiliging.</strong> Altijd. Dat is geen extraatje
         maar de standaard waarop we werken, en het is ook de reden dat we VCA-gecertificeerd
@@ -182,14 +263,20 @@
 
 <section class="vlak-wit">
   <div class="wrap">
-    <div class="slot">
-      <p class="opschrift">Volgende stap</p>
-      <h2>Stuur een foto van je dakkapel</h2>
-      <p>Eén van een afstandje en één van dichtbij. Dan zien we meteen of er een steiger
-      bij moet en wat het gaat kosten.</p>
-      <div class="knoprij">
-        <a class="knop knop-licht" href="/offerte">Offerte aanvragen</a>
-        <a class="knop knop-tweede" href="tel:{{bedrijf.telefoon_tel}}">{{bedrijf.telefoon}}</a>
+    <div class="slot met-beeld">
+      <div class="slot-tekst">
+        <p class="opschrift">Volgende stap</p>
+        <h2>Stuur een foto van je dakkapel</h2>
+        <p>Eén van een afstandje en één van dichtbij. Dan zien we meteen of er een steiger
+        bij moet en wat het gaat kosten.</p>
+        <div class="knoprij">
+          <a class="knop knop-licht" href="/offerte">Offerte aanvragen</a>
+          <a class="knop knop-tweede" href="tel:{{bedrijf.telefoon_tel}}">{{bedrijf.telefoon}}</a>
+        </div>
+      </div>
+      <div class="slot-beeld">
+        <x-beeld src="werk-oude-folie-verwijderen" sizes="(max-width:820px) 100vw, 480px" alt="Met warmte wordt de oude folie van het kozijn gehaald">
+        <a class="slot-score" href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener"><span aria-hidden="true">★</span> {{bedrijf.reviews_score}} uit {{bedrijf.reviews_aantal}} Google-reviews</a>
       </div>
     </div>
   </div>

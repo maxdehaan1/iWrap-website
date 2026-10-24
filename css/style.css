@@ -254,6 +254,8 @@ section{padding:clamp(56px,7vw,96px) 0;}
 
 .strook{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;}
 .strook img{border-radius:14px;box-shadow:var(--shadow);aspect-ratio:3/2;object-fit:cover;width:100%;}
+/* Op een telefoon twee per rij, anders staan er vier grote foto's onder elkaar. */
+@media (max-width:560px){ .strook{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;} .strook img{border-radius:10px;} }
 
 /* Kanttekeningen ---------------------------------------------------------- */
 
@@ -350,6 +352,34 @@ td strong{color:var(--ink);}
   border-radius:50%;background:radial-gradient(circle,rgba(163,205,194,.3),transparent 68%);
 }
 .slot h2{color:#fff;max-width:17ch;}
+/* Met een foto rechts: de foto loopt tot de rand van het blok door en vloeit
+   links over in het antraciet. Op een telefoon staat hij erboven. */
+.slot.met-beeld{
+  --slot-pad:clamp(34px,5vw,60px);padding:var(--slot-pad);
+  display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);
+  gap:clamp(28px,4vw,56px);align-items:center;
+}
+.slot.met-beeld::after{display:none;}
+.slot-tekst > :last-child{margin-bottom:0;}
+.slot-beeld{position:relative;align-self:stretch;min-height:330px;margin:calc(-1 * var(--slot-pad)) calc(-1 * var(--slot-pad)) calc(-1 * var(--slot-pad)) 0;}
+.slot-beeld picture,.slot-beeld img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.slot-beeld::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,var(--ink) 0%,rgba(34,38,42,.55) 22%,rgba(34,38,42,0) 52%);}
+.slot-score{
+  position:absolute;z-index:2;right:22px;bottom:22px;
+  display:inline-flex;align-items:center;gap:7px;
+  background:#fff;color:var(--ink);border-radius:999px;padding:9px 16px 9px 13px;
+  font-family:var(--kop);font-weight:600;font-size:.82rem;line-height:1;text-decoration:none;
+  box-shadow:0 10px 26px -10px rgba(0,0,0,.45);
+  transition:transform .18s ease;
+}
+.vlak-donker .slot-score,.slot a.slot-score{color:var(--ink);}
+.slot-score:hover{transform:translateY(-2px);color:var(--ink);}
+.slot-score span{color:var(--ster);font-size:1rem;}
+@media (max-width:820px){
+  .slot.met-beeld{grid-template-columns:1fr;}
+  .slot-beeld{order:-1;min-height:220px;margin:calc(-1 * var(--slot-pad)) calc(-1 * var(--slot-pad)) 0;}
+  .slot-beeld::before{background:linear-gradient(0deg,var(--ink) 0%,rgba(34,38,42,0) 55%);}
+}
 .slot p{color:#b9bfc5;max-width:52ch;}
 .slot .knoprij{position:relative;z-index:1;}
 .slot .bijschrift{color:#98a0a8;}
