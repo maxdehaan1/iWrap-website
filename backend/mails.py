@@ -356,7 +356,7 @@ def aanvraag_voor_max(a):
         rij("Adres", '%s &nbsp;<a href="%s" style="color:%s">Google Maps</a>' % (escape(adres), escape(kaart, True), IWRAP_MINT)),
         rij("Manier", escape(MANIEREN[a["manier"]])),
         rij("Kleur", escape(kleur)),
-        rij("Via de site", escape(a["via"])) if a["via"] else "",
+        rij("Herkomst", escape(a["via"])) if a["via"] else "",
         rij("Opmerking", escape(a["toelichting"]).replace("\n", "<br>")) if a["toelichting"] else "",
     ])
 
@@ -420,7 +420,7 @@ def aanvraag_voor_max(a):
         "%s, %s" % (g["naam"], g["plaats"]),
         "Telefoon: %s" % g["telefoon"], "E-mail: %s" % g["email"], "Adres: %s" % adres,
         "Manier: %s" % MANIEREN[a["manier"]], "Kleur: %s" % kleur,
-    ] + (["Via de site: %s" % a["via"]] if a["via"] else [])
+    ] + (["Herkomst: %s" % a["via"]] if a["via"] else [])
       + (["Opmerking: %s" % a["toelichting"]] if a["toelichting"] else [])
       + ["", "WAT ER MOET GEBEUREN"] + tekstblokken
       + (["", "Samen: " + samen] if samen else [])

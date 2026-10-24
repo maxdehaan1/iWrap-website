@@ -63,6 +63,19 @@ BEDRIJF = {
 # exact dezelfde formulering aan; drie sites die verschillende bedragen of
 # garantietermijnen noemen is voor een klant alleen maar verwarrend.
 # ---------------------------------------------------------------------------
+# kozijnhorren.nl staat nog niet online. Zolang dit False is, staat de naam wel
+# op de site maar zonder link (een link naar een site die er niet is, is erger
+# dan geen link). Zet op True zodra kozijnhorren.nl werkt en bouw opnieuw.
+KOZIJNHORREN_LIVE = False
+
+
+def kozijnhorren_link(tekst="kozijnhorren.nl", nieuw_venster=False):
+    if not KOZIJNHORREN_LIVE:
+        return tekst
+    return '<a href="https://kozijnhorren.nl" rel="noopener"%s>%s</a>' % (
+        ' target="_blank"' if nieuw_venster else "", tekst)
+
+
 FEITEN = {
     "garantie_folie": "tien jaar fabrieksgarantie op de folie",
     "garantie_montage": "vijf jaar op de montage",
@@ -424,6 +437,8 @@ def render_footer():
         zakelijk.append(f'Btw-id {b["btw"]}')
     zakelijk = " &middot; ".join(zakelijk)
     zakelijk = f" &middot; {zakelijk}" if zakelijk else ""
+    zusterhorren = (", en op " + kozijnhorren_link() + " bestel je horren in de kleur van je kozijn") \
+        if KOZIJNHORREN_LIVE else ""
     return f"""<footer class="site-footer">
   <div class="wrap fgrid">
       <div class="fcol fbrand">
@@ -445,8 +460,7 @@ def render_footer():
     <p>&copy; 2026 {b['juridisch']}, {b['plaats']}{zakelijk}</p>
     <p class="fzus">Meer weten? <a href="https://kozijnwrap.nl" rel="noopener">kozijnwrap.nl</a>
     legt uit wanneer herstel zin heeft, <a href="https://houtnerffolie.nl" rel="noopener">houtnerffolie.nl</a>
-    gaat over de folie zelf, en op <a href="https://kozijnhorren.nl" rel="noopener">kozijnhorren.nl</a>
-    bestel je horren in de kleur van je kozijn.</p>
+    gaat over de folie zelf{zusterhorren}.</p>
   </div>
 </footer>"""
 
@@ -667,6 +681,8 @@ def substitueer(tekst):
             bron = (SRC.parent / (blok + ".html")).read_text(encoding="utf-8")
             tekst = tekst.replace("{{%s}}" % blok, re.sub(r"<!--.*?-->\n", "", bron, count=1, flags=re.S).strip())
     tekst = re.sub(r"\{\{(bedrijf|feit)\.([a-z_]+)\}\}", rep, tekst)
+    tekst = tekst.replace("{{kozijnhorren}}", kozijnhorren_link())
+    tekst = tekst.replace("{{kozijnhorren_nieuw_venster}}", kozijnhorren_link(nieuw_venster=True))
     tekst = tekst.replace("{{kozijncheck_tabel}}", render_kozijncheck_tabel())
     tekst = tekst.replace("{{kozijncheck_disclaimer}}", KOZIJNCHECK["disclaimer"])
     tekst = tekst.replace("{{regios}}", render_regios())

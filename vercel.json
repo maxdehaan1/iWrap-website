@@ -63,6 +63,74 @@
   ],
   "redirects": [
     {
+      "source": "/contact",
+      "has": [
+        {
+          "type": "query",
+          "key": "utm_source",
+          "value": "kozijnwrap.nl"
+        },
+        {
+          "type": "query",
+          "key": "utm_campaign",
+          "value": "herstel-zakelijk"
+        }
+      ],
+      "destination": "/vve-en-woningcorporaties",
+      "permanent": false
+    },
+    {
+      "source": "/contact",
+      "has": [
+        {
+          "type": "query",
+          "key": "utm_source",
+          "value": "kozijnwrap.nl"
+        },
+        {
+          "type": "query",
+          "key": "utm_medium",
+          "value": "keuzehulp"
+        }
+      ],
+      "destination": "/offerte",
+      "permanent": false
+    },
+    {
+      "source": "/contact",
+      "has": [
+        {
+          "type": "query",
+          "key": "utm_source",
+          "value": "kozijnwrap.nl"
+        },
+        {
+          "type": "query",
+          "key": "utm_medium",
+          "value": "partybox"
+        }
+      ],
+      "destination": "/offerte",
+      "permanent": false
+    },
+    {
+      "source": "/contact",
+      "has": [
+        {
+          "type": "query",
+          "key": "utm_source",
+          "value": "houtnerffolie"
+        },
+        {
+          "type": "query",
+          "key": "utm_content",
+          "value": "cta"
+        }
+      ],
+      "destination": "/offerte",
+      "permanent": false
+    },
+    {
       "source": "/kunststof-kozijnen-herstellen",
       "destination": "/kunststof-kozijn-herstellen",
       "permanent": true

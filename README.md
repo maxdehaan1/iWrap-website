@@ -52,8 +52,22 @@ Verder verwijzen de sites naar elkaar waar het de klant helpt:
   nog de oude kleur hebben, met een link naar kozijnhorren.nl.
 - Het formulier, de bevestigingsmail, de werkwijze en de homepage noemen de **gratis
   kozijncheck** bij de oplevering.
-- De **footer van iwrap.nl** noemt de drie zustersites: kozijnwrap.nl (wanneer herstel
-  zin heeft), houtnerffolie.nl (de folie), kozijnhorren.nl (horren in de kleur).
+- De **footer van iwrap.nl** noemt de zustersites: kozijnwrap.nl (wanneer herstel zin
+  heeft), houtnerffolie.nl (de folie) en kozijnhorren.nl (horren in de kleur).
+- **kozijnhorren.nl staat nog niet online.** Daarom staat `KOZIJNHORREN_LIVE = False`
+  bovenin `build.py`: de naam staat dan wel op de site (kozijncheck, formulier), maar
+  zonder link, en de footer noemt de winkel nog niet. Zet hem op `True` zodra
+  kozijnhorren.nl werkt en bouw opnieuw. In de bron: `{{kozijnhorren}}`.
+- **Knoppen van de zustersites.** kozijnwrap.nl (keuzehulp en de knop op de
+  herstelpagina) en houtnerffolie.nl (de knop "Offerte aanvragen bij iWrap") linken naar
+  `iwrap.nl/contact/` met utm-codes. Zolang iwrap.nl op WordPress draait is dat de
+  contactpagina daar. Na de overstap stuurt `vercel.json` die links door naar
+  `/offerte`, en een VvE uit de keuzehulp (`utm_campaign=herstel-zakelijk`) naar
+  `/vve-en-woningcorporaties`. Gewone bezoekers van /contact merken daar niets van.
+- **Herkomst in de aanvraag.** Het formulier leest `klacht` (van de klachtenkaarten op de
+  homepage of uit de keuzehulp) en `utm_source`/`utm_medium`, en zet dat als "Herkomst"
+  in de aanvraag, bijvoorbeeld "klacht: folie laat los · kozijnwrap.nl (keuzehulp)". Zo
+  zie je wat de zustersites opleveren.
 - **kozijnhorren.nl noemt iWrap** op "Over ons" (met het reviewcijfer uit
   `reviews.json`), in de veelgestelde vragen ("Wie zit er achter kozijnhorren.nl?") en
   in de footer, met een link naar de offerte voor wie het kozijn zelf wil laten herstellen.
@@ -534,6 +548,11 @@ er komt, en staat daarom bovenaan **Over iWrap**, direct onder de paginakop.
 - Het bestand is `media/iwrap-werkdag.mp4` (het origineel staat in
   `Documents/iWrap/Offertes ICM/_media/`). De poster is `images/werkdag-poster.jpg`, het
   eerste beeld van de video, zodat het starten naadloos gaat.
+- De video op de site is 1280×720 en 0,7 MB: het origineel (1920×1080, 2,4 MB) is
+  opnieuw gecodeerd, zonder zichtbaar verschil. De site toont hem nergens breder dan
+  1100 pixels, en op een telefoon scheelt het bijna 2 MB. Bij een nieuwe video:
+  `video/node_modules/ffmpeg-static/ffmpeg -i nieuw.mp4 -vf scale=1280:-2 -c:v libx264
+  -preset slow -crf 27 -pix_fmt yuv420p -movflags +faststart -an media/iwrap-werkdag.mp4`
 - Hij laadt pas als hij in beeld komt (`preload="none"`), speelt dan zonder geluid af,
   pauzeert als je wegscrolt en blijft aan het eind op de eindkaart staan. Dat gedrag zit
   in `main.js` en werkt voor elke `<figure data-video>`, dus een tweede video ergens anders

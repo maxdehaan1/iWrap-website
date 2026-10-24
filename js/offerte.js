@@ -61,7 +61,7 @@
      (kleur, gegevens) in gewone formuliervelden. De foto's zelf staan als
      Blob in 'blobs', onder een sleutel die ook in IndexedDB gebruikt wordt. */
 
-  var staat = { manier: "", kozijnen: [], papier: { tekening: [], kozijnfoto: [] }, verzending: null };
+  var staat = { manier: "", kozijnen: [], papier: { tekening: [], kozijnfoto: [] }, verzending: null, vanaf: "" };
   var blobs = {};
   var urls = {};
   var voorbeelden = {};   // kozijn-id -> object-URL van de foto met strepen
@@ -1110,6 +1110,7 @@
     staat.kozijnen = (s.kozijnen || []).map(function (k) { return Object.assign(nieuwKozijn(), k); });
     staat.papier = { tekening: (s.papier && s.papier.tekening) || [], kozijnfoto: (s.papier && s.papier.kozijnfoto) || [] };
     staat.verzending = s.verzending || null;
+    staat.vanaf = s.vanaf || "";
     Object.keys(d.velden || {}).forEach(function (naam) {
       var v = d.velden[naam];
       if (Array.isArray(v)) {
@@ -1150,12 +1151,24 @@
     spanningsplooien: "plooien of kreukels",
     scheuren: "krassen of stootschade"
   };
-  var vanaf = KLACHTEN[new URLSearchParams(window.location.search).get("klacht")] || "";
+  // En van welke zustersite iemand komt (de knoppen daar hebben utm-codes), zodat
+  // Max ziet wat kozijnwrap.nl en houtnerffolie.nl opleveren.
+  var BRONNEN = { "kozijnwrap.nl": "kozijnwrap.nl", houtnerffolie: "houtnerffolie.nl" };
+  var zoek = new URLSearchParams(window.location.search);
+  var herkomst = [];
+  if (KLACHTEN[zoek.get("klacht")]) herkomst.push("klacht: " + KLACHTEN[zoek.get("klacht")]);
+  if (BRONNEN[zoek.get("utm_source")]) {
+    herkomst.push(BRONNEN[zoek.get("utm_source")] + (zoek.get("utm_medium") === "keuzehulp" ? " (keuzehulp)" : ""));
+  }
+  var vanaf = herkomst.join(" \u00b7 ");
 
   bouwStapbalk();
   toon(0, false);
 
   herstel().then(function (stap) {
+    // Wie later terugkomt zonder de codes in het adres, houdt de herkomst van toen.
+    if (!vanaf && staat.vanaf) vanaf = staat.vanaf;
+    staat.vanaf = vanaf;
     var gekozen = form.querySelector('[name="manier"][value="' + staat.manier + '"]');
     if (gekozen) gekozen.checked = true;
     tekenManier();
