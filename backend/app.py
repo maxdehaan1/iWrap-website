@@ -212,6 +212,12 @@ def _alleen_testkassa():
 
 @route("POST", "/api/aanvragen")
 def aanvraag_maken(v):
+    # Op Vercel zonder mailkoppeling of zonder Redis zou een aanvraag wel
+    # "verstuurd" lijken, maar nergens aankomen. Dan liever eerlijk: het
+    # formulier toont deze melding met een knop om te mailen.
+    if cfg.OP_VERCEL and not (mail.gekoppeld() and cfg.REDIS_URL):
+        raise Probleem(503, "Versturen via het formulier staat nog uit. Mail je aanvraag naar %s, "
+                            "met je foto's als bijlage." % cfg.MAX_EMAIL)
     if opslag().teller_met_ttl("aanvraag-ip:" + v.ip, 3600) > 8:
         raise Probleem(429, "Je hebt al een paar aanvragen gestuurd. Probeer het over een uur opnieuw, "
                             "of bel of mail ons.")

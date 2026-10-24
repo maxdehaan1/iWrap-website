@@ -89,6 +89,12 @@ def aanvragen_testen():
     r = verzoek("POST", "/api/aanvragen", {"manier": "maten", "kozijnen": [{"waar": "begane-grond"}],
                                            "gegevens": GEGEVENS})
     klopt(r["status"] == 422 and "minstens één deel" in r["json"]["fout"], "maten zonder delen wordt geweigerd")
+    from backend import instellingen
+    instellingen.OP_VERCEL = True
+    r = verzoek("POST", "/api/aanvragen", {"manier": "maten", "gegevens": GEGEVENS})
+    instellingen.OP_VERCEL = False
+    klopt(r["status"] == 503 and "staat nog uit" in r["json"]["fout"],
+          "op Vercel zonder mailkoppeling zegt het formulier eerlijk dat versturen nog uitstaat")
     r = verzoek("POST", "/api/aanvragen", {"manier": "streep", "kozijnen": [{"waar": "verdieping"}],
                                            "gegevens": GEGEVENS})
     klopt(r["status"] == 422 and "streep" in r["json"]["fout"], "aanstrepen zonder aanstreping wordt geweigerd")
