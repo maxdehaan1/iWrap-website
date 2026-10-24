@@ -4,4 +4,4 @@ Disallow: /max
 Disallow: /r/
 Disallow: /api/
 
-Sitemap: https://www.iwrap.nl/sitemap.xml
+Sitemap: https://iwrap.nl/sitemap.xml

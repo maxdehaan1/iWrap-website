@@ -21,7 +21,7 @@ from PIL import Image
 
 ROOT = Path(__file__).parent
 SRC = ROOT / "src" / "pages"
-SITE = "https://www.iwrap.nl"
+SITE = "https://iwrap.nl"
 
 # ---------------------------------------------------------------------------
 # Bedrijfsgegevens -- staan hier op EEN plek. Verandert het reviewaantal, de

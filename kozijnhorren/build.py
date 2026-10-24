@@ -43,7 +43,7 @@ MAAT = CAT["maatgrenzen"]
 SITE = "https://" + WINKEL["domein"]
 # De API draait op iwrap.nl (zie backend/). Lokaal pakt de winkel vanzelf
 # localhost:8010; dat regelt js/winkel.js.
-API = "https://www.iwrap.nl/api"
+API = "https://iwrap.nl/api"
 
 NAV = [
     ("bestellen", "Bestellen"),
@@ -66,7 +66,7 @@ FOOTER_KOLOMMEN = [
     ]),
     ("Over", [
         ("over-ons", "Over ons"),
-        ("https://www.iwrap.nl", "Kozijnen herstellen: iWrap"),
+        ("https://iwrap.nl", "Kozijnen herstellen: iWrap"),
         ("voorwaarden", "Voorwaarden"),
         ("privacy", "Privacy"),
     ]),
@@ -395,6 +395,9 @@ HEAD = """<!DOCTYPE html>
 <meta property="og:title" content="{ogtitle}">
 <meta property="og:description" content="{description}">
 <meta property="og:url" content="{canonical}">
+<meta property="og:image" content="{ogimage}">
+<meta property="og:image:alt" content="Een kozijnhor in de kleur van het kozijn">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#f8f3ee">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <script>document.documentElement.className+=" js";</script>
@@ -520,6 +523,7 @@ def render(slug, meta, inhoud, ver):
     return HEAD.format(
         title=meta["title"],
         description=meta["description"],
+        ogimage=SITE + "/images/held-1000.jpg",
         canonical=SITE + url_for(slug),
         robots='<meta name="robots" content="noindex">\n' if meta.get("noindex") else "",
         naam=WINKEL["naam"],

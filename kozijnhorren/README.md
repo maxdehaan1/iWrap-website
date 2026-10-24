@@ -34,7 +34,7 @@ de offerte op iwrap.nl, en noemt het formulier daar bij een kleurwissel kozijnho
 
 Technisch is de winkel een **statische site** (deze map). Rekenen, betalen, bestellingen
 en mails zitten in de achterkant van iwrap.nl (`backend/` in de repo-root), die de winkel
-aanroept op `https://www.iwrap.nl/api`. Max ziet de bestellingen in de Max-modus op
+aanroept op `https://iwrap.nl/api`. Max ziet de bestellingen in de Max-modus op
 iwrap.nl, onder "Kozijnhorren".
 
 ```
@@ -128,7 +128,7 @@ kassa een echte (live) Mollie-betaling.
 5. Maak in Microsoft 365 het adres info@kozijnhorren.nl aan (een alias is genoeg) en zet
    het in `backend/data/winkel.json`. Nu staat daar nog info@iwrap.nl.
 
-De winkel werkt pas echt als de API op www.iwrap.nl bereikbaar is; de `*.vercel.app`-
+De winkel werkt pas echt als de API op iwrap.nl bereikbaar is; de `*.vercel.app`-
 adressen van het iwrap-project zitten achter de Vercel-login.
 
 ## Wat er bewust niet in zit

@@ -425,8 +425,8 @@ Belangrijke keuzes:
 
 Nu draait alles lokaal. Om het echt te gebruiken:
 
-1. **iwrap.nl naar Vercel** (stond al op de lijst). De API moet op www.iwrap.nl bereikbaar
-   zijn: de `*.vercel.app`-adressen zitten achter de Vercel-login, en daar kunnen de
+1. **iwrap.nl naar Vercel** (stond al op de lijst), met iwrap.nl zonder www als hoofddomein
+   (zie hieronder). De API moet op iwrap.nl bereikbaar zijn: de `*.vercel.app`-adressen zitten achter de Vercel-login, en daar kunnen de
    winkel, Mollie en de klant niet bij.
 2. **Opslag:** Vercel > project iwrap-website > Storage > Upstash for Redis (gratis
    laag) > koppelen. Dat zet `KV_REST_API_URL` en `KV_REST_API_TOKEN` vanzelf.
@@ -444,7 +444,7 @@ Nu draait alles lokaal. Om het echt te gebruiken:
    | `SHOP_URL` | Het adres van de winkel: `https://kozijnhorren.nl` |
 
 4. **Mail via Microsoft 365.** Zie het kopje hieronder. Daarna een testaanvraag doen op
-   www.iwrap.nl/offerte en kijken of hij met alle foto's in je inbox staat.
+   iwrap.nl/offerte en kijken of hij met alle foto's in je inbox staat.
 5. **Mollie** in testmodus, en één keer de hele stroom doorlopen: klus in de Max-modus,
    rapport openen op je telefoon, via de tip naar kozijnhorren.nl, bestellen,
    testbetaling, mail, Naar leverancier, Verzonden.
@@ -611,8 +611,20 @@ op Vercel verloren. **Zet de site dus pas live als de koppeling werkt.**
    jaar is de fabrieksfolie op". De eerste staat al op kozijnwrap.nl, de tweede is mijn
    formulering — pas hem aan als jouw praktijkgetal anders is.
 
-**Bij het overzetten van het domein:**
+**Bij het overzetten van het domein (Google houdt je posities):**
 
+- **iwrap.nl zonder www is het hoofdadres.** Zo kent Google je site nu: de WordPress-site
+  heeft `https://iwrap.nl/` als canonical en stuurt www door naar iwrap.nl. De nieuwe site
+  gebruikt daarom overal `https://iwrap.nl` (canonical, sitemap, structured data, de
+  koppeling met de winkel). Zet in Vercel bij Domains **iwrap.nl** als hoofddomein en
+  **www.iwrap.nl** als doorverwijzing naar iwrap.nl. Andersom zou Google elke pagina op
+  een nieuw adres zien.
+- **Alle 18 pagina's die Google van de oude site kent** (uit de Yoast-sitemaps) komen op
+  de nieuwe site op een echte pagina uit: dezelfde URL, of een 301 naar de pagina die
+  erop lijkt (de portfolio's naar `/voorbeelden`). Getest op 24 oktober 2026.
+- **De Vercel-testadressen** (`*.vercel.app`) sturen de kop `X-Robots-Tag: noindex` mee
+  (`vercel.json`), zodat Google ze niet naast iwrap.nl gaat tonen. Op iwrap.nl zelf geldt
+  die kop niet.
 - De oude site draait op URL's mét slash (`/werkwijze/`), deze op URL's zónder
   (`/werkwijze`). `vercel.json` heeft `trailingSlash: false`, dus Vercel stuurt de oude
   variant automatisch door met een 301. De vier bestaande URL's
@@ -621,7 +633,13 @@ op Vercel verloren. **Zet de site dus pas live als de koppeling werkt.**
 - In `vercel.json` staan alvast redirects voor een paar URL's die mensen intypen
   (`/prijzen`, `/faq`, `/kozijnherstel`). Kom je in Search Console andere oude URL's
   tegen met inkomende links, zet ze daar dan bij.
-- Dien `sitemap.xml` opnieuw in via Search Console zodra de nieuwe pagina's live staan.
+- **Na de overstap in Google Search Console** (eigendom `iwrap.nl`, die heb je al als de
+  Yoast-sitemap daar staat): bij Sitemaps de oude `sitemap_index.xml` weghalen en
+  `https://iwrap.nl/sitemap.xml` toevoegen. Met URL-inspectie de homepage, `/offerte` en
+  `/kunststof-kozijn-herstellen` laten indexeren. Kijk de eerste weken bij Pagina's of er
+  404's opduiken; zet zo'n oude URL dan als redirect in `vercel.json`.
+- **Google Bedrijfsprofiel:** zet de website-link daar op `https://iwrap.nl` en de
+  afspraak-/offertelink op `https://iwrap.nl/offerte`.
 
 **Later, als je zin hebt:**
 

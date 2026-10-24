@@ -44,7 +44,7 @@ LOKAAL = not OP_VERCEL
 # een testadres niet door naar de echte site.
 _PREVIEW = OP_VERCEL and env("VERCEL_ENV") == "preview" and env("VERCEL_BRANCH_URL")
 _IWRAP_STANDAARD = ("https://" + env("VERCEL_BRANCH_URL")) if _PREVIEW else \
-    "https://www.iwrap.nl" if OP_VERCEL else "http://localhost:8010"
+    "https://iwrap.nl" if OP_VERCEL else "http://localhost:8010"
 _SHOP_STANDAARD = _IWRAP_STANDAARD.replace("://iwrap-website-", "://kozijnhorren-", 1) if _PREVIEW else \
     "https://kozijnhorren.nl" if OP_VERCEL else "http://localhost:8020"
 IWRAP_URL = env("IWRAP_URL", _IWRAP_STANDAARD).rstrip("/")
