@@ -15,7 +15,8 @@ Openbaar (ook vanuit de winkel op een ander domein):
 
 Max-modus (met token uit /api/max/login):
   /api/max/status, /api/max/rapporten[/<id>[/mail]], /api/max/fotos,
-  /api/max/bestellingen[/<nr>[/actie]]
+  /api/max/bestellingen[/<nr>[/actie]],
+  /api/max/aanvragen[/<id>[/fotos/<naam> | /klus]]
 
 Vercel Cron:
   GET  /api/cron
@@ -414,6 +415,42 @@ def foto_opslaan(v):
     fid = nieuwe_id(14)
     opslag().put_ruw("foto:" + fid, base64.b64encode(ruw).decode("ascii"))
     return antwoord({"id": fid, "url": "%s/fotos/%s" % (cfg.API_URL, fid)}, 201)
+
+
+@route("GET", "/api/max/aanvragen", max_modus=True)
+def aanvragen_lijst(v):
+    uit = []
+    for aid in opslag().index_lijst("aanvragen", 200):
+        a = aanvragen.haal(aid)
+        if a:
+            uit.append(aanvragen.lijstregel(a))
+    return antwoord({"aanvragen": uit})
+
+
+def _aanvraag_voor_max(aid):
+    a = aanvragen.haal(aid)
+    if not a or a["status"] != "verstuurd":
+        raise Probleem(404, "Deze aanvraag bestaat niet (meer). Na dertig dagen staat hij alleen nog in je mail.")
+    return a
+
+
+@route("GET", r"/api/max/aanvragen/(?P<aid>[a-z0-9]+)", max_modus=True)
+def aanvraag_max(v, aid):
+    return antwoord(aanvragen.voor_max(_aanvraag_voor_max(aid)))
+
+
+@route("GET", r"/api/max/aanvragen/(?P<aid>[a-z0-9]+)/fotos/(?P<naam>[a-z0-9-]+\.jpg)", max_modus=True)
+def aanvraag_foto_max(v, aid, naam):
+    inhoud = aanvragen.foto(_aanvraag_voor_max(aid), naam)
+    if not inhoud:
+        raise Probleem(404, "Foto niet gevonden.")
+    return 200, {"Content-Type": "image/jpeg", "Cache-Control": "private, max-age=3600"}, inhoud
+
+
+@route("POST", r"/api/max/aanvragen/(?P<aid>[a-z0-9]+)/klus", max_modus=True)
+def aanvraag_naar_klus(v, aid):
+    r = aanvragen.naar_klus(_aanvraag_voor_max(aid))
+    return antwoord({"id": r["id"]}, 201)
 
 
 @route("GET", "/api/max/bestellingen", max_modus=True)

@@ -66,6 +66,7 @@ FOOTER_KOLOMMEN = [
     ]),
     ("Over", [
         ("over-ons", "Over ons"),
+        ("https://www.iwrap.nl", "Kozijnen herstellen: iWrap"),
         ("voorwaarden", "Voorwaarden"),
         ("privacy", "Privacy"),
     ]),
@@ -357,7 +358,8 @@ def render_mand():
 def render_footer():
     kolommen = ""
     for titel, items in FOOTER_KOLOMMEN:
-        links = "".join('<li><a href="%s">%s</a></li>' % (url_for(s), l) for s, l in items)
+        links = "".join('<li><a href="%s"%s>%s</a></li>' % (
+            (s, ' rel="noopener"', l) if s.startswith("http") else (url_for(s), "", l)) for s, l in items)
         kolommen += '<div class="vcol"><h2>%s</h2><ul>%s</ul></div>' % (titel, links)
     zakelijk = " &middot; ".join(x for x in [
         ("KvK " + WINKEL["kvk"]) if WINKEL["kvk"] else "",
@@ -455,8 +457,16 @@ def faq_schema(paren):
         {"@type": "Question", "name": v, "acceptedAnswer": {"@type": "Answer", "text": a}} for v, a in paren]}
 
 
+def iwrap_reviews():
+    """Het Google-reviewcijfer van iWrap, uit reviews.json in de repo-root
+    (dat bestand houdt iwrap.nl bij, zie reviews.py)."""
+    r = json.loads((Path(__file__).resolve().parent.parent / "reviews.json").read_text(encoding="utf-8"))
+    return "%s uit %d Google-reviews" % (str(r["score"]).replace(".", ","), r["aantal"])
+
+
 def substitueer(tekst):
     vervang = {
+        "{{iwrap.reviews}}": iwrap_reviews(),
         "{{prijs.vanaf}}": euro(VANAF),
         "{{prijs.luxe_vanaf}}": euro(LUXE_VANAF),
         "{{levertijd}}": levertijd_tekst(),

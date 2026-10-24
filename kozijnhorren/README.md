@@ -1,8 +1,11 @@
 # kozijnhorren.nl
 
-Horren in de kleur van je kozijn. Een eigen webwinkel, los van iwrap.nl: de klant
-merkt er weinig van dat iWrap erachter zit. Alleen op de plekken waar het wettelijk
-moet (footer, voorwaarden, bevestigingsmail) staat "een handelsnaam van iWrap VOF".
+Horren in de kleur van je kozijn. Een eigen webwinkel met een eigen uiterlijk, maar
+geen geheim dat iWrap erachter zit: dat is juist het vertrouwen dat een nieuwe winkel
+nodig heeft. "Over ons" en de veelgestelde vragen noemen iWrap met het reviewcijfer
+(`{{iwrap.reviews}}`, uit `reviews.json` in de repo-root), en de footer linkt naar
+iwrap.nl. De samenhang met iwrap.nl staat in de README in de repo-root, onder "Hoe alles
+samenhangt".
 
 Waar de horren vandaan komen, welke hor we verkopen en waarom: zie
 [LEVERANCIERS.md](LEVERANCIERS.md).
@@ -25,8 +28,9 @@ als link naar de klant sturen; die rekent dan zelf af.
 
 Staan de horren in het opleverrapport van iWrap op oranje of rood, dan staat daar een
 tip met een link naar `kozijnhorren.nl/bestellen?kleur=<RAL>`: de kleur die bij de folie
-hoort staat dan al klaar (en is het geen standaardkleur, dan de Luxe). Verder is er geen
-koppeling; de klant vult zelf de maten in.
+hoort staat dan al klaar (en is het geen standaardkleur, dan de Luxe). De klant vult zelf
+de maten in. Andersom wijst "Over ons" de klant met een verweerd of verkleurd kozijn naar
+de offerte op iwrap.nl, en noemt het formulier daar bij een kleurwissel kozijnhorren.nl.
 
 Technisch is de winkel een **statische site** (deze map). Rekenen, betalen, bestellingen
 en mails zitten in de achterkant van iwrap.nl (`backend/` in de repo-root), die de winkel
@@ -55,7 +59,8 @@ de hand. `js/catalogus.js` wordt ook gegenereerd, uit `backend/data/`.
 Plaatshouders in de bron: `{{prijs.vanaf}}`, `{{prijs.luxe_vanaf}}`, `{{levertijd}}`,
 `{{pasgarantie.dagen}}`, `{{maat.*}}`, `{{prijstabel.basis}}`, `{{prijstabel.luxe}}`,
 `{{prijsvoorbeelden}}`, `{{kleuren}}`, `{{folietabel}}`, `{{usp}}`, `{{svg.hor:<id>}}`,
-`{{svg.raam:<id>}}`, `{{icoon.<naam>}}`, `{{whatsapp}}`, `{{winkel.<veld>}}`. Een onbekende
+`{{svg.raam:<id>}}`, `{{icoon.<naam>}}`, `{{whatsapp}}`, `{{winkel.<veld>}}`,
+`{{iwrap.reviews}}`. Een onbekende
 plaatshouder laat de build stoppen.
 
 ## Stijl

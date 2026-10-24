@@ -445,7 +445,8 @@ def render_footer():
     <p>&copy; 2026 {b['juridisch']}, {b['plaats']}{zakelijk}</p>
     <p class="fzus">Meer weten? <a href="https://kozijnwrap.nl" rel="noopener">kozijnwrap.nl</a>
     legt uit wanneer herstel zin heeft, <a href="https://houtnerffolie.nl" rel="noopener">houtnerffolie.nl</a>
-    gaat over de folie zelf.</p>
+    gaat over de folie zelf, en op <a href="https://kozijnhorren.nl" rel="noopener">kozijnhorren.nl</a>
+    bestel je horren in de kleur van je kozijn.</p>
   </div>
 </footer>"""
 

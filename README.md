@@ -18,6 +18,48 @@ waar je direct een offerte van kunt maken. Er staan bewust geen bedragen op de s
 Daarnaast staat er expliciet op de site wat je **niet** doet (krom kozijn, kapot beslag,
 lekkage, aluminium schil). Dat scheelt de aanvragen die toch nergens toe leiden.
 
+## Hoe alles samenhangt
+
+Eén klant, van eerste vraag tot horren in de juiste kleur. Elke stap verwijst naar de
+volgende, en jij ziet alles terug in de Max-modus (`/max`):
+
+```
+iwrap.nl/offerte          De klant laat zien wat er moet gebeuren (aanstrepen, maten
+       |                  of op papier), met een foto van elk kozijn.
+       v
+mail in je Outlook        Per kozijn het werk, de foto's als bijlage, aanvraag.json.
+       |                  Onderaan een link "maak er een klus van".
+       v
+Max-modus > Aanvragen     Dezelfde aanvraag, met de foto's. Knop "Klus aanmaken":
+       |                  naam, adres, mail en het werk staan dan al in de klus.
+       v
+Max-modus > Klussen       Op locatie: de kozijncheck (zes onderdelen, stoplicht).
+       |
+       v
+iwrap.nl/r/<id>           Het opleverrapport voor de klant: wat er gedaan is, de
+       |                  garantie, de kozijncheck. Staan de horren op oranje of rood:
+       |                  een tip met de kleur die bij de folie hoort.
+       v
+kozijnhorren.nl           Bestellen met die kleur al gekozen (/bestellen?kleur=7016).
+       |
+       v
+Max-modus > kozijnhorren.nl   De bestelling, betaald via Mollie.
+```
+
+Verder verwijzen de sites naar elkaar waar het de klant helpt:
+
+- Kiest iemand in het formulier **een andere kleur**, dan staat erbij dat de horren daarna
+  nog de oude kleur hebben, met een link naar kozijnhorren.nl.
+- Het formulier, de bevestigingsmail, de werkwijze en de homepage noemen de **gratis
+  kozijncheck** bij de oplevering.
+- De **footer van iwrap.nl** noemt de drie zustersites: kozijnwrap.nl (wanneer herstel
+  zin heeft), houtnerffolie.nl (de folie), kozijnhorren.nl (horren in de kleur).
+- **kozijnhorren.nl noemt iWrap** op "Over ons" (met het reviewcijfer uit
+  `reviews.json`), in de veelgestelde vragen ("Wie zit er achter kozijnhorren.nl?") en
+  in de footer, met een link naar de offerte voor wie het kozijn zelf wil laten herstellen.
+  De winkel houdt wel zijn eigen uiterlijk (oranje, crème, Nunito): het is een winkel,
+  geen dienst, en dat mag je zien.
+
 ## Wat er nieuw is ten opzichte van de oude site
 
 | | Oud | Nieuw |
@@ -310,7 +352,14 @@ daarom een snelkoppeling voor wat je bekeken hebt, geen standaard.
 
 ### Zo werkt de Max-modus op locatie
 
-1. `/max`, inloggen (de telefoon onthoudt het 120 dagen). **Nieuwe klus.**
+De Max-modus heeft drie tabs, in de volgorde van een klus: **Aanvragen** (wat er via
+de site binnenkwam), **Klussen** (kozijncheck en rapport) en **kozijnhorren.nl** (de
+bestellingen).
+
+1. `/max`, inloggen (de telefoon onthoudt het 120 dagen). Komt de klus uit een aanvraag
+   van de site: **Aanvragen** > de aanvraag > **Klus aanmaken**. Klant en werk staan dan
+   al ingevuld, en in de klus staat een link terug naar de aanvraag en de foto's. Anders:
+   **Klussen** > **Nieuwe klus**.
 2. Klant, oplevering (datum, wat gedaan, welke folie). De folie bepaalt ook de horkleur in
    de link naar kozijnhorren.nl, via de kleurentabel in `backend/data/folies.json`.
 3. Kozijncheck: één tik per onderdeel. Bij oranje of rood een notitie en een foto.

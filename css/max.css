@@ -138,3 +138,16 @@ header.site.kaal .nav{padding-top:8px;padding-bottom:8px;}
 .max-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:400;background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-size:.92rem;box-shadow:var(--shadow-lg);transition:opacity .4s ease,transform .4s ease;max-width:90vw;}
 .max-toast.fout{background:var(--rust);}
 .max-toast.weg{opacity:0;transform:translate(-50%,10px);}
+
+/* Aanvragen (uit iwrap.nl/offerte) ---------------------------------------- */
+.max-hint{font-size:.86rem;color:var(--sub);margin:8px 2px 12px;}
+.uit-aanvraag{background:var(--mint-wash);border:1px solid var(--mint-soft);border-radius:12px;padding:10px 13px;margin:0 0 12px;color:var(--ink-soft);}
+.aanvraag-gegevens{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0 0 16px;font-size:.94rem;}
+.aanvraag-gegevens dt{color:var(--sub);}
+.aanvraag-gegevens dd{margin:0;overflow-wrap:anywhere;}
+.aanvraag-regel{margin:0 0 4px;}
+.aanvraag-fotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:12px;}
+.aanvraag-foto{display:flex;flex-direction:column;gap:4px;padding:0;border:0;background:none;cursor:pointer;text-align:left;font:inherit;}
+.aanvraag-foto img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;background:#e9e7e2;}
+.aanvraag-foto span{font-size:.74rem;color:var(--sub);overflow-wrap:anywhere;}
+.aanvraag-foto.weg img{display:none;}

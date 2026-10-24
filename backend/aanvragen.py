@@ -27,6 +27,10 @@ het profiel, de kleur en of herstel kan.
 
 Wat hier bewaard wordt verloopt vanzelf: een aanvraag die niet verstuurd
 wordt na twee dagen, een verstuurde na dertig. De mail aan Max is het archief.
+
+In de Max-modus staan de verstuurde aanvragen onder "Aanvragen". Vandaar maakt
+Max er met één knop een klus van (naar_klus): de klantgegevens en het werk
+staan dan al klaar voor de kozijncheck en het opleverrapport.
 """
 
 import base64
@@ -36,7 +40,7 @@ import re
 import time
 
 from . import instellingen as cfg
-from . import mail, mails
+from . import mail, mails, rapporten
 from .auth import nieuwe_id
 from .opslag import opslag
 
@@ -184,6 +188,7 @@ def schoon(invoer):
         "email": _tekst(g.get("email"), 160).lower(),
         "telefoon": _tekst(g.get("telefoon"), 30),
         "postcode": (postcode[:4] + " " + postcode[4:]) if re.fullmatch(r"\d{4}[A-Z]{2}", postcode) else postcode,
+        "straat": _tekst(g.get("straat"), 80),
         "huisnummer": _tekst(g.get("huisnummer"), 12),
         "plaats": _tekst(g.get("plaats"), 60),
     }
@@ -196,6 +201,8 @@ def schoon(invoer):
         fouten.append("Vul je telefoonnummer in.")
     if not re.fullmatch(r"\d{4} [A-Z]{2}", a["gegevens"]["postcode"]):
         fouten.append("Vul je postcode in, bijvoorbeeld 1214 GZ.")
+    if not a["gegevens"]["straat"]:
+        fouten.append("Vul je straat in.")
     if not a["gegevens"]["huisnummer"]:
         fouten.append("Vul je huisnummer in.")
     if not a["gegevens"]["plaats"]:
@@ -327,3 +334,99 @@ def verstuur(a):
         opslag().verloop(_fotosleutel(a, f["naam"]), TTL_BEWAAR)
     opslag().index_zet("aanvragen", a["id"], a["gemaakt"])
     return a
+
+
+# ---------------------------------------------------------------------------
+# Voor de Max-modus
+# ---------------------------------------------------------------------------
+
+def adres(a):
+    g = a["gegevens"]
+    straat = ("%s %s" % (g.get("straat", ""), g["huisnummer"])).strip()
+    return "%s, %s %s" % (straat, g["postcode"], g["plaats"])
+
+
+def overzicht(a):
+    """Per kozijn een kop, wat er moet gebeuren en welke foto's erbij horen.
+    Dezelfde tekst als in de mail aan Max."""
+    if a["manier"] == "papier":
+        p = a["papier"]
+        return [{
+            "titel": "Getekend op papier",
+            "regels": ["Waar: " + ", ".join(WAAR[w] for w in p["waar"])],
+            "fotos": [f["naam"] for f in fotolijst(a)],
+        }]
+    uit = []
+    for nr, k in enumerate(a["kozijnen"], 1):
+        uit.append({"titel": mails._kozijn_kop(k, nr), "regels": mails._kozijn_werk(k, nr),
+                    "fotos": mails._kozijn_fotos(a, nr)})
+    return uit
+
+
+def lijstregel(a):
+    if a["manier"] == "papier":
+        wat = "tekening, %d foto%s" % (a["papier"]["fotos"], "'s" if a["papier"]["fotos"] != 1 else "")
+    else:
+        t = totalen(a)
+        wat = "%d kozijn%s" % (t["kozijnen"], "en" if t["kozijnen"] != 1 else "")
+    return {"id": a["id"], "naam": a["gegevens"]["naam"], "plaats": a["gegevens"]["plaats"],
+            "manier": MANIEREN[a["manier"]], "wat": wat, "gemaakt": a["gemaakt"], "klus": a.get("klus", "")}
+
+
+def voor_max(a):
+    d = lijstregel(a)
+    d.update({
+        "gegevens": a["gegevens"],
+        "adres": adres(a),
+        "kleur": "Dezelfde kleur houden" if a["kleur"] == "zelfde" else "Andere kleur: " + a["kleur_anders"],
+        "toelichting": a["toelichting"],
+        "via": a["via"],
+        "overzicht": overzicht(a),
+        "fotos": [f["naam"] for f in fotolijst(a)],
+    })
+    return d
+
+
+def foto(a, naam):
+    if naam not in {f["naam"] for f in fotolijst(a)}:
+        return None
+    data = opslag().get_ruw(_fotosleutel(a, naam))
+    return base64.b64decode(data) if data else None
+
+
+def werk_kort(a):
+    """Het werk in één regel, als begin voor 'Wat we gedaan hebben' in het
+    rapport. Max past het aan naar wat er echt gedaan is."""
+    if a["manier"] == "papier":
+        return "Volgens de tekening bij de aanvraag."
+    delen = []
+    for nr, k in enumerate(a["kozijnen"], 1):
+        if k["heel"]:
+            wat = "het hele kozijn"
+        elif k["regels"]:
+            wat = ", ".join(r["deel"].lower() for r in k["regels"])
+        else:
+            wat = "zie de aangestreepte foto"
+        delen.append("Kozijn %d%s: %s" % (nr, " (%d×)" % k["aantal"] if k["aantal"] > 1 else "", wat))
+    return ". ".join(delen) + "."
+
+
+def naar_klus(a):
+    """Een klus (kozijncheck en opleverrapport) met de gegevens uit de aanvraag.
+    Bestaat hij al, dan die."""
+    if a.get("klus"):
+        r = rapporten.haal(a["klus"])
+        if r:
+            return r
+    g = a["gegevens"]
+    r = rapporten.schoon({
+        "klant": {"naam": g["naam"], "straat": ("%s %s" % (g.get("straat", ""), g["huisnummer"])).strip(),
+                  "postcode": g["postcode"], "plaats": g["plaats"], "email": g["email"], "telefoon": g["telefoon"]},
+        "oplevering": {"werk": werk_kort(a)},
+    }, rapporten.nieuw())
+    r["oplevering"]["datum"] = rapporten.nieuw()["oplevering"]["datum"]
+    r["aanvraag"] = a["id"]
+    rapporten.bewaar(r)
+    a["klus"] = r["id"]
+    opslag().put("aanvraag:" + a["id"], a, ttl=TTL_BEWAAR)
+    return r

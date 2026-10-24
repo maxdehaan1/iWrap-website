@@ -1,14 +1,19 @@
 /* ---------------------------------------------------------------------------
    Max-modus (/max): het invulscherm voor op locatie.
 
-   Per klus: de klant, wat er gedaan is, de kozijncheck (zes onderdelen, één
-   tik per onderdeel), en de ramen voor de horren. Alles slaat vanzelf op, ook
-   als er even geen bereik is: dan bewaart de telefoon het en gaat het later
-   alsnog naar de server. Daarnaast een lijst met horrenbestellingen.
+   Drie tabs, in de volgorde van een klus:
+     Aanvragen        wat er via iwrap.nl/offerte binnenkwam; met één knop
+                      wordt een aanvraag een klus, met de gegevens al ingevuld
+     Klussen          per klus de klant, wat er gedaan is en de kozijncheck
+                      (zes onderdelen, één tik per onderdeel) -> opleverrapport
+     kozijnhorren.nl  de horrenbestellingen, vaak via de tip in dat rapport
+   Alles slaat vanzelf op, ook als er even geen bereik is: dan bewaart de
+   telefoon het en gaat het later alsnog naar de server.
 
    Opbouw: kleine helper h() maakt elementen (nooit innerHTML met klantgegevens),
    elk scherm is een functie die #app vult, de route staat in de hash:
      #            klussen          #klus/<id>        een klus
+     #aanvragen                    #aanvraag/<id>    een aanvraag
      #bestellingen                 #bestelling/<nr>  een bestelling
 
    Let op bij bewerken: teksten met een apostrof tussen dubbele aanhalingstekens,
@@ -116,6 +121,8 @@
     window.scrollTo(0, 0);
     if (delen[0] === "klus" && delen[1]) return toonKlus(delen[1]);
     if (delen[0] === "bestelling" && delen[1]) return toonBestelling(delen[1]);
+    if (delen[0] === "aanvraag" && delen[1]) return toonAanvraag(delen[1]);
+    if (delen[0] === "aanvragen") return toonOverzicht("aanvragen");
     if (delen[0] === "bestellingen") return toonOverzicht("bestellingen");
     return toonOverzicht("klussen");
   }
@@ -144,7 +151,7 @@
       }
     },
       h("h1", null, "Max-modus"),
-      h("p", null, "Kozijncheck, opleverrapport en de bestellingen van kozijnhorren.nl."),
+      h("p", null, "Aanvragen van de site, kozijncheck en opleverrapport, en de bestellingen van kozijnhorren.nl."),
       h("label", { for: "ww" }, "Wachtwoord"), veld, fout,
       h("button.knop.knop-primair", { type: "submit" }, "Inloggen"));
     leeg(APP).append(form);
@@ -158,10 +165,13 @@
     const inhoud = h("div.max-lijst", null, h("p.max-laden", null, "Laden…"));
     voegToe(leeg(APP), [
       h("div.max-tabs", { role: "tablist" },
+        h("a" + (tab === "aanvragen" ? ".actief" : ""), { href: "#aanvragen", role: "tab" }, "Aanvragen"),
         h("a" + (tab === "klussen" ? ".actief" : ""), { href: "#", role: "tab" }, "Klussen"),
         h("a" + (tab === "bestellingen" ? ".actief" : ""), { href: "#bestellingen", role: "tab" }, "kozijnhorren.nl")),
       statusBalk(),
       tab === "klussen" ? h("button.knop.knop-primair.max-nieuw", { type: "button", onclick: nieuweKlus }, "+ Nieuwe klus") : null,
+      tab === "klussen" ? h("p.max-hint", null, "Komt de klus uit een aanvraag van de site? Open hem dan bij Aanvragen: " +
+        "daar staan de klantgegevens al klaar.") : null,
       inhoud,
       h("p.max-voet", null, h("button.linkknop", { type: "button", onclick: uitloggen }, "Uitloggen"))]);
 
@@ -178,6 +188,17 @@
             h("span.max-regel-titel", null, r.naam || "Naamloze klus"),
             h("span.max-regel-sub", null, [r.straat, r.plaats].filter(Boolean).join(", ") || "Geen adres", " · ", r.datum ? datumKort(r.datum) : ""),
             h("span.max-chips", null, chips)));
+        });
+      }).catch(function (e) { leeg(inhoud).append(h("p.max-fout", null, e.message)); });
+    } else if (tab === "aanvragen") {
+      api("GET", "/max/aanvragen").then(function (j) {
+        leeg(inhoud);
+        if (!j.aanvragen.length) inhoud.append(h("p.max-leeg", null, "Nog geen aanvragen via de site. Ze staan ook altijd in je mail."));
+        j.aanvragen.forEach(function (a) {
+          inhoud.append(h("a.max-regel", { href: "#aanvraag/" + a.id },
+            h("span.max-regel-titel", null, a.naam + " · " + a.plaats),
+            h("span.max-regel-sub", null, a.wat + " · " + a.manier.toLowerCase() + " · " + datumKort(a.gemaakt)),
+            h("span.max-chips", null, a.klus ? h("span.chip.chip-groen", null, "Klus aangemaakt") : h("span.chip.chip-oranje", null, "Nieuw"))));
         });
       }).catch(function (e) { leeg(inhoud).append(h("p.max-fout", null, e.message)); });
     } else {
@@ -338,6 +359,8 @@
       h("div.max-balk", null,
         h("a.terug", { href: "#", "aria-label": "Terug naar de klussen" }, "‹ Klussen"),
         h("span.opslagstatus.klaar", { id: "opslagstatus" }, "Opgeslagen")),
+      k.aanvraag ? h("p.max-hint.uit-aanvraag", null, "Deze klus komt uit een aanvraag van de site. ",
+        h("a", { href: "#aanvraag/" + k.aanvraag }, "Bekijk de aanvraag en de foto's")) : null,
 
       h("section.max-kaart", null,
         h("h2", null, "Klant"),
@@ -594,6 +617,66 @@
   }
 
   // --- Een bestelling -----------------------------------------------------
+
+  // --- Een aanvraag -------------------------------------------------------
+
+  function toonAanvraag(id) {
+    klus = null;
+    leeg(APP).append(h("p.max-laden", null, "Aanvraag laden…"));
+    api("GET", "/max/aanvragen/" + id).then(bouwAanvraag).catch(function (e) {
+      leeg(APP).append(h("div.max-kaart", null, h("p.max-fout", null, e.message), h("a.knop.knop-tweede", { href: "#aanvragen" }, "Terug")));
+    });
+  }
+
+  // De foto's staan achter de inlog, dus ophalen met het token en tonen als blob.
+  function aanvraagFoto(id, naam) {
+    const img = h("img", { alt: naam, loading: "lazy" });
+    const knop = h("button.aanvraag-foto", { type: "button", "aria-label": "Foto " + naam + " groot bekijken" }, img, h("span", null, naam));
+    fetch("/api/max/aanvragen/" + id + "/fotos/" + naam, { headers: { Authorization: "Bearer " + token } })
+      .then(function (r) { if (!r.ok) throw new Error(); return r.blob(); })
+      .then(function (b) {
+        const url = URL.createObjectURL(b);
+        img.src = url;
+        knop.addEventListener("click", function () { window.open(url, "_blank"); });
+      })
+      .catch(function () { knop.classList.add("weg"); knop.lastChild.textContent = naam + " (niet meer op de server)"; });
+    return knop;
+  }
+
+  function bouwAanvraag(a) {
+    const g = a.gegevens;
+    const kaart = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(a.adres);
+    const klusKnop = a.klus
+      ? h("a.knop.knop-primair", { href: "#klus/" + a.klus }, "Naar de klus en de kozijncheck")
+      : h("button.knop.knop-primair", { type: "button", onclick: function (e) {
+          e.target.disabled = true;
+          api("POST", "/max/aanvragen/" + a.id + "/klus", {}).then(function (r) { location.hash = "klus/" + r.id; })
+            .catch(function (f) { e.target.disabled = false; melding(f.message, "fout"); });
+        } }, "Klus aanmaken voor de kozijncheck");
+    leeg(APP).append(
+      h("div.max-balk", null, h("a.terug", { href: "#aanvragen" }, "‹ Aanvragen"),
+        a.klus ? h("span.chip.chip-groen", null, "Klus aangemaakt") : h("span.chip.chip-oranje", null, "Nieuw")),
+      h("section.max-kaart", null,
+        h("h2", null, g.naam + " · " + g.plaats),
+        h("p.uitleg", null, "Binnengekomen " + datumKort(a.gemaakt) + " · " + a.manier.toLowerCase()),
+        h("dl.aanvraag-gegevens", null,
+          h("dt", null, "Telefoon"), h("dd", null, h("a", { href: "tel:" + g.telefoon.replace(/[^\d+]/g, "") }, g.telefoon)),
+          h("dt", null, "E-mail"), h("dd", null, h("a", { href: "mailto:" + g.email }, g.email)),
+          h("dt", null, "Adres"), h("dd", null, a.adres, " · ", h("a", { href: kaart, target: "_blank", rel: "noopener" }, "kaart")),
+          h("dt", null, "Kleur"), h("dd", null, a.kleur),
+          a.via ? [h("dt", null, "Via de site"), h("dd", null, a.via)] : null,
+          a.toelichting ? [h("dt", null, "Opmerking"), h("dd", null, a.toelichting)] : null),
+        klusKnop,
+        h("p.max-hint", null, a.klus ? "Klantgegevens en werk staan al in de klus." :
+          "Maakt een klus met de klantgegevens en het werk al ingevuld. Daarna doe je ter plekke de kozijncheck.")),
+      // Spreiden: append() maakt van een lijst anders de tekst "[object HTMLElement]".
+      ...a.overzicht.map(function (blok) {
+        return h("section.max-kaart", null,
+          h("h2", null, blok.titel),
+          blok.regels.map(function (r) { return h("p.aanvraag-regel", null, r); }),
+          h("div.aanvraag-fotos", null, blok.fotos.map(function (n) { return aanvraagFoto(a.id, n); })));
+      }));
+  }
 
   function toonBestelling(nr) {
     klus = null;

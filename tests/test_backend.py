@@ -81,7 +81,8 @@ def klopt(voorwaarde, wat):
 JPEG = bytes.fromhex("ffd8ffe000104a46494600010100000100010000ffdb004300") + b"\x08" * 64 + bytes.fromhex("ffd9")
 
 GEGEVENS = {"naam": "Joke Jansen", "email": "joke@voorbeeld.nl", "telefoon": "06 12345678",
-            "postcode": "1214ab", "huisnummer": "12", "plaats": "Hilversum", "toelichting": "Bel liever na 17 uur."}
+            "postcode": "1214ab", "straat": "Lindelaan", "huisnummer": "12", "plaats": "Hilversum",
+            "toelichting": "Bel liever na 17 uur."}
 
 
 def aanvragen_testen():
@@ -154,6 +155,28 @@ def aanvragen_testen():
                        encoding="utf-8").read()
     klopt("We hebben je aanvraag ontvangen" in bevestiging and "werkdag" not in bevestiging,
           "bevestiging aan de klant, zonder belofte over wanneer")
+
+    klopt("Lindelaan 12, 1214 AB Hilversum" in html, "het adres staat er compleet in, met de straat")
+
+    # De Max-modus: de aanvraag staat onder Aanvragen, en wordt met één knop een klus.
+    token = verzoek("POST", "/api/max/login", {"wachtwoord": "test"})["json"]["token"]
+    klopt(verzoek("GET", "/api/max/aanvragen")["status"] == 401, "aanvragen alleen voor Max")
+    lijst = verzoek("GET", "/api/max/aanvragen", token=token)["json"]["aanvragen"]
+    klopt([x["id"] for x in lijst] == [aid] and lijst[0]["wat"] == "2 kozijnen", "verstuurde aanvraag staat in de lijst")
+    d = verzoek("GET", "/api/max/aanvragen/" + aid, token=token)["json"]
+    klopt(d["overzicht"][0]["regels"][1] == "Stijl: 2 × 1,30 m = 2,60 m", "Max ziet per kozijn wat er moet gebeuren")
+    r = verzoek("GET", "/api/max/aanvragen/%s/fotos/kozijn-1-foto.jpg" % aid, token=token)
+    klopt(r["status"] == 200 and r["koppen"]["Content-Type"] == "image/jpeg", "Max ziet de foto's")
+    klus = verzoek("POST", "/api/max/aanvragen/%s/klus" % aid, {}, token)["json"]["id"]
+    r = verzoek("GET", "/api/max/rapporten/" + klus, token=token)["json"]
+    klopt(r["klant"]["straat"] == "Lindelaan 12" and r["klant"]["email"] == "joke@voorbeeld.nl" and r["aanvraag"] == aid,
+          "klus uit een aanvraag: klantgegevens staan al klaar")
+    klopt(r["oplevering"]["werk"] == "Kozijn 1 (2×): onderdorpel, stijl. Kozijn 2: het hele kozijn.",
+          "en het werk ook, als begin voor het rapport")
+    klopt(verzoek("POST", "/api/max/aanvragen/%s/klus" % aid, {}, token)["json"]["id"] == klus,
+          "nog een keer op de knop maakt geen tweede klus")
+    klopt(verzoek("GET", "/api/max/aanvragen", token=token)["json"]["aanvragen"][0]["klus"] == klus,
+          "in de lijst staat dat er al een klus van is")
 
     # Foto en aanstrepen: de aangestreepte foto komt als eigen bijlage mee.
     r = verzoek("POST", "/api/aanvragen", {"manier": "streep", "gegevens": GEGEVENS, "kozijnen": [

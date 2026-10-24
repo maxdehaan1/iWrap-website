@@ -830,7 +830,7 @@
     vak.appendChild(kleur);
 
     var wie = overzichtBlok("Je gegevens", 3);
-    [waarde("naam"), netjesPostcode(waarde("postcode")) + " " + waarde("huisnummer") + ", " + waarde("plaats"),
+    [waarde("naam"), waarde("straat") + " " + waarde("huisnummer") + ", " + netjesPostcode(waarde("postcode")) + " " + waarde("plaats"),
      waarde("telefoon"), waarde("email")].forEach(function (t) { wie.appendChild(maak("p", "", t)); });
     if (waarde("toelichting")) wie.appendChild(maak("p", "ov-opmerking", waarde("toelichting")));
     vak.appendChild(wie);
@@ -866,8 +866,8 @@
   }
 
   function samenvattingTekst() {
-    var regels = ["Naam: " + waarde("naam"), "Adres: " + waarde("postcode") + " " + waarde("huisnummer") +
-                  ", " + waarde("plaats"), "Telefoon: " + waarde("telefoon"), ""];
+    var regels = ["Naam: " + waarde("naam"), "Adres: " + waarde("straat") + " " + waarde("huisnummer") +
+                  ", " + waarde("postcode") + " " + waarde("plaats"), "Telefoon: " + waarde("telefoon"), ""];
     if (staat.manier === "papier") {
       regels.push("Ik stuur een foto van mijn tekening en van mijn kozijnen mee.");
     } else {
@@ -889,7 +889,7 @@
       website: waarde("website"),
       gegevens: {
         naam: waarde("naam"), email: waarde("email"), telefoon: waarde("telefoon"),
-        postcode: waarde("postcode"), huisnummer: waarde("huisnummer"), plaats: waarde("plaats"),
+        postcode: waarde("postcode"), straat: waarde("straat"), huisnummer: waarde("huisnummer"), plaats: waarde("plaats"),
         toelichting: waarde("toelichting")
       }
     };
