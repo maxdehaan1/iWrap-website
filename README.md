@@ -248,10 +248,18 @@ dan per ongeluk een streep. Het scherm gaat vanzelf open zodra er een foto gekoz
 Er zijn drie knoppen (Ongedaan maken, Alles wissen, Klaar) en een link "Moet het hele
 kozijn? Tik dan hier".
 
-De streep is **geel als een markeerstift, met een donkere rand**. Terracotta (de kleur
-van "voor" op de rest van de site) viel weg tegen baksteen, en daar zitten de meeste
-kozijnen in. De strepen worden bewaard als lijnen in verhoudingen van de foto, en bij het
-versturen op ware grootte op de foto gezet (`kozijn-1-aangestreept.jpg`).
+Er zijn **twee stiften**, bovenin het scherm te kiezen: **geel voor het kozijn** (de vaste
+delen) en **rood voor een draairaam of deur** (wat opengaat). De gekozen stift heeft een
+witte rand en een vinkje, en de uitleg zegt in één zin welke kleur wat is. Bij het openen
+staat altijd geel klaar. Beide kleuren hebben een donkere rand: zonder die rand viel een
+streep weg tegen baksteen, en daar zitten de meeste kozijnen in.
+
+De strepen worden bewaard als lijnen in verhoudingen van de foto, met per streep de stift
+(`{k: "kozijn" | "draai", p: [...]}`), en bij het versturen op ware grootte op de foto
+gezet (`kozijn-1-aangestreept.jpg`). Rechtsonder op die foto staat een kleine legenda met
+de kleuren die gebruikt zijn, zodat de foto ook los te begrijpen is. In de mail staat bij
+het kozijn bijvoorbeeld "Aangestreept op de foto (geel = kozijn, rood = draairaam of
+deur)", en in `aanvraag.json` staat het als `aanstreping: ["kozijn", "draai"]`.
 
 ### Foto's
 

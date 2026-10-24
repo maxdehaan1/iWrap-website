@@ -118,6 +118,9 @@ def _kozijn(k, nr, manier, fouten):
         "heel": bool(k.get("heel")),
         "dichtbij": bool(k.get("dichtbij")),
         "aangestreept": manier == "streep" and bool(k.get("aangestreept")) and not k.get("heel"),
+        # Welke stiften: geel = het kozijn, rood = een draairaam of deur.
+        "aanstreping": [s for s in ("kozijn", "draai") if s in (k.get("aanstreping") or [])]
+                       if manier == "streep" and k.get("aangestreept") and not k.get("heel") else [],
         "regels": [],
         "breedte": 0,
         "hoogte": 0,
@@ -299,7 +302,8 @@ def voor_claude(a):
     d["_uitleg"] = ("Lengtes in centimeters. regels = wat de klant zelf gemeten heeft "
                     "(deel, lengte per stuk, aantal). aantal bij een kozijn = hoe vaak dat kozijn "
                     "met hetzelfde werk voorkomt. heel = het hele kozijn moet. Bij manier 'streep' "
-                    "staat in kozijn-N-aangestreept.jpg wat er moet gebeuren.")
+                    "staat in kozijn-N-aangestreept.jpg wat er moet gebeuren: geel = het kozijn (vaste "
+                    "delen), rood = een draairaam of deur. aanstreping zegt welke kleuren gebruikt zijn.")
     return d
 
 
@@ -405,6 +409,9 @@ def werk_kort(a):
             wat = "het hele kozijn"
         elif k["regels"]:
             wat = ", ".join(r["deel"].lower() for r in k["regels"])
+        elif "draai" in k["aanstreping"]:
+            wat = "zie de aangestreepte foto (kozijn en draairaam)" if "kozijn" in k["aanstreping"] \
+                else "zie de aangestreepte foto (draairaam of deur)"
         else:
             wat = "zie de aangestreepte foto"
         delen.append("Kozijn %d%s: %s" % (nr, " (%d×)" % k["aantal"] if k["aantal"] > 1 else "", wat))

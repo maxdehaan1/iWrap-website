@@ -366,6 +366,14 @@
     });
   }
 
+  // "het kozijn (geel) en een draairaam of deur (rood)"
+  function streepTekst(k) {
+    var delen = Strepen.kleuren(k.strepen).map(function (x) {
+      return x === "kozijn" ? "het kozijn (geel)" : "een draairaam of deur (rood)";
+    });
+    return delen.join(" en ");
+  }
+
   /* Wat er aan een kozijn nog ontbreekt ------------------------------------ */
 
   function ontbreekt(k) {
@@ -446,10 +454,10 @@
       } else if (!heeftFoto) {
         stand.textContent = "Voeg eerst bij 1 een foto toe. Daarna streep je erop aan wat er moet gebeuren.";
       } else if (k.strepen.length) {
-        stand.textContent = "Aangestreept. Aanpassen kan met de knop onder de foto.";
+        stand.textContent = "Aangestreept: " + streepTekst(k) + ". Aanpassen kan met de knop onder de foto.";
         stand.classList.add("goed");
       } else {
-        stand.textContent = "Tik onder de foto op Aanstrepen, en streep aan wat er moet gebeuren.";
+        stand.textContent = "Tik onder de foto op Aanstrepen. Geel is voor het kozijn, rood voor een draairaam of deur.";
         stand.classList.add("open");
       }
     }
@@ -781,7 +789,7 @@
       var b = cm(k.breedte), h = cm(k.hoogte);
       uit.push("Het hele kozijn" + (staat.manier === "maten" && b && h ? ", " + b + " × " + h + " cm" : ""));
     } else if (staat.manier === "streep") {
-      uit.push(k.strepen.length ? "Wat je op de foto hebt aangestreept" : "Nog niets aangestreept");
+      uit.push(k.strepen.length ? "Aangestreept op de foto: " + streepTekst(k) : "Nog niets aangestreept");
     }
     if (k.werk === "delen" || staat.manier === "streep") {
       geldigeRegels(k).forEach(function (r) {
@@ -922,6 +930,7 @@
         return {
           waar: k.waar, plek: k.plek.trim(), aantal: k.aantal, heel: heel, dichtbij: !!k.dichtbij,
           aangestreept: staat.manier === "streep" && !heel && k.strepen.length > 0,
+          aanstreping: staat.manier === "streep" && !heel ? Strepen.kleuren(k.strepen) : [],
           regels: (!heel || staat.manier === "streep") ? geldigeRegels(k).map(function (r) {
             return { deel: r.deel.trim(), lengte: r.lengte, aantal: r.aantal };
           }) : [],

@@ -180,9 +180,16 @@ def aanvragen_testen():
 
     # Foto en aanstrepen: de aangestreepte foto komt als eigen bijlage mee.
     r = verzoek("POST", "/api/aanvragen", {"manier": "streep", "gegevens": GEGEVENS, "kozijnen": [
-        {"waar": "verdieping", "aangestreept": True}, {"waar": "begane-grond", "heel": True}]})
+        {"waar": "verdieping", "aangestreept": True, "aanstreping": ["kozijn", "draai", "onzin"]},
+        {"waar": "begane-grond", "heel": True}]})
     klopt(r["json"]["fotos"] == ["kozijn-1-foto.jpg", "kozijn-1-aangestreept.jpg", "kozijn-2-foto.jpg"],
           "bij aanstrepen hoort een aangestreepte foto, bij 'heel kozijn' niet")
+    from backend import aanvragen as av, mails as ml
+    a2 = av.haal(r["json"]["id"])
+    klopt(a2["kozijnen"][0]["aanstreping"] == ["kozijn", "draai"] and a2["kozijnen"][1]["aanstreping"] == [],
+          "de server onthoudt welke stiften er gebruikt zijn (geel en rood), en niets anders")
+    klopt("(geel = kozijn, rood = draairaam of deur)" in ml.aanvraag_voor_max(a2)[1],
+          "de mail aan Max zegt welke kleur wat is")
     # Op papier: tekeningen en kozijnfoto's.
     r = verzoek("POST", "/api/aanvragen", {"manier": "papier", "gegevens": GEGEVENS,
                                            "papier": {"tekeningen": 2, "fotos": 3, "waar": ["begane-grond", "dakkapel"]}})

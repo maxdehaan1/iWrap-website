@@ -577,6 +577,20 @@ html.streep-open,html.streep-open body{overflow:hidden;}
 .streep-kop{padding:16px 20px 12px;text-align:center;}
 .streep-titel{margin:0 0 4px;font-family:var(--kop);font-weight:700;font-size:1.2rem;}
 .streep-uitleg{margin:0 auto;max-width:46ch;font-size:.95rem;color:#c2c8ce;}
+/* De twee stiften: duidelijk welke je vast hebt. */
+.streep-uitleg b.geel{color:#ffd400;}
+.streep-uitleg b.rood{color:#ff6b6b;}
+.streep-pennen{display:flex;justify-content:center;gap:10px;margin-top:12px;flex-wrap:wrap;}
+.streep-pen{
+  display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:8px 18px 8px 10px;cursor:pointer;
+  border:2px solid rgba(255,255,255,.28);border-radius:999px;background:transparent;color:#fff;
+  font-family:var(--kop);font-weight:600;font-size:.95rem;
+  transition:border-color .15s ease,background .15s ease;
+}
+.streep-pen[aria-pressed="true"]{border-color:#fff;background:rgba(255,255,255,.14);}
+.streep-pen[aria-pressed="true"]::after{content:"\2713";font-weight:700;margin-left:2px;}
+.streep-stip{width:26px;height:26px;border-radius:50%;border:3px solid #1d1d1b;box-shadow:0 0 0 2px rgba(255,255,255,.55);flex-shrink:0;}
+.streep-pen[aria-pressed="false"] .streep-stip{opacity:.75;}
 .streep-podium{flex:1 1 0;min-height:0;margin:0 12px;display:grid;place-items:center;overflow:hidden;}
 .streep-podium canvas{grid-area:1/1;border-radius:6px;}
 .streep-laag{touch-action:none;cursor:crosshair;}
@@ -593,6 +607,8 @@ html.streep-open,html.streep-open body{overflow:hidden;}
   .streep-titel{font-size:1.05rem;}
   .streep-uitleg{font-size:.86rem;}
   .streep-knoppen .knop{padding:12px 16px;font-size:.9rem;}
+  .streep-pen{min-height:44px;padding:6px 14px 6px 8px;font-size:.88rem;}
+  .streep-stip{width:22px;height:22px;}
 }
 
 /* De vierde manier: gewoon een mail */

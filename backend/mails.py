@@ -300,7 +300,10 @@ def _kozijn_werk(k, nr):
     if k["heel"]:
         regels.append("Het hele kozijn")
     elif k["aangestreept"]:
-        regels.append("Aangestreept op de foto: zie kozijn-%d-aangestreept.jpg" % nr)
+        kleur = {"kozijn": "geel = kozijn", "draai": "rood = draairaam of deur"}
+        uitleg = ", ".join(kleur[s] for s in k.get("aanstreping", []))
+        regels.append("Aangestreept op de foto%s: zie kozijn-%d-aangestreept.jpg" % (
+            " (%s)" % uitleg if uitleg else "", nr))
     for r in k["regels"]:
         if r["aantal"] > 1:
             regels.append("%s: %d × %s = %s" % (r["deel"], r["aantal"], _m(r["cm"]), _m(r["cm"] * r["aantal"])))
