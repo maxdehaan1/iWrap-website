@@ -201,13 +201,14 @@ video/                    Neemt de film op als MP4 (niet op de site, niet in git
 
 Je wilt niet langs, en toch snel een offerte kunnen maken. Klanten vinden het lastig om
 op te schrijven welke delen er moeten gebeuren, en ze zijn niet allemaal even handig met
-een telefoon. Daarom kiest de klant zelf **hoe** hij laat zien wat er moet gebeuren:
+een telefoon. Daarom kiest de klant zelf **hoe** hij laat zien wat er moet gebeuren, uit vier manieren:
 
 | Manier | Voor wie | Wat de klant doet |
 |---|---|---|
 | **Foto en aanstrepen** (het snelst) | Wie denkt: ik maak een foto en streep het aan | Per kozijn een foto; daarna opent vanzelf een scherm waarop hij met zijn vinger aanstreept wat er moet gebeuren. Of hij tikt "het hele kozijn". Maten mogen erbij, hoeven niet. |
 | **Foto en maten** (het preciest) | Wie een rolmaat pakt | Per kozijn een foto, en per deel de lengte: hij tikt "+ Onderdorpel" en typt `1,60`, tikt "+ Stijl", zet het aantal op 2 en typt `130`. Moet het hele kozijn, dan alleen breedte × hoogte. |
 | **Op papier** | Wie liever met pen en papier werkt | Kozijnen natekenen (op een gewoon vel, of op het tekenblad van `/tekenblad`), arceren wat er moet gebeuren, en er een foto van maken. Een maattekening van de leverancier mag ook. |
+| **Gewoon een mail** (zonder formulier) | Wie de andere drie niet lukken | Een uitleg in vier punten wat er in de mail moet, en een knop die een mail aan info@iwrap.nl opent met al die vragen erin. Plus een knop om het mailadres te kopiëren, voor wie met webmail werkt. De stappen hierna zijn dan niet nodig. Hetzelfde mailsjabloon zit achter de uitweg bovenaan het formulier. |
 
 **Bij alle drie hoort een foto van elk kozijn in zijn geheel.** Dat staat al op het
 keuzescherm, zodat niemand erdoor verrast wordt. Daaraan zie je het profiel, de kleur en

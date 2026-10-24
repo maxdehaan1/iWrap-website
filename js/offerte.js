@@ -8,8 +8,11 @@
      maten   per kozijn een foto, en de delen met hun lengte: "onderdorpel
              1,60", "stijl 2 x 1,30" -- of breedte x hoogte bij een heel kozijn
      papier  een foto van een eigen tekening, plus van elk kozijn een foto
+     mail    geen formulier: een uitleg wat er in de mail moet, en een knop
+             die een mail opent met al die vragen erin. Voor wie de andere
+             drie niet lukken. De stappen hierna zijn dan niet nodig.
 
-   Bij alle drie hoort een foto van het hele kozijn: daaraan ziet Max het
+   Bij alle manieren hoort een foto van het hele kozijn: daaraan ziet Max het
    profiel, de kleur en of herstel kan.
 
    Foto's worden op de telefoon verkleind en in de browser bewaard
@@ -145,7 +148,7 @@
 
   function bouwKaarten() {
     kozijnenLijst.innerHTML = "";
-    if (staat.manier === "papier") return;
+    if (staat.manier === "papier" || staat.manier === "mail") return;
     staat.kozijnen.forEach(function (k) { kozijnenLijst.appendChild(maakKaart(k)); });
     nummerKaarten();
   }
@@ -543,6 +546,11 @@
   /* De gekozen manier ------------------------------------------------------ */
 
   function tekenManier() {
+    // Bij "Gewoon een mail" de uitleg onder de kaarten, en geen Volgende stap:
+    // er komt verder niets meer in het formulier.
+    var mail = staat.manier === "mail";
+    form.querySelector(".mailroute").hidden = !mail;
+    verder.hidden = nu === panelen.length - 1 || (nu === 0 && mail);
     var paneel = form.querySelector('[data-stap="kozijnen"]');
     Array.prototype.forEach.call(paneel.querySelectorAll(":scope > [data-voor]"), function (el) {
       el.hidden = !voorDezeManier(el);
@@ -550,7 +558,7 @@
     var kop = KOPPEN[staat.manier] || ["Je kozijnen", ""];
     paneel.querySelector(".kozijnen-kop").textContent = kop[0];
     paneel.querySelector(".kozijnen-uitleg").textContent = kop[1];
-    if (staat.manier !== "papier" && staat.manier && !staat.kozijnen.length) {
+    if (staat.manier !== "papier" && staat.manier !== "mail" && staat.manier && !staat.kozijnen.length) {
       staat.kozijnen.push(nieuwKozijn());
     }
     bouwKaarten();
@@ -563,10 +571,18 @@
       tekenManier();
       zeg("");
       bewaar();
+      if (r.value === "mail") form.querySelector(".mailroute").scrollIntoView({ behavior: "smooth", block: "nearest" });
     });
   });
 
   form.querySelector(".naar-manier").addEventListener("click", function () { toon(0, true); });
+
+  // Het mailadres kopiëren, voor wie met webmail werkt en bij wie de mailknop niets opent.
+  form.querySelector(".kopieer-adres").addEventListener("click", function () {
+    var knop = this;
+    var klaar = function () { knop.textContent = "Gekopieerd"; setTimeout(function () { knop.textContent = "Kopieer het mailadres"; }, 2500); };
+    if (navigator.clipboard) navigator.clipboard.writeText(knop.dataset.adres).then(klaar, function () {});
+  });
 
   /* Uitlezen --------------------------------------------------------------- */
 
@@ -639,7 +655,7 @@
     panelen.forEach(function (p, k) { p.hidden = k !== nu; });
     var laatste = nu === panelen.length - 1;
     terug.classList.toggle("onzichtbaar", nu === 0);
-    verder.hidden = laatste;
+    verder.hidden = laatste || (nu === 0 && staat.manier === "mail");
     versturen.hidden = !laatste;
     zeg("");
     if (laatste) tekenOverzicht();
@@ -658,6 +674,10 @@
     var paneel = panelen[index];
     var stap = paneel.dataset.stap;
     if (stap === "manier") {
+      if (staat.manier === "mail") {
+        if (!stil) zeg("Je hebt gekozen voor een mail. Gebruik de knop hierboven, dan hoef je hier verder niets in te vullen.");
+        return false;
+      }
       if (staat.manier) return true;
       if (!stil) zeg(paneel.dataset.melding);
       return false;

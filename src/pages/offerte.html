@@ -1,6 +1,6 @@
 <!-- {
   "title": "Offerte aanvragen voor kozijnherstel | iWrap",
-  "description": "Vraag een offerte aan voor kozijnherstel zonder dat er iemand langs hoeft te komen. Maak een foto en streep aan wat er moet gebeuren, zet de maten erbij of teken het op papier.",
+  "description": "Vraag een offerte aan voor kozijnherstel zonder dat er iemand langs hoeft te komen. Maak een foto en streep aan wat er moet gebeuren, zet de maten erbij, teken het op papier of stuur gewoon een mail.",
   "ogtitle": "Offerte aanvragen voor kozijnherstel",
   "bodyclass": "offertepagina",
   "css": ["offerte"],
@@ -15,8 +15,8 @@
   <div class="wrap">
     <p class="opschrift">Offerte aanvragen</p>
     <h1>Laat ons zien wat er moet gebeuren</h1>
-    <p>Met een foto en een paar strepen, met maten, of op papier: kies wat voor jou het
-    makkelijkst is. Wij maken er een vaste totaalprijs van, zonder dat er eerst iemand
+    <p>Met een foto en een paar strepen, met maten, op papier of gewoon per mail: kies wat
+    voor jou het makkelijkst is. Wij maken er een vaste totaalprijs van, zonder dat er eerst iemand
     bij je langs hoeft te komen.</p>
   </div>
 </section>
@@ -24,7 +24,7 @@
 <div class="wrap offerte-schil">
   <p class="liever-mailen">
     Lukt het formulier u niet? Stuur ons gewoon een mail op
-    <a class="mail-uitweg" href="mailto:{{bedrijf.email}}?subject=Offerteaanvraag%20kozijnherstel&amp;body=Goedemiddag%2C%0A%0AIk%20zou%20graag%20een%20offerte%20ontvangen.%0A%0AWat%20er%20moet%20gebeuren%3A%0A%0A%0AOm%20hoeveel%20kozijnen%20gaat%20het%3A%0A%0A%0AAdres%3A%0A%0A%0ATelefoonnummer%3A%0A%0A%0A%28Stuur%20van%20elk%20kozijn%20een%20foto%20mee%20als%20bijlage%2C%20met%20het%20hele%20kozijn%20erop.%29">{{bedrijf.email}}</a>,
+    <a class="mail-uitweg" href="mailto:{{bedrijf.email}}?subject=Offerteaanvraag%20kozijnherstel&amp;body=Goedemiddag%2C%0A%0AIk%20zou%20graag%20een%20offerte%20ontvangen%20voor%20het%20herstellen%20van%20mijn%20kozijnen.%0A%0AWat%20er%20moet%20gebeuren%20%28per%20kozijn%2C%20met%20de%20maten%20als%20je%20die%20weet%29%3A%0AKozijn%201%3A%0AKozijn%202%3A%0A%0AWaar%20zitten%20ze%20%28begane%20grond%2C%20verdieping%20of%20dakkapel%29%3A%0A%0AKleur%20%28dezelfde%20houden%2C%20of%20een%20andere%29%3A%0A%0ANaam%3A%0AAdres%3A%0ATelefoonnummer%3A%0A%0AVan%20elk%20kozijn%20stuur%20ik%20een%20foto%20mee%20als%20bijlage%2C%20met%20het%20hele%20kozijn%20erop.%0A%0AMet%20vriendelijke%20groet%2C%0A">{{bedrijf.email}}</a>,
     of bel <a href="tel:{{bedrijf.telefoon_tel}}">{{bedrijf.telefoon}}</a>. Dat mag net zo goed.
   </p>
 
@@ -38,7 +38,7 @@
       <section class="stap-paneel" data-titel="Manier" data-stap="manier"
                data-melding="Kies hierboven een van de drie manieren.">
         <h2>Hoe wil je laten zien wat er moet gebeuren?</h2>
-        <p class="toelichting">Het kan op drie manieren. Kies wat voor jou het makkelijkst
+        <p class="toelichting">Het kan op vier manieren. Kies wat voor jou het makkelijkst
         is; wisselen kan later altijd nog.</p>
 
         <fieldset class="manieren">
@@ -98,7 +98,45 @@
               <span class="manier-uitleg">Teken je kozijnen na, arceer wat er moet gebeuren en maak er een foto van.</span>
             </span>
           </label>
+
+          <label class="manier">
+            <input type="radio" name="manier" value="mail">
+            <span class="manier-vlak">
+              <svg class="manier-beeld" viewBox="0 0 120 80" aria-hidden="true">
+                <rect width="120" height="80" rx="8" fill="#eef2f4"/>
+                <rect x="22" y="18" width="76" height="48" rx="4" fill="#fff" stroke="#3f7468" stroke-width="2"/>
+                <path d="M23 20 L60 46 L97 20" fill="none" stroke="#3f7468" stroke-width="2" stroke-linejoin="round"/>
+                <rect x="70" y="40" width="34" height="26" rx="3" fill="#b5694a" stroke="#fff" stroke-width="2.5" transform="rotate(8 87 53)"/>
+                <rect x="76" y="45" width="22" height="16" fill="#f2ecda" transform="rotate(8 87 53)"/>
+              </svg>
+              <span class="manier-label">Zonder formulier</span>
+              <span class="manier-titel">Gewoon een mail</span>
+              <span class="manier-uitleg">Lukt het andere niet? Stuur ons een mail met je foto's. We zetten erin wat we van je nodig hebben.</span>
+            </span>
+          </label>
         </fieldset>
+
+        <!-- De vierde manier: geen formulier, maar een mail. Verschijnt zodra die
+             kaart gekozen is; de stappen hierna zijn dan niet nodig. -->
+        <div class="mailroute" hidden>
+          <h3>Zo stuur je het per mail</h3>
+          <ol>
+            <li>Maak van elk kozijn een foto, <b>met het hele kozijn erop</b>.</li>
+            <li>Schrijf per kozijn wat er moet gebeuren, bijvoorbeeld "onderdorpel en de twee stijlen",
+            en de maten als je die weet.</li>
+            <li>Zet erbij waar de kozijnen zitten (begane grond, verdieping of dakkapel) en of de
+            kleur hetzelfde blijft.</li>
+            <li>Vergeet je naam, adres en telefoonnummer niet.</li>
+          </ol>
+          <p>Met de knop hieronder opent een mail waar al die vragen al in staan. Je hoeft ze alleen
+          in te vullen en je foto's als bijlage toe te voegen.</p>
+          <div class="knoprij">
+            <a class="knop knop-primair mailroute-knop" href="mailto:{{bedrijf.email}}?subject=Offerteaanvraag%20kozijnherstel&amp;body=Goedemiddag%2C%0A%0AIk%20zou%20graag%20een%20offerte%20ontvangen%20voor%20het%20herstellen%20van%20mijn%20kozijnen.%0A%0AWat%20er%20moet%20gebeuren%20%28per%20kozijn%2C%20met%20de%20maten%20als%20je%20die%20weet%29%3A%0AKozijn%201%3A%0AKozijn%202%3A%0A%0AWaar%20zitten%20ze%20%28begane%20grond%2C%20verdieping%20of%20dakkapel%29%3A%0A%0AKleur%20%28dezelfde%20houden%2C%20of%20een%20andere%29%3A%0A%0ANaam%3A%0AAdres%3A%0ATelefoonnummer%3A%0A%0AVan%20elk%20kozijn%20stuur%20ik%20een%20foto%20mee%20als%20bijlage%2C%20met%20het%20hele%20kozijn%20erop.%0A%0AMet%20vriendelijke%20groet%2C%0A">Open een mail aan {{bedrijf.email}}</a>
+          </div>
+          <p class="mailroute-adres">Gebeurt er niets als je op de knop drukt? Mail dan zelf naar
+          <b>{{bedrijf.email}}</b>
+          <button type="button" class="kopieer-adres" data-adres="{{bedrijf.email}}">Kopieer het mailadres</button></p>
+        </div>
 
         <p class="altijd-foto">
           <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
