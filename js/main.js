@@ -5,6 +5,11 @@
   'use strict';
   document.documentElement.classList.add('js');
 
+  /* Printknop (het tekenblad) */
+  document.querySelectorAll('[data-print]').forEach(function (k) {
+    k.addEventListener('click', function () { window.print(); });
+  });
+
   /* Menu op mobiel ------------------------------------------------------- */
   var knop = document.querySelector('.nav-toggle');
   var menu = document.getElementById('hoofdmenu');

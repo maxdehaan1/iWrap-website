@@ -5,6 +5,7 @@ een bestelling van kozijnhorren.nl. De opmaak is bewust eenvoudig: één kolom,
 gewone tekst, één knop. Dat komt in elke mailbox goed aan, ook in Outlook.
 """
 
+import re
 from html import escape
 
 from . import instellingen as cfg
@@ -273,3 +274,185 @@ def past_alles(b, reviewlink):
     tekst = "%s\n\nJe horren zijn een paar dagen binnen. Passen ze goed? Zo niet, antwoord op deze mail.%s" % (
         _aanhef(k.get("naam")), ("\n\nTevreden? Een review helpt ons enorm: " + reviewlink) if reviewlink else "")
     return "Passen je horren? (%s)" % b["nr"], html, tekst
+
+
+# ---------------------------------------------------------------------------
+# iwrap.nl: offerteaanvragen (zie aanvragen.py)
+# ---------------------------------------------------------------------------
+
+def _m(centimeters):
+    return ("%.2f m" % (centimeters / 100)).replace(".", ",")
+
+
+def _kozijn_kop(k, nr):
+    from .aanvragen import WAAR
+    delen = ["Kozijn %d" % nr, WAAR.get(k["waar"], "")]
+    if k["plek"]:
+        delen.append(k["plek"])
+    if k["aantal"] > 1:
+        delen.append("%d× hetzelfde" % k["aantal"])
+    return " · ".join(d for d in delen if d)
+
+
+def _kozijn_werk(k, nr):
+    """Wat er aan één kozijn moet gebeuren, als losse regels tekst."""
+    regels = []
+    if k["heel"]:
+        regels.append("Het hele kozijn")
+    elif k["aangestreept"]:
+        regels.append("Aangestreept op de foto: zie kozijn-%d-aangestreept.jpg" % nr)
+    for r in k["regels"]:
+        if r["aantal"] > 1:
+            regels.append("%s: %d × %s = %s" % (r["deel"], r["aantal"], _m(r["cm"]), _m(r["cm"] * r["aantal"])))
+        else:
+            regels.append("%s: %s" % (r["deel"], _m(r["cm"])))
+    if k["breedte"]:
+        regels.append("Breedte × hoogte: %d × %d cm" % (k["breedte"], k["hoogte"]))
+    if k["regels"]:
+        per_stuk = sum(r["cm"] * r["aantal"] for r in k["regels"])
+        regels.append("Opgegeven lengte: %s%s" % (
+            _m(per_stuk), " per kozijn, %s samen" % _m(per_stuk * k["aantal"]) if k["aantal"] > 1 else ""))
+    return regels
+
+
+def _kozijn_fotos(a, nr):
+    from .aanvragen import fotolijst
+    return [f["naam"] for f in fotolijst(a) if f["kozijn"] == nr and a["manier"] != "papier"]
+
+
+def _aanvraag_onderwerp(a):
+    from .aanvragen import MANIEREN
+    g = a["gegevens"]
+    if a["manier"] == "papier":
+        wat = "tekening en %d foto%s" % (a["papier"]["fotos"], "'s" if a["papier"]["fotos"] != 1 else "")
+    else:
+        n = len(a["kozijnen"])
+        wat = "%d kozijn%s" % (n, "en" if n != 1 else "")
+    return "Aanvraag %s, %s: %s, %s" % (g["naam"], g["plaats"], wat, MANIEREN[a["manier"]].lower())
+
+
+def aanvraag_voor_max(a):
+    """De mail aan Max. Werkbon-achtig: eerst wie en waar, dan per kozijn wat er
+    moet gebeuren, en alle foto's als bijlage met het kozijnnummer in de naam."""
+    from urllib.parse import quote
+
+    from .aanvragen import MANIEREN, WAAR, fotolijst, totalen
+    g = a["gegevens"]
+    adres = "%s %s, %s" % (g["postcode"], g["huisnummer"], g["plaats"])
+    kaart = "https://www.google.com/maps/search/?api=1&query=" + quote("%s %s %s" % (g["postcode"], g["huisnummer"], g["plaats"]))
+    kleur = "Dezelfde kleur houden" if a["kleur"] == "zelfde" else "Andere kleur: " + a["kleur_anders"]
+    aantal_fotos = len(fotolijst(a))
+
+    def rij(label, waarde):
+        return ('<tr><td style="padding:5px 16px 5px 0;color:#6b7075;vertical-align:top;white-space:nowrap">%s</td>'
+                '<td style="padding:5px 0;vertical-align:top">%s</td></tr>' % (label, waarde))
+
+    contact = "".join([
+        rij("Telefoon", '<a href="tel:%s" style="color:%s">%s</a>' % (escape(re.sub(r"[^\d+]", "", g["telefoon"]), True), IWRAP_MINT, escape(g["telefoon"]))),
+        rij("E-mail", '<a href="mailto:%s" style="color:%s">%s</a>' % (escape(g["email"], True), IWRAP_MINT, escape(g["email"]))),
+        rij("Adres", '%s &nbsp;<a href="%s" style="color:%s">Google Maps</a>' % (escape(adres), escape(kaart, True), IWRAP_MINT)),
+        rij("Manier", escape(MANIEREN[a["manier"]])),
+        rij("Kleur", escape(kleur)),
+        rij("Via de site", escape(a["via"])) if a["via"] else "",
+        rij("Opmerking", escape(a["toelichting"]).replace("\n", "<br>")) if a["toelichting"] else "",
+    ])
+
+    blokken, tekstblokken = [], []
+    if a["manier"] == "papier":
+        p = a["papier"]
+        tekeningen = ", ".join("tekening-%d.jpg" % n for n in range(1, p["tekeningen"] + 1))
+        fotos = ", ".join("kozijn-%d-foto.jpg" % n for n in range(1, p["fotos"] + 1))
+        waar = ", ".join(WAAR[w] for w in p["waar"])
+        blokken.append(_werkblok("Getekend op papier", [
+            "Wat er moet gebeuren staat op de tekening: %s" % tekeningen,
+            "Foto's van de kozijnen: %s" % fotos,
+            "Waar ze zitten: %s" % waar]))
+        tekstblokken.append("Getekend op papier\n  Tekening: %s\n  Foto's: %s\n  Waar: %s" % (tekeningen, fotos, waar))
+    else:
+        for nr, k in enumerate(a["kozijnen"], 1):
+            werk = _kozijn_werk(k, nr)
+            fotos = "Foto's: " + ", ".join(_kozijn_fotos(a, nr))
+            blokken.append(_werkblok(_kozijn_kop(k, nr), werk + [fotos]))
+            tekstblokken.append(_kozijn_kop(k, nr) + "\n  " + "\n  ".join(werk + [fotos]))
+
+    samen = ""
+    if a["manier"] != "papier":
+        t = totalen(a)
+        delen = ["%d kozijn%s" % (t["kozijnen"], "en" if t["kozijnen"] != 1 else "")]
+        if t["stuks"] != t["kozijnen"]:
+            delen[0] += " (%d stuks)" % t["stuks"]
+        if t["opgegeven_cm"]:
+            delen.append("opgegeven lengte samen %s" % _m(t["opgegeven_cm"]))
+        hoog = ["%d op de %s" % (n, WAAR[w]) for w, n in t["per_hoogte"].items() if w != "begane-grond"]
+        if hoog:
+            delen.append(", ".join(hoog))
+        samen = " · ".join(delen)
+
+    html = (
+        '<!doctype html><html lang="nl"><head><meta charset="utf-8"></head>'
+        '<body style="margin:0;background:#f4f2ee;font-family:-apple-system,Segoe UI,Arial,sans-serif;color:%s">'
+        '<div style="max-width:680px;margin:0 auto;padding:24px 16px">'
+        '<div style="background:#ffffff;border-radius:16px;padding:26px 26px 22px;font-size:15px;line-height:1.55">'
+        '<p style="margin:0 0 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:%s;font-weight:700">'
+        'Nieuwe aanvraag via iwrap.nl</p>'
+        '<h1 style="font-size:22px;line-height:1.25;margin:0 0 4px;font-weight:600">%s</h1>'
+        '<p style="margin:0 0 18px;color:#6b7075">%s &middot; %d foto%s als bijlage</p>'
+        '<table role="presentation" style="border-collapse:collapse;font-size:15px;margin:0 0 22px">%s</table>'
+        '<h2 style="font-size:16px;margin:0 0 10px">Wat er moet gebeuren</h2>%s%s'
+        '<p style="margin:18px 0 0;font-size:12px;color:#8a8f94">Antwoord je op deze mail, dan gaat hij naar '
+        '%s. Aanvraag %s. Alle gegevens staan ook in de bijlage aanvraag.json.</p>'
+        '</div></div></body></html>'
+        % (INKT, IWRAP_MINT, escape("%s, %s" % (g["naam"], g["plaats"])),
+           escape(MANIEREN[a["manier"]]), aantal_fotos, "'s" if aantal_fotos != 1 else "",
+           contact, "".join(blokken),
+           ('<p style="margin:14px 0 0;padding:12px 14px;background:#eef6f3;border-radius:10px">'
+            '<b>Samen:</b> %s</p>' % escape(samen)) if samen else "",
+           escape(g["email"]), escape(a["id"]))
+    )
+    tekst = "\n".join([
+        "NIEUWE AANVRAAG VIA IWRAP.NL", "",
+        "%s, %s" % (g["naam"], g["plaats"]),
+        "Telefoon: %s" % g["telefoon"], "E-mail: %s" % g["email"], "Adres: %s" % adres,
+        "Manier: %s" % MANIEREN[a["manier"]], "Kleur: %s" % kleur,
+    ] + (["Via de site: %s" % a["via"]] if a["via"] else [])
+      + (["Opmerking: %s" % a["toelichting"]] if a["toelichting"] else [])
+      + ["", "WAT ER MOET GEBEUREN"] + tekstblokken
+      + (["", "Samen: " + samen] if samen else [])
+      + ["", "Aanvraag %s. Alle gegevens staan ook in aanvraag.json." % a["id"]])
+    return _aanvraag_onderwerp(a), html, tekst
+
+
+def _werkblok(kop, regels):
+    return ('<div style="border:1px solid #e3e1db;border-radius:12px;padding:12px 16px;margin:0 0 10px">'
+            '<p style="margin:0 0 6px;font-weight:600">%s</p>%s</div>'
+            % (escape(kop), "".join('<p style="margin:0 0 3px">%s</p>' % escape(r) for r in regels)))
+
+
+def aanvraag_bevestiging(a):
+    """De bevestiging aan de klant: wat hij stuurde, en wat er nu gebeurt.
+    Bewust zonder termijn: wanneer Max antwoordt, hangt van de planning af."""
+    g = a["gegevens"]
+    if a["manier"] == "papier":
+        regels = ["Je tekening en %d foto%s van je kozijnen" % (a["papier"]["fotos"], "'s" if a["papier"]["fotos"] != 1 else "")]
+    else:
+        regels = []
+        for nr, k in enumerate(a["kozijnen"], 1):
+            werk = _kozijn_werk(k, nr)
+            if k["aangestreept"]:
+                werk = ["wat je op de foto hebt aangestreept"] + werk[1:]
+            regels.append("%s: %s" % (_kozijn_kop(k, nr), "; ".join(w for w in werk if not w.startswith("Opgegeven"))))
+    lijst = "".join('<li style="margin:0 0 6px">%s</li>' % escape(r) for r in regels)
+    delen = [
+        _p(_aanhef(g["naam"])),
+        _p("Bedankt voor je aanvraag. Dit is wat je ons hebt gestuurd:"),
+        '<ul style="margin:0 0 16px;padding-left:20px">%s</ul>' % lijst,
+        _p("We bekijken je foto's en sturen je een offerte met een vaste totaalprijs. Kunnen we "
+           "iets niet goed zien, dan bellen of mailen we je even."),
+        _p("Wil je nog iets toevoegen, bijvoorbeeld een extra foto? Beantwoord deze mail gewoon."),
+        _p("Groet, Max"),
+    ]
+    html = _opmaak("We hebben je aanvraag ontvangen", "".join(delen), "iWrap", IWRAP_MINT)
+    tekst = "%s\n\nBedankt voor je aanvraag. Dit is wat je ons hebt gestuurd:\n- %s\n\n" \
+            "We bekijken je foto's en sturen je een offerte met een vaste totaalprijs. Kunnen we iets niet " \
+            "goed zien, dan bellen of mailen we je even.\n\nGroet, Max\niWrap" % (_aanhef(g["naam"]), "\n- ".join(regels))
+    return "We hebben je aanvraag ontvangen", html, tekst

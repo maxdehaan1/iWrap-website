@@ -1,0 +1,72 @@
+<!-- {
+  "title": "Tekenblad voor je offerteaanvraag | iWrap",
+  "description": "Liever op papier? Print dit tekenblad, teken je kozijnen, arceer wat er hersteld moet worden en stuur er een foto van mee met je offerteaanvraag.",
+  "ogtitle": "Tekenblad voor je offerteaanvraag",
+  "bodyclass": "tekenbladpagina",
+  "css": ["tekenblad"],
+  "js": ["main"],
+  "prioriteit": "0.3",
+  "kruimels": [["Offerte aanvragen", "/offerte"], ["Tekenblad", "/tekenblad"]]
+} -->
+
+<!-- Het tekenblad voor wie liever met pen en papier werkt. Op het scherm een
+     voorbeeld van het blad met een printknop; bij het printen alleen het blad,
+     op één A4. De opmaak voor het printen staat in css/tekenblad.css. -->
+
+<section class="tekenblad-scherm">
+  <div class="wrap">
+    <p class="opschrift">Offerte aanvragen &middot; op papier</p>
+    <h1>Tekenblad</h1>
+    <p>Print dit blad, teken je kozijnen na en arceer wat er hersteld moet worden. Maak
+    er daarna een foto van en voeg die toe op de aanvraagpagina, bij <b>Op papier</b>.
+    Een gewoon vel papier mag ook.</p>
+    <div class="knoprij">
+      <button type="button" class="knop knop-primair" data-print>Print het tekenblad</button>
+      <a class="knop knop-tweede" href="/offerte">Terug naar de aanvraag</a>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <article class="blad">
+    <header class="blad-kop">
+      <img src="/images/logo/iwrap-logo-donker-88.png" width="168" height="35" alt="iWrap">
+      <div>
+        <p class="blad-titel">Tekenblad voor je offerteaanvraag</p>
+        <p class="blad-contact">www.iwrap.nl/offerte &middot; {{bedrijf.email}} &middot; {{bedrijf.telefoon}}</p>
+      </div>
+    </header>
+
+    <div class="blad-uitleg">
+      <ol>
+        <li><b>Teken elk kozijn</b> zoals je het van buiten ziet, met de ramen en deuren erin. Mooi hoeft niet.</li>
+        <li><b>Arceer wat er moet gebeuren:</b> zet strepen over de delen die hersteld moeten worden. Moet het hele kozijn, schrijf dat er dan bij.</li>
+        <li><b>Zet de maten erbij</b> als je die weet, in centimeters. Weet je ze niet, dan is dat geen probleem.</li>
+        <li><b>Maak een foto van dit blad</b>, en van elk kozijn ook een foto met het hele kozijn erop.</li>
+      </ol>
+      <figure class="blad-voorbeeld">
+        <svg viewBox="0 0 200 150" role="img" aria-label="Voorbeeld: een kozijn met twee ramen, de onderdorpel gearceerd, met de maten erbij">
+          <path d="M40 22 L162 21 L163 112 L39 113 Z M101 22 L102 112" fill="none" stroke="#333" stroke-width="2.2" stroke-linejoin="round"/>
+          <path d="M108 30 L155 66 L108 104" fill="none" stroke="#777" stroke-width="1.3" stroke-dasharray="4 4"/>
+          <path d="M42 104l7 9M50 104l7 9M58 104l7 9M66 104l7 9M74 104l7 9M82 104l7 9M90 104l7 9M98 104l7 9M106 104l7 9M114 104l7 9M122 104l7 9M130 104l7 9M138 104l7 9M146 104l7 9M154 104l6 8" stroke="#a8523a" stroke-width="1.6"/>
+          <path d="M39 104 L163 103" stroke="#333" stroke-width="2.2"/>
+          <text x="101" y="132" text-anchor="middle" font-size="13" font-family="Georgia, serif" font-style="italic" fill="#333">onderdorpel 160</text>
+          <text x="178" y="70" font-size="13" font-family="Georgia, serif" font-style="italic" fill="#333" transform="rotate(90 178 70)" text-anchor="middle">130</text>
+          <text x="20" y="16" font-size="15" font-family="Georgia, serif" font-weight="bold" fill="#333">1</text>
+        </svg>
+        <figcaption>Voorbeeld: kozijn 1, de onderdorpel moet gebeuren. Het rechterraam gaat open.</figcaption>
+      </figure>
+    </div>
+
+    <div class="blad-vakken">
+      <div class="blad-vak"><p>Kozijn <span class="lijntje"></span></p><p class="blad-waar"><span>&#9744; begane grond</span><span>&#9744; verdieping</span><span>&#9744; dakkapel</span></p></div>
+      <div class="blad-vak"><p>Kozijn <span class="lijntje"></span></p><p class="blad-waar"><span>&#9744; begane grond</span><span>&#9744; verdieping</span><span>&#9744; dakkapel</span></p></div>
+      <div class="blad-vak"><p>Kozijn <span class="lijntje"></span></p><p class="blad-waar"><span>&#9744; begane grond</span><span>&#9744; verdieping</span><span>&#9744; dakkapel</span></p></div>
+      <div class="blad-vak"><p>Kozijn <span class="lijntje"></span></p><p class="blad-waar"><span>&#9744; begane grond</span><span>&#9744; verdieping</span><span>&#9744; dakkapel</span></p></div>
+    </div>
+
+    <p class="blad-voet">Meer kozijnen? Gebruik de achterkant of een tweede blad. Klaar? Maak een foto
+    van dit blad en voeg hem toe op <b>www.iwrap.nl/offerte</b> (kies <b>Op papier</b>), of
+    mail hem naar <b>{{bedrijf.email}}</b>.</p>
+  </article>
+</div>

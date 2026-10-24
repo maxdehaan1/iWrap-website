@@ -1,0 +1,56 @@
+/* ---------------------------------------------------------------------------
+   Het tekenblad (/tekenblad). Op het scherm een voorbeeld van het blad; bij
+   het printen alleen het blad, op één A4 staand.
+   --------------------------------------------------------------------------- */
+
+.tekenblad-scherm{padding:clamp(28px,4vw,48px) 0 clamp(24px,3vw,36px);}
+.tekenblad-scherm h1{margin-bottom:.3em;}
+.tekenblad-scherm p{max-width:60ch;color:var(--ink-soft);}
+
+.blad{
+  max-width:794px;margin:0 auto clamp(56px,7vw,90px);background:#fff;color:#222;
+  border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow-lg);
+  padding:34px 38px;display:flex;flex-direction:column;gap:20px;
+  aspect-ratio:210/297;
+}
+.blad-kop{display:flex;align-items:center;gap:20px;padding-bottom:14px;border-bottom:2px solid #222;}
+.blad-kop img{width:120px;height:auto;}
+.blad-titel{margin:0;font-family:var(--kop);font-weight:700;font-size:1.25rem;}
+.blad-contact{margin:2px 0 0;font-size:.82rem;color:#555;}
+
+.blad-uitleg{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:22px;align-items:center;}
+.blad-uitleg ol{margin:0;padding-left:20px;font-size:.88rem;line-height:1.5;}
+.blad-uitleg li{margin-bottom:6px;}
+.blad-voorbeeld{margin:0;border:1px solid #ccc;border-radius:8px;padding:10px;}
+.blad-voorbeeld svg{width:100%;height:auto;}
+.blad-voorbeeld figcaption{font-size:.74rem;color:#555;margin-top:4px;}
+
+.blad-vakken{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:14px;min-height:0;}
+.blad-vak{
+  border:1.5px solid #333;border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;
+  background-image:radial-gradient(#c9c9c9 1px,transparent 1.2px);background-size:14px 14px;background-position:6px 6px;
+}
+.blad-vak p{margin:0;font-family:var(--kop);font-weight:600;font-size:.9rem;background:#fff;align-self:flex-start;padding-right:6px;}
+.lijntje{display:inline-block;width:46px;border-bottom:1.5px solid #333;margin-left:4px;}
+.blad-waar{margin-top:auto!important;display:flex;flex-wrap:wrap;gap:4px 14px;font-family:var(--tekst)!important;font-weight:400!important;font-size:.8rem!important;padding:4px 6px 0 0!important;}
+.blad-voet{margin:0;font-size:.82rem;color:#333;border-top:1px solid #ccc;padding-top:10px;}
+
+@media (max-width:640px){
+  .blad{aspect-ratio:auto;padding:20px;}
+  .blad-uitleg{grid-template-columns:1fr;}
+  .blad-vakken{grid-template-columns:1fr;grid-template-rows:none;}
+  .blad-vak{min-height:220px;}
+}
+
+/* Printen: alleen het blad, de rest van de site weg. */
+@page{size:A4 portrait;margin:10mm;}
+@media print{
+  .skip,header.site,.kruimels,.tekenblad-scherm,footer.site-footer{display:none!important;}
+  body{background:#fff;}
+  .wrap{max-width:none;padding:0;}
+  .blad{
+    max-width:none;width:100%;height:277mm;aspect-ratio:auto;margin:0;padding:8mm 9mm;
+    border:0;border-radius:0;box-shadow:none;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  }
+}

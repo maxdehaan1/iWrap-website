@@ -1,6 +1,6 @@
 """Alle instellingen op één plek.
 
-Geheimen (wachtwoord, Mollie-sleutel, mail-webhook) komen uit omgevings-
+Geheimen (wachtwoord, Mollie-sleutel, de Microsoft-koppeling) komen uit omgevings-
 variabelen: in Vercel onder Settings > Environment Variables, lokaal uit een
 bestand .env in de repo-root (staat in .gitignore). Deze repo is openbaar,
 dus er staat hier nooit een echte sleutel in.
@@ -69,10 +69,14 @@ GEHEIM = env("GEHEIM", "alleen-lokaal-niet-geheim" if LOKAAL else "")
 # Betalen. Een sleutel die met test_ begint is Mollie's testmodus.
 MOLLIE_API_KEY = env("MOLLIE_API_KEY")
 
-# Mail. Eén van de twee invullen; zonder komt alles in .data/uitbak/ terecht.
-MAIL_WEBHOOK_URL = env("MAIL_WEBHOOK_URL")   # Make-scenario dat via Outlook verstuurt
-RESEND_API_KEY = env("RESEND_API_KEY")
-MAIL_VAN = env("MAIL_VAN", "iWrap <info@iwrap.nl>")
+# Mail, rechtstreeks via Microsoft 365 (zie mail.py en de README). Zonder deze
+# drie komt alles in .data/uitbak/ terecht.
+MS_TENANT_ID = env("MS_TENANT_ID")
+MS_CLIENT_ID = env("MS_CLIENT_ID")
+MS_CLIENT_SECRET = env("MS_CLIENT_SECRET")
+# De mailbox waaruit verstuurd wordt. Alles wat de site mailt komt hier vandaan
+# en staat daarna in de verzonden items van deze mailbox.
+MAIL_AFZENDER = env("MAIL_AFZENDER", "info@iwrap.nl")
 
 MAX_EMAIL = env("MAX_EMAIL", "info@iwrap.nl")
 
@@ -115,7 +119,7 @@ def status():
         "opslag": "redis" if REDIS_URL else "bestanden",
         "betalen": ("mollie-test" if MOLLIE_API_KEY.startswith("test_")
                     else "mollie-live" if MOLLIE_API_KEY else "testkassa"),
-        "mail": "make" if MAIL_WEBHOOK_URL else "resend" if RESEND_API_KEY else "uitbak",
+        "mail": "microsoft" if (MS_TENANT_ID and MS_CLIENT_ID and MS_CLIENT_SECRET) else "uitbak",
         "leverancier": LEVERANCIER_NAAM,
         "leverancier_automatisch": LEVERANCIER_AUTOMATISCH,
         "voorbeeldprijzen": lees_data("horren.json").get("voorbeeldprijzen", True),

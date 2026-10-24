@@ -9,6 +9,9 @@ Openbaar (ook vanuit de winkel op een ander domein):
   GET  /api/horren/testkassa/<nr>?t=      nepkassa, alleen zonder Mollie-sleutel
   GET  /api/rapporten/<id>                het rapport voor de klant
   GET  /api/fotos/<id>                    een foto uit een rapport
+  POST /api/aanvragen                     offerteaanvraag aanmaken (zonder foto's)
+  PUT  /api/aanvragen/<id>/fotos/<naam>?t= één foto bij die aanvraag
+  POST /api/aanvragen/<id>/versturen?t=   alles compleet: mail aan Max + bevestiging
 
 Max-modus (met token uit /api/max/login):
   /api/max/status, /api/max/rapporten[/<id>[/mail]], /api/max/fotos,
@@ -26,7 +29,7 @@ import traceback
 from html import escape
 from urllib.parse import parse_qs
 
-from . import bestellingen, horren, mail, mails, rapporten
+from . import aanvragen, bestellingen, horren, mail, mails, rapporten
 from . import instellingen as cfg
 from .auth import maak_token, nieuwe_id, token_geldig, wachtwoord_klopt
 from .opslag import Fout, opslag
@@ -201,6 +204,54 @@ def _alleen_testkassa():
     from .betalen import modus
     if modus() != "testkassa" or (cfg.OP_VERCEL and cfg.env("VERCEL_ENV") == "production"):
         raise Probleem(404, "Niet gevonden.")
+
+
+# ---------------------------------------------------------------------------
+# Offerteaanvragen (iwrap.nl/offerte, zie aanvragen.py)
+# ---------------------------------------------------------------------------
+
+@route("POST", "/api/aanvragen")
+def aanvraag_maken(v):
+    if opslag().teller_met_ttl("aanvraag-ip:" + v.ip, 3600) > 8:
+        raise Probleem(429, "Je hebt al een paar aanvragen gestuurd. Probeer het over een uur opnieuw, "
+                            "of bel of mail ons.")
+    try:
+        a = aanvragen.maak(v.json())
+    except aanvragen.Afgewezen as e:
+        raise Probleem(422, e.meldingen[0], {"fouten": e.meldingen})
+    return antwoord({"id": a["id"], "token": a["token"],
+                     "fotos": [f["naam"] for f in aanvragen.fotolijst(a)]}, 201)
+
+
+def _aanvraag_met_token(aid, token):
+    a = aanvragen.haal(aid)
+    if not aanvragen.token_klopt(a, token):
+        raise Probleem(404, "Deze aanvraag kennen we niet (meer). Verstuur hem nog een keer.")
+    return a
+
+
+@route("PUT", r"/api/aanvragen/(?P<aid>[a-z0-9]+)/fotos/(?P<naam>[a-z0-9-]+\.jpg)")
+def aanvraag_foto(v, aid, naam):
+    a = _aanvraag_met_token(aid, v.query.get("t"))
+    if opslag().teller_met_ttl("aanvraagfoto-ip:" + v.ip, 3600) > 200:
+        raise Probleem(429, "Te veel foto's in korte tijd. Probeer het over een uur opnieuw.")
+    try:
+        aanvragen.bewaar_foto(a, naam, v.body())
+    except aanvragen.Afgewezen as e:
+        raise Probleem(422, e.meldingen[0])
+    return antwoord({"ok": True})
+
+
+@route("POST", r"/api/aanvragen/(?P<aid>[a-z0-9]+)/versturen")
+def aanvraag_versturen(v, aid):
+    a = _aanvraag_met_token(aid, v.query.get("t"))
+    try:
+        a = aanvragen.verstuur(a)
+    except aanvragen.Ontbreekt as e:
+        raise Probleem(409, "Er missen nog foto's.", {"ontbreekt": e.namen})
+    except aanvragen.NietVerstuurd:
+        raise Probleem(502, "Het versturen lukte niet. Probeer het zo nog eens, of mail ons je foto's.")
+    return antwoord({"ok": True, "bevestiging": bool(a.get("bevestiging"))})
 
 
 # ---------------------------------------------------------------------------

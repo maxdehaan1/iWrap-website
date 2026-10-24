@@ -8,8 +8,14 @@ Sleutels:
   rapport:<id>        een klus: klant, oplevering, kozijncheck
   foto:<id>           een foto (base64-jpeg), klein gemaakt op de telefoon
   bestelling:<nr>     een horrenbestelling
+  aanvraag:<id>       een offerteaanvraag van de site (verloopt vanzelf, zie aanvragen.py)
+  aanvraagfoto:<id>:<naam>  een foto bij die aanvraag (base64-jpeg, verloopt mee)
   index rapporten     alle klussen, gesorteerd op laatst bijgewerkt
   index bestellingen  alle bestellingen, gesorteerd op aanmaakmoment
+  index aanvragen     alle offerteaanvragen, gesorteerd op aanmaakmoment
+
+Met ttl= verloopt een sleutel vanzelf na zoveel seconden. Zo blijven foto's van
+aanvragen niet eeuwig op de server staan: de mail aan Max is het archief.
   teller:bestelling:<jaar>
 """
 
@@ -53,14 +59,18 @@ class RedisOpslag:
         ruw = self._cmd("GET", sleutel)
         return json.loads(ruw) if ruw else None
 
-    def put(self, sleutel, waarde):
-        self._cmd("SET", sleutel, json.dumps(waarde, ensure_ascii=False, separators=(",", ":")))
+    def put(self, sleutel, waarde, ttl=None):
+        tekst = json.dumps(waarde, ensure_ascii=False, separators=(",", ":"))
+        self._cmd("SET", sleutel, tekst, *(("EX", int(ttl)) if ttl else ()))
 
     def get_ruw(self, sleutel):
         return self._cmd("GET", sleutel)
 
-    def put_ruw(self, sleutel, tekst):
-        self._cmd("SET", sleutel, tekst)
+    def put_ruw(self, sleutel, tekst, ttl=None):
+        self._cmd("SET", sleutel, tekst, *(("EX", int(ttl)) if ttl else ()))
+
+    def verloop(self, sleutel, ttl):
+        self._cmd("EXPIRE", sleutel, int(ttl))
 
     def weg(self, sleutel):
         self._cmd("DEL", sleutel)
@@ -112,15 +122,37 @@ class BestandOpslag:
             return None
         return data
 
-    def put(self, sleutel, waarde):
+    def put(self, sleutel, waarde, ttl=None):
+        if ttl:
+            waarde = dict(waarde, _verloopt=time.time() + ttl)
         self._schrijf(self._pad(sleutel), json.dumps(waarde, ensure_ascii=False, indent=1))
 
     def get_ruw(self, sleutel):
         p = self._pad(sleutel)
-        return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
+        if not p.exists():
+            return None
+        data = json.loads(p.read_text(encoding="utf-8"))
+        # Met een ttl staat de tekst in een omhulsel met de verloopdatum erbij.
+        if isinstance(data, dict) and "_ruw" in data:
+            if data["_verloopt"] < time.time():
+                p.unlink()
+                return None
+            return data["_ruw"]
+        return data
 
-    def put_ruw(self, sleutel, tekst):
-        self._schrijf(self._pad(sleutel), json.dumps(tekst))
+    def put_ruw(self, sleutel, tekst, ttl=None):
+        data = {"_ruw": tekst, "_verloopt": time.time() + ttl} if ttl else tekst
+        self._schrijf(self._pad(sleutel), json.dumps(data))
+
+    def verloop(self, sleutel, ttl):
+        p = self._pad(sleutel)
+        if not p.exists():
+            return
+        data = json.loads(p.read_text(encoding="utf-8"))
+        if not isinstance(data, dict):
+            data = {"_ruw": data}
+        data["_verloopt"] = time.time() + ttl
+        self._schrijf(p, json.dumps(data))
 
     def weg(self, sleutel):
         p = self._pad(sleutel)

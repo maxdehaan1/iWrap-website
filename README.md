@@ -9,10 +9,11 @@ de omzet is goed, en het knelpunt zit in de mail: elke offerte kost drie of vier
 berichten heen en weer over aantallen, welke delen, hoe hoog het zit en welke kleur.
 
 Deze site is daarom niet gebouwd om méér leads te vangen, maar om **completere leads**
-te vangen. Het hart is `/offerte`: een formulier in vier stappen dat precies de vragen
-stelt die anders per mail gesteld moeten worden: welk werk, hoe hoog, welke kleur, en
-foto's. Wie het invult stuurt een aanvraag waar je direct een offerte van kunt maken.
-Er staan bewust geen bedragen op de site (zie "Wat er níet op de site mag").
+te vangen. Het hart is `/offerte`: de klant laat op zijn eigen manier zien wat er moet
+gebeuren (een foto aanstrepen, de maten erbij zetten, of tekenen op papier), altijd met
+een foto van elk heel kozijn. Jij krijgt daar één mail van, met de foto's als bijlage,
+waar je direct een offerte van kunt maken. Er staan bewust geen bedragen op de site
+(zie "Wat er níet op de site mag").
 
 Daarnaast staat er expliciet op de site wat je **niet** doet (krom kozijn, kapot beslag,
 lekkage, aluminium schil). Dat scheelt de aanvragen die toch nergens toe leiden.
@@ -22,7 +23,7 @@ lekkage, aluminium schil). Dat scheelt de aanvragen die toch nergens toe leiden.
 | | Oud | Nieuw |
 |---|---|---|
 | Techniek | WordPress + Slider Revolution | Statische HTML, geen build-afhankelijkheden behalve Python |
-| Offerte | Contactformulier | Vier stappen met een werklijst per kozijn en foto-upload |
+| Offerte | Contactformulier (Tripetto, foto's achter de WordPress-login) | Drie manieren: foto aanstrepen, foto met maten, of op papier; één mail met alle foto's als bijlage |
 | Prijzen | Niet genoemd | Eigen pagina: wat de prijs bepaalt, zonder bedragen |
 | Zakelijk | Niets | Pagina's voor VvE's/corporaties en voor kozijndealers |
 | Merken | Opsomming in een zin | Eigen pagina per merk (8 stuks) |
@@ -94,6 +95,7 @@ src/vergelijking.html     Nieuw kozijn of herstellen, via {{vergelijking}}
 
 index.html                Homepage                              (gegenereerd)
 offerte.html              Het aanvraagformulier — de kern       (gegenereerd)
+tekenblad.html            Tekenblad om te printen (op papier)   (gegenereerd)
 kunststof-kozijn-herstellen.html  De belangrijkste SEO-pagina   (gegenereerd)
 werkwijze.html            Zes stappen met foto's                (gegenereerd)
 kosten.html               Prijzen en waar ze vandaan komen      (gegenereerd)
@@ -113,7 +115,8 @@ max.html                  De Max-modus, op /max                 (gegenereerd, no
 css/style.css             Gedeeld: kleuren, typografie, knoppen, kaarten, header, footer
 css/home.css              Alleen de homepage
 css/content.css           Tekstpagina's
-css/offerte.css           Alleen het formulier
+css/offerte.css           Alleen het formulier, ook het aanstreepscherm
+css/tekenblad.css         Het tekenblad, op het scherm en geprint op A4
 css/rapport.css           Het rapport en de kozijncheck-pagina
 css/max.css               De Max-modus
 css/film.css              De film (homepage en /werkwijze)
@@ -122,6 +125,8 @@ js/main.js                Menu, voor/na-schuif, scroll-animaties
 js/film.js                De film van 15 seconden op de homepage
 js/doorsnede.js           Speelt de doorsnede één keer af als hij in beeld komt
 js/offerte.js             Het stappenformulier
+js/fotos.js               Foto's verkleinen op de telefoon en bewaren in de browser
+js/aanstrepen.js          Het aanstreepscherm (met de vinger op de foto)
 js/rapport.js             Vult het rapport vanuit de API
 js/max.js                 De Max-modus
 js/vendor/                QR-code-bibliotheek (MIT), ongewijzigd
@@ -150,100 +155,128 @@ video/                    Neemt de film op als MP4 (niet op de site, niet in git
 
 ## Het offerteformulier
 
-Vier stappen: **het werk, de hoogte, de kleur, en gegevens met foto's.**
+### Het idee
 
-### De werklijst (stap 1)
+Je wilt niet langs, en toch snel een offerte kunnen maken. Klanten vinden het lastig om
+op te schrijven welke delen er moeten gebeuren, en ze zijn niet allemaal even handig met
+een telefoon. Daarom kiest de klant zelf **hoe** hij laat zien wat er moet gebeuren:
 
-Het hart van het formulier. Eén **blok** per soort werk, met drie genummerde vragen:
+| Manier | Voor wie | Wat de klant doet |
+|---|---|---|
+| **Foto en aanstrepen** (het snelst) | Wie denkt: ik maak een foto en streep het aan | Per kozijn een foto; daarna opent vanzelf een scherm waarop hij met zijn vinger aanstreept wat er moet gebeuren. Of hij tikt "het hele kozijn". Maten mogen erbij, hoeven niet. |
+| **Foto en maten** (het preciest) | Wie een rolmaat pakt | Per kozijn een foto, en per deel de lengte: hij tikt "+ Onderdorpel" en typt `1,60`, tikt "+ Stijl", zet het aantal op 2 en typt `130`. Moet het hele kozijn, dan alleen breedte × hoogte. |
+| **Op papier** | Wie liever met pen en papier werkt | Kozijnen natekenen (op een gewoon vel, of op het tekenblad van `/tekenblad`), arceren wat er moet gebeuren, en er een foto van maken. Een maattekening van de leverancier mag ook. |
 
-1. Wat voor element is het? (kozijn / draairaam / deur / schuifpui / dakkapelkozijn)
-2. Zit er iets in dat opengaat? — aantal draairamen en deuren **in dit kozijn**
-3. Wat moet eraan gebeuren? (het hele element, of bepaalde delen — dan verschijnen de
-   vinkjes voor onder-, boven- en tussendorpels en voor linker, rechter en tussenstijlen)
-4. Bij hoeveel kozijnen? (plus een vrij veld voor waar ze staan)
+**Bij alle drie hoort een foto van elk kozijn in zijn geheel.** Dat staat al op het
+keuzescherm, zodat niemand erdoor verrast wordt. Daaraan zie je het profiel, de kleur en
+of herstel kan.
 
-Dat levert dit op in de mail:
+Een aanklikbare kozijntekening (vorm kiezen, delen aantikken) is bewust **niet** gebouwd:
+te veel kozijntypes en maten, en voor ouderen te ingewikkeld. Ook een aanvinklijst per
+kozijn zit er niet in: klanten kennen "onderdorpel" en "stijl" wel, en met de lengte
+erbij heb je meer aan wat ze zelf typen.
 
-```
-2× kozijn met 2 draairamen en 1 deur — compleet rondom  (voorkant)   [2 foto's]
-1× deur                              — compleet rondom
+### De stappen
 
-Samen 2 kozijnen, 4 draairamen en 2 deuren
-```
+1. **Manier**: de drie kaarten hierboven. Wisselen kan later altijd; de foto's blijven staan.
+2. **Kozijnen**: per kozijn een kaart met drie genummerde vragen: (1) de foto, (2) wat er
+   moet gebeuren (aanstrepen of maten, afhankelijk van de manier), (3) waar het zit
+   (begane grond, verdieping, dakkapel; per kozijn, want daar hangt de steiger van af).
+   Onderaan: "Komt dit kozijn vaker voor, met hetzelfde werk?" Drie gelijke
+   slaapkamerramen zijn dus één kaart met één foto. Bij "Op papier" in plaats van
+   kaarten: foto's van de tekening, foto's van de kozijnen (genummerd) en waar ze zitten.
+3. **Kleur**: dezelfde houden of een andere.
+4. **Gegevens**: naam, mail, telefoon, adres, opmerking.
+5. **Versturen**: een overzicht met per kozijn een fotootje en wat er moet gebeuren, met
+   bij elk blok een "Wijzig"-knop. Dan pas "Aanvraag versturen".
 
-**Kies je een los draairaam of een losse deur**, dan verschijnt de spiegelvraag: hoort het
-kozijn eromheen erbij, of gaat het alleen om de deur of het raam zelf? Soms is alleen het
-draaiende deel aangetast en is het kozijn nog goed, en dat scheelt in het werk. Zonder
-antwoord op die vraag telt het blok niet mee — zonder dat gegeven is de klus niet te
-begroten.
+Klopt een kozijn nog niet, dan staat **bij die kaart** in gewone taal wat er ontbreekt
+("Kies waar dit kozijn zit."), en de kop van de kaart wordt groen met "Compleet" zodra
+alles er is. Maten mogen op elke manier worden getypt: `160`, `1,60` en `1.6` zijn
+allemaal 160 cm, en naast het vak staat meteen "1,60 m" zodat de klant ziet dat het
+klopt. Tot en met 10 lezen we als meters (`cm()` in `backend/aanvragen.py` en in
+`offerte.js`, die twee moeten gelijk blijven).
 
-**Draairamen en deuren horen bij het kozijn waar ze in zitten**, niet in een eigen blok.
-Vraag 2 verschijnt daarom alleen bij een kozijn, schuifpui of dakkapelkozijn; kies je een
-los draairaam of een losse deur, dan is dat element zelf al het draaiende deel en verdwijnt
-de vraag (de nummering loopt dan gewoon door van 1 naar 3). Het totaal onderaan telt de
-inhoud mee: twee kozijnen met elk twee draairamen zijn vier draairamen.
+### Het aanstreepscherm
 
-Vraag 4 leest mee met het gekozen soort — "Bij hoeveel kozijnen?" in plaats van "Bij
-hoeveel elementen?" — want zodra er draairamen in zitten is dat laatste dubbelzinnig.
+Aanstrepen gebeurt op een eigen scherm dat de hele telefoon vult (`js/aanstrepen.js`).
+Op een foto ín het formulier botst tekenen met scrollen: wie de pagina verschuift, zet
+dan per ongeluk een streep. Het scherm gaat vanzelf open zodra er een foto gekozen is.
+Er zijn drie knoppen (Ongedaan maken, Alles wissen, Klaar) en een link "Moet het hele
+kozijn? Tik dan hier".
 
-**De volgorde van die drie vragen is belangrijk.** Het aantal stond eerst vooraan, naast
-de knop "nog een regel toevoegen", en dan is onduidelijk welke van de twee je moet
-gebruiken voor meerdere kozijnen. Door het aantal pas ná de beschrijving te vragen — "bij
-hoeveel elementen moet *dit* gebeuren" — is het verschil vanzelf duidelijk, en gaat de
-knop eronder zichtbaar over ánder werk. Verplaats die vraag dus niet terug naar boven.
+De streep is **geel als een markeerstift, met een donkere rand**. Terracotta (de kleur
+van "voor" op de rest van de site) viel weg tegen baksteen, en daar zitten de meeste
+kozijnen in. De strepen worden bewaard als lijnen in verhoudingen van de foto, en bij het
+versturen op ware grootte op de foto gezet (`kozijn-1-aangestreept.jpg`).
 
-De kop van elk blok leest mee met wat er ingevuld is, zodat je bij drie blokken in één
-oogopslag ziet welk blok welk werk beschrijft.
+### Foto's
 
-**Per blok kunnen foto's mee.** Die krijgen bij het versturen het blocknummer in hun
-bestandsnaam (`regel-2-kozijn-1.jpg`), zodat in de mailbox meteen te zien is bij welk
-stuk werk ze horen. De dropzone in de laatste stap is voor overzichtsfoto's van de gevel.
+`js/fotos.js` verkleint elke foto op de telefoon tot 1600 pixels (een telefoonfoto van
+2 tot 12 MB wordt rond de 300 kB) en zet hem rechtop. De foto's worden in de browser
+bewaard (IndexedDB), de antwoorden in localStorage: wie halverwege wegklikt, gaat later
+verder waar hij was, mét foto's. Er gaat niets naar de server tot de klant op
+"Aanvraag versturen" drukt.
 
-Er wordt **niet** gevraagd naar het soort schade: de herstelwerkzaamheden zijn hetzelfde
-of de folie nu verweerd is, loslaat of blaasjes heeft. Klikt iemand op de homepage wél op
-een klacht, dan gaat dat via `?klacht=` stil mee en staat het in de mail onder "Via de
-site".
+### Versturen, en wat jij binnenkrijgt
 
-### Waar dit op gekalibreerd is
+In drie stappen (`backend/aanvragen.py`), zodat ook tien foto's op een matige
+verbinding heel aankomen:
 
-**Een typische klus is een woning met maximaal zes kozijnen.** Daar is het formulier op
-afgestemd: zo'n woning kost in de praktijk twee blokken en ongeveer elf handelingen
-(bijvoorbeeld "4× kozijn — onderdorpel" en "2× kozijn met 1 draairaam — compleet
-rondom"). Bouw dus geen bulkinvoer of importfuncties voor grote aantallen; voor VvE's en
-complexen komt iWrap sowieso langs voor een opname.
+1. `POST /api/aanvragen`: de antwoorden. De server controleert alles en zegt welke foto's
+   hij verwacht.
+2. `PUT /api/aanvragen/<id>/fotos/<naam>`: elke foto apart, opnieuw geprobeerd als de
+   verbinding hapert.
+3. `POST /api/aanvragen/<id>/versturen`: alles compleet? Dan één mail aan jou en een
+   bevestiging aan de klant. Nog een keer drukken stuurt niets dubbel.
+
+**De mail aan jou** komt rechtstreeks in je eigen Outlook (zie "Mail via Microsoft 365"):
+
+- Onderwerp: `Aanvraag Joke Jansen, Hilversum: 2 kozijnen, foto en maten`.
+- Bovenin telefoon, mail, adres met een link naar Google Maps, de manier en de kleur.
+- Per kozijn: waar het zit, hoe vaak het voorkomt, wat er moet gebeuren (bij maten in
+  meters, met de opgegeven lengte al opgeteld) en welke foto's erbij horen.
+- Onderaan "Samen": aantal kozijnen, opgegeven lengte, en hoeveel er op de verdieping of
+  de dakkapel zitten.
+- **Bijlagen** met een naam die zegt wat het is: `kozijn-1-foto.jpg`,
+  `kozijn-1-aangestreept.jpg`, `kozijn-1-dichtbij.jpg`, `tekening-1.jpg`, plus
+  `aanvraag.json` met alle gegevens.
+- **Antwoorden** op die mail gaat naar de klant.
+
+**Voor Claude (de offerte-ochtendronde):** de aanvraag is een gewone mail met gewone
+jpg-bijlagen, dus die worden in de mailbox gelezen zoals elke andere mail met foto's. Lees
+eerst `aanvraag.json`: daar staat alles als gegevens in (lengtes in centimeters, per
+kozijn `regels` met deel, lengte en aantal, `aantal` = hoe vaak dat kozijn voorkomt,
+`heel` = het hele kozijn). Bij de manier "streep" staat in `kozijn-N-aangestreept.jpg`
+wat er moet gebeuren, bij "papier" op `tekening-N.jpg`; de `kozijn-N-foto.jpg` is altijd
+het hele kozijn, voor profiel en kleur.
+
+**De klant** krijgt een bevestiging met wat hij gestuurd heeft, en dat je een offerte met
+een vaste totaalprijs stuurt. Bewust zonder termijn.
+
+Op de server blijven een aanvraag en zijn foto's dertig dagen staan als reserve (een niet
+verstuurde aanvraag twee dagen). De mail is het archief.
 
 ### De uitweg
 
 Boven het formulier staat in gewone taal: *"Lukt het formulier u niet? Stuur ons gewoon
-een mail."* Die mailtolink is **voorgevuld** met een kort lijstje (wat er moet gebeuren,
-om hoeveel het gaat, adres, telefoonnummer), zodat ook een aanvraag buiten het formulier
-om bruikbaar binnenkomt. Die regel staat bewust bovenaan: wie afhaakt op een formulier,
-haakt ook af op een verwijzing die pas onderaan staat.
+een mail."* Die mailtolink is voorgevuld met een kort lijstje. Lukt het versturen niet
+(geen verbinding, server onbereikbaar), dan blijft alles staan en zijn er twee knoppen:
+nog een keer proberen, of een mail met de antwoorden erin waar de klant zijn foto's bij
+doet.
 
-### Navigatie
+### Lokaal uitproberen
 
-De stappenbalk wordt door `offerte.js` uit de panelen zelf opgebouwd. Een stap toevoegen
-of weghalen is dus één `<section class="stap-paneel" data-titel="...">` erbij of eraf.
-
-**Elke stap is klikbaar, vooruit en terug.** Terug mag altijd. Vooruit loopt `spring()`
-elke tussenliggende stap na en gaat zo ver als mag: ontbreekt er iets, dan land je op díe
-stap met de bijbehorende melding. Een stap krijgt pas een vinkje als je er langs bent
-geweest én hij klopt.
-
-De knoppenbalk onderaan plakt (`position:sticky`) zodat "Volgende stap" ook op een lange
-stap in beeld blijft. **Zet daarom geen `overflow:hidden` op `.offerte-kaart`** — dat
-schakelt sticky uit. De hoeken worden op het eerste en laatste kind afgerond.
+`python3 serve.py`, dan http://localhost:8010/offerte. Zonder Microsoft-koppeling komt
+de mail in `.data/uitbak/` terecht: een HTML-bestand met de mail, en een map ernaast met
+de bijlagen precies zoals ze verstuurd zouden worden. `python3 tests/test_backend.py`
+loopt alle drie de manieren door, inclusief een ontbrekende foto en dubbel versturen.
 
 ### Valkuil bij het bewerken
 
-`offerte.js` is één grote functie met `var`-declaraties. Die zijn functie-breed, dus
-**twee keer dezelfde naam is één variabele**. Dat ging een keer mis met `lijst`: de
-werklijst en de fotolijst deelden de naam, waardoor werkregels in de fotolijst
-belandden. Kies bij nieuwe code een naam die nergens anders voorkomt.
-
-**Na elke wijziging in `js/`: open `/offerte` en kijk in de console.** `build.py`
-controleert of alle strings netjes afgesloten zijn (die fout heeft de site een keer
-stilgelegd), maar een typefout in een functienaam merk je alleen door het te draaien.
+Nederlandse teksten met een apostrof (`foto's`) in JavaScript altijd tussen dubbele
+aanhalingstekens. `build.py` controleert dat, want die fout heeft het formulier een keer
+stilgelegd. **Na elke wijziging in `js/`: open `/offerte` en kijk in de console.**
 
 ## Kozijncheck, Max-modus en het opleverrapport
 
@@ -302,8 +335,9 @@ dagelijkse taak voor herinneringen. Alle routes staan bovenin `backend/app.py`.
   in `.data/`, mails als HTML in `.data/uitbak/`, betalen via een testkassa, Max-modus
   op wachtwoord `test`. Lokale geheimen kun je in een bestand `.env` zetten.
 - **Op Vercel** draait hij als functie (`api/index.py`) en slaat hij op in Upstash Redis.
-- **Testen:** `python3 tests/test_backend.py` loopt de hele stroom door, van klus tot
-  "past alles?", tegen een lege tijdelijke map.
+- **Testen:** `python3 tests/test_backend.py` loopt de hele stroom door: een
+  offerteaanvraag op alle drie de manieren, en van klus tot "past alles?", tegen een
+  lege tijdelijke map.
 
 Belangrijke keuzes:
 
@@ -332,15 +366,13 @@ Nu draait alles lokaal. Om het echt te gebruiken:
    | `GEHEIM` | Een lange willekeurige tekst (40+ tekens); ondertekent de inlog |
    | `CRON_SECRET` | Een willekeurige tekst; Vercel stuurt hem mee met de dagelijkse taak |
    | `MOLLIE_API_KEY` | Eerst de `test_`-sleutel, later de `live_`-sleutel |
-   | `MAIL_WEBHOOK_URL` | Het webhookadres van het Make-scenario (zie hieronder) |
+   | `MS_TENANT_ID`, `MS_CLIENT_ID`, `MS_CLIENT_SECRET` | De koppeling met Microsoft 365 (zie hieronder) |
    | `LEVERANCIER_NAAM`, `LEVERANCIER_EMAIL` | Zodra je een leverancier hebt |
    | `LEVERANCIER_AUTOMATISCH` | `nee` (standaard) of `ja` |
    | `SHOP_URL` | Het adres van de winkel: `https://kozijnhorren.nl` |
 
-4. **Mail via Make.** Eén scenario: *Webhooks > Custom webhook* > *Microsoft 365 Email >
-   Send an email*. Vul in: To = `aan`, Subject = `onderwerp`, Body type HTML, Content =
-   `html`, Reply-To = `antwoord_aan`. Dan komen de mails uit je eigen Outlook, en staan
-   ze in je verzonden items. De site maakt de hele mail zelf; Make verstuurt alleen.
+4. **Mail via Microsoft 365.** Zie het kopje hieronder. Daarna een testaanvraag doen op
+   www.iwrap.nl/offerte en kijken of hij met alle foto's in je inbox staat.
 5. **Mollie** in testmodus, en één keer de hele stroom doorlopen: klus in de Max-modus,
    rapport openen op je telefoon, via de tip naar kozijnhorren.nl, bestellen,
    testbetaling, mail, Naar leverancier, Verzonden.
@@ -456,6 +488,37 @@ er komt, en staat daarom bovenaan **Over iWrap**, direct onder de paginakop.
   dertig dagen gecachet, dus wie hem al gezien heeft krijgt pas daarna de nieuwe. Wil je
   dat meteen, geef het bestand dan een nieuwe naam.
 
+## Mail via Microsoft 365
+
+iwrap.nl draait op Microsoft 365 (de MX wijst naar outlook.com). De site mailt daarom
+rechtstreeks vanuit info@iwrap.nl, via Microsoft Graph: geen Make, geen Resend, geen
+abonnement. Alles wat de site verstuurt staat daarna in je verzonden items, en een
+offerteaanvraag komt in je eigen inbox binnen met de foto's als echte bijlagen.
+
+Eenmalig instellen, ongeveer tien minuten, met je beheerdersaccount:
+
+1. Ga naar **entra.microsoft.com** > *Applications* > *App registrations* > *New
+   registration*. Naam: `iwrap-website`. Accounttype: alleen deze organisatie. Geen
+   redirect-URL. *Register*.
+2. Noteer op de overzichtspagina de **Application (client) ID** en de **Directory
+   (tenant) ID**.
+3. *Certificates & secrets* > *New client secret*, geldig 24 maanden. Kopieer meteen de
+   **Value** (die zie je maar één keer). Zet in je agenda wanneer hij verloopt.
+4. *API permissions* > *Add a permission* > *Microsoft Graph* > *Application
+   permissions* > `Mail.Send` > *Add*. Daarna **Grant admin consent**.
+5. In Vercel (Settings > Environment Variables): `MS_TENANT_ID`, `MS_CLIENT_ID`,
+   `MS_CLIENT_SECRET`. Optioneel `MAIL_AFZENDER` (standaard `info@iwrap.nl`). Opnieuw
+   deployen.
+6. In de Max-modus staat bij Status of de mail gekoppeld is.
+
+`Mail.Send` mag in principe namens elke mailbox in je organisatie versturen. Heb je meer
+mailboxen dan info@iwrap.nl, beperk de app dan tot die ene met een *application access
+policy* in Exchange Online (`New-ApplicationAccessPolicy`, documentatie van Microsoft).
+Met alleen info@iwrap.nl hoeft dat niet.
+
+Zolang dit niet is ingesteld komt alles in `.data/uitbak/` terecht (lokaal), of gaat het
+op Vercel verloren. **Zet de site dus pas live als de koppeling werkt.**
+
 ## Wat er nog moet gebeuren
 
 **Voordat de site live gaat:**
@@ -464,8 +527,8 @@ er komt, en staat daarom bovenaan **Over iWrap**, direct onder de paginakop.
    hieronder). Draai `python3 reviews.py` vlak voor de livegang.
 2. **Vul KvK en btw-id in** in `BEDRIJF` in `build.py`. Die horen op de site te staan en
    staan nu nergens. Zolang ze leeg zijn, laat de footer ze gewoon weg.
-3. **Web3Forms-key regelen** (zie hierboven), anders loopt elke aanvraag via de
-   mailclient van de bezoeker.
+3. **De mailkoppeling met Microsoft 365** (zie "Mail via Microsoft 365") en Upstash
+   Redis. Zonder die twee komt een offerteaanvraag nergens aan.
 4. **Controleer twee claims** die ik van je bestaande sites heb overgenomen maar niet zelf
    kan verifiëren: "gecertificeerde monteurs in vaste dienst" en "na vijftien tot twintig
    jaar is de fabrieksfolie op". De eerste staat al op kozijnwrap.nl, de tweede is mijn

@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Loopt de hele stroom door zonder browser.
 
-iwrap.nl: Max maakt een klus, vult de kozijncheck in en zet het rapport klaar.
+iwrap.nl: een klant vraagt op drie manieren een offerte aan (foto en
+aanstrepen, foto en maten, op papier); Max krijgt één mail met de foto's als
+bijlage. Max maakt een klus, vult de kozijncheck in en zet het rapport klaar.
 Staan de horren op oranje of rood, dan verwijst het rapport naar kozijnhorren.nl
 met de kleur van de folie al gekozen.
 
@@ -24,7 +26,7 @@ from urllib.parse import urlparse
 
 TMP = tempfile.mkdtemp(prefix="iwrap-test-")
 os.environ["DATA_MAP"] = TMP
-for sleutel in ("MOLLIE_API_KEY", "MAIL_WEBHOOK_URL", "RESEND_API_KEY", "KV_REST_API_URL",
+for sleutel in ("MOLLIE_API_KEY", "MS_TENANT_ID", "MS_CLIENT_ID", "MS_CLIENT_SECRET", "KV_REST_API_URL",
                 "UPSTASH_REDIS_REST_URL", "VERCEL", "LEVERANCIER_AUTOMATISCH"):
     os.environ.pop(sleutel, None)
 os.environ["MAX_WACHTWOORD"] = "test"
@@ -36,8 +38,10 @@ from backend import bestellingen, horren  # noqa: E402
 GOED = 0
 
 
-def verzoek(methode, pad, data=None, token=None, form=None, origin=None):
-    if form is not None:
+def verzoek(methode, pad, data=None, token=None, form=None, origin=None, ruw=None):
+    if ruw is not None:
+        body, ctype = ruw, "image/jpeg"
+    elif form is not None:
         body = "&".join("%s=%s" % kv for kv in form.items()).encode()
         ctype = "application/x-www-form-urlencoded"
     else:
@@ -73,6 +77,90 @@ def klopt(voorwaarde, wat):
     print("  ok  " + wat)
 
 
+# Een echte, piepkleine jpeg: begint met FFD8, zoals de server wil.
+JPEG = bytes.fromhex("ffd8ffe000104a46494600010100000100010000ffdb004300") + b"\x08" * 64 + bytes.fromhex("ffd9")
+
+GEGEVENS = {"naam": "Joke Jansen", "email": "joke@voorbeeld.nl", "telefoon": "06 12345678",
+            "postcode": "1214ab", "huisnummer": "12", "plaats": "Hilversum", "toelichting": "Bel liever na 17 uur."}
+
+
+def aanvragen_testen():
+    print("Offerteaanvragen (iwrap.nl)")
+    r = verzoek("POST", "/api/aanvragen", {"manier": "maten", "kozijnen": [{"waar": "begane-grond"}],
+                                           "gegevens": GEGEVENS})
+    klopt(r["status"] == 422 and "minstens één deel" in r["json"]["fout"], "maten zonder delen wordt geweigerd")
+    r = verzoek("POST", "/api/aanvragen", {"manier": "streep", "kozijnen": [{"waar": "verdieping"}],
+                                           "gegevens": GEGEVENS})
+    klopt(r["status"] == 422 and "streep" in r["json"]["fout"], "aanstrepen zonder aanstreping wordt geweigerd")
+    r = verzoek("POST", "/api/aanvragen", {"manier": "papier", "papier": {"tekeningen": 1, "fotos": 2, "waar": ["dakkapel"]},
+                                           "gegevens": dict(GEGEVENS, email="geen-mail")})
+    klopt(r["status"] == 422 and "e-mailadres" in r["json"]["fout"], "een fout e-mailadres wordt geweigerd")
+    r = verzoek("POST", "/api/aanvragen", {"manier": "papier", "website": "spam",
+                                           "papier": {"tekeningen": 1, "fotos": 1, "waar": ["dakkapel"]}, "gegevens": GEGEVENS})
+    klopt(r["status"] == 422, "het onzichtbare robotveld houdt spam tegen")
+
+    # Foto en maten: 1,60 en 130 zijn allebei goed, en een kozijn dat twee keer voorkomt telt dubbel.
+    r = verzoek("POST", "/api/aanvragen", {
+        "manier": "maten", "kleur": "zelfde", "via": "folie laat los", "gegevens": GEGEVENS,
+        "kozijnen": [
+            {"waar": "begane-grond", "plek": "voorkant", "aantal": 2, "dichtbij": True,
+             "regels": [{"deel": "Onderdorpel", "lengte": "1,60", "aantal": 1},
+                        {"deel": "Stijl", "lengte": "130", "aantal": 2}]},
+            {"waar": "dakkapel", "heel": True, "breedte": "2,40", "hoogte": "1,20"},
+        ]})
+    klopt(r["status"] == 201, "aanvraag met maten aangemaakt")
+    aid, tok, namen = r["json"]["id"], r["json"]["token"], r["json"]["fotos"]
+    klopt(namen == ["kozijn-1-foto.jpg", "kozijn-1-dichtbij.jpg", "kozijn-2-foto.jpg"],
+          "de server zegt welke foto's hij verwacht, met het kozijnnummer erin")
+    klopt(verzoek("PUT", "/api/aanvragen/%s/fotos/kozijn-1-foto.jpg?t=fout" % aid, ruw=JPEG)["status"] == 404,
+          "zonder het juiste token geen foto's")
+    klopt(verzoek("PUT", "/api/aanvragen/%s/fotos/kozijn-9-foto.jpg?t=%s" % (aid, tok), ruw=JPEG)["status"] == 422,
+          "een foto die niet bij de aanvraag hoort wordt geweigerd")
+    klopt(verzoek("PUT", "/api/aanvragen/%s/fotos/kozijn-1-foto.jpg?t=%s" % (aid, tok), ruw=b"GIF89a")["status"] == 422,
+          "alleen jpeg")
+    klopt(verzoek("PUT", "/api/aanvragen/%s/fotos/kozijn-1-foto.jpg?t=%s" % (aid, tok), ruw=JPEG)["status"] == 200,
+          "foto 1 ontvangen")
+    r = verzoek("POST", "/api/aanvragen/%s/versturen?t=%s" % (aid, tok))
+    klopt(r["status"] == 409 and r["json"]["ontbreekt"] == ["kozijn-1-dichtbij.jpg", "kozijn-2-foto.jpg"],
+          "versturen zegt welke foto's er nog missen")
+    for naam in namen[1:]:
+        verzoek("PUT", "/api/aanvragen/%s/fotos/%s?t=%s" % (aid, naam, tok), ruw=JPEG)
+    r = verzoek("POST", "/api/aanvragen/%s/versturen?t=%s" % (aid, tok))
+    klopt(r["status"] == 200 and r["json"]["bevestiging"], "verstuurd, met een bevestiging aan de klant")
+    klopt(verzoek("POST", "/api/aanvragen/%s/versturen?t=%s" % (aid, tok))["status"] == 200,
+          "nog een keer op versturen drukken stuurt niets dubbel")
+
+    uitbak = os.path.join(TMP, "uitbak")
+    mails = sorted(os.listdir(uitbak))
+    klopt(len([m for m in mails if m.endswith("-aanvraag.html")]) == 1, "precies één mail aan Max")
+    html = open(os.path.join(uitbak, [m for m in mails if m.endswith("-aanvraag.html")][0]), encoding="utf-8").read()
+    klopt("Aanvraag Joke Jansen, Hilversum: 2 kozijnen, foto en maten" in html, "onderwerp zegt wie, waar en hoe")
+    klopt("Stijl: 2 × 1,30 m = 2,60 m" in html and "Onderdorpel: 1,60 m" in html, "maten staan er netjes in, in meters")
+    klopt("4,20 m per kozijn, 8,40 m samen" in html, "een kozijn dat twee keer voorkomt telt dubbel")
+    klopt("Breedte × hoogte: 240 × 120 cm" in html and "1 op de dakkapel" in html, "heel kozijn en dakkapel staan erin")
+    klopt("Antwoord naar: joke@voorbeeld.nl" in html, "antwoorden gaat naar de klant")
+    bijlagen = sorted(os.listdir(os.path.join(uitbak, [m for m in mails if m.endswith("-aanvraag-bijlagen")][0])))
+    klopt(bijlagen == ["aanvraag.json", "kozijn-1-dichtbij.jpg", "kozijn-1-foto.jpg", "kozijn-2-foto.jpg"],
+          "alle foto's als bijlage, plus aanvraag.json")
+    data = json.load(open(os.path.join(uitbak, [m for m in mails if m.endswith("-aanvraag-bijlagen")][0], "aanvraag.json")))
+    klopt(data["totalen"]["opgegeven_cm"] == 840 and "token" not in data, "aanvraag.json klopt en bevat geen token")
+    bevestiging = open(os.path.join(uitbak, [m for m in mails if m.endswith("-aanvraag-bevestiging.html")][0]),
+                       encoding="utf-8").read()
+    klopt("We hebben je aanvraag ontvangen" in bevestiging and "werkdag" not in bevestiging,
+          "bevestiging aan de klant, zonder belofte over wanneer")
+
+    # Foto en aanstrepen: de aangestreepte foto komt als eigen bijlage mee.
+    r = verzoek("POST", "/api/aanvragen", {"manier": "streep", "gegevens": GEGEVENS, "kozijnen": [
+        {"waar": "verdieping", "aangestreept": True}, {"waar": "begane-grond", "heel": True}]})
+    klopt(r["json"]["fotos"] == ["kozijn-1-foto.jpg", "kozijn-1-aangestreept.jpg", "kozijn-2-foto.jpg"],
+          "bij aanstrepen hoort een aangestreepte foto, bij 'heel kozijn' niet")
+    # Op papier: tekeningen en kozijnfoto's.
+    r = verzoek("POST", "/api/aanvragen", {"manier": "papier", "gegevens": GEGEVENS,
+                                           "papier": {"tekeningen": 2, "fotos": 3, "waar": ["begane-grond", "dakkapel"]}})
+    klopt(r["json"]["fotos"] == ["tekening-1.jpg", "tekening-2.jpg", "kozijn-1-foto.jpg", "kozijn-2-foto.jpg",
+                                 "kozijn-3-foto.jpg"], "op papier: tekeningen en een foto per kozijn")
+
+
 def main():
     print("Prijzen")
     p = horren.prijs_regel({"uitvoering": "basis", "breedte": 812, "hoogte": 1204, "kleur": "7016"})
@@ -89,6 +177,8 @@ def main():
     klopt(horren.bereken([{"uitvoering": "luxe", "breedte": 700, "hoogte": 1100, "kleur": "3005"}])["levertijd"]["van"]
           > horren.bereken([{"uitvoering": "luxe", "breedte": 700, "hoogte": 1100, "kleur": "7016"}])["levertijd"]["van"],
           "een eigen RAL-kleur duurt langer")
+
+    aanvragen_testen()
 
     print("Max-modus en rapport (iwrap.nl)")
     klopt(verzoek("POST", "/api/max/login", {"wachtwoord": "fout"})["status"] == 401, "verkeerd wachtwoord wordt geweigerd")

@@ -1,429 +1,617 @@
 /* ---------------------------------------------------------------------------
-   De offerte-aanvraag.
+   De offerteaanvraag.
 
-   Uitgangspunt: elke vraag hier is een vraag die anders per mail gesteld moet
-   worden. Wie dit formulier invult, stuurt een aanvraag waar meteen een
-   offerte van gemaakt kan worden -- zonder eerst drie keer heen en weer te
-   mailen over aantallen, bereikbaarheid en kleur.
+   De klant kiest zelf hoe hij laat zien wat er moet gebeuren:
 
-   Zonder JavaScript valt de pagina terug op een gewoon formulier (.geen-js).
+     streep  per kozijn een foto, en daarop met de vinger aangestreept wat er
+             moet gebeuren (js/aanstrepen.js) -- of "het hele kozijn"
+     maten   per kozijn een foto, en de delen met hun lengte: "onderdorpel
+             1,60", "stijl 2 x 1,30" -- of breedte x hoogte bij een heel kozijn
+     papier  een foto van een eigen tekening, plus van elk kozijn een foto
+
+   Bij alle drie hoort een foto van het hele kozijn: daaraan ziet Max het
+   profiel, de kleur en of herstel kan.
+
+   Foto's worden op de telefoon verkleind en in de browser bewaard
+   (js/fotos.js); er gaat niets naar de server tot de klant op "Aanvraag
+   versturen" drukt. Dan in drie stappen: de antwoorden, elke foto apart, en
+   "versturen" -- zie backend/aanvragen.py. Max krijgt één mail met alle
+   foto's als bijlage, de klant een bevestiging.
+
+   Valkuil bij het bewerken: Nederlandse teksten met een apostrof altijd
+   tussen dubbele aanhalingstekens ("foto's"). build.py controleert dat.
    --------------------------------------------------------------------------- */
 (function () {
-  'use strict';
+  "use strict";
 
-  var form = document.getElementById('offerteformulier');
-  if (!form) return;
+  var form = document.getElementById("offerteformulier");
+  if (!form || !window.IwrapFotos || !window.IwrapAanstrepen) return;
 
-  /* Waar de aanvraag heen gaat. Zolang hier de plaatshouder staat, valt het
-     formulier terug op een e-mail met dezelfde samenvatting erin -- de site
-     werkt dus ook voordat de koppeling geregeld is. Zie README. */
-  var ACCESS_KEY = 'VERVANG_MET_JE_WEB3FORMS_KEY';
-  var ENDPOINT = 'https://api.web3forms.com/submit';
-  var MAILBOX = form.dataset.mailbox || 'info@iwrap.nl';
-  var OPSLAG = 'iwrap-offerte-concept';
+  var Fotos = window.IwrapFotos;
+  var Strepen = window.IwrapAanstrepen;
+  var API = form.dataset.api || "/api";
+  var MAILBOX = form.dataset.mailbox || "info@iwrap.nl";
+  var OPSLAG = "iwrap-offerte-2";
+  var MAX_KOZIJNEN = 20;
 
-  var panelen = Array.prototype.slice.call(form.querySelectorAll('.stap-paneel'));
-  var stapbalk = form.querySelector('.stapbalk');
-  var melding = form.querySelector('.stap-nav .melding');
-  var terug = form.querySelector('.stap-nav .terug');
-  var verder = form.querySelector('.stap-nav .verder');
-  var versturen = form.querySelector('.stap-nav .versturen');
-  var nu = 0;
-  var bereikt = 0;   // verste stap die de bezoeker heeft gezien
-  var bestanden = [];
+  // De vorige versie van het formulier bewaarde iets anders; dat ruimen we op.
+  try { localStorage.removeItem("iwrap-offerte-concept"); } catch (e) { /* privémodus */ }
 
-  /* Werklijst --------------------------------------------------------------
-     De kern van het formulier. Elke regel is een soort werk: "2x kozijn,
-     onderdorpel en rechter stijl". Wie alles apart wil opsommen maakt regels
-     van 1; wie vier identieke kozijnen heeft, doet dat in één regel. Dat levert
-     dezelfde opsomming op met een fractie van het klikwerk. */
+  var WAAR = { "begane-grond": "Begane grond", verdieping: "Verdieping", dakkapel: "Dakkapel" };
+  var SNELKNOPPEN = ["Onderdorpel", "Stijl", "Bovendorpel", "Tussenstijl", "Tussendorpel",
+                     "Onderdorpel draairaam", "Iets anders"];
 
-  var MAX_PER_REGEL = 4;
-  var MAXBYTES = 5 * 1024 * 1024;
-
-  var SOORTEN = {
-    kozijn: ['kozijn', 'kozijnen'],
-    draairaam: ['draairaam', 'draairamen'],
-    deur: ['deur', 'deuren'],
-    schuifpui: ['schuifpui', 'schuifpuien'],
-    dakkapelkozijn: ['dakkapelkozijn', 'dakkapelkozijnen']
-  };
-  var DELEN = {
-    onderdorpel: 'onderdorpel',
-    bovendorpel: 'bovendorpel',
-    tussendorpel: 'tussendorpel',
-    tussendorpels: 'meerdere tussendorpels',
-    'linker-stijl': 'linker stijl',
-    'rechter-stijl': 'rechter stijl',
-    tussenstijl: 'tussenstijl',
-    tussenstijlen: 'meerdere tussenstijlen',
-    anders: 'iets anders'
+  var KOPPEN = {
+    streep: ["Foto's maken en aanstrepen",
+             "Maak van elk kozijn een foto, met het hele kozijn erop. Daarna streep je met je " +
+             "vinger aan wat er moet gebeuren. Begin met kozijn 1; meer kozijnen voeg je eronder toe."],
+    maten: ["Foto's maken en de maten erbij",
+            "Maak van elk kozijn een foto, met het hele kozijn erop. Daarna tik je aan welke " +
+            "delen hersteld moeten worden en typ je hoe lang ze zijn."],
+    papier: ["Je tekening en je foto's",
+             "Teken je kozijnen op papier en maak er een foto van. Doe er van elk kozijn ook een " +
+             "foto bij, met het hele kozijn erop."]
   };
 
-  // Let op de naam: 'lijst' is verderop al in gebruik voor de fotolijst, en met
-  // var is dat dezelfde variabele in de hele functie. Vandaar 'werklijst'.
-  var werklijst = form.querySelector('.werklijst');
-  var sjabloon = document.getElementById('werkregel-sjabloon');
-  var totaalregel = form.querySelector('.werklijst-totaal');
+  /* Toestand ---------------------------------------------------------------
+     Alles wat de klant invult over zijn kozijnen staat in 'staat'; de rest
+     (kleur, gegevens) in gewone formuliervelden. De foto's zelf staan als
+     Blob in 'blobs', onder een sleutel die ook in IndexedDB gebruikt wordt. */
 
-  function regels() {
-    return Array.prototype.slice.call(werklijst.querySelectorAll('.werkregel'));
+  var staat = { manier: "", kozijnen: [], papier: { tekening: [], kozijnfoto: [] }, verzending: null };
+  var blobs = {};
+  var urls = {};
+  var voorbeelden = {};   // kozijn-id -> object-URL van de foto met strepen
+
+  function sleutel(soort) {
+    return soort + "-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   }
 
-  // Soorten waar draairamen of een deur in kunnen zitten. Een los draairaam of
-  // een losse deur is zelf al het draaiende deel, dus daar vragen we het niet.
-  var MET_INHOUD = ['kozijn', 'dakkapelkozijn', 'schuifpui'];
-
-  // De spiegelvraag: kiest iemand een los draairaam of een losse deur, dan
-  // willen we weten of het kozijn eromheen ook mee moet. Dat scheelt in het werk.
-  var LOSSE_DELEN = ['draairaam', 'deur'];
-
-  function getal(regel, veld) {
-    var el = regel.querySelector('[data-veld=' + veld + ']');
-    var n = el ? parseInt(el.value, 10) : 0;
-    return isNaN(n) || n < 0 ? 0 : n;
+  function nieuwKozijn() {
+    return { id: sleutel("k"), foto: "", dichtbij: "", strepen: [], werk: "delen", regels: [],
+             breedte: "", hoogte: "", waar: "", plek: "", aantal: 1 };
   }
 
-  function leesRegel(regel) {
-    var omvang = regel.querySelector('[data-veld=omvang]:checked');
-    var soort = (regel.querySelector('[data-veld=soort]:checked') || {}).value || '';
-    var heeftInhoud = MET_INHOUD.indexOf(soort) > -1;
-    var isLosDeel = LOSSE_DELEN.indexOf(soort) > -1;
-    var omkader = regel.querySelector('[data-veld=omkader]:checked');
-    var delen = Array.prototype.slice
-      .call(regel.querySelectorAll('[data-deel]:checked'))
-      .map(function (v) { return v.dataset.deel; });
-    var n = parseInt(regel.querySelector('[data-veld=aantal]').value, 10);
-    return {
-      fotos: regel.fotos || [],
-      soort: soort,
-      draairamen: heeftInhoud ? getal(regel, 'draairamen') : 0,
-      deuren: heeftInhoud ? getal(regel, 'deuren') : 0,
-      omkader: isLosDeel && omkader ? omkader.value : '',
-      aantal: isNaN(n) || n < 1 ? 1 : n,
-      omvang: omvang ? omvang.value : '',
-      plek: regel.querySelector('[data-veld=plek]').value.trim(),
-      delen: delen
-    };
+  /* Lengtes ----------------------------------------------------------------
+     Precies zoals de server ze leest (backend/aanvragen.py, cm()): 160,
+     "1,60" en "1.6" zijn allemaal 160 cm. Tot en met 10 is het in meters. */
+
+  function cm(waarde) {
+    var m = String(waarde || "").match(/\d+(?:[.,]\d+)?/);
+    if (!m) return 0;
+    var getal = parseFloat(m[0].replace(",", "."));
+    if (!(getal > 0)) return 0;
+    return Math.round(getal <= 10 ? getal * 100 : getal);
   }
 
-  // Een regel telt pas mee als duidelijk is wát er moet gebeuren: compleet, of
-  // bepaalde delen met minstens één deel aangevinkt.
-  function regelCompleet(r) {
-    if (!r.soort) return false;
-    // Bij een los draairaam of een losse deur moet ook duidelijk zijn of het
-    // kozijn eromheen meegaat; zonder dat antwoord is de klus niet te begroten.
-    if (LOSSE_DELEN.indexOf(r.soort) > -1 && !r.omkader) return false;
-    return r.omvang === 'compleet' || (r.omvang === 'delen' && r.delen.length > 0);
+  function meter(centimeters) {
+    return (centimeters / 100).toFixed(2).replace(".", ",") + " m";
   }
 
-  function leesWerklijst() {
-    return regels().map(leesRegel).filter(regelCompleet);
-  }
-
-  function regelInTekst(r) {
-    // Met het maalteken ervoor hoort het enkelvoud: "4x kozijn", niet "4x kozijnen".
-    var soort = (SOORTEN[r.soort] || ['element'])[0];
-    var wat = r.omvang === 'compleet'
-      ? 'compleet rondom'
-      : r.delen.map(function (d) { return DELEN[d]; }).join(' + ');
-    var inhoud = [];
-    if (r.draairamen) {
-      inhoud.push(r.draairamen + ' ' + (r.draairamen === 1 ? 'draairaam' : 'draairamen'));
-    }
-    if (r.deuren) {
-      inhoud.push(r.deuren + ' ' + (r.deuren === 1 ? 'deur' : 'deuren'));
-    }
-    var met = inhoud.length ? ' met ' + inhoud.join(' en ') : '';
-    if (r.omkader === 'ook-kozijn') met = ' met kozijn';
-    else if (r.omkader === 'alleen') met = ' (zonder kozijn)';
-    return r.aantal + '\u00d7 ' + soort + met + ' \u2014 ' + wat +
-           (r.plek ? ' (' + r.plek + ')' : '') +
-           (r.fotos.length ? '  [' + r.fotos.length + ' foto' +
-            (r.fotos.length === 1 ? '' : "'s") + ']' : '');
-  }
-
-  function totaalElementen() {
-    return leesWerklijst().reduce(function (som, r) {
-      return som + r.aantal * (1 + r.draairamen + r.deuren);
-    }, 0);
-  }
-
-  // Alles bij elkaar opgeteld per soort, zodat onderaan staat wat er in totaal
-  // gedaan moet worden -- inclusief de draairamen en deuren in de kozijnen.
-  function totalenPerSoort() {
-    var totaal = {};
-    leesWerklijst().forEach(function (r) {
-      totaal[r.soort] = (totaal[r.soort] || 0) + r.aantal;
-      if (r.omkader === 'ook-kozijn') {
-        totaal.kozijn = (totaal.kozijn || 0) + r.aantal;
-      }
-      if (r.draairamen) {
-        totaal.draairaam = (totaal.draairaam || 0) + r.aantal * r.draairamen;
-      }
-      if (r.deuren) totaal.deur = (totaal.deur || 0) + r.aantal * r.deuren;
-    });
-    return totaal;
-  }
-
-  function totaalInTekst() {
-    var totaal = totalenPerSoort();
-    var delen = Object.keys(totaal).map(function (soort) {
-      var n = totaal[soort];
-      return n + ' ' + (SOORTEN[soort] || ['element', 'elementen'])[n === 1 ? 0 : 1];
-    });
-    if (!delen.length) return '';
-    if (delen.length === 1) return delen[0];
-    return delen.slice(0, -1).join(', ') + ' en ' + delen[delen.length - 1];
-  }
-
-  function tekenTotaal() {
-    if (!totaalregel) return;
-    var tekst = totaalInTekst();
-    totaalregel.textContent = tekst ? 'Samen ' + tekst : '';
-    totaalregel.hidden = !tekst;
-  }
-
-  function nummerRegels() {
-    var alle = regels();
-    alle.forEach(function (regel, i) {
-      regel.querySelector('.regel-nr').textContent = String(i + 1);
-      // De eerste regel mag niet weg: dan staat de stap helemaal leeg.
-      regel.querySelector('.regel-weg').hidden = alle.length < 2;
+  function geldigeRegels(k) {
+    return k.regels.filter(function (r) {
+      var c = cm(r.lengte);
+      return r.deel.trim() && c >= 5 && c <= 1500;
     });
   }
 
-  function voegRegelToe(gegevens) {
-    var regel = sjabloon.content.firstElementChild.cloneNode(true);
+  /* Foto's ----------------------------------------------------------------- */
 
-    var aantalVeld = regel.querySelector('[data-veld=aantal]');
+  function fotoUrl(s) {
+    if (!s || !blobs[s]) return "";
+    if (!urls[s]) urls[s] = URL.createObjectURL(blobs[s]);
+    return urls[s];
+  }
 
-    // Elk blok heeft meerdere tellers (aantal, draairamen, deuren); ze worden
-    // hier allemaal op dezelfde manier bediend.
-    Array.prototype.forEach.call(regel.querySelectorAll('.regel-aantal'), function (teller) {
-      var veld = teller.querySelector('input');
-      var laagste = parseInt(veld.min, 10) || 0;
-      var hoogste = parseInt(veld.max, 10) || 99;
-      function pas(richting) {
-        var n = parseInt(veld.value, 10);
-        if (isNaN(n)) n = laagste;
-        veld.value = Math.max(laagste, Math.min(hoogste, n + richting));
-        veld.dispatchEvent(new Event('change', { bubbles: true }));
-      }
-      teller.querySelector('.teller-min').addEventListener('click', function () { pas(-1); });
-      teller.querySelector('.teller-plus').addEventListener('click', function () { pas(1); });
+  function voegFotoToe(bestand) {
+    return Fotos.verklein(bestand).then(function (blob) {
+      var s = sleutel("f");
+      blobs[s] = blob;
+      Fotos.bewaar(s, blob);
+      return s;
+    });
+  }
+
+  function laatFotoLos(s) {
+    if (!s) return;
+    if (urls[s]) URL.revokeObjectURL(urls[s]);
+    delete urls[s];
+    delete blobs[s];
+    Fotos.wis(s);
+  }
+
+  var FOTOFOUT = "Deze foto kunnen we niet openen. Kies een andere, of maak er een nieuwe.";
+
+  function maakVoorbeeld(k) {
+    if (voorbeelden[k.id]) { URL.revokeObjectURL(voorbeelden[k.id]); delete voorbeelden[k.id]; }
+    if (!k.strepen.length || !blobs[k.foto]) return Promise.resolve();
+    return Strepen.samenstellen(blobs[k.foto], k.strepen, 900).then(function (b) {
+      voorbeelden[k.id] = URL.createObjectURL(b);
+    }).catch(function () {});
+  }
+
+  /* Kozijnkaarten ---------------------------------------------------------- */
+
+  var kozijnenLijst = form.querySelector(".kozijnen");
+  var sjabloon = document.getElementById("kozijn-sjabloon");
+
+  function kaartVan(k) {
+    return kozijnenLijst.querySelector('[data-id="' + k.id + '"]');
+  }
+
+  function voorDezeManier(el) {
+    return el.dataset.voor.split(" ").indexOf(staat.manier) > -1;
+  }
+
+  function bouwKaarten() {
+    kozijnenLijst.innerHTML = "";
+    if (staat.manier === "papier") return;
+    staat.kozijnen.forEach(function (k) { kozijnenLijst.appendChild(maakKaart(k)); });
+    nummerKaarten();
+  }
+
+  function nummerKaarten() {
+    var kaarten = kozijnenLijst.querySelectorAll(".kozijn");
+    Array.prototype.forEach.call(kaarten, function (kaart, i) {
+      kaart.querySelector(".kozijn-nr").textContent = String(i + 1);
+      kaart.querySelector(".kozijn-weg").hidden = kaarten.length < 2;
+    });
+    form.querySelector(".kozijn-erbij").hidden = kaarten.length >= MAX_KOZIJNEN;
+  }
+
+  function maakKaart(k) {
+    var kaart = sjabloon.content.firstElementChild.cloneNode(true);
+    kaart.dataset.id = k.id;
+
+    // Alleen de vragen van de gekozen manier. Vraag 2 bestaat twee keer in
+    // het sjabloon; de andere gaat eruit, anders zijn er twee radiogroepen
+    // met dezelfde naam.
+    Array.prototype.forEach.call(kaart.querySelectorAll(".kozijn-vraag[data-voor]"), function (el) {
+      if (!voorDezeManier(el)) el.remove();
+    });
+    Array.prototype.forEach.call(kaart.querySelectorAll("[data-voor]"), function (el) {
+      el.hidden = !voorDezeManier(el);
     });
 
-    // De deelvakjes verschijnen pas als iemand 'bepaalde delen' kiest. Gaat het
-    // om complete kozijnen, dan is die hele lijst niet nodig.
-    var delenblok = regel.querySelector('.regel-delen');
-    function tekenDelen() {
-      var gekozen = regel.querySelector('[data-veld=omvang]:checked');
-      var toon = gekozen && gekozen.value === 'delen';
-      delenblok.hidden = !toon;
-      if (!toon) {
-        Array.prototype.forEach.call(regel.querySelectorAll('[data-deel]'),
-          function (v) { v.checked = false; });
-      }
-    }
-    Array.prototype.forEach.call(regel.querySelectorAll('[data-veld=omvang]'),
-      function (v) { v.addEventListener('change', tekenDelen); });
+    // Elke kaart een eigen naam voor zijn keuzerondjes.
+    Array.prototype.forEach.call(kaart.querySelectorAll("input[type=radio][data-veld]"), function (r) {
+      r.name = r.dataset.veld + "-" + k.id;
+      r.checked = String(k[r.dataset.veld]) === r.value;
+      r.addEventListener("change", function () {
+        k[r.dataset.veld] = r.value;
+        tekenKaart(k);
+        bewaar();
+      });
+    });
 
-    // De vraag "zit er iets in dat opengaat" slaat alleen op kozijnen, puien en
-    // dakkapelkozijnen. Een los draairaam of een losse deur is zelf al dat deel.
-    var inhoudblok = regel.querySelector('.regel-inhoud');
-    var omkaderblok = regel.querySelector('.regel-omkader');
-    function tekenInhoud() {
-      var gekozen = regel.querySelector('[data-veld=soort]:checked');
-      var toon = gekozen && MET_INHOUD.indexOf(gekozen.value) > -1;
-      inhoudblok.hidden = !toon;
-      if (!toon) {
-        Array.prototype.forEach.call(inhoudblok.querySelectorAll('input[type=number]'),
-          function (v) { v.value = '0'; });
-      }
+    var plek = kaart.querySelector('[data-veld="plek"]');
+    plek.value = k.plek;
+    plek.addEventListener("input", function () { k.plek = plek.value; bewaar(); });
 
-      // De spiegelvraag voor een los draairaam of een losse deur.
-      var losDeel = gekozen && LOSSE_DELEN.indexOf(gekozen.value) > -1;
-      omkaderblok.hidden = !losDeel;
-      if (!losDeel) {
-        Array.prototype.forEach.call(omkaderblok.querySelectorAll('[data-veld=omkader]'),
-          function (v) { v.checked = false; });
-      } else {
-        var woord = gekozen.value === 'deur' ? 'de deur' : 'het raam';
-        Array.prototype.forEach.call(regel.querySelectorAll('.omkader-soort'),
-          function (e) { e.textContent = woord; });
-      }
-      // "Bij hoeveel elementen" is dubbelzinnig zodra er draairamen in zitten:
-      // bedoel je de kozijnen of alles bij elkaar? Met de soort erin staat het
-      // er letterlijk: "Bij hoeveel kozijnen?"
-      var soortLabel = regel.querySelector('.aantal-soort');
-      if (soortLabel) {
-        soortLabel.textContent = gekozen
-          ? (SOORTEN[gekozen.value] || ['element', 'elementen'])[1]
-          : 'elementen';
-      }
-      // Vraagnummers lopen door over de vragen die zichtbaar zijn.
-      var nr = 1;
-      Array.prototype.forEach.call(regel.querySelectorAll('.regel-vraag'), function (vraag) {
-        var teller = vraag.querySelector('.vraag-nr');
-        if (!teller) return;
-        teller.textContent = vraag.hidden ? '' : (nr++) + ' \u00b7';
+    ["breedte", "hoogte"].forEach(function (veld) {
+      var invoer = kaart.querySelector('[data-veld="' + veld + '"]');
+      if (!invoer) return;
+      invoer.value = k[veld];
+      invoer.addEventListener("input", function () { k[veld] = invoer.value; tekenKaart(k); bewaar(); });
+    });
+
+    kaart.querySelector(".teller-min").addEventListener("click", function () {
+      k.aantal = Math.max(1, k.aantal - 1); tekenKaart(k); bewaar();
+    });
+    kaart.querySelector(".teller-plus").addEventListener("click", function () {
+      k.aantal = Math.min(20, k.aantal + 1); tekenKaart(k); bewaar();
+    });
+
+    // Foto's
+    function kies(invoer, veld) {
+      invoer.addEventListener("change", function () {
+        var bestand = invoer.files && invoer.files[0];
+        invoer.value = "";
+        if (bestand) kiesFoto(k, bestand, veld);
       });
     }
-    Array.prototype.forEach.call(regel.querySelectorAll('[data-veld=soort]'),
-      function (v) { v.addEventListener('change', tekenInhoud); });
-
-    // Radio's binnen één regel moeten een eigen groep vormen, anders zetten de
-    // regels elkaar uit. De naam wordt hier gezet omdat hij uniek moet zijn.
-    var sleutel = Math.random().toString(36).slice(2, 9);
-    Array.prototype.forEach.call(regel.querySelectorAll('[data-veld=omvang]'),
-      function (v) { v.name = 'omvang_' + sleutel; });
-    Array.prototype.forEach.call(regel.querySelectorAll('[data-veld=omkader]'),
-      function (v) { v.name = 'omkader_' + sleutel; });
-    Array.prototype.forEach.call(regel.querySelectorAll('[data-veld=soort]'),
-      function (v) { v.name = 'soort_' + sleutel; });
-
-    // Foto's die bij deze regel horen. Zo weet Max meteen welke foto bij welk
-    // stuk werk hoort, in plaats van een stapel losse plaatjes bij de aanvraag.
-    regel.fotos = [];
-    var fotoInvoer = regel.querySelector('.regel-fotos input[type=file]');
-    var fotolijst = regel.querySelector('.regel-fotolijst');
-
-    function tekenRegelFotos() {
-      fotolijst.innerHTML = '';
-      regel.fotos.forEach(function (f, i) {
-        var li = document.createElement('li');
-        var mini = document.createElement('img');
-        mini.alt = '';
-        mini.src = URL.createObjectURL(f);
-        mini.onload = function () { URL.revokeObjectURL(mini.src); };
-        var weg = document.createElement('button');
-        weg.type = 'button';
-        weg.innerHTML = '&times;';
-        weg.setAttribute('aria-label', 'Foto verwijderen');
-        weg.addEventListener('click', function () {
-          regel.fotos.splice(i, 1);
-          tekenRegelFotos();
-        });
-        li.append(mini, weg);
-        fotolijst.append(li);
-      });
-      fotolijst.hidden = !regel.fotos.length;
-    }
-    regel.tekenFotos = tekenRegelFotos;
-
-    fotoInvoer.addEventListener('change', function () {
-      Array.prototype.forEach.call(fotoInvoer.files, function (f) {
-        if (regel.fotos.length >= MAX_PER_REGEL) return;
-        if (!/^image\//.test(f.type)) return;
-        if (f.size > MAXBYTES) { zeg(f.name + ' is groter dan 5 MB en is overgeslagen.'); return; }
-        regel.fotos.push(f);
-      });
-      fotoInvoer.value = '';
-      tekenRegelFotos();
-      if (regel.tekenSamenvatting) regel.tekenSamenvatting();
+    kies(kaart.querySelector(".foto-invoer"), "foto");
+    kies(kaart.querySelector(".foto-vervang input"), "foto");
+    kies(kaart.querySelector(".dichtbij-kiezen input"), "dichtbij");
+    kaart.querySelector(".dichtbij-weg").addEventListener("click", function () {
+      laatFotoLos(k.dichtbij); k.dichtbij = ""; tekenKaart(k); bewaar();
+    });
+    kaart.querySelector(".foto-strepen").addEventListener("click", function () { openStrepen(k); });
+    kaart.querySelector(".foto-raam").addEventListener("click", function () {
+      if (staat.manier === "streep" && k.werk === "delen") openStrepen(k);
     });
 
-    regel.querySelector('.regel-weg').addEventListener('click', function () {
-      regel.remove();
-      nummerRegels();
-      tekenTotaal();
+    kaart.querySelector(".kozijn-weg").addEventListener("click", function () {
+      var nr = staat.kozijnen.indexOf(k) + 1;
+      if ((k.foto || k.regels.length) &&
+          !window.confirm("Kozijn " + nr + " weghalen? Wat je erbij hebt ingevuld gaat ook weg.")) return;
+      laatFotoLos(k.foto);
+      laatFotoLos(k.dichtbij);
+      staat.kozijnen.splice(staat.kozijnen.indexOf(k), 1);
+      kaart.remove();
+      nummerKaarten();
       bewaar();
     });
 
-    // De kop van het blok leest mee met wat er ingevuld is, zodat je bij drie
-    // blokken in een oogopslag ziet welk blok welk werk beschrijft.
-    var samenvatting = regel.querySelector('.regel-samenvatting');
-    function tekenSamenvatting() {
-      var r = leesRegel(regel);
-      samenvatting.textContent = regelCompleet(r)
-        ? regelInTekst(r)
-        : 'Nog in te vullen';
-      samenvatting.dataset.leeg = regelCompleet(r) ? 'nee' : 'ja';
-    }
-    regel.tekenSamenvatting = tekenSamenvatting;
-    regel.addEventListener('change', tekenSamenvatting);
-    regel.addEventListener('input', tekenSamenvatting);
+    var matenBlok = kaart.querySelector(".maten-blok");
+    if (matenBlok) bouwMaten(matenBlok, k);
 
-    if (gegevens) {
-      if (gegevens.soort) {
-        var soortKeuze = regel.querySelector('[data-veld=soort][value="' + gegevens.soort + '"]');
-        if (soortKeuze) soortKeuze.checked = true;
+    tekenKaart(k, kaart);
+    return kaart;
+  }
+
+  function kiesFoto(k, bestand, veld) {
+    var kaart = kaartVan(k);
+    var bezig = kaart && kaart.querySelector(".foto-bezig");
+    if (bezig && veld === "foto") bezig.hidden = false;
+    voegFotoToe(bestand).then(function (s) {
+      laatFotoLos(k[veld]);
+      k[veld] = s;
+      if (veld === "foto") { k.strepen = []; return maakVoorbeeld(k); }
+    }).then(function () {
+      if (bezig) bezig.hidden = true;
+      tekenKaart(k);
+      bewaar();
+      // Wie aanstreept, krijgt na de foto meteen het aanstreepscherm: dat is
+      // de logische volgende stap, en dan hoeft niemand de knop te zoeken.
+      if (veld === "foto" && staat.manier === "streep" && k.werk === "delen") openStrepen(k);
+    }).catch(function () {
+      if (bezig) bezig.hidden = true;
+      toonKaartMelding(k, [FOTOFOUT]);
+    });
+  }
+
+  function openStrepen(k) {
+    if (!blobs[k.foto]) return;
+    Strepen.open(blobs[k.foto], k.strepen).then(function (uit) {
+      if (uit.heel) {
+        k.werk = "heel";
+      } else {
+        k.strepen = uit.strepen;
       }
-      aantalVeld.value = gegevens.aantal || 1;
-      regel.querySelector('[data-veld=plek]').value = gegevens.plek || '';
-      if (gegevens.omkader) {
-        var omkaderKeuze = regel.querySelector('[data-veld=omkader][value="' + gegevens.omkader + '"]');
-        if (omkaderKeuze) omkaderKeuze.checked = true;
+      return maakVoorbeeld(k);
+    }).then(function () {
+      var kaart = kaartVan(k);
+      if (kaart) {
+        Array.prototype.forEach.call(kaart.querySelectorAll('[data-veld="werk"]'), function (r) {
+          r.checked = r.value === k.werk;
+        });
       }
-      if (gegevens.draairamen) regel.querySelector('[data-veld=draairamen]').value = gegevens.draairamen;
-      if (gegevens.deuren) regel.querySelector('[data-veld=deuren]').value = gegevens.deuren;
-      if (gegevens.omvang) {
-        var keuze = regel.querySelector('[data-veld=omvang][value="' + gegevens.omvang + '"]');
-        if (keuze) keuze.checked = true;
+      tekenKaart(k);
+      bewaar();
+    });
+  }
+
+  /* Maten ------------------------------------------------------------------
+     Een deel aantikken zet een regel klaar met de naam al ingevuld; de klant
+     typt alleen nog de lengte. Bij "Iets anders" typt hij ook de naam. */
+
+  function bouwMaten(blok, k) {
+    blok.innerHTML =
+      '<div class="maten-uitleg">' +
+      '<svg width="74" height="54" viewBox="0 0 74 54" aria-hidden="true"><rect x="8" y="4" width="46" height="36" fill="#fff" stroke="#3f7468" stroke-width="2"/>' +
+      '<rect x="13" y="9" width="16" height="26" fill="#d6e7ee"/><rect x="33" y="9" width="16" height="26" fill="#d6e7ee"/>' +
+      '<path d="M8 47h46M8 44v6M54 44v6M62 4v36M59 4h6M59 40h6" stroke="#a8523a" stroke-width="1.6"/></svg>' +
+      "<p>Tik op een deel en typ hoe lang het is. Meet aan de buitenkant, van hoek tot hoek. " +
+      "<b>160</b> of <b>1,60</b> is allebei goed.</p></div>" +
+      '<div class="snelknoppen" role="group" aria-label="Een deel toevoegen"></div>' +
+      '<div class="maatregels"></div>';
+    var knoppen = blok.querySelector(".snelknoppen");
+    SNELKNOPPEN.forEach(function (naam) {
+      var knop = document.createElement("button");
+      knop.type = "button";
+      knop.className = "snelknop";
+      knop.textContent = "+ " + naam;
+      knop.addEventListener("click", function () {
+        k.regels.push({ deel: naam === "Iets anders" ? "" : naam, lengte: "", aantal: 1 });
+        tekenRegels(blok, k);
+        var rijen = blok.querySelectorAll(".maatregel");
+        var laatste = rijen[rijen.length - 1];
+        (naam === "Iets anders" ? laatste.querySelector(".mr-deel") : laatste.querySelector(".mr-lengte input")).focus();
+        tekenKaart(k);
+        bewaar();
+      });
+      knoppen.appendChild(knop);
+    });
+    tekenRegels(blok, k);
+  }
+
+  function tekenRegels(blok, k) {
+    var lijst = blok.querySelector(".maatregels");
+    lijst.innerHTML = "";
+    if (!k.regels.length) {
+      lijst.innerHTML = '<p class="maten-leeg">Nog geen delen. Tik hierboven op een deel om te beginnen.</p>';
+      return;
+    }
+    k.regels.forEach(function (r, i) {
+      var rij = document.createElement("div");
+      rij.className = "maatregel";
+      rij.innerHTML =
+        '<input class="mr-deel" type="text" maxlength="40" placeholder="Welk deel?" aria-label="Welk deel">' +
+        '<label class="mr-aantal"><span class="sr-only">Aantal</span><input type="number" min="1" max="20" inputmode="numeric"></label>' +
+        '<span class="mr-keer" aria-hidden="true">&times;</span>' +
+        '<label class="mr-lengte"><span class="sr-only">Lengte</span><input type="text" inputmode="decimal" placeholder="lengte"></label>' +
+        '<span class="mr-uit" aria-live="polite"></span>' +
+        '<button type="button" class="mr-weg" aria-label="Deze regel weghalen">&times;</button>';
+      var deel = rij.querySelector(".mr-deel");
+      var aantal = rij.querySelector(".mr-aantal input");
+      var lengte = rij.querySelector(".mr-lengte input");
+      var uit = rij.querySelector(".mr-uit");
+      deel.value = r.deel;
+      aantal.value = r.aantal;
+      lengte.value = r.lengte;
+      function toonUitkomst() {
+        var c = cm(r.lengte);
+        uit.textContent = !r.lengte ? "" : (c >= 5 && c <= 1500 ? meter(c) : "?");
+        uit.classList.toggle("fout", !!r.lengte && !(c >= 5 && c <= 1500));
       }
-      (gegevens.delen || []).forEach(function (d) {
-        var v = regel.querySelector('[data-deel="' + d + '"]');
-        if (v) v.checked = true;
+      deel.addEventListener("input", function () { r.deel = deel.value; tekenKaart(k); bewaar(); });
+      aantal.addEventListener("input", function () {
+        var n = parseInt(aantal.value, 10);
+        r.aantal = isNaN(n) ? 1 : Math.max(1, Math.min(20, n));
+        bewaar();
+      });
+      lengte.addEventListener("input", function () { r.lengte = lengte.value; toonUitkomst(); tekenKaart(k); bewaar(); });
+      rij.querySelector(".mr-weg").addEventListener("click", function () {
+        k.regels.splice(i, 1);
+        tekenRegels(blok, k);
+        tekenKaart(k);
+        bewaar();
+      });
+      toonUitkomst();
+      lijst.appendChild(rij);
+    });
+  }
+
+  /* Wat er aan een kozijn nog ontbreekt ------------------------------------ */
+
+  function ontbreekt(k) {
+    var uit = [];
+    if (!k.foto || !blobs[k.foto]) uit.push("Voeg een foto toe met het hele kozijn erop.");
+    if (staat.manier === "streep" && k.werk === "delen" && !k.strepen.length) {
+      uit.push(k.foto ? "Streep op de foto aan wat er moet gebeuren, of kies 'Het hele kozijn'."
+                      : "Streep daarna op de foto aan wat er moet gebeuren, of kies 'Het hele kozijn'.");
+    }
+    if (staat.manier === "maten") {
+      if (k.werk === "heel" && !(cm(k.breedte) >= 20 && cm(k.hoogte) >= 20)) {
+        uit.push("Vul de breedte en de hoogte van het kozijn in.");
+      }
+      if (k.werk === "delen") {
+        if (!geldigeRegels(k).length) uit.push("Tik een deel aan en typ de lengte erbij.");
+        k.regels.forEach(function (r) {
+          var c = cm(r.lengte);
+          if (r.deel.trim() && !(c >= 5 && c <= 1500)) uit.push("Vul bij '" + r.deel.trim() + "' de lengte in.");
+          if (!r.deel.trim() && r.lengte) uit.push("Zet bij de lengte " + r.lengte + " welk deel het is.");
+        });
+      }
+    }
+    if (staat.manier === "streep") {
+      k.regels.forEach(function (r) {
+        if (r.deel.trim() && r.lengte && !(cm(r.lengte) >= 5)) uit.push("Bij '" + r.deel.trim() + "' staat geen goede lengte.");
+      });
+    }
+    if (!k.waar) uit.push("Kies waar dit kozijn zit.");
+    return uit;
+  }
+
+  function toonKaartMelding(k, lijst) {
+    var kaart = kaartVan(k);
+    if (!kaart) return;
+    var vak = kaart.querySelector(".kozijn-melding");
+    vak.hidden = !lijst.length;
+    vak.innerHTML = lijst.length
+      ? "<p>Nog niet compleet:</p><ul>" + lijst.map(function (t) {
+          return "<li>" + t.replace(/</g, "&lt;") + "</li>";
+        }).join("") + "</ul>"
+      : "";
+  }
+
+  /* Een kaart bijwerken naar de toestand ----------------------------------- */
+
+  function tekenKaart(k, kaart) {
+    kaart = kaart || kaartVan(k);
+    if (!kaart) return;
+    var heeftFoto = !!(k.foto && blobs[k.foto]);
+    var strepen = staat.manier === "streep";
+
+    kaart.querySelector(".foto-kiezen").hidden = heeftFoto;
+    kaart.querySelector(".foto-toon").hidden = !heeftFoto;
+    if (heeftFoto) {
+      var beeld = kaart.querySelector(".foto-beeld");
+      var bron = strepen && k.werk === "delen" && voorbeelden[k.id] ? voorbeelden[k.id] : fotoUrl(k.foto);
+      if (beeld.getAttribute("src") !== bron) beeld.src = bron;
+      beeld.alt = "Foto van kozijn " + (staat.kozijnen.indexOf(k) + 1);
+    }
+    kaart.querySelector(".foto-raam").classList.toggle("tikbaar", strepen && k.werk === "delen");
+    kaart.querySelector(".foto-heel").hidden = k.werk !== "heel";
+    kaart.querySelector(".foto-raam").classList.toggle("heel", k.werk === "heel");
+    var strepKnop = kaart.querySelector(".foto-strepen");
+    strepKnop.hidden = !(strepen && k.werk === "delen");
+    strepKnop.textContent = k.strepen.length ? "Aanstreping aanpassen" : "Aanstrepen";
+
+    var heeftDichtbij = !!(k.dichtbij && blobs[k.dichtbij]);
+    kaart.querySelector(".dichtbij-kiezen").hidden = heeftDichtbij || !heeftFoto;
+    kaart.querySelector(".dichtbij-toon").hidden = !heeftDichtbij;
+    if (heeftDichtbij) kaart.querySelector(".dichtbij-toon img").src = fotoUrl(k.dichtbij);
+
+    var stand = kaart.querySelector(".streep-stand");
+    if (stand) {
+      stand.className = "streep-stand";
+      if (k.werk === "heel") {
+        stand.textContent = "Het hele kozijn: dan hoef je niets aan te strepen.";
+        stand.classList.add("goed");
+      } else if (!heeftFoto) {
+        stand.textContent = "Voeg eerst bij 1 een foto toe. Daarna streep je erop aan wat er moet gebeuren.";
+      } else if (k.strepen.length) {
+        stand.textContent = "Aangestreept. Aanpassen kan met de knop onder de foto.";
+        stand.classList.add("goed");
+      } else {
+        stand.textContent = "Tik onder de foto op Aanstrepen, en streep aan wat er moet gebeuren.";
+        stand.classList.add("open");
+      }
+    }
+
+    var matenBlok = kaart.querySelector('.kozijn-vraag[data-voor="maten"] .maten-blok');
+    var heleMaten = kaart.querySelector(".hele-maten");
+    if (matenBlok) matenBlok.hidden = k.werk === "heel";
+    if (heleMaten) {
+      heleMaten.hidden = k.werk !== "heel";
+      ["breedte", "hoogte"].forEach(function (veld) {
+        var invoer = heleMaten.querySelector('[data-veld="' + veld + '"]');
+        var c = cm(k[veld]);
+        invoer.nextElementSibling.textContent = k[veld] ? (c >= 20 ? meter(c) : "?") : "";
       });
     }
 
-    werklijst.appendChild(regel);
-    tekenInhoud();
-    tekenDelen();
-    regel.tekenFotos();
-    tekenSamenvatting();
-    nummerRegels();
-    return regel;
+    kaart.querySelector(".teller-uit").textContent = k.aantal + "×";
+
+    var mist = ontbreekt(k);
+    var status = kaart.querySelector(".kozijn-status");
+    status.textContent = mist.length ? "" : "Compleet";
+    status.classList.toggle("compleet", !mist.length);
+    kaart.classList.toggle("is-compleet", !mist.length);
+    // Na een poging om verder te gaan blijft de melding meelopen met wat er
+    // nog ontbreekt, tot alles er is.
+    if (kaart.classList.contains("gecontroleerd")) toonKaartMelding(k, mist);
+    // Is alles nu compleet, dan hoort de melding onderin ook weg.
+    if (!mist.length && /^Kozijn \d+ is nog niet compleet/.test(melding.textContent) &&
+        staat.kozijnen.every(function (x) { return !ontbreekt(x).length; })) zeg("");
   }
 
-  form.querySelector('.regel-toevoegen').addEventListener('click', function () {
-    var regel = voegRegelToe();
-    regel.querySelector('[data-veld=soort]').focus();
-    tekenTotaal();
+  form.querySelector(".kozijn-erbij").addEventListener("click", function () {
+    var k = nieuwKozijn();
+    // Het nieuwe kozijn zit meestal op dezelfde hoogte als het vorige.
+    var vorige = staat.kozijnen[staat.kozijnen.length - 1];
+    if (vorige) k.waar = vorige.waar;
+    staat.kozijnen.push(k);
+    var kaart = maakKaart(k);
+    kozijnenLijst.appendChild(kaart);
+    nummerKaarten();
+    kaart.scrollIntoView({ behavior: "smooth", block: "start" });
+    kaart.querySelector(".foto-invoer").focus({ preventScroll: true });
     bewaar();
   });
+
+  /* Op papier -------------------------------------------------------------- */
+
+  function tekenFotorij(rij) {
+    var rol = rij.dataset.rol;
+    var lijst = staat.papier[rol];
+    var max = parseInt(rij.dataset.max, 10) || 10;
+    rij.innerHTML = "";
+    lijst.forEach(function (s, i) {
+      var tegel = document.createElement("figure");
+      tegel.className = "fototegel";
+      tegel.innerHTML = '<img alt=""><figcaption></figcaption>' +
+        '<button type="button" class="tegel-weg" aria-label="Foto weghalen">&times;</button>';
+      tegel.querySelector("img").src = fotoUrl(s);
+      tegel.querySelector("img").alt = rij.dataset.label + " " + (i + 1);
+      tegel.querySelector("figcaption").textContent = rij.dataset.label + " " + (i + 1);
+      tegel.querySelector(".tegel-weg").addEventListener("click", function () {
+        laatFotoLos(s);
+        lijst.splice(i, 1);
+        tekenFotorij(rij);
+        bewaar();
+      });
+      rij.appendChild(tegel);
+    });
+    if (lijst.length < max) {
+      var erbij = document.createElement("label");
+      erbij.className = "fototegel-erbij";
+      erbij.innerHTML = '<input type="file" accept="image/*" multiple>' +
+        '<span><b aria-hidden="true">+</b> ' + (lijst.length ? "Nog een foto" : rij.dataset.leeg) + "</span>";
+      var invoer = erbij.querySelector("input");
+      invoer.addEventListener("change", function () {
+        var bestanden = Array.prototype.slice.call(invoer.files || [], 0, max - lijst.length);
+        invoer.value = "";
+        erbij.classList.add("bezig");
+        // Eén voor één, zodat de volgorde gelijk blijft aan de keuze.
+        bestanden.reduce(function (keten, bestand) {
+          return keten.then(function () {
+            return voegFotoToe(bestand).then(function (s) { lijst.push(s); }, function () { zeg(FOTOFOUT); });
+          });
+        }, Promise.resolve()).then(function () { tekenFotorij(rij); bewaar(); });
+      });
+      rij.appendChild(erbij);
+    }
+  }
+
+  function tekenPapier() {
+    Array.prototype.forEach.call(form.querySelectorAll(".fotorij"), tekenFotorij);
+  }
+
+  /* De gekozen manier ------------------------------------------------------ */
+
+  function tekenManier() {
+    var paneel = form.querySelector('[data-stap="kozijnen"]');
+    Array.prototype.forEach.call(paneel.querySelectorAll(":scope > [data-voor]"), function (el) {
+      el.hidden = !voorDezeManier(el);
+    });
+    var kop = KOPPEN[staat.manier] || ["Je kozijnen", ""];
+    paneel.querySelector(".kozijnen-kop").textContent = kop[0];
+    paneel.querySelector(".kozijnen-uitleg").textContent = kop[1];
+    if (staat.manier !== "papier" && staat.manier && !staat.kozijnen.length) {
+      staat.kozijnen.push(nieuwKozijn());
+    }
+    bouwKaarten();
+    tekenPapier();
+  }
+
+  Array.prototype.forEach.call(form.querySelectorAll('[name="manier"]'), function (r) {
+    r.addEventListener("change", function () {
+      staat.manier = r.value;
+      tekenManier();
+      zeg("");
+      bewaar();
+    });
+  });
+
+  form.querySelector(".naar-manier").addEventListener("click", function () { toon(0, true); });
 
   /* Uitlezen --------------------------------------------------------------- */
 
   function waarde(naam) {
     var el = form.querySelector('[name="' + naam + '"]:checked') ||
-             form.querySelector('input[name="' + naam + '"]:not([type=radio]):not([type=checkbox]), textarea[name="' + naam + '"], select[name="' + naam + '"]');
-    return el ? el.value.trim() : '';
-  }
-  function waarden(naam) {
-    return Array.prototype.map.call(
-      form.querySelectorAll('[name="' + naam + '"]:checked'),
-      function (el) { return el.value; }
-    );
-  }
-  function labels(naam) {
-    return Array.prototype.map.call(
-      form.querySelectorAll('[name="' + naam + '"]:checked'),
-      function (el) {
-        var t = el.parentNode.querySelector('.titel');
-        return t ? t.textContent.trim() : el.value;
-      }
-    );
+             form.querySelector('input[name="' + naam + '"]:not([type=radio]):not([type=checkbox]), textarea[name="' + naam + '"]');
+    return el ? el.value.trim() : "";
   }
 
-  /* Stappenbalk ------------------------------------------------------------
-     Uit de panelen opgebouwd, zodat een stap erbij of eraf hier niets kost.
-     Je kunt terugklikken naar elke stap die je al gezien hebt; vooruit gaat via
-     de knop, want daar hoort de controle bij. */
+  function netjesPostcode(p) {
+    var schoon = p.replace(/\s+/g, "").toUpperCase();
+    return /^\d{4}[A-Z]{2}$/.test(schoon) ? schoon.slice(0, 4) + " " + schoon.slice(4) : p;
+  }
+  form.querySelector("#postcode").addEventListener("blur", function () {
+    this.value = netjesPostcode(this.value.trim());
+  });
+
+  function waarden(naam) {
+    return Array.prototype.map.call(form.querySelectorAll('[name="' + naam + '"]:checked'),
+      function (el) { return el.value; });
+  }
+
+  /* Stappen ---------------------------------------------------------------- */
+
+  var panelen = Array.prototype.slice.call(form.querySelectorAll(".stap-paneel"));
+  var stapbalk = form.querySelector(".stapbalk");
+  var melding = form.querySelector(".stap-nav .melding");
+  var terug = form.querySelector(".stap-nav .terug");
+  var verder = form.querySelector(".stap-nav .verder");
+  var versturen = form.querySelector(".stap-nav .versturen");
+  var nu = 0;
+  var bereikt = 0;
+
+  function zeg(tekst) { if (melding) melding.textContent = tekst; }
 
   function bouwStapbalk() {
-    if (!stapbalk) return;
-    var lijst = document.createElement('ol');
+    var lijst = document.createElement("ol");
     panelen.forEach(function (paneel, i) {
-      var li = document.createElement('li');
-      var knop = document.createElement('button');
-      knop.type = 'button';
-      knop.className = 'stapknop';
-      knop.innerHTML =
-        '<span class="nr" aria-hidden="true">' + (i + 1) + '</span>' +
-        '<span class="lab">' + (paneel.dataset.titel || 'Stap ' + (i + 1)) + '</span>';
-      knop.addEventListener('click', function () { spring(i); });
+      var li = document.createElement("li");
+      var knop = document.createElement("button");
+      knop.type = "button";
+      knop.className = "stapknop";
+      knop.innerHTML = '<span class="nr" aria-hidden="true">' + (i + 1) + "</span>" +
+                       '<span class="lab">' + paneel.dataset.titel + "</span>";
+      knop.addEventListener("click", function () { spring(i); });
       li.appendChild(knop);
       lijst.appendChild(li);
     });
@@ -431,459 +619,532 @@
   }
 
   function tekenStapbalk() {
-    if (!stapbalk) return;
-    var knoppen = stapbalk.querySelectorAll('.stapknop');
-    Array.prototype.forEach.call(knoppen, function (knop, i) {
-      // Drie standen: waar je bent, wat al ingevuld is, en wat nog moet. Alle
-      // drie blijven klikbaar -- vooruit springen controleert onderweg zelf.
-      // 'klaar' alleen voor stappen waar je langs bent geweest én die kloppen.
-      // Anders krijgt Kleur meteen een vinkje, omdat 'dezelfde kleur' al
-      // voorgeselecteerd staat -- en dan lijkt een stap af die je nooit zag.
-      var staat = i === nu ? 'nu'
-                : (i <= bereikt && geldig(i)) ? 'klaar'
-                : 'open';
-      knop.dataset.staat = staat;
-      knop.disabled = false;
-      if (i === nu) knop.setAttribute('aria-current', 'step');
-      else knop.removeAttribute('aria-current');
-      knop.setAttribute('aria-label',
-        'Ga naar stap ' + (i + 1) + ' van ' + panelen.length + ': ' +
-        (panelen[i].dataset.titel || '') +
-        (staat === 'nu' ? ', hier ben je nu' :
-         staat === 'klaar' ? ', ingevuld' : ', nog in te vullen'));
+    Array.prototype.forEach.call(stapbalk.querySelectorAll(".stapknop"), function (knop, i) {
+      // 'klaar' alleen voor stappen waar je al langs bent geweest en die kloppen.
+      var stand = i === nu ? "nu" : (i <= bereikt && geldig(i, true)) ? "klaar" : "open";
+      knop.dataset.staat = stand;
+      if (i === nu) knop.setAttribute("aria-current", "step"); else knop.removeAttribute("aria-current");
+      knop.setAttribute("aria-label", "Stap " + (i + 1) + " van " + panelen.length + ": " +
+        panelen[i].dataset.titel + (stand === "nu" ? ", hier ben je nu" : stand === "klaar" ? ", ingevuld" : ""));
     });
-    stapbalk.style.setProperty('--stappen', String(panelen.length));
-    stapbalk.style.setProperty('--vordering-f', String(nu / (panelen.length - 1)));
-    var teller = form.querySelector('.stap-teller');
-    if (teller) teller.textContent = 'Stap ' + (nu + 1) + ' van ' + panelen.length;
+    stapbalk.style.setProperty("--stappen", String(panelen.length));
+    stapbalk.style.setProperty("--vordering-f", String(nu / (panelen.length - 1)));
+    var teller = form.querySelector(".stap-teller");
+    if (teller) teller.textContent = "Stap " + (nu + 1) + " van " + panelen.length;
   }
-
-  /* Stappen ---------------------------------------------------------------- */
 
   function toon(i, verschuif) {
     nu = Math.max(0, Math.min(panelen.length - 1, i));
     if (nu > bereikt) bereikt = nu;
     panelen.forEach(function (p, k) { p.hidden = k !== nu; });
-    tekenStapbalk();
-    if (terug) terug.classList.toggle('onzichtbaar', nu === 0);
     var laatste = nu === panelen.length - 1;
-    if (verder) verder.hidden = laatste;
-    if (versturen) versturen.hidden = !laatste;
-    if (melding) melding.textContent = '';
-    if (laatste) vulSamenvatting();
+    terug.classList.toggle("onzichtbaar", nu === 0);
+    verder.hidden = laatste;
+    versturen.hidden = !laatste;
+    zeg("");
+    if (laatste) tekenOverzicht();
     tekenVervolgvelden();
-    // Focus naar de kop van de nieuwe stap, anders weten schermlezers niet
-    // dat er iets veranderd is. Niet bij het openen van de pagina: dan is er
-    // nog niets veranderd.
-    var kop = panelen[nu].querySelector('h2');
-    if (kop && verschuif) { kop.setAttribute('tabindex', '-1'); kop.focus({ preventScroll: true }); }
+    tekenStapbalk();
     if (verschuif) {
-      var top = form.getBoundingClientRect().top + window.scrollY - 90;
-      window.scrollTo({ top: top, behavior: 'smooth' });
+      var kop = panelen[nu].querySelector("h2");
+      if (kop) { kop.setAttribute("tabindex", "-1"); kop.focus({ preventScroll: true }); }
+      window.scrollTo({ top: form.getBoundingClientRect().top + window.scrollY - 90, behavior: "smooth" });
     }
     bewaar();
   }
 
-  function geldig(index) {
-    var paneel = panelen[index === undefined ? nu : index];
-    var eis = paneel.dataset.verplicht;
-    if (eis) {
-      var namen = eis.split(',');
-      for (var i = 0; i < namen.length; i++) {
-        var naam = namen[i].trim();
-        var gekozen = naam === 'werklijst'
-          ? leesWerklijst().length
-          : form.querySelectorAll('[name="' + naam + '"]:checked').length;
-        if (!gekozen) {
-          zeg(paneel.dataset.melding || 'Kies hierboven een antwoord om verder te gaan.');
-          return false;
-        }
-      }
-    }
-    // Kiest iemand een andere kleur, dan willen we ook weten welke.
-    if (paneel.querySelector('[name="kleur"]') &&
-        waarde('kleur') === 'anders' && !waarde('kleur_anders')) {
-      zeg('Zet er even bij welke kleur je in gedachten hebt.');
-      form.querySelector('[name="kleur_anders"]').focus();
+  // stil: alleen kijken, geen meldingen (voor de stappenbalk).
+  function geldig(index, stil) {
+    var paneel = panelen[index];
+    var stap = paneel.dataset.stap;
+    if (stap === "manier") {
+      if (staat.manier) return true;
+      if (!stil) zeg(paneel.dataset.melding);
       return false;
     }
-    var velden = paneel.querySelectorAll('input[required],textarea[required],select[required]');
+    if (stap === "kozijnen") return kozijnenGeldig(stil);
+    if (paneel.querySelector('[name="kleur"]') && waarde("kleur") === "anders" && !waarde("kleur_anders")) {
+      if (!stil) { zeg("Zet er even bij welke kleur je in gedachten hebt."); form.querySelector("#kleur_anders").focus(); }
+      return false;
+    }
+    var velden = paneel.querySelectorAll("input[required], textarea[required]");
     for (var j = 0; j < velden.length; j++) {
       if (!velden[j].checkValidity()) {
-        // reportValidity werkt alleen op wat in beeld staat
-        if (!paneel.hidden) velden[j].reportValidity();
+        if (!stil && !paneel.hidden) velden[j].reportValidity();
         return false;
       }
     }
     return true;
   }
 
-  /* Springen naar een stap ------------------------------------------------
-     Terug mag altijd. Vooruit loopt elke tussenliggende stap na en gaat zo ver
-     als mag: is er iets niet ingevuld, dan landt de bezoeker op die stap met de
-     bijbehorende melding in plaats van op een foutloze blokkade. */
+  function kozijnenGeldig(stil) {
+    if (!staat.manier) return false;
+    if (staat.manier === "papier") {
+      var mist = !staat.papier.tekening.length ? "Voeg een foto van je tekening toe."
+               : !staat.papier.kozijnfoto.length ? "Voeg van elk kozijn een foto toe, met het hele kozijn erop."
+               : !waarden("papier_waar").length ? "Geef aan waar de kozijnen zitten."
+               : "";
+      if (mist && !stil) zeg(mist);
+      return !mist;
+    }
+    if (!staat.kozijnen.length) return false;
+    var eersteFout = -1;
+    staat.kozijnen.forEach(function (k, i) {
+      var lijst = ontbreekt(k);
+      if (lijst.length && eersteFout < 0) eersteFout = i;
+      if (!stil) {
+        var kaart = kaartVan(k);
+        if (kaart) kaart.classList.add("gecontroleerd");
+        toonKaartMelding(k, lijst);
+      }
+    });
+    if (eersteFout > -1 && !stil) {
+      zeg("Kozijn " + (eersteFout + 1) + " is nog niet compleet. Bij de kaart staat wat er nog mist.");
+      var kaart = kaartVan(staat.kozijnen[eersteFout]);
+      if (kaart && !panelen[1].hidden) kaart.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    return eersteFout < 0;
+  }
 
+  // Terug mag altijd. Vooruit loopt elke stap ertussen na en stopt bij de
+  // eerste die nog niet klopt, met de melding erbij.
   function spring(doel) {
     if (doel <= nu) { toon(doel, true); return; }
     for (var i = nu; i < doel; i++) {
-      if (!geldig(i)) {
-        // toon() wist de melding, dus die zetten we er daarna pas op: anders
-        // land je op een eerdere stap zonder te zien waarom je daar bent.
+      if (!geldig(i, true)) {
         if (i !== nu) toon(i, true);
-        zeg(panelen[i].dataset.melding || 'Vul deze stap eerst in om verder te kunnen.');
+        geldig(i, false);
         return;
       }
     }
     toon(doel, true);
   }
 
-  function zeg(tekst) {
-    if (melding) melding.textContent = tekst;
-  }
-
-  if (verder) verder.addEventListener('click', function () { if (geldig()) toon(nu + 1, true); });
-  if (terug) terug.addEventListener('click', function () { toon(nu - 1, true); });
-
-  /* Vervolgvelden ----------------------------------------------------------
-     Velden die pas verschijnen zodra een bepaalde keuze gemaakt is, zodat het
-     formulier niet voller oogt dan het is. */
+  verder.addEventListener("click", function () { if (geldig(nu, false)) toon(nu + 1, true); });
+  terug.addEventListener("click", function () { toon(nu - 1, true); });
 
   function tekenVervolgvelden() {
-    Array.prototype.forEach.call(form.querySelectorAll('.vervolgveld'), function (veld) {
-      var deel = (veld.dataset.toonBij || '').split('=');
+    Array.prototype.forEach.call(form.querySelectorAll(".vervolgveld"), function (veld) {
+      var deel = (veld.dataset.toonBij || "").split("=");
       veld.hidden = waarde(deel[0]) !== deel[1];
     });
   }
 
-  function bijwerken(e) {
-    // Velden binnen een werkblok hebben geen name-attribuut (ze worden per blok
-    // uitgelezen), dus die moeten hier expliciet doorgelaten worden.
-    if (!e.target.name && !e.target.closest('.werkregel')) return;
-    zeg('');
-    // Op de laatste stap staat de samenvatting in beeld; die moet meelopen met
-    // wat er nog wordt ingevuld, anders klopt hij niet met wat er verstuurd wordt.
-    if (nu === panelen.length - 1) vulSamenvatting();
+  form.addEventListener("change", function (e) {
+    if (!e.target.name) return;
     tekenVervolgvelden();
-    tekenTotaal();
+    if (nu === panelen.length - 1) tekenOverzicht();
     bewaar();
-  }
-  form.addEventListener('change', bijwerken);
-  form.addEventListener('input', bijwerken);
+  });
+  form.addEventListener("input", function (e) { if (e.target.name) bewaar(); });
 
-  // Enter in een tekstveld gaat naar de volgende stap in plaats van te versturen.
-  form.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'file') {
-      e.preventDefault();
-      if (nu < panelen.length - 1 && geldig()) toon(nu + 1, true);
-    }
+  // Enter in een tekstveld verstuurt niet; in de gegevens gaat het naar de volgende stap.
+  form.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" || e.target.tagName !== "INPUT" || e.target.type === "file") return;
+    e.preventDefault();
+    if (e.target.name && nu < panelen.length - 1 && geldig(nu, false)) toon(nu + 1, true);
   });
 
-  /* Foto's ----------------------------------------------------------------- */
+  /* Overzicht -------------------------------------------------------------- */
 
-  var zone = form.querySelector('.dropzone');
-  var invoer = form.querySelector('input[type=file]');
-  var lijst = form.querySelector('.bestandenlijst');
-  var MAX = 8;
-
-  function tekenBestanden() {
-    if (!lijst) return;
-    lijst.innerHTML = '';
-    bestanden.forEach(function (f, i) {
-      var li = document.createElement('li');
-      var img = document.createElement('img');
-      img.className = 'mini';
-      img.alt = '';
-      img.src = URL.createObjectURL(f);
-      img.onload = function () { URL.revokeObjectURL(img.src); };
-      var naam = document.createElement('span');
-      naam.textContent = f.name + ' (' + Math.round(f.size / 1024) + ' kB)';
-      var weg = document.createElement('button');
-      weg.type = 'button';
-      weg.className = 'weg';
-      weg.innerHTML = '&times;';
-      weg.setAttribute('aria-label', 'Verwijder ' + f.name);
-      weg.addEventListener('click', function () { bestanden.splice(i, 1); tekenBestanden(); });
-      li.append(img, naam, weg);
-      lijst.append(li);
-    });
+  function kozijnKop(k, nr) {
+    var delen = ["Kozijn " + nr];
+    if (k.waar) delen.push(WAAR[k.waar]);
+    if (k.plek.trim()) delen.push(k.plek.trim());
+    if (k.aantal > 1) delen.push(k.aantal + "× hetzelfde");
+    return delen.join(" · ");
   }
 
-  function voegToe(fileList) {
-    Array.prototype.forEach.call(fileList, function (f) {
-      if (bestanden.length >= MAX) return;
-      if (!/^image\//.test(f.type)) return;
-      if (f.size > MAXBYTES) { zeg(f.name + ' is groter dan 5 MB en is overgeslagen.'); return; }
-      bestanden.push(f);
-    });
-    tekenBestanden();
+  function werkRegels(k) {
+    var uit = [];
+    if (k.werk === "heel") {
+      var b = cm(k.breedte), h = cm(k.hoogte);
+      uit.push("Het hele kozijn" + (staat.manier === "maten" && b && h ? ", " + b + " × " + h + " cm" : ""));
+    } else if (staat.manier === "streep") {
+      uit.push(k.strepen.length ? "Wat je op de foto hebt aangestreept" : "Nog niets aangestreept");
+    }
+    if (k.werk === "delen" || staat.manier === "streep") {
+      geldigeRegels(k).forEach(function (r) {
+        uit.push(r.deel.trim() + ": " + (r.aantal > 1 ? r.aantal + " × " : "") + meter(cm(r.lengte)));
+      });
+    }
+    if (k.dichtbij) uit.push("Met een foto van dichtbij");
+    return uit;
   }
 
-  if (zone && invoer) {
-    zone.addEventListener('click', function () { invoer.click(); });
-    zone.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); invoer.click(); }
-    });
-    invoer.addEventListener('change', function () { voegToe(invoer.files); invoer.value = ''; });
-    ['dragenter', 'dragover'].forEach(function (t) {
-      zone.addEventListener(t, function (e) { e.preventDefault(); zone.classList.add('over'); });
-    });
-    ['dragleave', 'drop'].forEach(function (t) {
-      zone.addEventListener(t, function (e) { e.preventDefault(); zone.classList.remove('over'); });
-    });
-    zone.addEventListener('drop', function (e) { voegToe(e.dataTransfer.files); });
+  function maak(tag, klasse, tekst) {
+    var el = document.createElement(tag);
+    if (klasse) el.className = klasse;
+    if (tekst !== undefined) el.textContent = tekst;
+    return el;
   }
 
-  /* Samenvatting ----------------------------------------------------------- */
+  function overzichtBlok(titel, stap) {
+    var blok = maak("div", "ov-blok");
+    var kop = maak("div", "ov-kop");
+    kop.appendChild(maak("h3", "", titel));
+    var wijzig = maak("button", "wijzig", "Wijzig");
+    wijzig.type = "button";
+    wijzig.addEventListener("click", function () { toon(stap, true); });
+    kop.appendChild(wijzig);
+    blok.appendChild(kop);
+    return blok;
+  }
 
-  // Enkelvoud en meervoud, zodat er in de mail geen '1 deuren' staat.
-  var VELDEN = [
-    ['Het werk', function () {
-      return leesWerklijst().map(regelInTekst).join('\n');
-    }, 0],
-    ['Waar', function () { return labels('bereikbaar').join(', '); }, 1],
-    ['Kleur', function () {
-      return waarde('kleur') === 'anders'
-        ? 'Andere kleur: ' + (waarde('kleur_anders') || 'nog te bepalen')
-        : 'Dezelfde kleur houden';
-    }, 2],
-    ['Adres', function () {
-      var p = waarde('postcode'), h = waarde('huisnummer'), pl = waarde('plaats');
-      return [p, h, pl].filter(Boolean).join(' ');
-    }, 3],
-    ["Foto's", function () {
-      var bijRegels = leesWerklijst().reduce(function (n, r) { return n + r.fotos.length; }, 0);
-      var delen = [];
-      if (bijRegels) delen.push(bijRegels + ' bij de werkregels');
-      if (bestanden.length) delen.push(bestanden.length + ' overzichtsfoto' +
-        (bestanden.length === 1 ? '' : "'s"));
-      return delen.join(', ') || 'geen';
-    }, 3],
-    ['Toelichting', function () { return waarde('toelichting'); }, 3],
-    ['Via de site', function () { return vanaf; }, null]
-  ];
+  function tekenOverzicht() {
+    var vak = form.querySelector(".overzicht");
+    vak.innerHTML = "";
 
-  function vulSamenvatting() {
-    var dl = form.querySelector('.samenvatting dl');
-    if (!dl) return;
-    dl.innerHTML = '';
-    VELDEN.forEach(function (v) {
-      var tekst = v[1]();
-      if (!tekst) return;
-      var dt = document.createElement('dt');
-      dt.textContent = v[0];
-      var dd = document.createElement('dd');
-      dd.textContent = tekst;
-      if (v[2] !== null) {
-        var knop = document.createElement('button');
-        knop.type = 'button';
-        knop.className = 'wijzig';
-        knop.textContent = 'wijzig';
-        knop.addEventListener('click', function () { toon(v[2], true); });
-        dd.append(knop);
-      }
-      dl.append(dt, dd);
-    });
+    var werk = overzichtBlok("Wat er moet gebeuren", 1);
+    if (staat.manier === "papier") {
+      var rij = maak("div", "ov-papier");
+      staat.papier.tekening.concat(staat.papier.kozijnfoto).forEach(function (s) {
+        var img = maak("img");
+        img.src = fotoUrl(s);
+        img.alt = "";
+        rij.appendChild(img);
+      });
+      werk.appendChild(rij);
+      werk.appendChild(maak("p", "", staat.papier.tekening.length + " foto van je tekening, " +
+        staat.papier.kozijnfoto.length + " foto" + (staat.papier.kozijnfoto.length === 1 ? "" : "'s") +
+        " van je kozijnen. Waar: " + waarden("papier_waar").map(function (w) { return WAAR[w].toLowerCase(); }).join(", ") + "."));
+    } else {
+      staat.kozijnen.forEach(function (k, i) {
+        var regel = maak("div", "ov-kozijn");
+        var img = maak("img");
+        img.src = staat.manier === "streep" && k.werk === "delen" && voorbeelden[k.id] ? voorbeelden[k.id] : fotoUrl(k.foto);
+        img.alt = "";
+        regel.appendChild(img);
+        var tekst = maak("div");
+        tekst.appendChild(maak("p", "ov-titel", kozijnKop(k, i + 1)));
+        werkRegels(k).forEach(function (r) { tekst.appendChild(maak("p", "", r)); });
+        regel.appendChild(tekst);
+        werk.appendChild(regel);
+      });
+    }
+    vak.appendChild(werk);
+
+    var kleur = overzichtBlok("Kleur", 2);
+    kleur.appendChild(maak("p", "", waarde("kleur") === "anders"
+      ? "Een andere kleur: " + waarde("kleur_anders") : "Dezelfde kleur houden"));
+    vak.appendChild(kleur);
+
+    var wie = overzichtBlok("Je gegevens", 3);
+    [waarde("naam"), netjesPostcode(waarde("postcode")) + " " + waarde("huisnummer") + ", " + waarde("plaats"),
+     waarde("telefoon"), waarde("email")].forEach(function (t) { wie.appendChild(maak("p", "", t)); });
+    if (waarde("toelichting")) wie.appendChild(maak("p", "ov-opmerking", waarde("toelichting")));
+    vak.appendChild(wie);
+  }
+
+  /* Versturen --------------------------------------------------------------
+     1. de antwoorden naar de server, die zegt welke foto's hij verwacht
+     2. elke foto apart (opnieuw proberen bij een haperende verbinding)
+     3. versturen: de server stuurt de mail aan Max en de bevestiging
+     Lukt iets niet, dan blijft alles staan en kan de klant het opnieuw
+     proberen; wat al binnen is, wordt niet nog eens gestuurd. */
+
+  var stand = form.querySelector(".verzendstand");
+  var bezig = false;
+
+  function toonStand(tekst, deel) {
+    stand.hidden = false;
+    stand.querySelector(".verzend-fout").hidden = true;
+    stand.querySelector(".verzend-tekst").textContent = tekst;
+    stand.querySelector(".verzend-balk").hidden = false;
+    stand.querySelector(".verzend-balk span").style.width = Math.round(Math.max(0.04, deel) * 100) + "%";
+  }
+
+  function toonFout(tekst) {
+    stand.hidden = false;
+    stand.querySelector(".verzend-tekst").textContent = "";
+    stand.querySelector(".verzend-balk").hidden = true;
+    stand.querySelector(".verzend-fout").hidden = false;
+    stand.querySelector(".verzend-fout-tekst").textContent = tekst;
+    stand.querySelector(".verzend-mail").href = "mailto:" + MAILBOX +
+      "?subject=" + encodeURIComponent("Offerteaanvraag " + waarde("naam")) +
+      "&body=" + encodeURIComponent(samenvattingTekst() + "\n\n(Stuur je foto's als bijlage mee.)");
   }
 
   function samenvattingTekst() {
-    var regels = ['AANVRAAG VIA IWRAP.NL', ''];
-    regels.push('Naam:      ' + waarde('naam'));
-    regels.push('E-mail:    ' + waarde('email'));
-    regels.push('Telefoon:  ' + waarde('telefoon'));
-    regels.push('');
-    VELDEN.forEach(function (v) {
-      var t = v[1]();
-      if (t) regels.push((v[0] + ':').padEnd(11) + t);
-    });
-    return regels.join('\n');
-  }
-
-  /* Bewaren ---------------------------------------------------------------- */
-
-  function bewaar() {
-    try {
-      var d = { stap: nu, bereikt: bereikt, velden: {},
-                werk: leesWerklijst().map(function (r) {
-                  return { soort: r.soort, aantal: r.aantal, omvang: r.omvang,
-                           draairamen: r.draairamen, deuren: r.deuren,
-                           omkader: r.omkader, plek: r.plek, delen: r.delen };
-                }) };
-      form.querySelectorAll('input,textarea,select').forEach(function (el) {
-        if (!el.name || el.type === 'file') return;
-        if (el.type === 'radio' || el.type === 'checkbox') {
-          if (el.checked) (d.velden[el.name] = d.velden[el.name] || []).push(el.value);
-        } else if (el.value) {
-          d.velden[el.name] = el.value;
-        }
+    var regels = ["Naam: " + waarde("naam"), "Adres: " + waarde("postcode") + " " + waarde("huisnummer") +
+                  ", " + waarde("plaats"), "Telefoon: " + waarde("telefoon"), ""];
+    if (staat.manier === "papier") {
+      regels.push("Ik stuur een foto van mijn tekening en van mijn kozijnen mee.");
+    } else {
+      staat.kozijnen.forEach(function (k, i) {
+        regels.push(kozijnKop(k, i + 1) + ": " + werkRegels(k).join("; "));
       });
-      localStorage.setItem(OPSLAG, JSON.stringify(d));
-    } catch (e) { /* privémodus: dan bewaren we gewoon niets */ }
-  }
-
-  function herstel() {
-    try {
-      var d = JSON.parse(localStorage.getItem(OPSLAG) || 'null');
-      if (!d) return 0;
-      Object.keys(d.velden).forEach(function (naam) {
-        var v = d.velden[naam];
-        if (Array.isArray(v)) {
-          v.forEach(function (x) {
-            var el = form.querySelector('[name="' + naam + '"][value="' + CSS.escape(x) + '"]');
-            if (el) el.checked = true;
-          });
-        } else {
-          var el2 = form.querySelector('[name="' + naam + '"]');
-          if (el2) el2.value = v;
-        }
-      });
-      (d.werk || []).forEach(function (r) { voegRegelToe(r); });
-      bereikt = d.bereikt || d.stap || 0;
-      return d.stap || 0;
-    } catch (e) { return 0; }
-  }
-
-  function wisOpslag() {
-    try { localStorage.removeItem(OPSLAG); } catch (e) {}
-  }
-
-  /* Versturen -------------------------------------------------------------- */
-
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    if (!geldig()) return;
-
-    var tekst = samenvattingTekst();
-
-    if (ACCESS_KEY === 'VERVANG_MET_JE_WEB3FORMS_KEY') {
-      // Nog geen koppeling: dan doen we het via de mailclient van de bezoeker.
-      var onderwerp = 'Offerteaanvraag ' + (waarde('naam') || '') + ' — ' +
-                      (waarde('postcode') || '');
-      window.location.href = 'mailto:' + MAILBOX +
-        '?subject=' + encodeURIComponent(onderwerp) +
-        '&body=' + encodeURIComponent(tekst + "\n\n(Stuur je foto's als bijlage mee.)");
-      bedanktScherm(true);
-      return;
     }
+    regels.push("", "Kleur: " + (waarde("kleur") === "anders" ? waarde("kleur_anders") : "dezelfde houden"));
+    if (waarde("toelichting")) regels.push("Opmerking: " + waarde("toelichting"));
+    return regels.join("\n");
+  }
 
-    var data = new FormData();
-    data.append('access_key', ACCESS_KEY);
-    data.append('subject', 'Offerteaanvraag ' + waarde('naam') + ' — ' + waarde('postcode'));
-    data.append('from_name', waarde('naam'));
-    data.append('replyto', waarde('email'));
-    data.append('samenvatting', tekst);
-    // Losse velden erbij, zodat een CRM of Make.com-scenario ze kan uitlezen
-    // zonder de tekst te hoeven ontleden.
-    data.append('gegevens_json', JSON.stringify(gegevens()));
-    bestanden.forEach(function (f, i) {
-      data.append('overzichtsfoto_' + (i + 1), f, 'overzicht-' + (i + 1) + '-' + f.name);
-    });
-    // Foto's per werkregel krijgen het regelnummer in hun bestandsnaam, zodat in
-    // de mailbox meteen te zien is bij welk stuk werk ze horen.
-    leesWerklijst().forEach(function (r, ri) {
-      r.fotos.forEach(function (f, fi) {
-        data.append('foto_regel' + (ri + 1) + '_' + (fi + 1), f,
-                    'regel-' + (ri + 1) + '-' + r.soort + '-' + (fi + 1) + '.jpg');
+  function maakPayload() {
+    var p = {
+      manier: staat.manier,
+      kleur: waarde("kleur"),
+      kleur_anders: waarde("kleur_anders"),
+      via: vanaf,
+      website: waarde("website"),
+      gegevens: {
+        naam: waarde("naam"), email: waarde("email"), telefoon: waarde("telefoon"),
+        postcode: waarde("postcode"), huisnummer: waarde("huisnummer"), plaats: waarde("plaats"),
+        toelichting: waarde("toelichting")
+      }
+    };
+    if (staat.manier === "papier") {
+      p.papier = { tekeningen: staat.papier.tekening.length, fotos: staat.papier.kozijnfoto.length,
+                   waar: waarden("papier_waar") };
+    } else {
+      p.kozijnen = staat.kozijnen.map(function (k) {
+        var heel = k.werk === "heel";
+        return {
+          waar: k.waar, plek: k.plek.trim(), aantal: k.aantal, heel: heel, dichtbij: !!k.dichtbij,
+          aangestreept: staat.manier === "streep" && !heel && k.strepen.length > 0,
+          regels: (!heel || staat.manier === "streep") ? geldigeRegels(k).map(function (r) {
+            return { deel: r.deel.trim(), lengte: r.lengte, aantal: r.aantal };
+          }) : [],
+          breedte: heel ? k.breedte : "", hoogte: heel ? k.hoogte : ""
+        };
+      });
+    }
+    return p;
+  }
+
+  // Bij elke bestandsnaam die de server verwacht, de juiste foto.
+  function fotoBron(naam) {
+    var m = naam.match(/^tekening-(\d+)\.jpg$/);
+    if (m) return Promise.resolve(blobs[staat.papier.tekening[m[1] - 1]]);
+    m = naam.match(/^kozijn-(\d+)-(foto|dichtbij|aangestreept)\.jpg$/);
+    if (!m) return Promise.resolve(null);
+    if (staat.manier === "papier") return Promise.resolve(blobs[staat.papier.kozijnfoto[m[1] - 1]]);
+    var k = staat.kozijnen[m[1] - 1];
+    if (!k) return Promise.resolve(null);
+    if (m[2] === "foto") return Promise.resolve(blobs[k.foto]);
+    if (m[2] === "dichtbij") return Promise.resolve(blobs[k.dichtbij]);
+    return blobs[k.foto] ? Strepen.samenstellen(blobs[k.foto], k.strepen) : Promise.resolve(null);
+  }
+
+  function Fout(tekst, extra) {
+    this.message = tekst;
+    this.extra = extra || {};
+  }
+
+  function vraag(methode, pad, lijf, soort) {
+    return fetch(API + pad, {
+      method: methode,
+      headers: { "Content-Type": soort || "application/json" },
+      body: lijf
+    }).catch(function () {
+      throw new Fout("We krijgen geen verbinding. Kijk of je internet het doet en probeer het nog eens.",
+                     { netwerk: true });
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (d) {
+        if (r.ok) return d;
+        throw new Fout(d.fout || "Het versturen lukt nu niet. Probeer het later nog eens, of mail ons.",
+                       { status: r.status, ontbreekt: d.ontbreekt });
       });
     });
+  }
 
+  function wacht(ms) { return new Promise(function (ok) { setTimeout(ok, ms); }); }
+
+  function stuurFoto(v, naam, poging) {
+    return fotoBron(naam).then(function (blob) {
+      if (!blob) throw new Fout("Een foto is weggeraakt. Ga terug naar Kozijnen en voeg hem opnieuw toe.");
+      return vraag("PUT", "/aanvragen/" + v.id + "/fotos/" + naam + "?t=" + encodeURIComponent(v.token),
+                   blob, "image/jpeg");
+    }).catch(function (e) {
+      if (e.extra && e.extra.netwerk && poging < 3) {
+        return wacht(1500 * poging).then(function () { return stuurFoto(v, naam, poging + 1); });
+      }
+      throw e;
+    });
+  }
+
+  function verstuur(v, herkansing) {
+    var todo = v.namen.filter(function (n) { return v.gedaan.indexOf(n) < 0; });
+    return todo.reduce(function (keten, naam) {
+      return keten.then(function () {
+        toonStand("Foto " + (v.gedaan.length + 1) + " van " + v.namen.length + " wordt verstuurd…",
+                  0.05 + 0.85 * v.gedaan.length / v.namen.length);
+        return stuurFoto(v, naam, 1).then(function () { v.gedaan.push(naam); bewaarNu(); });
+      });
+    }, Promise.resolve()).then(function () {
+      toonStand("Bijna klaar: je aanvraag gaat naar iWrap…", 0.95);
+      return vraag("POST", "/aanvragen/" + v.id + "/versturen?t=" + encodeURIComponent(v.token), "{}");
+    }).catch(function (e) {
+      // De server mist een foto (bijvoorbeeld na een herstart): die nog een keer.
+      if (e.extra && e.extra.ontbreekt && !herkansing) {
+        v.gedaan = v.gedaan.filter(function (n) { return e.extra.ontbreekt.indexOf(n) < 0; });
+        return verstuur(v, true);
+      }
+      throw e;
+    });
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (bezig) return;
+    for (var i = 0; i < panelen.length - 1; i++) {
+      if (!geldig(i, true)) { spring(i + 1); return; }
+    }
+    bezig = true;
     versturen.disabled = true;
-    versturen.textContent = 'Bezig met versturen…';
+    terug.disabled = true;
+    toonStand("Je aanvraag wordt klaargezet…", 0.03);
 
-    fetch(ENDPOINT, { method: 'POST', body: data })
-      .then(function (r) { return r.json(); })
-      .then(function (r) {
-        if (r.success) { bedanktScherm(false); }
-        else { throw new Error(r.message || 'onbekend'); }
-      })
-      .catch(function () {
-        versturen.disabled = false;
-        versturen.textContent = 'Aanvraag versturen';
-        zeg('Het versturen lukte niet. Mail je aanvraag naar ' + MAILBOX +
-            ' of bel ons — dan pakken we het zo op.');
-      });
+    var payload = maakPayload();
+    var vingerafdruk = JSON.stringify(payload);
+    var begin = staat.verzending && staat.verzending.vingerafdruk === vingerafdruk
+      ? Promise.resolve(staat.verzending)
+      : vraag("POST", "/aanvragen", vingerafdruk).then(function (d) {
+          staat.verzending = { id: d.id, token: d.token, namen: d.fotos, gedaan: [], vingerafdruk: vingerafdruk };
+          bewaarNu();
+          return staat.verzending;
+        });
+
+    begin.then(function (v) { return verstuur(v, false); }).then(function (d) {
+      bedankt(d);
+    }).catch(function (fout) {
+      bezig = false;
+      versturen.disabled = false;
+      terug.disabled = false;
+      // Een verlopen aanvraag (na twee dagen) begint gewoon opnieuw.
+      if (fout.extra && fout.extra.status === 404) staat.verzending = null;
+      toonFout(fout.message || "Het versturen lukte niet.");
+    });
   });
 
-  function gegevens() {
-    var d = {};
-    ['naam', 'email', 'telefoon', 'postcode', 'huisnummer', 'plaats', 'toelichting']
-      .forEach(function (n) { d[n] = waarde(n); });
-    ['bereikbaar', 'kleur'].forEach(function (n) { d[n] = waarden(n); });
-    d.werklijst = leesWerklijst().map(function (r) {
-      return { soort: r.soort, aantal: r.aantal, omvang: r.omvang,
-               draairamen: r.draairamen, deuren: r.deuren, omkader: r.omkader,
-               plek: r.plek, delen: r.delen, aantal_fotos: r.fotos.length };
-    });
-    d.totaal_elementen = totaalElementen();
-    d.totalen_per_soort = totalenPerSoort();
-    d.kleur_anders = waarde('kleur_anders');
-    d.via_de_site = vanaf;
-    d.aantal_overzichtsfotos = bestanden.length;
-    d.bron = document.referrer || '';
-    return d;
-  }
+  stand.querySelector(".verzend-opnieuw").addEventListener("click", function () {
+    form.requestSubmit ? form.requestSubmit(versturen) : versturen.click();
+  });
 
-  function bedanktScherm(viaMail) {
-    wisOpslag();
-    var kaart = form.closest('.offerte-kaart');
-    var naam = waarde('naam').split(' ')[0];
+  function bedankt(d) {
+    wisAlles();
+    var kaart = form.closest(".offerte-kaart");
+    var naam = waarde("naam").split(" ")[0];
+    var email = waarde("email");
     kaart.innerHTML =
       '<div class="bedankt">' +
       '<div class="vink" aria-hidden="true"></div>' +
-      '<h2>Bedankt' + (naam ? ', ' + naam : '') + '</h2>' +
-      (viaMail
-        ? '<p>Je mailprogramma is geopend met de aanvraag erin. Controleer hem even, ' +
-          "voeg je foto's toe als bijlage en verstuur hem — dan komt hij bij ons binnen.</p>"
-        : "<p>Je aanvraag is binnen. We kijken je foto's na en laten je weten wat " +
-          'het gaat kosten. Zijn er dingen die we niet goed kunnen zien, dan bellen we ' +
-          'je even.</p>') +
+      "<h2>Bedankt" + (naam ? ", " + naam.replace(/</g, "") : "") + "</h2>" +
+      "<p>Je aanvraag is binnen, met al je foto's. We bekijken ze en sturen je een offerte met " +
+      "een vaste totaalprijs. Kunnen we iets niet goed zien, dan bellen of mailen we je even.</p>" +
+      (d && d.bevestiging ? '<p class="bedankt-mail">Je krijgt ook een bevestiging per mail op <b></b>.</p>' : "") +
       '<div class="knoprij"><a class="knop knop-tweede" href="/voorbeelden">Bekijk ons werk</a>' +
       '<a class="knop knop-tweede" href="/veelgestelde-vragen">Veelgestelde vragen</a></div>' +
-      '</div>';
-    kaart.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      "</div>";
+    var mail = kaart.querySelector(".bedankt-mail b");
+    if (mail) mail.textContent = email;
+    kaart.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
-  /* Opstarten -------------------------------------------------------------- */
+  /* Bewaren ----------------------------------------------------------------
+     De antwoorden in localStorage, de foto's in IndexedDB. Wie halverwege
+     wegklikt, gaat later verder waar hij was. */
+
+  var bewaarKlok = null;
+
+  function bewaar() {
+    clearTimeout(bewaarKlok);
+    bewaarKlok = setTimeout(bewaarNu, 250);
+  }
+
+  function bewaarNu() {
+    try {
+      var velden = {};
+      Array.prototype.forEach.call(form.querySelectorAll("input[name], textarea[name]"), function (el) {
+        if (el.type === "file" || el.name === "website" || el.name === "manier") return;
+        if (el.type === "radio" || el.type === "checkbox") {
+          if (el.checked) (velden[el.name] = velden[el.name] || []).push(el.value);
+        } else if (el.value) {
+          velden[el.name] = el.value;
+        }
+      });
+      localStorage.setItem(OPSLAG, JSON.stringify({ stap: nu, bereikt: bereikt, staat: staat, velden: velden }));
+    } catch (e) { /* privémodus: dan bewaren we niets */ }
+  }
+
+  function wisAlles() {
+    try { localStorage.removeItem(OPSLAG); } catch (e) { /* niets */ }
+    Fotos.wisAlles();
+  }
+
+  function herstel() {
+    var d;
+    try { d = JSON.parse(localStorage.getItem(OPSLAG) || "null"); } catch (e) { d = null; }
+    if (!d || !d.staat) return Promise.resolve(null);
+    var s = d.staat;
+    staat.manier = s.manier || "";
+    staat.kozijnen = (s.kozijnen || []).map(function (k) { return Object.assign(nieuwKozijn(), k); });
+    staat.papier = { tekening: (s.papier && s.papier.tekening) || [], kozijnfoto: (s.papier && s.papier.kozijnfoto) || [] };
+    staat.verzending = s.verzending || null;
+    Object.keys(d.velden || {}).forEach(function (naam) {
+      var v = d.velden[naam];
+      if (Array.isArray(v)) {
+        v.forEach(function (x) {
+          var el = form.querySelector('[name="' + naam + '"][value="' + CSS.escape(x) + '"]');
+          if (el) el.checked = true;
+        });
+      } else {
+        var el = form.querySelector('[name="' + naam + '"]');
+        if (el) el.value = v;
+      }
+    });
+    // De foto's terughalen. Is er een weg (privévenster, opgeruimde browser),
+    // dan staat bij dat kozijn gewoon weer "Maak of kies een foto".
+    var sleutels = [];
+    staat.kozijnen.forEach(function (k) { if (k.foto) sleutels.push(k.foto); if (k.dichtbij) sleutels.push(k.dichtbij); });
+    sleutels = sleutels.concat(staat.papier.tekening, staat.papier.kozijnfoto);
+    return Promise.all(sleutels.map(function (x) {
+      return Fotos.haal(x).then(function (blob) { if (blob) blobs[x] = blob; });
+    })).then(function () {
+      staat.papier.tekening = staat.papier.tekening.filter(function (x) { return blobs[x]; });
+      staat.papier.kozijnfoto = staat.papier.kozijnfoto.filter(function (x) { return blobs[x]; });
+      return Promise.all(staat.kozijnen.map(maakVoorbeeld));
+    }).then(function () {
+      bereikt = d.bereikt || 0;
+      return d.stap || 0;
+    });
+  }
 
   /* Opstarten -------------------------------------------------------------- */
 
   // Klikt iemand op de homepage op een klacht, dan onthouden we dat stilletjes.
-  // Voor de prijs maakt het niet uit -- de werkzaamheden zijn hetzelfde, wat er
-  // ook mis is -- maar het is voor ons wel prettig om te weten waarmee iemand
-  // binnenkomt. We laten de bezoeker er dus geen stap voor invullen.
   var KLACHTEN = {
-    verweerd: 'verweerd of gebarsten',
-    'laat-los': 'folie laat los',
-    blaasjes: 'blaasjes of scheuren',
-    lijmlaag: 'gele lijmlaag zichtbaar',
-    spanningsplooien: 'plooien of kreukels',
-    scheuren: 'krassen of stootschade'
+    verweerd: "verweerd of gebarsten",
+    "laat-los": "folie laat los",
+    blaasjes: "blaasjes of scheuren",
+    lijmlaag: "gele lijmlaag zichtbaar",
+    spanningsplooien: "plooien of kreukels",
+    scheuren: "krassen of stootschade"
   };
-  var vanaf = KLACHTEN[new URLSearchParams(window.location.search).get('klacht')] || '';
+  var vanaf = KLACHTEN[new URLSearchParams(window.location.search).get("klacht")] || "";
 
   bouwStapbalk();
+  toon(0, false);
 
-  var startStap = herstel();
-  if (!regels().length) voegRegelToe();   // altijd één regel om mee te beginnen
-  tekenTotaal();
-  toon(startStap, false);
-
-  // Wie halverwege weggeklikt was, komt terug op de stap waar hij gebleven is.
-  // Dan moet het formulier ook in beeld staan -- de browser zet je anders terug
-  // op de scrollpositie van vorige keer, wat onderaan de pagina kan zijn.
-  if (startStap > 0) {
-    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-    window.scrollTo({
-      top: form.getBoundingClientRect().top + window.scrollY - 90,
-      behavior: 'auto'
-    });
-    var terugmelding = document.createElement('p');
-    terugmelding.className = 'hervat';
-    terugmelding.innerHTML = 'We hebben je eerdere antwoorden bewaard. ' +
-      '<button type="button">Opnieuw beginnen</button>';
-    terugmelding.querySelector('button').addEventListener('click', function () {
-      wisOpslag();
-      window.location.href = window.location.pathname;
-    });
-    stapbalk.appendChild(terugmelding);
-  }
+  herstel().then(function (stap) {
+    var gekozen = form.querySelector('[name="manier"][value="' + staat.manier + '"]');
+    if (gekozen) gekozen.checked = true;
+    tekenManier();
+    if (stap === null) return;
+    toon(stap, false);
+    if (stap > 0) {
+      if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+      window.scrollTo({ top: form.getBoundingClientRect().top + window.scrollY - 90, behavior: "auto" });
+      var terugmelding = document.createElement("p");
+      terugmelding.className = "hervat";
+      terugmelding.innerHTML = "We hebben je eerdere antwoorden en foto's bewaard. " +
+        '<button type="button">Opnieuw beginnen</button>';
+      terugmelding.querySelector("button").addEventListener("click", function () {
+        if (!window.confirm("Alles wissen en opnieuw beginnen?")) return;
+        wisAlles();
+        window.location.href = window.location.pathname;
+      });
+      stapbalk.appendChild(terugmelding);
+    }
+  });
 })();
