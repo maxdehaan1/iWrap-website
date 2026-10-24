@@ -120,6 +120,8 @@
 .stap-paneel{padding:clamp(24px,3.4vw,40px);}
 .stap-paneel[hidden]{display:none;}
 .stap-paneel > h2{font-size:clamp(1.28rem,1.1rem + .8vw,1.68rem);margin-bottom:.3em;}
+/* De kop krijgt focus voor schermlezers, niet om aan te klikken: geen kader. */
+.stap-paneel > h2:focus{outline:none;}
 .stap-paneel > .toelichting{color:var(--sub);font-size:.97rem;margin-bottom:26px;max-width:56ch;}
 
 /* Keuzekaarten ------------------------------------------------------------ */
@@ -422,17 +424,6 @@
   background:var(--mint-wash);border-radius:var(--radius);
 }
 .vervolgveld .hint{display:block;margin-top:7px;}
-
-/* Prijsindicatie ---------------------------------------------------------- */
-
-.prijsblok{
-  margin:26px 0 0;background:var(--mint-wash);border:1px solid var(--mint);
-  border-radius:var(--radius);padding:22px 24px;
-}
-.prijsblok .opschrift{margin-bottom:9px;}
-.prijsblok .bedrag{font-family:var(--kop);font-weight:700;font-size:clamp(1.3rem,1.1rem + .9vw,1.75rem);letter-spacing:-.03em;line-height:1.2;margin:0 0 8px;}
-.prijsblok p{font-size:.89rem;color:var(--ink-soft);margin:0;}
-.prijsblok .waarschuwing{margin-top:11px;padding-top:11px;border-top:1px solid var(--mint);font-size:.86rem;}
 
 /* Samenvatting ------------------------------------------------------------ */
 

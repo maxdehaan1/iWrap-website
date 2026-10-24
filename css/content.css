@@ -125,7 +125,3 @@
 .merkkaart .land{font-size:.8rem;color:var(--sub);margin:0 0 12px;}
 .merkkaart p{font-size:.9rem;color:var(--ink-soft);margin:0;}
 
-/* Beeldstrook ------------------------------------------------------------- */
-
-.strook{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;}
-.strook img{border-radius:14px;box-shadow:var(--shadow);aspect-ratio:3/2;object-fit:cover;width:100%;}

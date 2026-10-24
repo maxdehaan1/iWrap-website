@@ -473,9 +473,10 @@
     if (laatste) vulSamenvatting();
     tekenVervolgvelden();
     // Focus naar de kop van de nieuwe stap, anders weten schermlezers niet
-    // dat er iets veranderd is.
+    // dat er iets veranderd is. Niet bij het openen van de pagina: dan is er
+    // nog niets veranderd.
     var kop = panelen[nu].querySelector('h2');
-    if (kop) { kop.setAttribute('tabindex', '-1'); kop.focus({ preventScroll: true }); }
+    if (kop && verschuif) { kop.setAttribute('tabindex', '-1'); kop.focus({ preventScroll: true }); }
     if (verschuif) {
       var top = form.getBoundingClientRect().top + window.scrollY - 90;
       window.scrollTo({ top: top, behavior: 'smooth' });

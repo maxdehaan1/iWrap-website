@@ -9,10 +9,10 @@ de omzet is goed, en het knelpunt zit in de mail: elke offerte kost drie of vier
 berichten heen en weer over aantallen, welke delen, hoe hoog het zit en welke kleur.
 
 Deze site is daarom niet gebouwd om méér leads te vangen, maar om **completere leads**
-te vangen. Het hart is `/offerte`: een formulier in zes stappen dat precies de vragen
-stelt die anders per mail gesteld moeten worden, met een prijsindicatie die onderweg
-meeloopt. Wie het invult stuurt een aanvraag waar je direct een offerte van kunt maken.
-Wie schrikt van de indicatie, haakt af vóórdat het jou vier mailtjes heeft gekost.
+te vangen. Het hart is `/offerte`: een formulier in vier stappen dat precies de vragen
+stelt die anders per mail gesteld moeten worden: welk werk, hoe hoog, welke kleur, en
+foto's. Wie het invult stuurt een aanvraag waar je direct een offerte van kunt maken.
+Er staan bewust geen bedragen op de site (zie "Wat er níet op de site mag").
 
 Daarnaast staat er expliciet op de site wat je **niet** doet (krom kozijn, kapot beslag,
 lekkage, aluminium schil). Dat scheelt de aanvragen die toch nergens toe leiden.
@@ -22,8 +22,8 @@ lekkage, aluminium schil). Dat scheelt de aanvragen die toch nergens toe leiden.
 | | Oud | Nieuw |
 |---|---|---|
 | Techniek | WordPress + Slider Revolution | Statische HTML, geen build-afhankelijkheden behalve Python |
-| Offerte | Contactformulier | Zes stappen met diagnose, prijsindicatie en foto-upload |
-| Prijzen | Niet genoemd | Eigen pagina, plus indicatie in het formulier |
+| Offerte | Contactformulier | Vier stappen met een werklijst per kozijn en foto-upload |
+| Prijzen | Niet genoemd | Eigen pagina: wat de prijs bepaalt, zonder bedragen |
 | Zakelijk | Niets | Pagina's voor VvE's/corporaties en voor kozijndealers |
 | Merken | Opsomming in een zin | Eigen pagina per merk (8 stuks) |
 | Bewijs | Drie reviews | Voor/na-schuifbalken met je eigen foto's |
@@ -437,10 +437,8 @@ er komt, en staat daarom bovenaan **Over iWrap**, direct onder de paginakop.
 
 **Voordat de site live gaat:**
 
-1. **Controleer het reviewcijfer.** In `build.py` staat `BEDRIJF["reviews_score"] = "4,9"`
-   en `reviews_aantal = "81"` — overgenomen van kozijnwrap.nl. Je huidige site zegt
-   "80 recensies". Zet het juiste aantal in `build.py`; het werkt door in de footer, de
-   homepage én de structured data.
+1. **Reviews verversen.** Score en aantal komen uit `reviews.json` (zie "Reviews"
+   hieronder). Draai `python3 reviews.py` vlak voor de livegang.
 2. **Vul KvK en btw-id in** in `BEDRIJF` in `build.py`. Die horen op de site te staan en
    staan nu nergens. Zolang ze leeg zijn, laat de footer ze gewoon weg.
 3. **Web3Forms-key regelen** (zie hierboven), anders loopt elke aanvraag via de
