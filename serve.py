@@ -78,6 +78,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         return self.path.startswith("/api/")
 
     def do_GET(self):
+        if self.path.startswith("/_vercel/insights/"):
+            # Het telscript van Vercel bestaat alleen online; lokaal een leeg script.
+            self.send_response(200)
+            self.send_header("Content-Type", "application/javascript")
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return
         return self._api() if self._is_api() else super().do_GET()
 
     def do_HEAD(self):

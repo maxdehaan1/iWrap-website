@@ -29,6 +29,13 @@
     of bel <a href="tel:{{bedrijf.telefoon_tel}}">{{bedrijf.telefoon}}</a>. Dat mag net zo goed.
   </p>
 
+  <!-- Alleen in de wintermaanden zichtbaar (main.js, data-winter). -->
+  <p class="wintermelding" data-winter hidden>
+    <b>Het is winter.</b> Dan plannen we minder, want folie wil droog en niet te koud
+    aangebracht worden. Vraag gerust nu aan: dan ligt je offerte klaar en plannen we je
+    in zodra het seizoen begint, in maart. Een kleine klus kan soms ook nu al, op een droge dag.
+  </p>
+
   <div class="offerte-kaart">
     <form id="offerteformulier" data-api="/api" data-mailbox="{{bedrijf.email}}" novalidate>
 
@@ -297,7 +304,8 @@
         <b>Aanvraag versturen</b>.</p>
         <div class="overzicht"></div>
         <p class="privacy">We gebruiken je gegevens en foto's alleen om je aanvraag te
-        beantwoorden en er een offerte van te maken. Niets anders, en we geven niets door.</p>
+        beantwoorden en er een offerte van te maken. Niets anders, en we geven niets door.
+        <a href="/privacy" target="_blank" rel="noopener">Lees de privacyverklaring</a></p>
         <div class="verzendstand" aria-live="polite" hidden>
           <p class="verzend-tekst"></p>
           <div class="verzend-balk"><span></span></div>

@@ -29,6 +29,17 @@
 }
 .liever-mailen a{font-weight:600;color:var(--mint-deep);}
 .uitweg-kaart{border-color:var(--mint);}
+/* De wintermelding: in dezelfde vorm als de mailuitweg, maar koeler van kleur. */
+.wintermelding{
+  margin:0 0 18px;padding:14px 18px 14px 50px;position:relative;
+  background:#eef3f8;border:1px solid #d3dfeb;border-radius:var(--radius);
+  font-size:.93rem;color:var(--ink-soft);
+}
+.wintermelding::before{
+  content:"";position:absolute;left:17px;top:16px;width:20px;height:20px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234a6a8a' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M12 2v20M4.9 7l14.2 10M19.1 7 4.9 17M9 4l3 2 3-2M9 20l3-2 3 2'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+.wintermelding b{color:var(--ink);}
 
 .offerte-kaart{
   background:var(--white);border:1px solid var(--line);border-radius:var(--radius-lg);

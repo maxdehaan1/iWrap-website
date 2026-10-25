@@ -43,6 +43,15 @@
       ]
     },
     {
+      "source": "/fonts/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
       "source": "/css/(.*)",
       "headers": [
         {
@@ -201,6 +210,21 @@
       "permanent": true
     },
     {
+      "source": "/portfolio/dewissel",
+      "destination": "/voorbeelden#de-wissel",
+      "permanent": true
+    },
+    {
+      "source": "/portfolio/hersteldeurkozijnen",
+      "destination": "/voorbeelden#deur",
+      "permanent": true
+    },
+    {
+      "source": "/portfolio/herstelcremewittekozijnen",
+      "destination": "/voorbeelden#cremewitte-kozijnen",
+      "permanent": true
+    },
+    {
       "source": "/portfolio/:pad*",
       "destination": "/voorbeelden",
       "permanent": true
@@ -244,7 +268,7 @@
   "functions": {
     "api/index.py": {
       "maxDuration": 30,
-      "excludeFiles": "{images/**,media/**,kozijnhorren/**,src/**,css/**,js/**,kozijnmerken/**,tests/**,.data/**,prive/**,*.html,*.xml,*.md}"
+      "excludeFiles": "{images/**,media/**,fonts/**,kozijnhorren/**,src/**,css/**,js/**,kozijnmerken/**,tests/**,.data/**,prive/**,*.html,*.xml,*.md}"
     }
   },
   "crons": [
@@ -252,5 +276,8 @@
       "path": "/api/cron",
       "schedule": "0 7 * * *"
     }
+  ],
+  "regions": [
+    "fra1"
   ]
 }

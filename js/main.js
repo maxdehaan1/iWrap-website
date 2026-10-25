@@ -99,6 +99,15 @@
     }, { threshold: 0.55 }).observe(blok);
   });
 
+  /* Wintermelding --------------------------------------------------------- */
+  /* Van half november tot en met februari plannen we veel minder; dan zegt de
+     offertepagina dat er gerust al aangevraagd kan worden voor het voorjaar. */
+  var nu = new Date();
+  var maand = nu.getMonth() + 1;
+  if ((maand === 11 && nu.getDate() >= 15) || maand === 12 || maand <= 2) {
+    document.querySelectorAll('[data-winter]').forEach(function (el) { el.hidden = false; });
+  }
+
   /* Reviews -------------------------------------------------------------- */
   /* De pagina komt met de stand van de laatste build. Hier halen we de live
      stand op (/api/reviews, die hem van Google heeft) en zetten die in elk

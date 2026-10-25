@@ -91,6 +91,8 @@ FEITEN = {
     "garantie_montage_jaren": "5",
     "levensduur_profiel": "50 tot 75 jaar",
     "doorlooptijd": "een tot twee dagen",
+    # Het seizoen: in de winter plannen we veel minder, grote projecten niet.
+    "seizoen": "maart tot november",
 }
 
 # ---------------------------------------------------------------------------
@@ -126,6 +128,7 @@ FOOTER_KOLOMMEN = [
         ("veelgestelde-vragen", "Veelgestelde vragen"),
         ("contact", "Contact"),
         ("offerte", "Offerte aanvragen"),
+        ("privacy", "Privacy"),
     ]),
 ]
 
@@ -681,10 +684,7 @@ HEAD = """<!DOCTYPE html>
 <link rel="icon" href="{favicon}" type="image/png">
 <link rel="apple-touch-icon" href="/images/logo/apple-touch-icon.png">
 <script>document.documentElement.className+=" js";</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="{fonts}">
-{stylesheets}{preload}<script type="application/ld+json">{jsonld}</script>
+{fonts}{stylesheets}{preload}<script type="application/ld+json">{jsonld}</script>
 </head>
 <body class="{bodyclass}">
 <a class="skip" href="#inhoud">Naar de inhoud</a>
@@ -697,11 +697,21 @@ HEAD = """<!DOCTYPE html>
 </html>
 """
 
-FONTS = (
-    "https://fonts.googleapis.com/css2?"
-    "family=Montserrat:wght@500;600;700&"
-    "family=Inter:wght@400;500;600&display=swap"
-)
+# Bezoekers tellen met Vercel Web Analytics: zonder cookies en zonder iets op het
+# toestel van de bezoeker, dus zonder cookiebanner. Niet op de Max-modus en het
+# rapport (noindex): die adressen bevatten een sleutel en horen nergens in een
+# overzicht. Werkt pas als Analytics in Vercel aanstaat (zie LIVEGANG.md).
+ANALYTICS = '<script defer src="/_vercel/insights/script.js"></script>\n'
+
+
+def fonts_koppen(ver):
+    """De lettertypen staan op de site zelf (css/fonts.css, fonts/): zo gaat het
+    IP-adres van een bezoeker niet naar Google, en is er geen cookiebanner nodig.
+    De twee die bovenaan elke pagina staan worden alvast geladen."""
+    vooraf = "".join(
+        '<link rel="preload" href="/fonts/%s" as="font" type="font/woff2" crossorigin>\n' % f.name
+        for f in sorted((ROOT / "fonts").glob("*-latin-*.woff2")) if "-ext-" not in f.name)
+    return vooraf + '<link rel="stylesheet" href="/css/fonts.css?v=%s">\n' % ver
 
 
 def render(slug, meta, inhoud, ver):
@@ -757,7 +767,7 @@ def render(slug, meta, inhoud, ver):
         oghoogte=oghoogte,
         ogalt=meta.get("ogalt", "Hersteld kunststof kozijn met nieuwe Renolit folie"),
         favicon=FAVICON,
-        fonts=FONTS,
+        fonts=fonts_koppen(ver),
         stylesheets=stylesheets,
         preload=preload,
         jsonld=jsonld,
@@ -765,7 +775,7 @@ def render(slug, meta, inhoud, ver):
         nav=render_kale_kop(meta["kaal"]) if meta.get("kaal") else render_nav(slug),
         inhoud=inhoud,
         footer="" if meta.get("kaal") else render_footer(),
-        scripts=scripts,
+        scripts=scripts + ("" if meta.get("noindex") else ANALYTICS),
     )
 
 

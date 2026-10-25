@@ -47,11 +47,18 @@ weinig misgaan.
       - "na vijftien tot twintig jaar is de fabrieksfolie op"
       - opgericht in 2014. Daar rekenen de sites "12 jaar" mee uit. Was het een ander jaar,
         dan past Claude één getal aan.
-- [ ] **[Claude] Privacyverklaring voor iwrap.nl.** Die is er nog niet, en de oude site
-      had er ook geen. Het offerteformulier vraagt naam, adres, telefoon en foto's, dus de
-      AVG vraagt erom. Claude schrijft een concept dat beschrijft wat de site echt doet:
-      gegevens alleen voor de offerte, bewaard tot 30 dagen, mail via Microsoft 365, geen
-      tracking. **[Max]** leest het en laat het eventueel nakijken.
+- [x] **[Claude] Privacyverklaring voor iwrap.nl** staat op `/privacy` (25 oktober),
+      met een link in de footer en bij het versturen van het formulier. kozijnwrap.nl en
+      houtnerffolie.nl hebben een korte privacyregel.
+- [ ] **[Max] Privacyverklaring nalezen.** Twee dingen daarin zijn een keuze van jou, en
+      Claude heeft er een redelijke standaard voor ingevuld: een aanvraag die geen opdracht
+      wordt, verwijder je **binnen twee jaar** uit je mail, en het opleverrapport bewaar je
+      **zolang de garantie loopt**. Klopt dat niet met hoe je werkt, zeg het dan. Daarna
+      eventueel laten nakijken.
+- [x] **Geen cookiebanner nodig.** De sites gebruiken geen cookies, de lettertypen staan
+      op de sites zelf (niet meer bij Google), en de bezoekersmeting werkt zonder cookies.
+      Komt er ooit iets bij dat wel cookies zet (een YouTube-video, een Google Maps-kaart,
+      advertentiepixels), dan is er wél een banner nodig. Claude let daarop.
 
 ## 2. Koppelingen instellen en testen op het testadres (weken van tevoren)
 
@@ -65,7 +72,7 @@ Environment *Production* aangevinkt. Na het toevoegen: Deployments > de bovenste
 | `CRON_SECRET` | Lange willekeurige tekst | Zie hieronder |
 | `MS_TENANT_ID`, `MS_CLIENT_ID`, `MS_CLIENT_SECRET` | De koppeling met je mailbox | entra.microsoft.com, zie README "Mail via Microsoft 365" |
 | `GOOGLE_PLACES_API_KEY` | De reviews live op alle sites | console.cloud.google.com, zie README "Reviews" |
-| `KV_REST_API_URL`, `KV_REST_API_TOKEN` | De opslag | Komen er vanzelf bij: Vercel > Storage > Upstash for Redis (gratis) > Connect |
+| `KV_REST_API_URL`, `KV_REST_API_TOKEN` | De opslag | Komen er vanzelf bij: Vercel > Storage > Upstash for Redis (gratis) > Connect. **Kies als regio Frankfurt (eu-central-1)**: de privacyverklaring zegt dat we waar het kan EU-servers gebruiken |
 | `IWRAP_URL` | `https://iwrap-website.vercel.app` | **Tijdelijk**, alleen tot de overstapdag (zie stap 3) |
 
 Een willekeurige tekst maken, in je eigen Terminal (niet in een chat plakken):
@@ -74,7 +81,11 @@ Een willekeurige tekst maken, in je eigen Terminal (niet in een chat plakken):
 python3 -c "import secrets; print(secrets.token_urlsafe(48))"
 ```
 
-- [ ] **[Max] Opslag:** Upstash for Redis koppelen.
+- [ ] **[Max] Opslag:** Upstash for Redis koppelen, regio Frankfurt.
+- [ ] **[Max] Bezoekers tellen:** zet in Vercel bij **iwrap-website**, **kozijnwrap-website**
+      en **houtnerffolie-website** het tabblad *Analytics* aan (Enable Web Analytics). Het
+      telscript staat al op de sites; zonder deze klik telt het niets. Dit kan nu al.
+      (De functies van iwrap draaien al in Frankfurt, dat staat in `vercel.json`.)
 - [ ] **[Max] Mail:** app-registratie in Microsoft Entra en de drie `MS_`-waarden (tien
       minuten, stappen in de README). **Zet in je agenda wanneer het client secret
       verloopt** (na 24 maanden), anders stopt de mail van de site op die dag.
@@ -182,6 +193,8 @@ iwrap.nl noemt de naam kozijnhorren.nl wel al, maar linkt pas naar de winkel als
 - [ ] **[Max] Vercel > kozijnhorren > Domains:** kozijnhorren.nl toevoegen, en het DNS
       bij GPO zoals bij stap 4.
 - [ ] **[Max] Vercel > iwrap-website:** `SHOP_URL` = `https://kozijnhorren.nl`.
+- [ ] **[Claude]** Het telscript van Vercel ook op kozijnhorren.nl zetten, en **[Max]**
+      Analytics aanzetten in het project kozijnhorren.
 - [ ] **[Claude]** `KOZIJNHORREN_LIVE = True` in `build.py`. Dan linkt iwrap.nl naar de
       winkel (kozijncheck, rapport, footer). Opnieuw bouwen en pushen.
 
@@ -195,4 +208,4 @@ iwrap.nl noemt de naam kozijnhorren.nl wel al, maar linkt pas naar de winkel als
 
 ---
 
-*Bijgehouden door Claude. Laatst bijgewerkt: 25 oktober 2026.*
+*Bijgehouden door Claude. Laatst bijgewerkt: 25 oktober 2026 (privacy, lettertypen, bezoekersmeting).*

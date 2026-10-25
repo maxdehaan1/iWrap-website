@@ -611,7 +611,8 @@ op Vercel verloren. **Zet de site dus pas live als de koppeling werkt.**
   een nieuw adres zien.
 - **Alle 18 pagina's die Google van de oude site kent** (uit de Yoast-sitemaps) komen op
   de nieuwe site op een echte pagina uit: dezelfde URL, of een 301 naar de pagina die
-  erop lijkt (de portfolio's naar `/voorbeelden`). Getest op 24 oktober 2026.
+  erop lijkt (de portfolio's naar `/voorbeelden`, drie ervan naar hun eigen project
+  daar). Getest op 24 oktober 2026.
 - **De Vercel-testadressen** (`*.vercel.app`) sturen de kop `X-Robots-Tag: noindex` mee
   (`vercel.json`), zodat Google ze niet naast iwrap.nl gaat tonen. Op iwrap.nl zelf geldt
   die kop niet.
@@ -626,9 +627,13 @@ op Vercel verloren. **Zet de site dus pas live als de koppeling werkt.**
 
 **Later, als je zin hebt:**
 
-- **Echte projecten op `/voorbeelden`.** Nu staan er vijf voor/na-paren van één klus. Elke
-  nieuwe klus met een fatsoenlijke voor- en na-foto kun je erbij zetten — mét plaatsnaam,
-  want dat is precies waar "kunststof kozijnen herstellen [plaats]" op gaat ranken.
+- **Meer projecten op `/voorbeelden`.** Er staan nu drie projecten van de oude site (De
+  Wissel in Etten-Leur, crèmewitte kozijnen, een deur) plus de voor/na-foto's van één klus.
+  De oude projectpagina's sturen door naar hun eigen project (`/voorbeelden#de-wissel`
+  enzovoort). Greefa, de Avery-fabriek en de villa zijn bewust weggelaten: dat was
+  facadefilm, en dat doet iWrap niet meer. Elke nieuwe klus met een goede voor- en
+  na-foto kan erbij, het liefst mét plaatsnaam: daar gaat "kunststof kozijnen herstellen
+  [plaats]" op ranken. Foto's eerst zonder EXIF opslaan (daar zit de GPS van het huis in).
 - **Meer merkpagina's.** Eén regel in `MERKEN` per merk. Kandidaten: Rehau, Deceuninck,
   Aluplast, Salamander.
 - **Werkgebied uitbreiden.** In `REGIOS` in `build.py` staan alleen plaatsen waar je
@@ -636,6 +641,18 @@ op Vercel verloren. **Zet de site dus pas live als de koppeling werkt.**
   Google als spam gelezen en werkt averechts.
 - **Geen analytics ingebouwd.** Wil je zien hoeveel aanvragen er binnenkomen en waar ze
   vandaan komen, dan is Vercel Analytics één regel werk.
+
+## Privacy, lettertypen en bezoekersmeting
+
+- **`/privacy`** beschrijft wat de site echt doet. Verandert er iets aan het formulier,
+  de opslag of de diensten die we gebruiken, pas de pagina dan mee aan.
+- **Geen cookies, dus geen cookiebanner.** De lettertypen staan in `fonts/` en
+  `css/fonts.css`, niet bij Google. Haal ze nooit meer van fonts.googleapis.com: dan gaat
+  bij elk bezoek het IP-adres van de bezoeker naar Google.
+- **Bezoekersmeting:** Vercel Web Analytics (`ANALYTICS` in `build.py`), zonder cookies.
+  Niet op de Max-modus en het rapport, want die adressen bevatten een sleutel. Aanzetten
+  doe je in Vercel (zie LIVEGANG.md).
+- **De functies draaien in Frankfurt** (`regions` in `vercel.json`).
 
 ## Feiten die op meerdere sites staan
 
@@ -646,6 +663,10 @@ alleen maar verwarrend. Ze staan hier op één plek, in `FEITEN` in `build.py`:
 - Tien jaar fabrieksgarantie op de folie, vijf jaar op de montage
 - Kunststof profiel gaat 50 tot 75 jaar mee
 - Doorlooptijd: een tot twee dagen
+- Seizoen: het meeste werk van maart tot november; in de winter alleen kleinere klussen,
+  geen grote projecten (`feit.seizoen`, de FAQ, de VvE-pagina, en op houtnerffolie.nl
+  het buitenseizoen en de FAQ). Van half november tot en met februari toont de
+  offertepagina vanzelf een wintermelding (`data-winter` in `main.js`).
 
 ## Wat er níet op de site mag
 
