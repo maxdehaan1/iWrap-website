@@ -550,8 +550,7 @@ def render_footer():
       <div class="fcol fbrand">
         <img src="/images/logo/iwrap-logo-licht-88.png" width="200" height="42" alt="iWrap" loading="lazy">
         <p>Wij herstellen kunststof kozijnen met Renolit folie. Al
-        {b['ervaring_jaren']} jaar, door heel Nederland, met eigen gecertificeerde
-        monteurs.</p>
+        {b['ervaring_jaren']} jaar, door heel Nederland, en we besteden niets uit.</p>
         <p class="fcontact">
           <a href="tel:{b['telefoon_tel']}">{b['telefoon']}</a><br>
           <a href="mailto:{b['email']}">{b['email']}</a>

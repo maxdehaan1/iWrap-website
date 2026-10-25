@@ -42,8 +42,9 @@ weinig misgaan.
       domein was op 25 oktober nog vrij; wacht er niet te lang mee.
 - [ ] **[Max] KvK-nummer en btw-id** doorgeven. **[Claude]** zet ze in `build.py` (footer
       en contactpagina) en, voor de winkel, in `backend/data/winkel.json`.
-- [ ] **[Max] Drie dingen bevestigen** die op de sites staan:
-      - "gecertificeerde monteurs in vaste dienst"
+- [x] "Gecertificeerde monteurs in vaste dienst" is overal vervangen door **"wij besteden
+      niets uit"** (25 oktober, akkoord Max).
+- [ ] **[Max] Nog twee dingen bevestigen** die op de sites staan:
       - "na vijftien tot twintig jaar is de fabrieksfolie op"
       - opgericht in 2014. Daar rekenen de sites "12 jaar" mee uit. Was het een ander jaar,
         dan past Claude één getal aan.
