@@ -160,6 +160,9 @@
 .project-tekst dt{color:var(--sub);}
 .project-tekst dd{margin:0;font-weight:500;}
 .project-meer a{font-weight:600;color:var(--mint-ink);}
+.project-groot.omgekeerd{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);}
+.project-groot.omgekeerd .project-tekst{order:-1;}
+.project-groot .voorna{margin-bottom:0;}
 .projecten-paar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(28px,3.4vw,48px);}
 .project{scroll-margin-top:90px;}
 .voorna{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
@@ -169,6 +172,7 @@
 .etiket.na{background:var(--mint);color:var(--ink);}
 @media (max-width:900px){
   .project-groot{grid-template-columns:1fr;}
+  .project-groot.omgekeerd .project-tekst{order:0;}
   .projecten-paar{grid-template-columns:1fr;}
 }
 .vve-voorbeeld{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:center;margin:30px 0 0;padding:16px;background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}
