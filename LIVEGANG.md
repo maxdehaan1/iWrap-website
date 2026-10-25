@@ -38,6 +38,11 @@ weinig misgaan.
       met offerteformulier (en straks een winkel) hoort op **Pro** (rond $20 per maand,
       één abonnement voor alle projecten). Kijk bij Vercel > Settings > Billing wat je nu
       hebt. Wil je geen abonnement, zeg het dan, dan zoeken we samen naar een alternatief.
+- [ ] **[Max] Beslissen: een vast zakelijk nummer** (085 of 035) dat doorschakelt naar je
+      06, in plaats van het 06-nummer op de sites. Zo ja, regel het vóór de overstap: dan
+      gaan de sites, het Google Bedrijfsprofiel en je reviewkaartjes in één keer om.
+      **[Claude]** zet het nummer daarna overal goed (het staat op één plek per site).
+      WhatsApp blijft op je 06, tenzij je WhatsApp Business op het nieuwe nummer zet.
 - [ ] **[Max] kozijnhorren.nl registreren** bij GPO, alleen als de winkel doorgaat. Het
       domein was op 25 oktober nog vrij; wacht er niet te lang mee.
 - [ ] **[Max] KvK-nummer en btw-id** doorgeven. **[Claude]** zet ze in `build.py` (footer
