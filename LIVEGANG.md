@@ -44,10 +44,9 @@ weinig misgaan.
       en contactpagina) en, voor de winkel, in `backend/data/winkel.json`.
 - [x] "Gecertificeerde monteurs in vaste dienst" is overal vervangen door **"wij besteden
       niets uit"** (25 oktober, akkoord Max).
-- [ ] **[Max] Nog twee dingen bevestigen** die op de sites staan:
-      - "na vijftien tot twintig jaar is de fabrieksfolie op"
-      - opgericht in 2014. Daar rekenen de sites "12 jaar" mee uit. Was het een ander jaar,
-        dan past Claude één getal aan.
+- [x] **Levensduur van de folie:** overal "vijftien tot vijfentwintig jaar", en "versleten"
+      in plaats van "op" (25 oktober, akkoord Max).
+- [x] **Opgericht in 2014** bevestigd; daar rekenen de sites "12 jaar" mee uit.
 - [x] **[Claude] Privacyverklaring voor iwrap.nl** staat op `/privacy` (25 oktober),
       met een link in de footer en bij het versturen van het formulier. kozijnwrap.nl en
       houtnerffolie.nl hebben een korte privacyregel.

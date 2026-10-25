@@ -455,7 +455,7 @@ en de FAQ.
 **Hoe de omvang erbij staat.** Nooit als "duizenden klanten": naast "84 reviews" gaat een
 lezer dan rekenen. Wel in kozijnen en jaren ("in 12 jaar duizenden kozijnen hersteld"), en
 waar ruimte is met de uitleg erbij: "een deel van die klanten schreef er een review over".
-Het aantal jaren rekent zichzelf uit vanaf 2014 (`opgericht` in `build.py`, en hetzelfde
+Het aantal jaren rekent zichzelf uit vanaf 2014, het jaar dat iWrap begon (`opgericht` in `build.py`, en hetzelfde
 jaartal in de build van kozijnwrap.nl en kozijnhorren.nl; op houtnerffolie.nl staat "sinds
 2014").
 
@@ -662,6 +662,8 @@ alleen maar verwarrend. Ze staan hier op één plek, in `FEITEN` in `build.py`:
 
 - Tien jaar fabrieksgarantie op de folie, vijf jaar op de montage
 - Kunststof profiel gaat 50 tot 75 jaar mee
+- De folie houdt het vijftien tot vijfentwintig jaar (`feit.levensduur_folie`). Schrijf
+  "versleten" of "aan vervanging toe", niet "de folie is op"
 - Doorlooptijd: een tot twee dagen
 - Seizoen: het meeste werk van maart tot november; in de winter alleen kleinere klussen,
   geen grote projecten (`feit.seizoen`, de FAQ, de VvE-pagina, en op houtnerffolie.nl

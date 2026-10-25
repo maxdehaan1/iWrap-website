@@ -90,6 +90,8 @@ FEITEN = {
     "garantie_folie_jaren": "10",
     "garantie_montage_jaren": "5",
     "levensduur_profiel": "50 tot 75 jaar",
+    # Hoe lang de folie het houdt voor hij aan vervanging toe is. Niet "op" schrijven.
+    "levensduur_folie": "vijftien tot vijfentwintig jaar",
     "doorlooptijd": "een tot twee dagen",
     # Het seizoen: in de winter plannen we veel minder, grote projecten niet.
     "seizoen": "maart tot november",
