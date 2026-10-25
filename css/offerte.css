@@ -311,6 +311,14 @@
   .manier-titel{grid-area:titel;}
   .manier-uitleg{grid-area:uitleg;font-size:.9rem;}
 }
+@media (max-width:560px){
+  /* Smal scherm: kleiner plaatje en het rondje naast het label in plaats van
+     naast alle tekst. Anders breekt de uitleg na elk tweede woord af. */
+  .stap-paneel{padding:22px 18px;}
+  .manier-vlak{grid-template-columns:64px 1fr;column-gap:12px;padding:14px;}
+  .manier-beeld{align-self:start;margin-top:4px;}
+  .manier-label{margin-right:34px;justify-self:start;}
+}
 
 .altijd-foto{
   display:flex;gap:12px;align-items:flex-start;margin:20px 0 0;padding:14px 18px;

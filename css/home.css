@@ -45,6 +45,8 @@
   /* De knoppen direct onder de foto: anders staat "Offerte aanvragen" pas
      na een heel scherm lopende tekst. */
   .hero-tekst .knoprij{order:4;margin-top:4px;}
+  /* Het reviewcijfer meteen onder de knoppen: daar twijfelt iemand. */
+  .hero-tekst .rv-badge{order:4;justify-self:start;margin-top:0;}
   .hero-lede{order:5;margin-top:26px;}
   .hero-tekst .hero-bewijs{order:6;}
 }
