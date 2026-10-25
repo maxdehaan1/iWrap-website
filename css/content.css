@@ -167,6 +167,9 @@
 .project{scroll-margin-top:90px;}
 .voorna{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
 .voorna img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:12px;box-shadow:var(--shadow);}
+/* In het raster liggen alle paren in hetzelfde formaat, dan staan de kaarten rustig naast elkaar. */
+.projecten-paar .voorna img{aspect-ratio:4/3;}
+.projecten-paar{row-gap:clamp(36px,4vw,56px);}
 .etiket{position:absolute;left:8px;top:8px;font-family:var(--kop);font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:999px;}
 .etiket.voor{background:var(--rust);color:#fff;}
 .etiket.na{background:var(--mint);color:var(--ink);}

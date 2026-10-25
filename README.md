@@ -627,13 +627,16 @@ op Vercel verloren. **Zet de site dus pas live als de koppeling werkt.**
 
 **Later, als je zin hebt:**
 
-- **Meer projecten op `/voorbeelden`.** Er staan nu drie projecten van de oude site (De
-  Wissel in Etten-Leur, crèmewitte kozijnen, een deur) plus de voor/na-foto's van één klus.
-  De oude projectpagina's sturen door naar hun eigen project (`/voorbeelden#de-wissel`
-  enzovoort). Greefa, de Avery-fabriek en de villa zijn bewust weggelaten: dat was
-  facadefilm, en dat doet iWrap niet meer. Elke nieuwe klus met een goede voor- en
-  na-foto kan erbij, het liefst mét plaatsnaam: daar gaat "kunststof kozijnen herstellen
-  [plaats]" op ranken. Foto's eerst zonder EXIF opslaan (daar zit de GPS van het huis in).
+- **Meer projecten op `/voorbeelden`.** Er staan nu twee grote projecten (De Wissel,
+  een opengescheurde kozijnhoek) en een raster met zes voor/na-paren: een klein raam,
+  groen (RAL 6009), antracietgrijs (RAL 7016), een witte verbinding, een crème onderdorpel
+  en crèmewitte kozijnen. De paren komen uit Documents/iWrap/.../foto's voor website; in
+  het raster zijn ze allemaal 4:3 bijgesneden tot hetzelfde stuk kozijn. Greefa, de
+  Avery-fabriek en de villa zijn bewust weggelaten (facadefilm), de groene deur ook (alleen
+  de dorpels waren hersteld, op de foto lijkt het paneel van kleur veranderd). Teksten
+  gaan over hoe het eruitziet, nooit over water of lekkage, en zonder datums. Foto's waarop
+  het kozijn helemaal geel is, tonen de lijmlaag: niet gebruiken. Altijd zonder EXIF
+  opslaan (daar zit de GPS van het huis in).
 - **Meer merkpagina's.** Eén regel in `MERKEN` per merk. Kandidaten: Rehau, Deceuninck,
   Aluplast, Salamander.
 - **Werkgebied uitbreiden.** In `REGIOS` in `build.py` staan alleen plaatsen waar je
