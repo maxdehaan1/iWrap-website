@@ -421,39 +421,11 @@ Belangrijke keuzes:
 - Automatische mails: bevestiging na betaling, "onderweg" als Max op verzonden zet, en
   "past alles?" vijf dagen later.
 
-## Livegang: in deze volgorde
+## Livegang
 
-Nu draait alles lokaal. Om het echt te gebruiken:
-
-1. **iwrap.nl naar Vercel** (stond al op de lijst), met iwrap.nl zonder www als hoofddomein
-   (zie hieronder). De API moet op iwrap.nl bereikbaar zijn: de `*.vercel.app`-adressen zitten achter de Vercel-login, en daar kunnen de
-   winkel, Mollie en de klant niet bij.
-2. **Opslag:** Vercel > project iwrap-website > Storage > Upstash for Redis (gratis
-   laag) > koppelen. Dat zet `KV_REST_API_URL` en `KV_REST_API_TOKEN` vanzelf.
-3. **Omgevingsvariabelen** in Vercel (Settings > Environment Variables):
-
-   | Naam | Wat |
-   |---|---|
-   | `MAX_WACHTWOORD` | Je wachtwoord voor de Max-modus |
-   | `GEHEIM` | Een lange willekeurige tekst (40+ tekens); ondertekent de inlog |
-   | `CRON_SECRET` | Een willekeurige tekst; Vercel stuurt hem mee met de dagelijkse taak |
-   | `MOLLIE_API_KEY` | Eerst de `test_`-sleutel, later de `live_`-sleutel |
-   | `MS_TENANT_ID`, `MS_CLIENT_ID`, `MS_CLIENT_SECRET` | De koppeling met Microsoft 365 (zie hieronder) |
-   | `LEVERANCIER_NAAM`, `LEVERANCIER_EMAIL` | Zodra je een leverancier hebt |
-   | `LEVERANCIER_AUTOMATISCH` | `nee` (standaard) of `ja` |
-   | `SHOP_URL` | Het adres van de winkel: `https://kozijnhorren.nl` |
-   | `GOOGLE_PLACES_API_KEY` | De Google-reviews live op alle sites (zie "Reviews") |
-
-4. **Mail via Microsoft 365.** Zie het kopje hieronder. Daarna een testaanvraag doen op
-   iwrap.nl/offerte en kijken of hij met alle foto's in je inbox staat.
-5. **Mollie** in testmodus, en één keer de hele stroom doorlopen: klus in de Max-modus,
-   rapport openen op je telefoon, via de tip naar kozijnhorren.nl, bestellen,
-   testbetaling, mail, Naar leverancier, Verzonden.
-6. **kozijnhorren.nl online** als tweede Vercel-project: zie `kozijnhorren/README.md`.
-7. **Echte prijzen** (`prijslijst.py`), dan `voorbeeldprijzen` op `false`, dan de
-   `live_`-sleutel van Mollie.
-8. **Voorwaarden en privacy** laten nakijken (staan als concept in `kozijnhorren/src/pages/`),
-   en KvK en btw-id invullen in `build.py` én `backend/data/winkel.json`.
+Alles wat er voor de echte domeinen ingesteld moet worden, voor alle vier de sites, staat
+in **[LIVEGANG.md](LIVEGANG.md)**: in volgorde, met wie wat doet. Dat is de enige lijst.
+Komt er iets bij, dan komt het daar.
 
 ## Reviews
 
@@ -627,20 +599,9 @@ op Vercel verloren. **Zet de site dus pas live als de koppeling werkt.**
 
 ## Wat er nog moet gebeuren
 
-**Voordat de site live gaat:**
+**Voor de livegang:** zie [LIVEGANG.md](LIVEGANG.md). Hieronder alleen de achtergrond.
 
-1. **De Google-sleutel in Vercel** (zie "Reviews"). Dan lopen cijfer, aantal en de
-   nieuwste reviews op alle vier de sites vanzelf mee.
-2. **Vul KvK en btw-id in** in `BEDRIJF` in `build.py`. Die horen op de site te staan en
-   staan nu nergens. Zolang ze leeg zijn, laat de footer ze gewoon weg.
-3. **De mailkoppeling met Microsoft 365** (zie "Mail via Microsoft 365") en Upstash
-   Redis. Zonder die twee komt een offerteaanvraag nergens aan.
-4. **Controleer twee claims** die ik van je bestaande sites heb overgenomen maar niet zelf
-   kan verifiëren: "gecertificeerde monteurs in vaste dienst" en "na vijftien tot twintig
-   jaar is de fabrieksfolie op". De eerste staat al op kozijnwrap.nl, de tweede is mijn
-   formulering — pas hem aan als jouw praktijkgetal anders is.
-
-**Bij het overzetten van het domein (Google houdt je posities):**
+**Waarom de overstap zo is opgezet (Google houdt je posities):**
 
 - **iwrap.nl zonder www is het hoofdadres.** Zo kent Google je site nu: de WordPress-site
   heeft `https://iwrap.nl/` als canonical en stuurt www door naar iwrap.nl. De nieuwe site
@@ -662,13 +623,6 @@ op Vercel verloren. **Zet de site dus pas live als de koppeling werkt.**
 - In `vercel.json` staan alvast redirects voor een paar URL's die mensen intypen
   (`/prijzen`, `/faq`, `/kozijnherstel`). Kom je in Search Console andere oude URL's
   tegen met inkomende links, zet ze daar dan bij.
-- **Na de overstap in Google Search Console** (eigendom `iwrap.nl`, die heb je al als de
-  Yoast-sitemap daar staat): bij Sitemaps de oude `sitemap_index.xml` weghalen en
-  `https://iwrap.nl/sitemap.xml` toevoegen. Met URL-inspectie de homepage, `/offerte` en
-  `/kunststof-kozijn-herstellen` laten indexeren. Kijk de eerste weken bij Pagina's of er
-  404's opduiken; zet zo'n oude URL dan als redirect in `vercel.json`.
-- **Google Bedrijfsprofiel:** zet de website-link daar op `https://iwrap.nl` en de
-  afspraak-/offertelink op `https://iwrap.nl/offerte`.
 
 **Later, als je zin hebt:**
 

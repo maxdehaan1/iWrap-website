@@ -128,8 +128,8 @@ kassa een echte (live) Mollie-betaling.
 5. Maak in Microsoft 365 het adres info@kozijnhorren.nl aan (een alias is genoeg) en zet
    het in `backend/data/winkel.json`. Nu staat daar nog info@iwrap.nl.
 
-De winkel werkt pas echt als de API op iwrap.nl bereikbaar is; de `*.vercel.app`-
-adressen van het iwrap-project zitten achter de Vercel-login.
+De winkel praat met de API op iwrap.nl, dus hij gaat pas echt live na de overstap van
+iwrap.nl. Alle stappen voor de livegang, in volgorde, staan in `../LIVEGANG.md` (stap 6).
 
 ## Wat er bewust niet in zit
 
