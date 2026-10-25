@@ -51,14 +51,15 @@
     <div class="sectie-kop">
       <p class="opschrift">Projecten</p>
       <h2>Klussen van dichtbij</h2>
-      <p>Van één kozijnhoek tot een heel appartementencomplex.</p>
+      <p>Van één kozijnhoek tot een heel appartementencomplex. Sleep de schuif over de
+      foto's om voor en na te vergelijken.</p>
     </div>
 
     <article class="project-groot verschijn" id="de-wissel">
       <div class="project-beelden">
         <figure class="project-hoofd"><x-beeld src="project-de-wissel-complex" sizes="(max-width:900px) 100vw, 640px" alt="Appartementencomplex De Wissel in Etten-Leur, met de herstelde kozijnen op alle verdiepingen"></figure>
         <div class="project-duim">
-          <figure><x-beeld src="project-de-wissel-voor" sizes="(max-width:900px) 25vw, 160px" alt="Een onderdorpel bij De Wissel voor het herstel: de folie is kapot en vies"><span class="etiket voor">Voor</span></figure>
+          <figure><x-beeld src="project-de-wissel-voor" sizes="(max-width:900px) 25vw, 160px" alt="Een kozijnhoek bij De Wissel voor het herstel: de folie is verweerd en vlekkerig"><span class="etiket voor">Voor</span></figure>
           <figure><x-beeld src="project-de-wissel-na" sizes="(max-width:900px) 25vw, 160px" alt="Een kozijnhoek bij De Wissel na het herstel: strak en egaal"><span class="etiket na">Na</span></figure>
           <figure><x-beeld src="project-de-wissel-hoogwerker" sizes="(max-width:900px) 25vw, 160px" alt="Werk aan een kozijn op de verdieping, vanaf de hoogwerker"></figure>
           <figure><x-beeld src="project-de-wissel-gevel" sizes="(max-width:900px) 25vw, 160px" alt="Kopgevel van De Wissel met de herstelde kozijnen"></figure>
@@ -79,10 +80,7 @@
 
     <article class="project-groot omgekeerd verschijn" id="kozijnhoek">
       <div class="project-beelden">
-        <div class="voorna">
-          <figure><x-beeld src="project-hoek-voor" sizes="(max-width:900px) 50vw, 320px" alt="Kozijnhoek voor het herstel: de folie op de onderdorpel is opengescheurd en de gele lijmlaag is zichtbaar"><span class="etiket voor">Voor</span></figure>
-          <figure><x-beeld src="project-hoek-na" sizes="(max-width:900px) 50vw, 320px" alt="Dezelfde kozijnhoek na het herstel: de folie is strak om de hoek gezet en dicht"><span class="etiket na">Na</span></figure>
-        </div>
+        {{schuif:hoek|(max-width:900px) 100vw, 640px|Kozijnhoek voor het herstel: de folie is opengescheurd en de gele lijmlaag is zichtbaar|Dezelfde kozijnhoek na het herstel: strak en egaal, zonder naad|42}}
       </div>
       <div class="project-tekst">
         <p class="plaats">Kozijnhoek &middot; houtnerffolie</p>
@@ -95,55 +93,37 @@
 
     <div class="projecten-paar">
       <article class="project verschijn" id="klein-raam">
-        <div class="voorna">
-          <figure><x-beeld src="project-raam-voor" sizes="(max-width:900px) 50vw, 270px" alt="Klein kozijn voor het herstel: de folie is gebarsten en laat aan de onderkant los"><span class="etiket voor">Voor</span></figure>
-          <figure><x-beeld src="project-raam-na" sizes="(max-width:900px) 50vw, 270px" alt="Hetzelfde kleine kozijn na het herstel: strak en egaal"><span class="etiket na">Na</span></figure>
-        </div>
+        {{schuif:raam|(max-width:900px) 100vw, 540px|Klein kozijn voor het herstel: de folie is gebarsten en laat aan de onderkant los|Hetzelfde kleine kozijn na het herstel: strak en egaal}}
         <p class="plaats">Klein raam &middot; crème</p>
         <h3>Een klein raam, weer als nieuw</h3>
         <p>De folie was gebarsten en liet aan de onderkant los. Nu is het kozijn rondom weer strak en egaal.</p>
       </article>
       <article class="project verschijn" id="groen">
-        <div class="voorna">
-          <figure><x-beeld src="project-groen-voor" sizes="(max-width:900px) 50vw, 270px" alt="Groene onderdorpel voor het herstel: verweerd, met witte strepen en kale plekken"><span class="etiket voor">Voor</span></figure>
-          <figure><x-beeld src="project-groen-na" sizes="(max-width:900px) 50vw, 270px" alt="Dezelfde groene onderdorpel na het herstel: egaal groen met houtnerf"><span class="etiket na">Na</span></figure>
-        </div>
+        {{schuif:groen|(max-width:900px) 100vw, 540px|Groene onderdorpel voor het herstel: verweerd, met witte strepen en kale plekken|Dezelfde groene onderdorpel na het herstel: egaal groen met houtnerf}}
         <p class="plaats">Groen &middot; RAL 6009</p>
         <h3>Groen, weer egaal van kleur</h3>
         <p>De groene folie op de onderdorpel was verweerd, met witte strepen en kale plekken. Nu is hij weer egaal groen, met de houtnerf die erbij hoort.</p>
       </article>
       <article class="project verschijn" id="antraciet">
-        <div class="voorna">
-          <figure><x-beeld src="project-antraciet-voor" sizes="(max-width:900px) 50vw, 270px" alt="Antracietgrijze tussendorpel van een deur voor het herstel: gebarsten en verweerd"><span class="etiket voor">Voor</span></figure>
-          <figure><x-beeld src="project-antraciet-na" sizes="(max-width:900px) 50vw, 270px" alt="Dezelfde tussendorpel na het herstel: strak en egaal antraciet"><span class="etiket na">Na</span></figure>
-        </div>
+        {{schuif:antraciet|(max-width:900px) 100vw, 540px|Antracietgrijze tussendorpel van een deur voor het herstel: gebarsten en verweerd|Dezelfde tussendorpel na het herstel: strak en egaal antraciet}}
         <p class="plaats">Antracietgrijs &middot; RAL 7016</p>
         <h3>Een tussendorpel in een deur</h3>
         <p>De folie op de tussendorpel van deze glazen deur was gebarsten en verweerd. Nu is hij weer strak en egaal antraciet.</p>
       </article>
       <article class="project verschijn" id="verbinding">
-        <div class="voorna">
-          <figure><x-beeld src="project-verbinding-voor" sizes="(max-width:900px) 50vw, 270px" alt="Verbinding van stijl en dorpel voor het herstel: de folie is verweerd en gebarsten"><span class="etiket voor">Voor</span></figure>
-          <figure><x-beeld src="project-verbinding-na" sizes="(max-width:900px) 50vw, 270px" alt="Dezelfde verbinding na het herstel: de nieuwe folie loopt strak om de hoek"><span class="etiket na">Na</span></figure>
-        </div>
+        {{schuif:verbinding|(max-width:900px) 100vw, 540px|Verbinding van stijl en dorpel voor het herstel: de folie is verweerd en gebarsten|Dezelfde verbinding na het herstel: de nieuwe folie loopt strak om de hoek}}
         <p class="plaats">Wit &middot; houtnerffolie</p>
         <h3>Tot in de verbinding</h3>
         <p>De folie was over het hele kozijn verweerd en gebarsten, ook waar de stijl op de dorpel aansluit. Nu loopt de nieuwe houtnerffolie strak om de verbinding.</p>
       </article>
       <article class="project verschijn" id="onderdorpel">
-        <div class="voorna">
-          <figure><x-beeld src="project-dorpel-voor" sizes="(max-width:900px) 50vw, 270px" alt="Crème onderdorpel voor het herstel: dof, gebarsten en op plekken kaal"><span class="etiket voor">Voor</span></figure>
-          <figure><x-beeld src="project-dorpel-na" sizes="(max-width:900px) 50vw, 270px" alt="Dezelfde onderdorpel na het herstel: strak en egaal"><span class="etiket na">Na</span></figure>
-        </div>
+        {{schuif:dorpel|(max-width:900px) 100vw, 540px|Crème onderdorpel voor het herstel: dof, gebarsten en op plekken kaal|Dezelfde onderdorpel na het herstel: strak en egaal}}
         <p class="plaats">Onderdorpel &middot; crème</p>
         <h3>Een verweerde onderdorpel</h3>
         <p>Op de onderdorpel was de folie dof en gebarsten, en op plekken helemaal weg. Nu is hij weer strak en egaal.</p>
       </article>
       <article class="project verschijn" id="cremewitte-kozijnen">
-        <div class="voorna">
-          <figure><x-beeld src="project-cremewit-voor" sizes="(max-width:900px) 50vw, 270px" alt="Crèmewit kozijn voor het herstel: dof, vlekkerig en onderaan beschadigd"><span class="etiket voor">Voor</span></figure>
-          <figure><x-beeld src="project-cremewit-na" sizes="(max-width:900px) 50vw, 270px" alt="Hetzelfde kozijn na het herstel: weer strak en egaal"><span class="etiket na">Na</span></figure>
-        </div>
+        {{schuif:cremewit|(max-width:900px) 100vw, 540px|Crèmewit kozijn voor het herstel: dof, vlekkerig en onderaan beschadigd|Hetzelfde kozijn na het herstel: weer strak en egaal}}
         <p class="plaats">Kozijnen &middot; crèmewit</p>
         <h3>Crèmewitte kozijnen</h3>
         <p>De folie was dof en vlekkerig geworden, en onderaan beschadigd. Na het herstel zijn de kozijnen weer strak en egaal.</p>

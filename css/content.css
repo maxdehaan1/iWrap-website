@@ -151,8 +151,9 @@
 .project-hoofd{margin:0;}
 .project-hoofd img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--radius);box-shadow:var(--shadow);}
 .project-duim{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px;}
-.project-duim figure,.voorna figure{margin:0;position:relative;}
+.project-duim figure{margin:0;position:relative;}
 .project-duim img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:10px;}
+@media (max-width:560px){ .project-duim{grid-template-columns:repeat(2,minmax(0,1fr));} }
 .project-tekst h3,.project h3{margin-bottom:.4em;}
 .project-groot .plaats,.project .plaats{font-family:var(--kop);font-size:.76rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--mint-ink);margin:0 0 10px;}
 .project-tekst p,.project p{color:var(--ink-soft);font-size:.97rem;}
@@ -160,22 +161,24 @@
 .project-tekst dt{color:var(--sub);}
 .project-tekst dd{margin:0;font-weight:500;}
 .project-meer a{font-weight:600;color:var(--mint-ink);}
-.project-groot.omgekeerd{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);}
-.project-groot.omgekeerd .project-tekst{order:-1;}
-.project-groot .voorna{margin-bottom:0;}
 .projecten-paar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(28px,3.4vw,48px);}
 .project{scroll-margin-top:90px;}
-.voorna{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
-.voorna img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:12px;box-shadow:var(--shadow);}
-/* In het raster liggen alle paren in hetzelfde formaat, dan staan de kaarten rustig naast elkaar. */
-.projecten-paar .voorna img{aspect-ratio:4/3;}
 .projecten-paar{row-gap:clamp(36px,4vw,56px);}
+/* Een voor/na-schuif in een kaart: de foto boven, de tekst eronder. */
+.project .vergelijk{border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:20px;}
+.project-groot .vergelijk{border-radius:var(--radius);box-shadow:var(--shadow);}
+.project .vergelijk .greep::after,.project-groot .vergelijk .greep::after{width:42px;height:42px;}
 .etiket{position:absolute;left:8px;top:8px;font-family:var(--kop);font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:999px;}
 .etiket.voor{background:var(--rust);color:#fff;}
 .etiket.na{background:var(--mint);color:var(--ink);}
+/* Bij "omgekeerd" staat de tekst links en de foto rechts, maar alleen op een
+   breed scherm: op een telefoon altijd de foto boven de tekst. */
+@media (min-width:901px){
+  .project-groot.omgekeerd{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);}
+  .project-groot.omgekeerd .project-tekst{order:-1;}
+}
 @media (max-width:900px){
   .project-groot{grid-template-columns:1fr;}
-  .project-groot.omgekeerd .project-tekst{order:0;}
   .projecten-paar{grid-template-columns:1fr;}
 }
 .vve-voorbeeld{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:center;margin:30px 0 0;padding:16px;background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}

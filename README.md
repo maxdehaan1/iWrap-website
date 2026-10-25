@@ -627,6 +627,12 @@ op Vercel verloren. **Zet de site dus pas live als de koppeling werkt.**
 
 **Later, als je zin hebt:**
 
+- **Voor/na-foto's zijn op elkaar gelegd.** Elk paar laat hetzelfde stuk kozijn zien, even
+  groot en op dezelfde plek, zodat je bij het schuiven ziet wat er veranderd is. Op
+  /voorbeelden staan ze als schuif: `{{schuif:naam|sizes|alt voor|alt na|positie}}` in de
+  bron, met `images/project-<naam>-voor` en `-na`. Een nieuw paar: snij beide foto's tot
+  hetzelfde stuk kozijn bij (ongeveer is goed genoeg; het gaat erom dat je ziet dat het
+  weer mooi is).
 - **Meer projecten op `/voorbeelden`.** Er staan nu twee grote projecten (De Wissel,
   een opengescheurde kozijnhoek) en een raster met zes voor/na-paren: een klein raam,
   groen (RAL 6009), antracietgrijs (RAL 7016), een witte verbinding, een crème onderdorpel

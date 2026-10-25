@@ -395,6 +395,28 @@ def render_reviews(aantal, vanaf=0):
     return "\n".join(render_review(r) for r in REVIEWS["reviews"][vanaf:vanaf + aantal])
 
 
+def render_schuif(m):
+    """{{schuif:naam|sizes|alt voor|alt na[|positie]}}: een voor/na-foto met een schuif
+    ertussen, zoals bovenaan de homepage. De twee foto's (project-<naam>-voor en
+    -na) zijn op elkaar gelegd, zodat je bij het schuiven hetzelfde stuk kozijn
+    ziet veranderen. main.js maakt de schuif sleepbaar."""
+    delen = [x.strip() for x in m.group(1).split("|")]
+    naam, sizes, alt_voor, alt_na = delen[:4]
+    # Optioneel vijfde deel: waar de schuif begint, zodat de schade bij het openen al
+    # naast het herstel staat.
+    pos = delen[4] if len(delen) > 4 else "50"
+    return (
+        f'<div class="vergelijk" style="--pos:{pos}%">'
+        f'<x-beeld src="project-{naam}-voor" sizes="{sizes}" alt="{alt_voor}">'
+        f'<div class="na"><x-beeld src="project-{naam}-na" sizes="{sizes}" alt="{alt_na}"></div>'
+        '<span class="label label-voor">Voor</span><span class="label label-na">Na</span>'
+        '<div class="greep" aria-hidden="true"></div>'
+        f'<label class="sr-only" for="schuif-{naam}">Schuif om voor en na te vergelijken</label>'
+        f'<input id="schuif-{naam}" type="range" min="0" max="100" value="{pos}" step="1">'
+        "</div>"
+    )
+
+
 def render_reviewbadge(zin=True):
     """Het cijfer bovenaan elke pagina, aan te klikken naar Google."""
     return (
@@ -795,6 +817,7 @@ def substitueer(tekst):
         if "{{%s}}" % blok in tekst:
             bron = (SRC.parent / (blok + ".html")).read_text(encoding="utf-8")
             tekst = tekst.replace("{{%s}}" % blok, re.sub(r"<!--.*?-->\n", "", bron, count=1, flags=re.S).strip())
+    tekst = re.sub(r"\{\{schuif:([^}]*)\}\}", render_schuif, tekst)
     tekst = tekst.replace("{{reviewstrook}}", render_reviewstrook())
     tekst = tekst.replace("{{reviewstrook_zakelijk}}", render_reviewstrook("Je klant is bij ons in goede handen"))
     tekst = tekst.replace("{{reviewbadge}}", render_reviewbadge())
