@@ -18,12 +18,13 @@
     <p>Met een foto en een paar strepen, met maten, op papier of gewoon per mail: kies wat
     voor jou het makkelijkst is. Wij maken er een vaste totaalprijs van, zonder dat er eerst iemand
     bij je langs hoeft te komen.</p>
+    {{reviewbadge}}
   </div>
 </section>
 
 <div class="wrap offerte-schil">
   <p class="liever-mailen">
-    Lukt het formulier u niet? Stuur ons gewoon een mail op
+    Lukt het formulier niet? Stuur ons gewoon een mail op
     <a class="mail-uitweg" href="mailto:{{bedrijf.email}}?subject=Offerteaanvraag%20kozijnherstel&amp;body=Goedemiddag%2C%0A%0AIk%20zou%20graag%20een%20offerte%20ontvangen%20voor%20het%20herstellen%20van%20mijn%20kozijnen.%0A%0AWat%20er%20moet%20gebeuren%20%28per%20kozijn%2C%20met%20de%20maten%20als%20je%20die%20weet%29%3A%0AKozijn%201%3A%0AKozijn%202%3A%0A%0AWaar%20zitten%20ze%20%28begane%20grond%2C%20verdieping%20of%20dakkapel%29%3A%0A%0AKleur%20%28dezelfde%20houden%2C%20of%20een%20andere%29%3A%0A%0ANaam%3A%0AAdres%3A%0ATelefoonnummer%3A%0A%0AVan%20elk%20kozijn%20stuur%20ik%20een%20foto%20mee%20als%20bijlage%2C%20met%20het%20hele%20kozijn%20erop.%0A%0AMet%20vriendelijke%20groet%2C%0A">{{bedrijf.email}}</a>,
     of bel <a href="tel:{{bedrijf.telefoon_tel}}">{{bedrijf.telefoon}}</a>. Dat mag net zo goed.
   </p>
@@ -458,3 +459,5 @@
     </div>
   </article>
 </template>
+
+{{reviewstrook}}

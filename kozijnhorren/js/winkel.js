@@ -338,6 +338,18 @@
     teken();
   }
 
+  // Het Google-cijfer van iWrap, live van de API (die het van Google heeft).
+  // Lukt dat niet, dan blijft de stand van de laatste build gewoon staan.
+  var rvVelden = document.querySelectorAll("[data-rv]");
+  if (rvVelden.length && window.fetch) {
+    fetch(API + "/reviews").then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!d || !d.aantal) return;
+      rvVelden.forEach(function (v) {
+        v.textContent = v.getAttribute("data-rv") === "score" ? d.score_tekst : String(d.aantal);
+      });
+    }).catch(function () {});
+  }
+
   tekenMand();
   leesDeelLink();
   window.addEventListener("hashchange", leesDeelLink);

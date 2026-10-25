@@ -52,11 +52,8 @@
         <a class="knop knop-primair" href="/offerte">Offerte aanvragen</a>
         <a class="knop knop-tweede" href="/kosten">Wat kost het?</a>
       </div>
+      {{reviewbadge}}
       <div class="hero-bewijs">
-        <a class="hero-score" href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener">
-          <span class="sterren" aria-hidden="true">★★★★★</span>
-          <b>{{bedrijf.reviews_score}}</b> uit {{bedrijf.reviews_aantal}} Google-reviews
-        </a>
         <span>Vaste prijs vooraf</span>
         <span>Tien jaar garantie op de folie</span>
         <span>Door heel Nederland</span>
@@ -288,24 +285,7 @@
   </div>
 </section>
 
-<section class="vlak-mint">
-  <div class="wrap">
-    <div class="sectie-kop midden">
-      <p class="opschrift">Wat klanten zeggen</p>
-      <h2>{{bedrijf.reviews_score}} uit {{bedrijf.reviews_aantal}} Google-reviews</h2>
-    </div>
-    <div class="raster raster-3 verschijn">
-      {{reviews:3}}
-    </div>
-    <div class="knoprij" style="margin-top:32px;justify-content:center">
-      <a class="score" href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener">
-        <span class="cijfer">{{bedrijf.reviews_score}}</span>
-        <span><span class="sterren" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-        <small>{{bedrijf.reviews_aantal}} reviews op Google</small></span>
-      </a>
-    </div>
-  </div>
-</section>
+{{reviewstrook}}
 
 <section class="vlak-wit">
   <div class="wrap">
@@ -420,7 +400,7 @@
       </div>
       <div class="slot-beeld">
         <x-beeld src="werk-renolit-folie-aanbrengen" sizes="(max-width:820px) 100vw, 480px" alt="Nieuwe Renolit folie wordt met een rakel op een onderdorpel aangebracht">
-        <a class="slot-score" href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener"><span aria-hidden="true">★</span> {{bedrijf.reviews_score}} uit {{bedrijf.reviews_aantal}} Google-reviews</a>
+        <a class="slot-score" href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener"><span aria-hidden="true">★</span> <span>{{rv.score}} uit {{rv.aantal}} Google-reviews</span></a>
       </div>
     </div>
   </div>

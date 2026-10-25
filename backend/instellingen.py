@@ -99,8 +99,12 @@ DATA_MAP = Path(env("DATA_MAP", str(ROOT / ".data")))
 HERINNERING_NA_DAGEN = int(env("HERINNERING_NA_DAGEN", "7"))
 PAST_ALLES_NA_DAGEN = int(env("PAST_ALLES_NA_DAGEN", "5"))
 
-# De Google-reviewlink van iWrap (dezelfde als in build.py).
-IWRAP_REVIEWS_URL = env("IWRAP_REVIEWS_URL", "https://maps.app.goo.gl/C77mS69nK3GGyqz9A?g_st=ic")
+# Google-reviews. Met deze sleutel lopen cijfer, aantal en reviews op alle sites
+# vanzelf mee (zie reviews.py en de README). Zonder: de stand van de laatste build.
+GOOGLE_PLACES_API_KEY = env("GOOGLE_PLACES_API_KEY")
+# Waar een klant een review schrijft: het opleverrapport en de mails linken hierheen.
+IWRAP_REVIEWS_URL = env("IWRAP_REVIEWS_URL",
+                        "https://search.google.com/local/writereview?placeid=ChIJyzBbwf-FxkcRIdeuLPGJt9U")
 IWRAP_WHATSAPP = env("IWRAP_WHATSAPP", "31614415877")
 
 
@@ -120,6 +124,7 @@ def status():
         "betalen": ("mollie-test" if MOLLIE_API_KEY.startswith("test_")
                     else "mollie-live" if MOLLIE_API_KEY else "testkassa"),
         "mail": "microsoft" if (MS_TENANT_ID and MS_CLIENT_ID and MS_CLIENT_SECRET) else "uitbak",
+        "reviews": "google" if GOOGLE_PLACES_API_KEY else "vast",
         "leverancier": LEVERANCIER_NAAM,
         "leverancier_automatisch": LEVERANCIER_AUTOMATISCH,
         "voorbeeldprijzen": lees_data("horren.json").get("voorbeeldprijzen", True),

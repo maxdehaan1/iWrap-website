@@ -19,6 +19,7 @@
     <p class="lede">Voor een offerte is het formulier het snelst — daar staan precies de
     vragen in die we anders toch zouden stellen. Wil je gewoon iets vragen, bel of mail
     dan gerust.</p>
+    {{reviewbadge}}
   </div>
 </section>
 
@@ -87,7 +88,7 @@
         </p>
         <p>{{bedrijf.plaats}}<br>Werkgebied: heel Nederland</p>
         <p><a href="{{bedrijf.instagram}}" target="_blank" rel="noopener">iWrap op Instagram</a><br>
-        <a href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener">{{bedrijf.reviews_score}} uit {{bedrijf.reviews_aantal}} Google-reviews</a></p>
+        <a href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener">{{rv.score}} uit {{rv.aantal}} Google-reviews</a></p>
       </div>
       <div class="zijkaart">
         <h3>Direct een offerte?</h3>
@@ -97,3 +98,5 @@
     </aside>
   </div>
 </section>
+
+{{reviewstrook}}

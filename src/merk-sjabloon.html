@@ -11,6 +11,7 @@
       <a class="knop knop-primair" href="/offerte">Offerte aanvragen</a>
       <a class="knop knop-tweede" href="/kosten">Wat kost het?</a>
     </div>
+    {{reviewbadge}}
   </div>
 </section>
 
@@ -100,6 +101,8 @@
   </div>
 </section>
 
+{{reviewstrook}}
+
 <section class="vlak-wit">
   <div class="wrap">
     <div class="slot met-beeld">
@@ -115,7 +118,7 @@
       </div>
       <div class="slot-beeld">
         <x-beeld src="na-resultaat-kozijnhoek" sizes="(max-width:820px) 100vw, 480px" alt="Afgewerkte kozijnhoek na herstel met Renolit folie">
-        <a class="slot-score" href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener"><span aria-hidden="true">★</span> {{bedrijf.reviews_score}} uit {{bedrijf.reviews_aantal}} Google-reviews</a>
+        <a class="slot-score" href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener"><span aria-hidden="true">★</span> <span>{{rv.score}} uit {{rv.aantal}} Google-reviews</span></a>
       </div>
     </div>
   </div>

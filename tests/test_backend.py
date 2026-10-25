@@ -27,13 +27,14 @@ from urllib.parse import urlparse
 TMP = tempfile.mkdtemp(prefix="iwrap-test-")
 os.environ["DATA_MAP"] = TMP
 for sleutel in ("MOLLIE_API_KEY", "MS_TENANT_ID", "MS_CLIENT_ID", "MS_CLIENT_SECRET", "KV_REST_API_URL",
-                "UPSTASH_REDIS_REST_URL", "VERCEL", "LEVERANCIER_AUTOMATISCH"):
+                "UPSTASH_REDIS_REST_URL", "VERCEL", "LEVERANCIER_AUTOMATISCH", "GOOGLE_PLACES_API_KEY"):
     os.environ.pop(sleutel, None)
 os.environ["MAX_WACHTWOORD"] = "test"
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from backend.app import app  # noqa: E402
-from backend import bestellingen, horren  # noqa: E402
+from backend import bestellingen, horren, reviews  # noqa: E402
+from backend import instellingen as cfg  # noqa: E402
 
 GOED = 0
 
@@ -197,7 +198,69 @@ def aanvragen_testen():
                                  "kozijn-3-foto.jpg"], "op papier: tekeningen en een foto per kozijn")
 
 
+def reviews_testen():
+    print("Google-reviews")
+    r = verzoek("GET", "/api/reviews", origin="https://kozijnwrap.nl")
+    vast = reviews.basis()
+    klopt(r["status"] == 200 and r["json"]["aantal"] == vast["aantal"] and r["json"]["bron"] == "reviews.json",
+          "zonder sleutel: de stand uit reviews.json")
+    klopt(r["koppen"].get("Access-Control-Allow-Origin") == "*", "elke site mag de reviews ophalen")
+    klopt("s-maxage" in r["koppen"]["Cache-Control"], "Vercel mag het antwoord bewaren")
+    klopt(all(k["url"].startswith("https://") for k in r["json"]["reviews"]), "elke review is aan te klikken")
+
+    nep = {"rating": 4.87, "userRatingCount": 91, "reviews": [
+        {"rating": 5, "publishTime": "2026-10-20T10:00:00Z", "relativePublishTimeDescription": "5 dagen geleden",
+         "originalText": {"text": "Prachtig  werk aan   onze dakkapel, alles netjes opgeruimd en goed uitgelegd."},
+         "authorAttribution": {"displayName": "Nieuwe Klant"}, "googleMapsUri": "https://maps.google.com/?r=1"},
+        {"rating": 2, "originalText": {"text": "Dit is een lange maar negatieve review die niet op de site hoort."},
+         "authorAttribution": {"displayName": "Boze Klant"}},
+        {"rating": 5, "originalText": {"text": "Top!"}, "authorAttribution": {"displayName": "Kort"}},
+    ]}
+
+    class Antwoord(io.BytesIO):
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    aanroepen = []
+
+    def nep_google(verzoek_, timeout=None):
+        aanroepen.append(verzoek_.full_url)
+        return Antwoord(json.dumps(nep).encode())
+
+    echt = reviews.urllib.request.urlopen
+    reviews.urllib.request.urlopen = nep_google
+    cfg.GOOGLE_PLACES_API_KEY = "test-sleutel"
+    try:
+        d = verzoek("GET", "/api/reviews")["json"]
+        klopt(d["bron"] == "google" and d["aantal"] == 91 and d["score_tekst"] == "4,9",
+              "met sleutel: cijfer en aantal van Google")
+        klopt(d["reviews"][0]["naam"] == "Nieuwe Klant" and "  " not in d["reviews"][0]["tekst"],
+              "de nieuwste goede review staat vooraan")
+        namen = [k["naam"] for k in d["reviews"]]
+        klopt("Boze Klant" not in namen and "Kort" not in namen, "slechte en lege reviews komen niet op de site")
+        klopt(len(namen) == reviews.MAX_KAARTEN, "aangevuld met reviews uit reviews.json")
+        verzoek("GET", "/api/reviews")
+        klopt(len(aanroepen) == 1, "Google wordt maar een keer per zes uur gevraagd")
+
+        def plat(*a, **k):
+            raise reviews.urllib.error.URLError("plat")
+        reviews.urllib.request.urlopen = plat
+        reviews._geheugen.update(t=0, d=None)
+        reviews.opslag().weg(reviews.SLEUTEL)
+        r = verzoek("GET", "/api/reviews")
+        klopt(r["status"] == 200 and r["json"]["aantal"] == vast["aantal"] and "s-maxage=900" in r["koppen"]["Cache-Control"],
+              "Google plat: de vaste stand, en kort bewaard")
+    finally:
+        reviews.urllib.request.urlopen = echt
+        cfg.GOOGLE_PLACES_API_KEY = ""
+        reviews._geheugen.update(t=0, d=None)
+
+
 def main():
+    reviews_testen()
     print("Prijzen")
     p = horren.prijs_regel({"uitvoering": "basis", "breedte": 812, "hoogte": 1204, "kleur": "7016"})
     klopt(p["stukprijs"] == 113, "Basis 812 x 1204 antraciet valt in de cel 1000 x 1250 (EUR 113)")

@@ -30,6 +30,7 @@
     <p class="lede">iWrap is een klein bedrijf uit {{bedrijf.plaats}} dat één ding
     doet: kunststof kozijnen herstellen met Renolit folie. Geen schilderwerk erbij,
     geen kozijnen verkopen, geen aanbouw. Alleen dit.</p>
+    {{reviewbadge}}
   </div>
 </section>
 
@@ -82,7 +83,7 @@
       </ul>
 
       <h2>Klein en dat blijft zo</h2>
-      <p>We hebben geen groeiambitie. De planning zit ruim vol, de reviews zijn goed en
+      <p>We hebben geen groeiambitie. De planning zit ruim vol, de reviews zijn uitstekend en
       het vak laat zich slecht uitbesteden. Wat we wel doen, is onze eigen boel zo
       efficiënt mogelijk regelen — vandaar ook het
       <a href="/offerte">aanvraagformulier</a> op deze site: hoe completer een aanvraag
@@ -116,8 +117,9 @@
 
     <aside class="zij">
       <div class="zijkaart">
-        <h3>{{bedrijf.reviews_score}} uit {{bedrijf.reviews_aantal}} reviews</h3>
-        <p>Wat klanten het vaakst noemen: netjes werken, meedenken en alles opruimen.</p>
+        <h3>{{rv.score}} uit {{rv.aantal}} reviews</h3>
+        <p>Duizenden klanten gingen je voor. Wat ze het vaakst noemen: netjes werken,
+        meedenken en alles opruimen.</p>
         <a class="knop knop-tweede" href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener">Lees ze op Google</a>
       </div>
       <div class="zijkaart">
@@ -147,3 +149,5 @@
     </div>
   </div>
 </section>
+
+{{reviewstrook}}

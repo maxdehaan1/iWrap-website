@@ -442,6 +442,7 @@ Nu draait alles lokaal. Om het echt te gebruiken:
    | `LEVERANCIER_NAAM`, `LEVERANCIER_EMAIL` | Zodra je een leverancier hebt |
    | `LEVERANCIER_AUTOMATISCH` | `nee` (standaard) of `ja` |
    | `SHOP_URL` | Het adres van de winkel: `https://kozijnhorren.nl` |
+   | `GOOGLE_PLACES_API_KEY` | De Google-reviews live op alle sites (zie "Reviews") |
 
 4. **Mail via Microsoft 365.** Zie het kopje hieronder. Daarna een testaanvraag doen op
    iwrap.nl/offerte en kijken of hij met alle foto's in je inbox staat.
@@ -456,28 +457,48 @@ Nu draait alles lokaal. Om het echt te gebruiken:
 
 ## Reviews
 
-Score, aantal en de reviewteksten staan in **`reviews.json`** en nergens anders. Header,
-homepage, footer en de structured data lezen daar allemaal uit.
+Eén bron, live op alle vier de sites.
 
-```bash
-python3 reviews.py     # haalt de actuele Google-reviews op
-python3 build.py       # zet ze op de site
-```
+- **`reviews.json`** is de stand van de laatste build: cijfer, aantal, een handvol
+  reviews en de Place ID van iWrap. Die stand staat in de html, ook voor Google zelf (de
+  structured data). `build.py` ververst hem bij het bouwen, hooguit eens per uur: van
+  Google als de sleutel lokaal staat, anders van de live site. Handmatig kan ook:
+  `python3 reviews.py`. Offline of zonder sleutel blijft hij gewoon staan; een build gaat
+  hier nooit op stuk.
+- **`/api/reviews`** (`backend/reviews.py`) is de live stand. Met `GOOGLE_PLACES_API_KEY`
+  in Vercel haalt hij cijfer, aantal en de nieuwste reviews rechtstreeks bij Google,
+  hooguit eens per zes uur. `js/main.js` zet die stand in elk cijfer op de pagina
+  (`[data-rv]`) en zet nieuwe reviews vooraan in de reviewstrook. kozijnwrap.nl,
+  houtnerffolie.nl en kozijnhorren.nl halen hetzelfde adres op.
 
-`reviews.py` doet zonder API-sleutel niets — dan blijft `reviews.json` gewoon staan en
-bouwt de site door met de laatst opgehaalde reviews. Een build gaat dus nooit stuk omdat
-Google even niet bereikbaar is.
+**Waar ze staan.** Op iwrap.nl: een badge in de kop van elke pagina ("4,9 uit 84
+Google-reviews, duizenden klanten gingen je voor"), de reviewstrook onderaan bijna elke
+pagina (acht reviews om doorheen te schuiven, elke kaart opent die review op Google), het
+pilletje op de foto's in de afsluitblokken, en de footer. Het opleverrapport heeft een knop
+die meteen het venster opent om een review te schrijven. Op kozijnwrap.nl: twee reviews in
+het iWrap-blok, het cijfer in de uitkomst van de keuzehulp en bij de offerteknop. Op
+houtnerffolie.nl: bij beide offerteblokken. Op kozijnhorren.nl: Over ons en de FAQ.
 
-**Verversen aanzetten:** maak in console.cloud.google.com een project, zet de *Places API
-(New)* aan, maak een API-sleutel en beperk hem tot die ene API. Zet hem daarna in je
-omgeving — **niet in de repo, die is openbaar**:
+Alleen reviews met vier of vijf sterren en een echte tekst (40+ tekens) komen in de rij.
+Het cijfer en het aantal zijn altijd de echte.
 
-```bash
-echo 'export GOOGLE_PLACES_API_KEY="AIza..."' >> ~/.zshrc
-```
+**De sleutel aanmaken** (eenmalig, een kwartiertje):
 
-Kosten zijn in de praktijk nul: je haalt ze een paar keer per maand op en Google geeft
-maandelijks $200 gratis tegoed.
+1. Ga naar console.cloud.google.com en maak een project, bijvoorbeeld "iwrap-reviews".
+2. Koppel facturering. Google vraagt een betaalmethode, ook als je binnen het gratis
+   gebruik blijft.
+3. APIs & Services > Library > **Places API (New)** > Enable.
+4. Credentials > Create credentials > API key. Daarna Edit > API restrictions > alleen
+   *Places API (New)*.
+5. Quotas: zet het aantal aanvragen per dag op 50. Dan kan het nooit iets kosten.
+6. Vercel > iwrap-website > Settings > Environment Variables: `GOOGLE_PLACES_API_KEY` met
+   de sleutel als waarde. Daarna Redeploy. **Nooit in de repo zetten, die is openbaar.**
+7. Controleer `https://iwrap.nl/api/reviews` (voor de overstap:
+   `https://iwrap-website.vercel.app/api/reviews`): daar moet `"bron": "google"` staan. De
+   Max-modus laat het ook zien.
+
+Google laat van deze aanvragen ongeveer 1.000 per maand gratis; de site doet er hooguit
+zo'n 120. Kijk bij het aanmaken even of dat nog klopt.
 
 **Waarom niet de Trustindex-widget?** Die draait op je huidige site en is wél live, maar
 het is een extern script dat de pagina vertraagt en dat verdwijnt zodra iwrap.nl deze
@@ -600,8 +621,8 @@ op Vercel verloren. **Zet de site dus pas live als de koppeling werkt.**
 
 **Voordat de site live gaat:**
 
-1. **Reviews verversen.** Score en aantal komen uit `reviews.json` (zie "Reviews"
-   hieronder). Draai `python3 reviews.py` vlak voor de livegang.
+1. **De Google-sleutel in Vercel** (zie "Reviews"). Dan lopen cijfer, aantal en de
+   nieuwste reviews op alle vier de sites vanzelf mee.
 2. **Vul KvK en btw-id in** in `BEDRIJF` in `build.py`. Die horen op de site te staan en
    staan nu nergens. Zolang ze leeg zijn, laat de footer ze gewoon weg.
 3. **De mailkoppeling met Microsoft 365** (zie "Mail via Microsoft 365") en Upstash

@@ -8,7 +8,7 @@
    ontbreekt.
    --------------------------------------------------------------------------- */
 
-.offerte-hero{background:var(--ink);color:#e8eaec;padding:clamp(30px,4vw,50px) 0 clamp(70px,8vw,110px);}
+.offerte-hero{background:var(--ink);color:#e8eaec;padding:clamp(30px,4vw,50px) 0 clamp(96px,10vw,136px);}
 .offerte-hero h1{color:#fff;max-width:19ch;margin-bottom:.35em;}
 .offerte-hero p{color:#b9bfc5;max-width:54ch;font-size:1.05rem;margin-bottom:0;}
 .offerte-hero .opschrift{color:var(--mint);}

@@ -1,118 +1,86 @@
 #!/usr/bin/env python3
 """
-Ververst reviews.json met de actuele Google-reviews van iWrap.
+Ververst reviews.json: het Google-cijfer, het aantal en de nieuwste goede reviews.
 
-Zonder API-sleutel doet dit script niets: dan blijft reviews.json staan zoals
-het is en bouwt de site gewoon door met de laatst opgehaalde reviews. Dat is
-expres — een build mag nooit stukgaan omdat Google even niet bereikbaar is.
+build.py draait dit zelf aan het begin, dus los hoeft het bijna nooit. Wat er
+in reviews.json staat, komt in de html van de site (ook voor Google zelf, in de
+structured data). Bezoekers zien daarbovenop de live stand via /api/reviews.
 
-Sleutel aanmaken:
-  1. console.cloud.google.com -> nieuw project -> Places API (New) aanzetten
-  2. Credentials -> API key. Beperk hem tot de Places API.
-  3. Zet hem in je omgeving, NIET in de repo (die is openbaar):
-         export GOOGLE_PLACES_API_KEY="AIza..."
-     Handig: die regel onderaan in ~/.zshrc zetten.
+Waar het de stand vandaan haalt, de eerste die werkt:
+  1. Rechtstreeks van Google, als GOOGLE_PLACES_API_KEY lokaal in je omgeving
+     of in .env staat.
+  2. Van de live site (/api/reviews), die de sleutel in Vercel heeft. Zo hoeft
+     de sleutel maar op één plek te staan.
+Lukt geen van beide, of heeft de live site zelf nog geen sleutel, dan blijft
+reviews.json zoals hij is. Een build gaat hier nooit op stuk.
 
-Gebruik:  python3 reviews.py     (en daarna python3 build.py)
+De sleutel aanmaken staat in de README, onder "Google-reviews".
+
+Gebruik:  python3 reviews.py
 """
 
 import json
-import os
 import sys
 import urllib.error
-import urllib.parse
 import urllib.request
 from datetime import date
 from pathlib import Path
 
-ROOT = Path(__file__).parent
-CACHE = ROOT / "reviews.json"
-SLEUTEL = os.environ.get("GOOGLE_PLACES_API_KEY", "").strip()
+ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT))
 
-# Waar we naar zoeken als de Place ID nog niet bekend is.
-ZOEKTERM = "iWrap Neuweg 128 Hilversum"
-MAX_REVIEWS = 6
+from backend import instellingen as cfg  # noqa: E402
+from backend import reviews  # noqa: E402
 
-
-def api(url, headers, data=None):
-    verzoek = urllib.request.Request(url, data=data, headers=headers)
-    with urllib.request.urlopen(verzoek, timeout=20) as r:
-        return json.loads(r.read())
+LIVE = ("https://iwrap.nl/api/reviews", "https://iwrap-website.vercel.app/api/reviews")
+MAX_IN_BESTAND = 10
 
 
-def zoek_place_id():
-    """Place ID opzoeken op naam en adres, zodat hij nergens hardgecodeerd staat."""
-    body = json.dumps({"textQuery": ZOEKTERM}).encode()
-    uit = api(
-        "https://places.googleapis.com/v1/places:searchText",
-        {
-            "Content-Type": "application/json",
-            "X-Goog-Api-Key": SLEUTEL,
-            "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress",
-        },
-        body,
-    )
-    plaatsen = uit.get("places") or []
-    if not plaatsen:
-        raise SystemExit("Geen plaats gevonden voor: " + ZOEKTERM)
-    p = plaatsen[0]
-    print(f"gevonden: {p['displayName']['text']} — {p.get('formattedAddress','')}")
-    return p["id"]
+def van_live_site():
+    for url in LIVE:
+        try:
+            with urllib.request.urlopen(url, timeout=4) as r:
+                d = json.loads(r.read())
+        except (urllib.error.URLError, OSError, ValueError):
+            continue
+        if d.get("bron") == "google":
+            return d
+    return None
 
 
-def haal_details(place_id):
-    return api(
-        f"https://places.googleapis.com/v1/places/{place_id}"
-        "?languageCode=nl&fields=rating,userRatingCount,reviews",
-        {"X-Goog-Api-Key": SLEUTEL},
-    )
-
-
-def main():
-    huidig = json.loads(CACHE.read_text(encoding="utf-8"))
-
-    if not SLEUTEL:
-        print("Geen GOOGLE_PLACES_API_KEY gevonden — reviews.json blijft ongewijzigd.")
-        print(f"(nu: {huidig['score']} uit {huidig['aantal']}, "
-              f"bijgewerkt {huidig['bijgewerkt']})")
-        print("Zie de uitleg bovenin dit bestand om het verversen aan te zetten.")
-        return 0
-
+def ververs(stil=False):
+    huidig = reviews.basis()
     try:
-        details = haal_details(zoek_place_id())
-    except (urllib.error.URLError, urllib.error.HTTPError, KeyError) as e:
-        print(f"Ophalen mislukt ({e}). reviews.json blijft staan.", file=sys.stderr)
-        return 1
+        if cfg.GOOGLE_PLACES_API_KEY:
+            nieuw, bron = reviews.van_google(cfg.GOOGLE_PLACES_API_KEY, huidig["place_id"]), "Google"
+        else:
+            nieuw, bron = van_live_site(), "de live site"
+    except (urllib.error.URLError, OSError, ValueError, KeyError, TypeError) as e:
+        nieuw, bron = None, "Google (%s)" % e
+    if not nieuw:
+        if not stil:
+            print("Geen verse stand gevonden; reviews.json blijft %s uit %s."
+                  % (huidig["score"], huidig["aantal"]))
+        return False
 
-    nieuw = dict(huidig)
-    nieuw["score"] = round(float(details.get("rating", huidig["score"])), 1)
-    nieuw["aantal"] = int(details.get("userRatingCount", huidig["aantal"]))
-    nieuw["bijgewerkt"] = date.today().isoformat()
+    # Nieuwe reviews vooraan; wat er al stond blijft eronder staan. De relatieve
+    # tijd ("2 weken geleden") veroudert in een bestand, dus die gaat eruit.
+    lijst = []
+    for r in nieuw["reviews"]:
+        r = {k: r[k] for k in ("naam", "tekst", "sterren", "datum", "url") if r.get(k)}
+        if r.get("url", "").startswith("https://search.google.com/local/reviews"):
+            del r["url"]   # de algemene link; die zet de site er zelf bij
+        lijst.append(r)
+    namen = {r["naam"].lower() for r in lijst}
+    lijst += [r for r in huidig["reviews"] if r["naam"].lower() not in namen]
 
-    opgehaald = []
-    for r in (details.get("reviews") or [])[:MAX_REVIEWS]:
-        tekst = (r.get("originalText") or r.get("text") or {}).get("text", "").strip()
-        naam = (r.get("authorAttribution") or {}).get("displayName", "").strip()
-        if not tekst or not naam:
-            continue
-        # Alleen positieve reviews op de site; de score zelf vertelt het hele verhaal.
-        if r.get("rating", 5) < 4:
-            continue
-        opgehaald.append({
-            "naam": naam,
-            "wanneer": r.get("relativePublishTimeDescription", ""),
-            "tekst": " ".join(tekst.split()),
-        })
-    if opgehaald:
-        nieuw["reviews"] = opgehaald
-
-    CACHE.write_text(json.dumps(nieuw, ensure_ascii=False, indent=2) + "\n",
-                     encoding="utf-8")
-    print(f"bijgewerkt: {nieuw['score']} uit {nieuw['aantal']} reviews, "
-          f"{len(nieuw['reviews'])} teksten")
-    print("Draai nu python3 build.py om ze op de site te zetten.")
-    return 0
+    uit = dict(huidig, score=nieuw["score"], aantal=nieuw["aantal"], reviews=lijst[:MAX_IN_BESTAND])
+    if uit != huidig:
+        uit["bijgewerkt"] = date.today().isoformat()
+        reviews.BESTAND.write_text(json.dumps(uit, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print("Reviews van %s: %s uit %s." % (bron, uit["score"], uit["aantal"]))
+    return True
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    ververs()

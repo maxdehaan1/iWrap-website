@@ -227,11 +227,13 @@
     if (s.omgeving === "vercel" && s.mail === "uitbak") waarschuwingen.push("Mail is niet gekoppeld: klanten krijgen geen mail. Zet de Microsoft-koppeling (MS_TENANT_ID, MS_CLIENT_ID, MS_CLIENT_SECRET) in Vercel.");
     if (s.betalen === "testkassa" && s.omgeving === "vercel") waarschuwingen.push("Betalen is niet gekoppeld (MOLLIE_API_KEY).");
     if (s.voorbeeldprijzen) waarschuwingen.push("De horrenprijzen zijn nog voorbeeldprijzen.");
+    if (s.omgeving === "vercel" && s.reviews !== "google") waarschuwingen.push("De Google-reviews lopen niet live mee: zet GOOGLE_PLACES_API_KEY in Vercel. Tot die tijd staat de stand van de laatste build op de sites.");
     const regels = [
       ["Opslag", s.opslag === "redis" ? "Upstash Redis" : "bestanden (" + s.omgeving + ")"],
       ["Betalen", { "mollie-live": "Mollie (live)", "mollie-test": "Mollie (testmodus)", testkassa: "testkassa" }[s.betalen]],
       ["Mail", { microsoft: "via Microsoft 365 (info@iwrap.nl)", uitbak: "niet gekoppeld (uitbak)" }[s.mail]],
       ["Leverancier", s.leverancier + (s.leverancier_automatisch ? " (automatisch)" : " (na jouw akkoord)")],
+      ["Reviews", s.reviews === "google" ? "live van Google" : "vast (reviews.json)"],
     ];
     return h("details.max-status" + (waarschuwingen.length ? ".let" : ""), null,
       h("summary", null, waarschuwingen.length ? "Let op: " + waarschuwingen.length + (waarschuwingen.length === 1 ? " punt" : " punten") : "Alles gekoppeld"),

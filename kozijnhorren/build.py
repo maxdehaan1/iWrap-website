@@ -464,7 +464,9 @@ def iwrap_reviews():
     """Het Google-reviewcijfer van iWrap, uit reviews.json in de repo-root
     (dat bestand houdt iwrap.nl bij, zie reviews.py)."""
     r = json.loads((Path(__file__).resolve().parent.parent / "reviews.json").read_text(encoding="utf-8"))
-    return "%s uit %d Google-reviews" % (str(r["score"]).replace(".", ","), r["aantal"])
+    # Losse velden: winkel.js zet er de live stand van /api/reviews in.
+    return ('<span data-rv="score">%s</span> uit <span data-rv="aantal">%d</span> Google-reviews'
+            % (str(r["score"]).replace(".", ","), r["aantal"]))
 
 
 def substitueer(tekst):

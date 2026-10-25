@@ -13,8 +13,11 @@ Gebruik:  python3 build.py
 """
 
 import json
+import os
 import re
 import hashlib
+import time
+from html import escape
 from pathlib import Path
 
 from PIL import Image
@@ -28,10 +31,10 @@ SITE = "https://iwrap.nl"
 # telefoon of het werkgebied, dan hoeft alleen dit blok aangepast te worden:
 # het werkt door in de header, de footer, de structured data en de contactpagina.
 # ---------------------------------------------------------------------------
-# Score, aantal en de reviewteksten komen uit reviews.json. Dat bestand wordt
-# ververst met `python3 reviews.py` (Google Places API) en is de enige plek waar
-# reviewgegevens staan — header, footer, homepage en structured data lezen er
-# allemaal uit.
+# Score, aantal en de reviewteksten komen uit reviews.json. Dat bestand ververst
+# zichzelf bij het bouwen (zie reviews_verversen hieronder) en is de enige plek
+# waar reviewgegevens staan. Bezoekers zien bovendien de live stand: main.js
+# haalt die op bij /api/reviews en zet hem in elk [data-rv]-veld.
 REVIEWS = json.loads((ROOT / "reviews.json").read_text(encoding="utf-8"))
 
 # De kozijncheck: zes onderdelen met stoplicht. Staat in de achterkant omdat de
@@ -51,7 +54,9 @@ BEDRIJF = {
     "telefoon_tel": "+31614415877",
     "whatsapp": "31614415877",
     "instagram": "https://www.instagram.com/iwrap.nl/",
-    "reviews_url": "https://maps.app.goo.gl/C77mS69nK3GGyqz9A?g_st=ic",
+    # Beide links komen uit de Place ID in reviews.json, zie reviews_afleiden().
+    "reviews_url": "",
+    "review_schrijven_url": "",
     "ervaring_jaren": "10",
     # TODO Max: KvK-nummer en btw-id invullen -- horen op de contactpagina te staan
     "kvk": "",
@@ -225,10 +230,32 @@ REGIOS = [
     ("Noord-Nederland en Limburg", ["Groningen", "Leeuwarden", "Assen", "Maastricht", "Venlo", "Roermond"]),
 ]
 
-# Afgeleid uit reviews.json, zodat de sjablonen er niets van hoeven te weten.
-BEDRIJF["reviews_score"] = str(REVIEWS["score"]).replace(".", ",")
-BEDRIJF["reviews_score_getal"] = str(REVIEWS["score"])
-BEDRIJF["reviews_aantal"] = str(REVIEWS["aantal"])
+def reviews_afleiden():
+    """Afgeleid uit reviews.json, zodat de sjablonen er niets van hoeven te weten."""
+    BEDRIJF["reviews_score"] = str(REVIEWS["score"]).replace(".", ",")
+    BEDRIJF["reviews_score_getal"] = str(REVIEWS["score"])
+    BEDRIJF["reviews_aantal"] = str(REVIEWS["aantal"])
+    BEDRIJF["reviews_url"] = "https://search.google.com/local/reviews?placeid=" + REVIEWS["place_id"]
+    BEDRIJF["review_schrijven_url"] = "https://search.google.com/local/writereview?placeid=" + REVIEWS["place_id"]
+
+
+def reviews_verversen():
+    """Hooguit eens per uur bij Google (of de live site) kijken of er nieuwe
+    reviews zijn. Offline of zonder sleutel gebeurt er niets en bouwt de site
+    gewoon door met wat er staat. IWRAP_OFFLINE=1 slaat het over."""
+    global REVIEWS
+    merk = ROOT / ".data" / "reviews-gecheckt"
+    if os.environ.get("IWRAP_OFFLINE") or (merk.exists() and time.time() - merk.stat().st_mtime < 3600):
+        return
+    import reviews as ververser
+    ververser.ververs(stil=True)
+    merk.parent.mkdir(exist_ok=True)
+    merk.touch()
+    REVIEWS = json.loads((ROOT / "reviews.json").read_text(encoding="utf-8"))
+    reviews_afleiden()
+
+
+reviews_afleiden()
 
 FAVICON = "/images/logo/iwrap-mark-64.png"
 
@@ -317,23 +344,91 @@ def render_merkkaarten():
     return '<div class="merkkaarten">' + "".join(uit) + "</div>"
 
 
+MAANDEN = ["januari", "februari", "maart", "april", "mei", "juni", "juli",
+           "augustus", "september", "oktober", "november", "december"]
+
+
+# Korter dan dit krijgt grotere letters, anders staat er een halflege kaart.
+KORTE_REVIEW = 90
+
+
+def review_wanneer(r):
+    if r.get("datum"):
+        jaar, maand = r["datum"][:4], int(r["datum"][5:7])
+        return f"{MAANDEN[maand - 1]} {jaar}"
+    return ""
+
+
+def render_review(r):
+    """Eén reviewkaart. main.js bouwt precies dezelfde kaart als de live stand
+    van Google nieuwere reviews heeft -- houd die twee gelijk."""
+    naam = escape(r["naam"])
+    sterren = int(r.get("sterren", 5))
+    url = r.get("url") or BEDRIJF["reviews_url"]
+    kort = " kort" if len(r["tekst"]) < KORTE_REVIEW else ""
+    wanneer = review_wanneer(r)
+    return (
+        f'<article class="review{kort}">'
+        '<div class="review-kop">'
+        f'<span class="sterren" role="img" aria-label="{sterren} van de 5 sterren">'
+        f'{"&#9733;" * sterren}{"&#9734;" * (5 - sterren)}</span>'
+        '<span class="review-bron">Google</span></div>'
+        f'<p>{escape(r["tekst"])}</p>'
+        f'<div class="wie"><span class="avatar" aria-hidden="true">{naam[:1].upper()}</span>'
+        f'<div><b>{naam}</b>{f"<small>{wanneer}</small>" if wanneer else ""}</div></div>'
+        f'<a class="review-link" href="{escape(url)}" target="_blank" rel="noopener">'
+        f'Lees op Google<span aria-hidden="true"> &#8599;</span><span class="sr-only">: de review van {naam}</span></a>'
+        "</article>"
+    )
+
+
 def render_reviews(aantal, vanaf=0):
-    """Reviewkaarten uit reviews.json. Zo staat er nergens meer een review in
-    de bronpagina's en is `python3 reviews.py` genoeg om ze te verversen."""
-    uit = []
-    for r in REVIEWS["reviews"][vanaf:vanaf + aantal]:
-        wanneer = r["wanneer"] or "Google-review"
-        initiaal = r["naam"].strip()[:1].upper()
-        uit.append(
-            '<article class="review">'
-            '<div class="sterren" aria-label="5 van de 5 sterren">'
-            "&#9733;&#9733;&#9733;&#9733;&#9733;</div>"
-            f'<p>{r["tekst"]}</p>'
-            f'<div class="wie"><span class="avatar" aria-hidden="true">{initiaal}</span>'
-            f'<div><b>{r["naam"]}</b><small>{wanneer}</small></div></div>'
-            "</article>"
-        )
-    return "\n".join(uit)
+    """Reviewkaarten uit reviews.json. Zo staat er nergens een review in de
+    bronpagina's, en ververst reviews.py ze vanzelf."""
+    return "\n".join(render_review(r) for r in REVIEWS["reviews"][vanaf:vanaf + aantal])
+
+
+def render_reviewbadge(zin=True):
+    """Het cijfer bovenaan elke pagina, aan te klikken naar Google."""
+    return (
+        f'<a class="rv-badge" href="{BEDRIJF["reviews_url"]}" target="_blank" rel="noopener">'
+        '<span class="rv-badge-cijfer">{{rv.score}}</span>'
+        '<span class="rv-badge-regel"><span class="sterren" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>'
+        '<span>uit {{rv.aantal}} Google-reviews</span></span>'
+        + ('<span class="rv-badge-zin">Duizenden klanten gingen je voor</span>' if zin else "")
+        + "</a>"
+    )
+
+
+def render_reviewstrook(opschrift="Duizenden klanten gingen je voor", kop="Wat klanten over ons zeggen"):
+    """Het cijfer groot, en een rij reviews om doorheen te schuiven. Elke kaart
+    opent die review op Google."""
+    url = BEDRIJF["reviews_url"]
+    return f"""<section class="vlak-mint reviewstrook" aria-labelledby="rv-titel">
+  <div class="wrap">
+    <div class="rv-kop">
+      <div>
+        <p class="opschrift">{opschrift}</p>
+        <h2 id="rv-titel">{kop}</h2>
+      </div>
+      <a class="rv-totaal" href="{url}" target="_blank" rel="noopener">
+        <span class="rv-cijfer">{{{{rv.score}}}}</span>
+        <span class="rv-totaal-tekst"><span class="sterren" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+        <span>uit {{{{rv.aantal}}}} reviews op Google</span></span>
+      </a>
+    </div>
+    <div class="rv-rij" data-rv-rij tabindex="0" role="region" aria-label="Reviews van klanten, schuif opzij voor meer">
+{render_reviews(8)}
+    </div>
+    <div class="rv-voet">
+      <div class="rv-pijlen" hidden>
+        <button type="button" class="rv-pijl" data-rv-pijl="-1" aria-label="Vorige reviews">&#8249;</button>
+        <button type="button" class="rv-pijl" data-rv-pijl="1" aria-label="Volgende reviews">&#8250;</button>
+      </div>
+      <a class="rv-alle" href="{url}" target="_blank" rel="noopener">Lees alle {{{{rv.aantal}}}} reviews op Google</a>
+    </div>
+  </div>
+</section>"""
 
 
 def render_beeld(m):
@@ -451,7 +546,7 @@ def render_footer():
           <a href="mailto:{b['email']}">{b['email']}</a>
         </p>
         <p class="fsocial">
-          <a href="{b['reviews_url']}" target="_blank" rel="noopener">{b['reviews_score']} uit {b['reviews_aantal']} Google-reviews</a><br>
+          <a href="{b['reviews_url']}" target="_blank" rel="noopener">&#9733; <span data-rv="score">{b['reviews_score']}</span> uit <span data-rv="aantal">{b['reviews_aantal']}</span> Google-reviews</a><br>
           <a href="{b['instagram']}" target="_blank" rel="noopener">iWrap op Instagram</a>
         </p>
       </div>
@@ -511,9 +606,10 @@ def localbusiness():
             {
                 "@type": "Review",
                 "author": {"@type": "Person", "name": r["naam"]},
-                "reviewRating": {"@type": "Rating", "ratingValue": "5",
+                "reviewRating": {"@type": "Rating", "ratingValue": str(r.get("sterren", 5)),
                                  "bestRating": "5"},
                 "reviewBody": r["tekst"],
+                **({"datePublished": r["datum"]} if r.get("datum") else {}),
             }
             for r in REVIEWS["reviews"]
         ],
@@ -680,6 +776,14 @@ def substitueer(tekst):
         if "{{%s}}" % blok in tekst:
             bron = (SRC.parent / (blok + ".html")).read_text(encoding="utf-8")
             tekst = tekst.replace("{{%s}}" % blok, re.sub(r"<!--.*?-->\n", "", bron, count=1, flags=re.S).strip())
+    tekst = tekst.replace("{{reviewstrook}}", render_reviewstrook())
+    tekst = tekst.replace("{{reviewstrook_zakelijk}}", render_reviewstrook(
+        "Google-reviews", "Je klant is bij ons in goede handen"))
+    tekst = tekst.replace("{{reviewbadge}}", render_reviewbadge())
+    tekst = tekst.replace("{{reviewbadge_kort}}", render_reviewbadge(zin=False))
+    # Cijfer en aantal als los veld, zodat main.js er de live stand in kan zetten.
+    tekst = tekst.replace("{{rv.score}}", '<span data-rv="score">%s</span>' % BEDRIJF["reviews_score"])
+    tekst = tekst.replace("{{rv.aantal}}", '<span data-rv="aantal">%s</span>' % BEDRIJF["reviews_aantal"])
     tekst = re.sub(r"\{\{(bedrijf|feit)\.([a-z_]+)\}\}", rep, tekst)
     tekst = tekst.replace("{{kozijnhorren}}", kozijnhorren_link())
     tekst = tekst.replace("{{kozijnhorren_nieuw_venster}}", kozijnhorren_link(nieuw_venster=True))
@@ -741,6 +845,7 @@ def controleer_js(map_=None):
 
 def main():
     controleer_js()
+    reviews_verversen()
     ver = css_version()
     paginas = []
 

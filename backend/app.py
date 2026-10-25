@@ -12,6 +12,7 @@ Openbaar (ook vanuit de winkel op een ander domein):
   POST /api/aanvragen                     offerteaanvraag aanmaken (zonder foto's)
   PUT  /api/aanvragen/<id>/fotos/<naam>?t= één foto bij die aanvraag
   POST /api/aanvragen/<id>/versturen?t=   alles compleet: mail aan Max + bevestiging
+  GET  /api/reviews                       Google-cijfer, aantal en reviews (voor alle sites)
 
 Max-modus (met token uit /api/max/login):
   /api/max/status, /api/max/rapporten[/<id>[/mail]], /api/max/fotos,
@@ -30,7 +31,7 @@ import traceback
 from html import escape
 from urllib.parse import parse_qs
 
-from . import aanvragen, bestellingen, horren, mail, mails, rapporten
+from . import aanvragen, bestellingen, horren, mail, mails, rapporten, reviews
 from . import instellingen as cfg
 from .auth import maak_token, nieuwe_id, token_geldig, wachtwoord_klopt
 from .opslag import Fout, opslag
@@ -504,6 +505,17 @@ def cron(v):
     return antwoord(bestellingen.dagelijks())
 
 
+@route("GET", "/api/reviews")
+def reviews_lijst(v):
+    """Openbaar en voor iedereen hetzelfde, dus Vercel mag het bewaren: Google
+    wordt dan hooguit een paar keer per dag gevraagd, hoeveel bezoekers er ook zijn."""
+    gegevens, vers = reviews.stand()
+    return antwoord(gegevens, koppen={
+        "Cache-Control": "public, max-age=900, s-maxage=%d, stale-while-revalidate=86400"
+                         % (reviews.VERS if vers else 900),
+        "Access-Control-Allow-Origin": "*"})
+
+
 @route("GET", "/api/gezond")
 def gezond(v):
     return antwoord({"ok": True})
@@ -558,7 +570,8 @@ def app(environ, start_response):
         traceback.print_exc()
         status, koppen, inhoud = antwoord({"fout": "Er ging iets mis aan onze kant. Probeer het opnieuw, "
                                                    "of stuur ons een WhatsApp."}, 500)
-    koppen = dict(koppen, **_cors(v))
+    if "Access-Control-Allow-Origin" not in koppen:
+        koppen = dict(koppen, **_cors(v))
     koppen.setdefault("X-Robots-Tag", "noindex")
     start_response("%d %s" % (status, STATUSTEKST.get(status, "")), list(koppen.items()))
     return [inhoud]
