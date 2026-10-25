@@ -348,6 +348,7 @@ td strong{color:var(--ink);}
 .reviewstrook{overflow:hidden;}
 .rv-kop{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:22px 40px;margin-bottom:34px;}
 .rv-kop h2{margin-bottom:0;}
+.rv-inleiding{margin:12px 0 0;max-width:52ch;color:var(--sub);font-size:1rem;}
 .rv-totaal{
   display:inline-flex;align-items:center;gap:16px;padding:14px 24px 14px 18px;
   background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);

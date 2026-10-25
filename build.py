@@ -57,7 +57,9 @@ BEDRIJF = {
     # Beide links komen uit de Place ID in reviews.json, zie reviews_afleiden().
     "reviews_url": "",
     "review_schrijven_url": "",
-    "ervaring_jaren": "10",
+    # Het aantal jaren rekent zichzelf uit, zodat er nooit een verouderd getal staat.
+    "opgericht": "2014",
+    "ervaring_jaren": str(time.localtime().tm_year - 2014),
     # TODO Max: KvK-nummer en btw-id invullen -- horen op de contactpagina te staan
     "kvk": "",
     "btw": "",
@@ -395,21 +397,27 @@ def render_reviewbadge(zin=True):
         '<span class="rv-badge-cijfer">{{rv.score}}</span>'
         '<span class="rv-badge-regel"><span class="sterren" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>'
         '<span>uit {{rv.aantal}} Google-reviews</span></span>'
-        + ('<span class="rv-badge-zin">Duizenden klanten gingen je voor</span>' if zin else "")
+        + (f'<span class="rv-badge-zin">In {BEDRIJF["ervaring_jaren"]} jaar duizenden kozijnen hersteld</span>' if zin else "")
         + "</a>"
     )
 
 
-def render_reviewstrook(opschrift="Duizenden klanten gingen je voor", kop="Wat klanten over ons zeggen"):
+def render_reviewstrook(kop="Wat klanten over ons zeggen"):
     """Het cijfer groot, en een rij reviews om doorheen te schuiven. Elke kaart
-    opent die review op Google."""
+    opent die review op Google.
+
+    De omvang staat er bewust in kozijnen en jaren, niet in klanten: "duizenden
+    klanten" naast "84 reviews" laat een lezer rekenen. Zo klopt het allebei, en
+    verklaart de inleiding meteen waarom er minder reviews zijn dan klussen."""
     url = BEDRIJF["reviews_url"]
     return f"""<section class="vlak-mint reviewstrook" aria-labelledby="rv-titel">
   <div class="wrap">
     <div class="rv-kop">
       <div>
-        <p class="opschrift">{opschrift}</p>
+        <p class="opschrift">Google-reviews</p>
         <h2 id="rv-titel">{kop}</h2>
+        <p class="rv-inleiding">In {BEDRIJF["ervaring_jaren"]} jaar hebben we duizenden kozijnen hersteld, door heel
+        Nederland. Een deel van die klanten schreef er een review over.</p>
       </div>
       <a class="rv-totaal" href="{url}" target="_blank" rel="noopener">
         <span class="rv-cijfer">{{{{rv.score}}}}</span>
@@ -538,7 +546,7 @@ def render_footer():
   <div class="wrap fgrid">
       <div class="fcol fbrand">
         <img src="/images/logo/iwrap-logo-licht-88.png" width="200" height="42" alt="iWrap" loading="lazy">
-        <p>Wij herstellen kunststof kozijnen met Renolit folie. Al meer dan
+        <p>Wij herstellen kunststof kozijnen met Renolit folie. Al
         {b['ervaring_jaren']} jaar, door heel Nederland, met eigen gecertificeerde
         monteurs.</p>
         <p class="fcontact">
@@ -777,8 +785,7 @@ def substitueer(tekst):
             bron = (SRC.parent / (blok + ".html")).read_text(encoding="utf-8")
             tekst = tekst.replace("{{%s}}" % blok, re.sub(r"<!--.*?-->\n", "", bron, count=1, flags=re.S).strip())
     tekst = tekst.replace("{{reviewstrook}}", render_reviewstrook())
-    tekst = tekst.replace("{{reviewstrook_zakelijk}}", render_reviewstrook(
-        "Google-reviews", "Je klant is bij ons in goede handen"))
+    tekst = tekst.replace("{{reviewstrook_zakelijk}}", render_reviewstrook("Je klant is bij ons in goede handen"))
     tekst = tekst.replace("{{reviewbadge}}", render_reviewbadge())
     tekst = tekst.replace("{{reviewbadge_kort}}", render_reviewbadge(zin=False))
     # Cijfer en aantal als los veld, zodat main.js er de live stand in kan zetten.

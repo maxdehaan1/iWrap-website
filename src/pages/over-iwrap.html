@@ -1,6 +1,6 @@
 <!-- {
   "title": "Over iWrap — specialist in kozijnherstel | iWrap",
-  "description": "iWrap is een klein, gespecialiseerd bedrijf uit Hilversum dat al meer dan tien jaar niets anders doet dan kunststof kozijnen herstellen met Renolit folie.",
+  "description": "iWrap is een klein, gespecialiseerd bedrijf uit Hilversum dat al {{bedrijf.ervaring_jaren}} jaar niets anders doet dan kunststof kozijnen herstellen met Renolit folie.",
   "ogtitle": "Over iWrap",
   "bodyclass": "tekstpagina",
   "css": ["content", "home"],
@@ -26,7 +26,7 @@
       <ol><li><a href="/">Home</a></li><li>Over iWrap</li></ol>
     </nav>
     <p class="opschrift">Over ons</p>
-    <h1>Eén vak, al meer dan tien jaar</h1>
+    <h1>Eén vak, al {{bedrijf.ervaring_jaren}} jaar</h1>
     <p class="lede">iWrap is een klein bedrijf uit {{bedrijf.plaats}} dat één ding
     doet: kunststof kozijnen herstellen met Renolit folie. Geen schilderwerk erbij,
     geen kozijnen verkopen, geen aanbouw. Alleen dit.</p>
@@ -118,8 +118,8 @@
     <aside class="zij">
       <div class="zijkaart">
         <h3>{{rv.score}} uit {{rv.aantal}} reviews</h3>
-        <p>Duizenden klanten gingen je voor. Wat ze het vaakst noemen: netjes werken,
-        meedenken en alles opruimen.</p>
+        <p>In {{bedrijf.ervaring_jaren}} jaar duizenden kozijnen hersteld. Wat klanten in hun
+        review het vaakst noemen: netjes werken, meedenken en alles opruimen.</p>
         <a class="knop knop-tweede" href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener">Lees ze op Google</a>
       </div>
       <div class="zijkaart">

@@ -17,6 +17,7 @@ import hashlib
 import json
 import re
 import sys
+from datetime import date
 from pathlib import Path
 from urllib.parse import quote
 
@@ -472,6 +473,8 @@ def iwrap_reviews():
 def substitueer(tekst):
     vervang = {
         "{{iwrap.reviews}}": iwrap_reviews(),
+        # iWrap bestaat sinds 2014; het aantal jaren rekent zichzelf uit.
+        "{{iwrap.jaren}}": str(date.today().year - 2014),
         "{{prijs.vanaf}}": euro(VANAF),
         "{{prijs.luxe_vanaf}}": euro(LUXE_VANAF),
         "{{levertijd}}": levertijd_tekst(),

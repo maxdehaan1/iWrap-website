@@ -472,12 +472,20 @@ Eén bron, live op alle vier de sites.
   houtnerffolie.nl en kozijnhorren.nl halen hetzelfde adres op.
 
 **Waar ze staan.** Op iwrap.nl: een badge in de kop van elke pagina ("4,9 uit 84
-Google-reviews, duizenden klanten gingen je voor"), de reviewstrook onderaan bijna elke
-pagina (acht reviews om doorheen te schuiven, elke kaart opent die review op Google), het
-pilletje op de foto's in de afsluitblokken, en de footer. Het opleverrapport heeft een knop
-die meteen het venster opent om een review te schrijven. Op kozijnwrap.nl: twee reviews in
-het iWrap-blok, het cijfer in de uitkomst van de keuzehulp en bij de offerteknop. Op
-houtnerffolie.nl: bij beide offerteblokken. Op kozijnhorren.nl: Over ons en de FAQ.
+Google-reviews, in 12 jaar duizenden kozijnen hersteld"), de reviewstrook onderaan bijna
+elke pagina (acht reviews om doorheen te schuiven, elke kaart opent die review op Google),
+het pilletje op de foto's in de afsluitblokken, en de footer. Het opleverrapport heeft een
+knop die meteen het venster opent om een review te schrijven. Op kozijnwrap.nl: twee
+reviews in het iWrap-blok, het cijfer in de uitkomst van de keuzehulp en bij de
+offerteknop. Op houtnerffolie.nl: bij beide offerteblokken. Op kozijnhorren.nl: Over ons
+en de FAQ.
+
+**Hoe de omvang erbij staat.** Nooit als "duizenden klanten": naast "84 reviews" gaat een
+lezer dan rekenen. Wel in kozijnen en jaren ("in 12 jaar duizenden kozijnen hersteld"), en
+waar ruimte is met de uitleg erbij: "een deel van die klanten schreef er een review over".
+Het aantal jaren rekent zichzelf uit vanaf 2014 (`opgericht` in `build.py`, en hetzelfde
+jaartal in de build van kozijnwrap.nl en kozijnhorren.nl; op houtnerffolie.nl staat "sinds
+2014").
 
 Alleen reviews met vier of vijf sterren en een echte tekst (40+ tekens) komen in de rij.
 Het cijfer en het aantal zijn altijd de echte.
