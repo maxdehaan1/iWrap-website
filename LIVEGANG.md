@@ -86,8 +86,8 @@ Een willekeurige tekst maken, in je eigen Terminal (niet in een chat plakken):
 python3 -c "import secrets; print(secrets.token_urlsafe(48))"
 ```
 
-- [ ] **[Max] Opslag:** Upstash for Redis koppelen, regio Frankfurt. Het is dezelfde database
-      als die van de iWrap-app (stap 8): één keer aanmaken, aan beide projecten koppelen.
+- [ ] **[Max] Opslag:** Upstash for Redis koppelen, regio Frankfurt. Komt de Vercel-versie van de
+      iWrap-app ooit (stap 8), dan gebruikt die dezelfde database.
 - [ ] **[Max] Bezoekers tellen:** zet in Vercel bij **iwrap-website**, **kozijnwrap-website**
       en **houtnerffolie-website** het tabblad *Analytics* aan (Enable Web Analytics). Het
       telscript staat al op de sites; zonder deze klik telt het niets. Dit kan nu al.
@@ -138,8 +138,8 @@ langer).
       **Alle andere records blijven staan, anders stopt je mail.** Het gaat om: het MX-record (`iwrap-nl.mail.protection.outlook.com`),
       de TXT-records (`MS=ms88982446` en de SPF met `spf.protection.outlook.com`),
       `_dmarc`, de DKIM-records (`selector1._domainkey` en `selector2._domainkey`) en
-      `autodiscover` (allemaal op 25 oktober nagekeken). En de CNAME `app`: dat is de
-      iWrap-app (stap 8).
+      `autodiscover` (allemaal op 25 oktober nagekeken). En, als die er staat, de CNAME
+      `app` (de iWrap-app, stap 8).
 - [ ] **[Max]** Wacht tot Vercel bij beide domeinen "Valid Configuration" toont. Het
       certificaat (https) regelt Vercel daarna zelf.
 - [ ] **[Claude] Controleren:**
@@ -213,28 +213,24 @@ iwrap.nl noemt de naam kozijnhorren.nl wel al, maar linkt pas naar de winkel als
       draaien op diezelfde GPO-server.
 - [ ] **[Max] Agenda:** het verloopmoment van het Microsoft client secret (stap 2).
 
-## 8. iWrap-app (app.iwrap.nl)
+## 8. iWrap-app
 
-De eigen app van Max en Phoebe. Hij staat los van de sites: de code staat in een besloten
-repo (`iwrap-app`), niet in deze. Dit kan nu al; het hangt niet af van de overstapdag.
+De eigen app van Max en Phoebe draait sinds 5 november 2026 als **artifact in Claude**. De link
+staat in de README van `iwrap-app`. De versie met een eigen server (app.iwrap.nl op Vercel) ligt
+stil: het Vercel-project `iwrap-app` en het domein bestaan, maar er draait niets. Dit hangt niet
+af van de overstapdag.
 
-- [x] **[Claude]** Vercel-project **iwrap-app**, de sleutels erin als geheim, en
-      `app.iwrap.nl` aan het project toegevoegd.
-- [ ] **[Max] GitHub:** een lege, **besloten** repo `iwrap-app`, zonder README.
-- [ ] **[Max] Vercel > iwrap-app > Storage:** Upstash for Redis, gratis, regio
-      **Frankfurt**. Koppel hem aan **iwrap-app** én **iwrap-website**, alleen
-      *Production*. Daarmee is ook de opslag uit stap 2 klaar.
-- [ ] **[Max en Phoebe] Wachtwoord:** in de Terminal
-      `bash ~/Downloads/iwrap-app/scripts/wachtwoord.sh max` (Phoebe: `phoebe` aan het
-      eind). Je ziet niet wat je typt; het gaat alleen naar Vercel. Zo verander je het
-      later ook.
-- [ ] **[Max] GPO, DNS van iwrap.nl:** een nieuw record: CNAME `app` naar
-      `03f583d87b7216a1.vercel-dns-017.com.` **Dit record blijft altijd staan, ook op de
-      overstapdag.**
-- [ ] **[Claude]** Eerste deploy en nakijken, de dossiers erin, en daarna de
-      importsleutel weer weg.
-- [ ] **[Max en Phoebe]** Safari > `app.iwrap.nl` > Deel > Zet op beginscherm > inloggen.
+- [x] **[Claude]** De app als artifact, met verzonnen voorbeeldklanten.
+- [ ] **[Max]** Openen en uitproberen.
+- [ ] **[Max]** Phoebe uitnodigen: in Claude bij de app *Delen*, haar mailadres, **Editor**. Zij
+      heeft een eigen Claude-account nodig. Nooit delen via een openbare link.
+- [ ] **[Max]** Akkoord op de verhuizing van de dossiers: de klantgegevens staan dan bij Anthropic
+      (Claude), niet op een server in Frankfurt.
+- [ ] **[Claude]** De verhuizing, en daarna de inbox-ronde laten schrijven in de app.
+- Later, alleen als het nodig is (bijvoorbeeld voor meldingen op de iPhone): de Vercel-versie
+  met een GitHub-repo, Upstash, wachtwoorden en de CNAME `app` bij GPO. Die stappen staan in de
+  tak `vercel` van `iwrap-app`.
 
 ---
 
-*Bijgehouden door Claude. Laatst bijgewerkt: 4 november 2026 (iWrap-app).*
+*Bijgehouden door Claude. Laatst bijgewerkt: 5 november 2026 (iWrap-app als artifact).*
