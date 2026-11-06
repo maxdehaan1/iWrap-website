@@ -236,6 +236,10 @@ af van de overstapdag.
 - [ ] **[Max]** De bijgewerkte offerte-skill uploaden in Claude (`Offertes ICM/_skills/iwrap-offerte-maken.zip`).
 - [x] **[Claude]** De app op jullie werkwijze (6 nov): op de klus, planning uit de mail, offertes klaarzetten
       ("maak de offertes"), nog factureren met het meerwerk, en een plek voor de cijfers uit SnelStart.
+- [x] **[Claude]** Controle met de echte gegevens (7 nov): de planning kijkt verder vooruit, de agenda telt mee
+      zodra hij gekoppeld is, en de inbox-ronde vult de ontbrekende datums en woonplaatsen aan uit de mail.
+- [ ] **[Max]** De taken die Claude in de app zette nalopen (op Vandaag: 4 voor Max, 4 voor Phoebe), onder andere
+      dagen werk invullen bij klussen zonder duur.
 - [ ] **[Phoebe]** Cijfers voor Geld: in SnelStart de resultatenrekening per maand (dit jaar en vorig jaar) en de
       openstaande posten exporteren naar `Offertes ICM/dossiers/_app-import/snelstart/`, dan in Claude zeggen:
       "lees de cijfers van SnelStart in". Daarna elke maand opnieuw.
@@ -245,4 +249,4 @@ af van de overstapdag.
 
 ---
 
-*Bijgehouden door Claude. Laatst bijgewerkt: 6 november 2026 (app op de werkwijze; cijfers uit SnelStart).*
+*Bijgehouden door Claude. Laatst bijgewerkt: 7 november 2026 (controle met de echte gegevens; taken in de app).*
