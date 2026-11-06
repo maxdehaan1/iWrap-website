@@ -220,17 +220,19 @@ staat in de README van `iwrap-app`. De versie met een eigen server (app.iwrap.nl
 stil: het Vercel-project `iwrap-app` en het domein bestaan, maar er draait niets. Dit hangt niet
 af van de overstapdag.
 
-- [x] **[Claude]** De app als artifact, met verzonnen voorbeeldklanten.
+- [x] **[Claude]** De app als artifact in Claude.
 - [ ] **[Max]** Openen en uitproberen.
 - [ ] **[Max]** Phoebe uitnodigen: in Claude bij de app *Delen*, haar mailadres, **Editor**. Zij
       heeft een eigen Claude-account nodig. Nooit delen via een openbare link.
-- [ ] **[Max]** Akkoord op de verhuizing van de dossiers: de klantgegevens staan dan bij Anthropic
+- [x] **[Max]** Akkoord op de verhuizing van de dossiers (6 nov): de klantgegevens staan bij Anthropic
       (Claude), niet op een server in Frankfurt.
-- [ ] **[Claude]** De verhuizing, en daarna de inbox-ronde laten schrijven in de app.
+- [x] **[Claude]** De verhuizing (6 nov): 78 klanten met hun klus, taken en tijdlijn.
+- [ ] **[Max]** Toestemming zodat de inbox-ronde zonder te vragen in de app mag schrijven. Daarna zet Claude
+      de ronde om (in `Offertes ICM/stappen/00-inbox/RONDE.md` staat hij klaar, met een schakelaar).
 - Later, alleen als het nodig is (bijvoorbeeld voor meldingen op de iPhone): de Vercel-versie
   met een GitHub-repo, Upstash, wachtwoorden en de CNAME `app` bij GPO. Die stappen staan in de
   tak `vercel` van `iwrap-app`.
 
 ---
 
-*Bijgehouden door Claude. Laatst bijgewerkt: 5 november 2026 (iWrap-app als artifact).*
+*Bijgehouden door Claude. Laatst bijgewerkt: 6 november 2026 (dossiers in de iWrap-app).*
