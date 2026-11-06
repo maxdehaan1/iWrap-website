@@ -229,10 +229,15 @@ af van de overstapdag.
 - [x] **[Claude]** De verhuizing (6 nov): 78 klanten met hun klus, taken en tijdlijn.
 - [x] **[Max]** Toestemming zodat de inbox-ronde zonder te vragen in de app mag schrijven (6 nov).
 - [x] **[Claude]** De inbox-ronde schrijft in de app (`Offertes ICM/stappen/00-inbox/RONDE.md`, sinds 6 nov).
+- [x] **[Claude]** De inbox-ronde draait als cloudroutine in Claude, 4× per dag, ook als de Mac uit staat
+      (6 nov). De oude planning in de chat is gestopt.
+- [ ] **[Max]** iCloud-agenda koppelen: de agenda delen als openbare agenda en de link in de app zetten (bij je
+      account, "Agenda").
+- [ ] **[Max]** De bijgewerkte offerte-skill uploaden in Claude (`Offertes ICM/_skills/iwrap-offerte-maken.zip`).
 - Later, alleen als het nodig is (bijvoorbeeld voor meldingen op de iPhone): de Vercel-versie
   met een GitHub-repo, Upstash, wachtwoorden en de CNAME `app` bij GPO. Die stappen staan in de
   tak `vercel` van `iwrap-app`.
 
 ---
 
-*Bijgehouden door Claude. Laatst bijgewerkt: 6 november 2026 (inbox-ronde schrijft in de iWrap-app).*
+*Bijgehouden door Claude. Laatst bijgewerkt: 6 november 2026 (inbox-ronde als cloudroutine; agenda en offerte-skill).*
