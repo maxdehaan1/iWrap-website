@@ -234,10 +234,15 @@ af van de overstapdag.
 - [ ] **[Max]** iCloud-agenda koppelen: de agenda delen als openbare agenda en de link in de app zetten (bij je
       account, "Agenda").
 - [ ] **[Max]** De bijgewerkte offerte-skill uploaden in Claude (`Offertes ICM/_skills/iwrap-offerte-maken.zip`).
+- [x] **[Claude]** De app op jullie werkwijze (6 nov): op de klus, planning uit de mail, offertes klaarzetten
+      ("maak de offertes"), nog factureren met het meerwerk, en een plek voor de cijfers uit SnelStart.
+- [ ] **[Phoebe]** Cijfers voor Geld: in SnelStart de resultatenrekening per maand (dit jaar en vorig jaar) en de
+      openstaande posten exporteren naar `Offertes ICM/dossiers/_app-import/snelstart/`, dan in Claude zeggen:
+      "lees de cijfers van SnelStart in". Daarna elke maand opnieuw.
 - Later, alleen als het nodig is (bijvoorbeeld voor meldingen op de iPhone): de Vercel-versie
   met een GitHub-repo, Upstash, wachtwoorden en de CNAME `app` bij GPO. Die stappen staan in de
   tak `vercel` van `iwrap-app`.
 
 ---
 
-*Bijgehouden door Claude. Laatst bijgewerkt: 6 november 2026 (inbox-ronde als cloudroutine; agenda en offerte-skill).*
+*Bijgehouden door Claude. Laatst bijgewerkt: 6 november 2026 (app op de werkwijze; cijfers uit SnelStart).*
