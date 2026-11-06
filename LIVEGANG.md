@@ -227,12 +227,12 @@ af van de overstapdag.
 - [x] **[Max]** Akkoord op de verhuizing van de dossiers (6 nov): de klantgegevens staan bij Anthropic
       (Claude), niet op een server in Frankfurt.
 - [x] **[Claude]** De verhuizing (6 nov): 78 klanten met hun klus, taken en tijdlijn.
-- [ ] **[Max]** Toestemming zodat de inbox-ronde zonder te vragen in de app mag schrijven. Daarna zet Claude
-      de ronde om (in `Offertes ICM/stappen/00-inbox/RONDE.md` staat hij klaar, met een schakelaar).
+- [x] **[Max]** Toestemming zodat de inbox-ronde zonder te vragen in de app mag schrijven (6 nov).
+- [x] **[Claude]** De inbox-ronde schrijft in de app (`Offertes ICM/stappen/00-inbox/RONDE.md`, sinds 6 nov).
 - Later, alleen als het nodig is (bijvoorbeeld voor meldingen op de iPhone): de Vercel-versie
   met een GitHub-repo, Upstash, wachtwoorden en de CNAME `app` bij GPO. Die stappen staan in de
   tak `vercel` van `iwrap-app`.
 
 ---
 
-*Bijgehouden door Claude. Laatst bijgewerkt: 6 november 2026 (dossiers in de iWrap-app).*
+*Bijgehouden door Claude. Laatst bijgewerkt: 6 november 2026 (inbox-ronde schrijft in de iWrap-app).*
