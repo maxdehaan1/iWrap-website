@@ -234,6 +234,9 @@ af van de overstapdag.
 - [ ] **[Max]** iCloud-agenda koppelen: de agenda delen als openbare agenda en de link in de app zetten (bij je
       account, "Agenda").
 - [ ] **[Max]** De bijgewerkte offerte-skill uploaden in Claude (`Offertes ICM/_skills/iwrap-offerte-maken.zip`).
+- [ ] **[Max]** In de mailbox max@iwrap.nl een doorstuurregel naar info@iwrap.nl (Outlook > Instellingen > E-mail >
+      Doorsturen). De inbox-ronde leest alleen info@; mail van dealers aan max@ ziet hij nu niet. Daarna de
+      oude dealermails uit max@ één keer doorsturen.
 - [x] **[Claude]** De app op jullie werkwijze (6 nov): op de klus, planning uit de mail, offertes klaarzetten
       ("maak de offertes"), nog factureren met het meerwerk, en een plek voor de cijfers uit SnelStart.
 - [x] **[Claude]** Controle met de echte gegevens (7 nov): de planning kijkt verder vooruit, de agenda telt mee
