@@ -235,8 +235,11 @@ af van de overstapdag.
 - [ ] **[Max]** De cloud mag de agenda ophalen: op claude.ai/code bij de omgeving **Default** (instellingen van de
       omgeving, netwerktoegang) `p167-caldav.icloud.com` (of `*.icloud.com`) toestaan. Nu blokkeert de cloud iCloud
       en leest de ronde de agenda niet in; Claude zette hem op 7 nov één keer zelf in de app.
-- [ ] **[Claude]** Daarna de routine bijwerken met `scripts/routine_opdracht.py` (agenda 30 weken vooruit, regel
-      voor "Optie"-afspraken) en een ronde draaien om te zien dat de agenda binnenkomt.
+- [ ] **[Claude]** Daarna de routine bijwerken met `scripts/routine_opdracht.py` (agenda 30 weken vooruit, "de agenda
+      is leidend" met `agenda_volgen.py` en het logboek) en een ronde draaien om te zien dat de agenda binnenkomt.
+- [x] **[Claude]** De agenda is leidend (7 nov): wat in de iCloud-agenda verandert, neemt de ronde over in de app; elke
+      wijziging staat in Planning onder "Uit de agenda overgenomen". Wil je dat een klant nog niet vaststaat, zet dan
+      "Optie" voor de titel in de agenda.
 - [ ] **[Max]** De bijgewerkte offerte-skill uploaden in Claude (`Offertes ICM/_skills/iwrap-offerte-maken.zip`).
 - [ ] **[Max]** In de mailbox max@iwrap.nl een doorstuurregel naar info@iwrap.nl (Outlook > Instellingen > E-mail >
       Doorsturen). De inbox-ronde leest alleen info@; mail van dealers aan max@ ziet hij nu niet. Daarna de
