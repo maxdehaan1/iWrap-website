@@ -231,8 +231,7 @@ af van de overstapdag.
 - [x] **[Claude]** De inbox-ronde schrijft in de app (`Offertes ICM/stappen/00-inbox/RONDE.md`, sinds 6 nov).
 - [x] **[Claude]** De inbox-ronde draait als cloudroutine in Claude, 4× per dag, ook als de Mac uit staat
       (6 nov). De oude planning in de chat is gestopt.
-- [ ] **[Max]** iCloud-agenda koppelen: de agenda delen als openbare agenda en de link in de app zetten (bij je
-      account, "Agenda").
+- [x] **[Max]** iCloud-agenda koppelen: de agenda delen als openbare agenda en de link in de app zetten (7 nov).
 - [ ] **[Max]** De bijgewerkte offerte-skill uploaden in Claude (`Offertes ICM/_skills/iwrap-offerte-maken.zip`).
 - [ ] **[Max]** In de mailbox max@iwrap.nl een doorstuurregel naar info@iwrap.nl (Outlook > Instellingen > E-mail >
       Doorsturen). De inbox-ronde leest alleen info@; mail van dealers aan max@ ziet hij nu niet. Daarna de
