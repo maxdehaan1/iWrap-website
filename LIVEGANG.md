@@ -232,6 +232,11 @@ af van de overstapdag.
 - [x] **[Claude]** De inbox-ronde draait als cloudroutine in Claude, 4× per dag, ook als de Mac uit staat
       (6 nov). De oude planning in de chat is gestopt.
 - [x] **[Max]** iCloud-agenda koppelen: de agenda delen als openbare agenda en de link in de app zetten (7 nov).
+- [ ] **[Max]** De cloud mag de agenda ophalen: op claude.ai/code bij de omgeving **Default** (instellingen van de
+      omgeving, netwerktoegang) `p167-caldav.icloud.com` (of `*.icloud.com`) toestaan. Nu blokkeert de cloud iCloud
+      en leest de ronde de agenda niet in; Claude zette hem op 7 nov één keer zelf in de app.
+- [ ] **[Claude]** Daarna de routine bijwerken met `scripts/routine_opdracht.py` (agenda 30 weken vooruit, regel
+      voor "Optie"-afspraken) en een ronde draaien om te zien dat de agenda binnenkomt.
 - [ ] **[Max]** De bijgewerkte offerte-skill uploaden in Claude (`Offertes ICM/_skills/iwrap-offerte-maken.zip`).
 - [ ] **[Max]** In de mailbox max@iwrap.nl een doorstuurregel naar info@iwrap.nl (Outlook > Instellingen > E-mail >
       Doorsturen). De inbox-ronde leest alleen info@; mail van dealers aan max@ ziet hij nu niet. Daarna de
