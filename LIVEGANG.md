@@ -236,7 +236,10 @@ af van de overstapdag.
       omgeving, netwerktoegang) `p167-caldav.icloud.com` (of `*.icloud.com`) toestaan. Nu blokkeert de cloud iCloud
       en leest de ronde de agenda niet in; Claude zette hem op 7 nov één keer zelf in de app.
 - [ ] **[Claude]** Daarna de routine bijwerken met `scripts/routine_opdracht.py` (agenda 30 weken vooruit, "de agenda
-      is leidend" met `agenda_volgen.py` en het logboek) en een ronde draaien om te zien dat de agenda binnenkomt.
+      is leidend" met `agenda_volgen.py` en het logboek, en de dag van het akkoord bij de klus) en een ronde draaien om
+      te zien dat de agenda binnenkomt. Daarbij nalopen of elke klus bij "Nog inplannen" een akkoorddatum heeft.
+- [x] **[Claude]** Bij "Nog inplannen" staat sinds wanneer het akkoord er is ("Akkoord sinds 2 nov · 6 dagen"), wie het
+      langst wacht staat bovenaan (8 nov). Aanpassen kan bij Klus bewerken.
 - [x] **[Claude]** De agenda is leidend (7 nov): wat in de iCloud-agenda verandert, neemt de ronde over in de app; elke
       wijziging staat in Planning onder "Uit de agenda overgenomen". Wil je dat een klant nog niet vaststaat, zet dan
       "Optie" voor de titel in de agenda.
