@@ -156,6 +156,7 @@ def aanvragen_testen():
                        encoding="utf-8").read()
     klopt("We hebben je aanvraag ontvangen" in bevestiging and "werkdag" not in bevestiging,
           "bevestiging aan de klant, zonder belofte over wanneer")
+    klopt("Offertes maken we op maandag" in bevestiging, "de bevestiging zegt dat offertes op maandag gemaakt worden")
 
     klopt("Lindelaan 12, 1214 AB Hilversum" in html, "het adres staat er compleet in, met de straat")
 

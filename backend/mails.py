@@ -436,7 +436,10 @@ def _werkblok(kop, regels):
 
 def aanvraag_bevestiging(a):
     """De bevestiging aan de klant: wat hij stuurde, en wat er nu gebeurt.
-    Bewust zonder termijn: wanneer Max antwoordt, hangt van de planning af."""
+    Bewust zonder termijn: wanneer Max antwoordt, hangt van de planning af. Er staat
+    wel bij dat de offertes op maandag gemaakt worden (akkoord Max, 10 november 2026):
+    dat is geen belofte, en het scheelt mails van mensen die vragen of hun aanvraag
+    is aangekomen."""
     g = a["gegevens"]
     if a["manier"] == "papier":
         regels = ["Je tekening en %d foto%s van je kozijnen" % (a["papier"]["fotos"], "'s" if a["papier"]["fotos"] != 1 else "")]
@@ -452,8 +455,8 @@ def aanvraag_bevestiging(a):
         _p(_aanhef(g["naam"])),
         _p("Bedankt voor je aanvraag. Dit is wat je ons hebt gestuurd:"),
         '<ul style="margin:0 0 16px;padding-left:20px">%s</ul>' % lijst,
-        _p("We bekijken je foto's en sturen je een offerte met een vaste totaalprijs. Kunnen we "
-           "iets niet goed zien, dan bellen of mailen we je even."),
+        _p("We bekijken je foto's en sturen je een offerte met een vaste totaalprijs. Offertes maken "
+           "we op maandag, onze kantoordag. Kunnen we iets niet goed zien, dan bellen of mailen we je even."),
         _p("Wil je nog iets toevoegen, bijvoorbeeld een extra foto? Beantwoord deze mail gewoon."),
         _p("Wordt het een klus, dan kijken we bij de oplevering ook naar je rubbers, kit, glas en beslag: "
            '<a href="%s/kozijncheck" style="color:%s">de gratis kozijncheck</a>. Die krijg je als rapport, '
@@ -462,6 +465,7 @@ def aanvraag_bevestiging(a):
     ]
     html = _opmaak("We hebben je aanvraag ontvangen", "".join(delen), "iWrap", IWRAP_MINT)
     tekst = "%s\n\nBedankt voor je aanvraag. Dit is wat je ons hebt gestuurd:\n- %s\n\n" \
-            "We bekijken je foto's en sturen je een offerte met een vaste totaalprijs. Kunnen we iets niet " \
-            "goed zien, dan bellen of mailen we je even.\n\nGroet, Max\niWrap" % (_aanhef(g["naam"]), "\n- ".join(regels))
+            "We bekijken je foto's en sturen je een offerte met een vaste totaalprijs. Offertes maken we op " \
+            "maandag, onze kantoordag. Kunnen we iets niet goed zien, dan bellen of mailen we je even." \
+            "\n\nGroet, Max\niWrap" % (_aanhef(g["naam"]), "\n- ".join(regels))
     return "We hebben je aanvraag ontvangen", html, tekst

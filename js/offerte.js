@@ -1060,7 +1060,8 @@
       '<div class="vink" aria-hidden="true"></div>' +
       "<h2>Bedankt" + (naam ? ", " + naam.replace(/</g, "") : "") + "</h2>" +
       "<p>Je aanvraag is binnen, met al je foto's. We bekijken ze en sturen je een offerte met " +
-      "een vaste totaalprijs. Kunnen we iets niet goed zien, dan bellen of mailen we je even.</p>" +
+      "een vaste totaalprijs. Offertes maken we op maandag, onze kantoordag. Kunnen we iets niet " +
+      "goed zien, dan bellen of mailen we je even.</p>" +
       (d && d.bevestiging ? '<p class="bedankt-mail">Je krijgt ook een bevestiging per mail op <b></b>.</p>' : "") +
       '<div class="knoprij"><a class="knop knop-tweede" href="/voorbeelden">Bekijk ons werk</a>' +
       '<a class="knop knop-tweede" href="/veelgestelde-vragen">Veelgestelde vragen</a></div>' +
