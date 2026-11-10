@@ -5,11 +5,28 @@
 Zonder instellingen werkt alles lokaal: opslag in .data/, mails in
 .data/uitbak/, betalen via de testkassa, en de Max-modus op wachtwoord "test".
 """
-import http.server, socketserver, os, io, re
+import http.server, socketserver, os, io, re, json
 from pathlib import Path
 
 ROOT = Path(__file__).parent
 POORT = int(os.environ.get("POORT", "8010"))
+
+
+def _koppen_uit_vercel():
+    """De beveiligingskoppen uit vercel.json (onder andere de Content-Security-Policy),
+    zodat je lokaal ziet wat de browser online ook zou tegenhouden. De cache-koppen
+    slaan we over: lokaal wil je een wijziging meteen zien."""
+    uit = []
+    for blok in json.loads((ROOT / "vercel.json").read_text(encoding="utf-8")).get("headers", []):
+        if blok.get("has"):
+            continue
+        koppen = [(k["key"], k["value"]) for k in blok["headers"] if k["key"].lower() != "cache-control"]
+        if koppen:
+            uit.append((re.compile("^" + blok["source"] + "$"), koppen))
+    return uit
+
+
+VERCEL_KOPPEN = _koppen_uit_vercel()
 
 from backend.app import app as api_app  # noqa: E402
 from backend import instellingen  # noqa: E402
@@ -44,6 +61,14 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if code == 404 and (ROOT / "404.html").exists():
             self.error_message_format = (ROOT / "404.html").read_text(encoding="utf-8")
         super().send_error(code, message, explain)
+
+    def end_headers(self):
+        pad = self.path.split("?", 1)[0]
+        for patroon, koppen in VERCEL_KOPPEN:
+            if patroon.match(pad):
+                for sleutel, waarde in koppen:
+                    self.send_header(sleutel, waarde)
+        super().end_headers()
 
     def log_message(self, *a):
         pass

@@ -24,6 +24,7 @@ Vercel Cron:
 """
 
 import base64
+import hmac
 import json
 import re
 import time
@@ -146,7 +147,7 @@ def bestelling_maken(v):
 
 def _bestelling_met_token(nr, token):
     b = bestellingen.haal(nr)
-    if not b or not token or token != b.get("token"):
+    if not b or not token or not hmac.compare_digest(str(token), str(b.get("token") or "")):
         raise Probleem(404, "Deze bestelling kennen we niet.")
     return b
 

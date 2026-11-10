@@ -45,6 +45,13 @@ weinig misgaan.
       WhatsApp blijft op je 06, tenzij je WhatsApp Business op het nieuwe nummer zet.
 - [ ] **[Max] kozijnhorren.nl registreren** bij GPO, alleen als de winkel doorgaat. Het
       domein was op 25 oktober nog vrij; wacht er niet te lang mee.
+- [ ] **[Max] De GitHub-repo op privé zetten** (github.com > iWrap-website > Settings >
+      General > onderaan "Change visibility" > Private). Nu kan iedereen de code en dit
+      draaiboek lezen. Er staan geen wachtwoorden in, maar wel hoe alles in elkaar zit.
+      Vercel blijft gewoon werken met een privé-repo. Doe hetzelfde bij kozijnwrap,
+      houtnerffolie en iwrap-app als die openbaar staan.
+- [ ] **[Max] Tweestapsverificatie aan** op GitHub, Vercel en bij GPO (waar het DNS staat).
+      Wie in een van die drie komt, kan de site overnemen.
 - [ ] **[Max] KvK-nummer en btw-id** doorgeven. **[Claude]** zet ze in `build.py` (footer
       en contactpagina) en, voor de winkel, in `backend/data/winkel.json`.
 - [x] "Gecertificeerde monteurs in vaste dienst" is overal vervangen door **"wij besteden
@@ -147,6 +154,9 @@ langer).
       - Oude adressen sturen door: `/werkwijze/`, `/portfolio/...`, `/contact/` met de
         utm-codes van kozijnwrap en houtnerffolie (komt uit op `/offerte`).
       - Geen `noindex`-kop op iwrap.nl, de sitemap werkt, en `/api/gezond` en `/api/reviews` antwoorden.
+      - De beveiligingskoppen staan er (Content-Security-Policy), de console van de browser
+        blijft leeg op de homepage, `/offerte` en `/max`, en `/LIVEGANG.md`, `/build.py` en
+        `/backend/app.py` geven een 404.
 - [ ] **[Max] Mail testen:** stuur vanaf een ander adres (je telefoon) een mail naar
       info@iwrap.nl. Die moet gewoon binnenkomen. Doe daarna één echte testaanvraag op
       iwrap.nl/offerte.
@@ -262,4 +272,4 @@ af van de overstapdag.
 
 ---
 
-*Bijgehouden door Claude. Laatst bijgewerkt: 7 november 2026 (controle met de echte gegevens; taken in de app).*
+*Bijgehouden door Claude. Laatst bijgewerkt: 10 november 2026 (controle van de site op veiligheid, SEO en snelheid).*

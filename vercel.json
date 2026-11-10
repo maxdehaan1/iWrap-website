@@ -20,7 +20,11 @@
         },
         {
           "key": "Permissions-Policy",
-          "value": "geolocation=(), microphone=(), camera=()"
+          "value": "geolocation=(), microphone=(), camera=(), payment=(), usb=(), browsing-topics=()"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'sha256-tHd4qJ0R/vQfI0CbRTiL3XGSi+Tun7VhOcDbx08aLKA='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://iwrap.nl; media-src 'self' blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
         }
       ]
     },
@@ -86,6 +90,11 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/backend/:pad*",
+      "destination": "/niet-gevonden",
+      "permanent": false
+    },
     {
       "source": "/contact",
       "has": [

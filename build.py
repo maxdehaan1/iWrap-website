@@ -12,10 +12,12 @@ onderhouden zijn.
 Gebruik:  python3 build.py
 """
 
+import base64
 import json
 import os
 import re
 import hashlib
+import subprocess
 import time
 from html import escape
 from pathlib import Path
@@ -598,9 +600,12 @@ def render_footer():
 # Structured data
 # ---------------------------------------------------------------------------
 
-def localbusiness():
+def localbusiness(met_reviews=True):
+    """met_reviews: de losse reviews horen alleen in de gegevens voor Google op
+    pagina's waar de bezoeker ze ook echt ziet staan. Het cijfer staat op elke
+    pagina (in de footer) en mag dus overal mee."""
     b = BEDRIJF
-    return {
+    gegevens = {
         "@type": "HomeAndConstructionBusiness",
         "@id": SITE + "/#bedrijf",
         "name": b["naam"],
@@ -636,7 +641,9 @@ def localbusiness():
             "reviewCount": b["reviews_aantal"],
             "bestRating": "5",
         },
-        "review": [
+    }
+    if met_reviews:
+        gegevens["review"] = [
             {
                 "@type": "Review",
                 "author": {"@type": "Person", "name": r["naam"]},
@@ -646,8 +653,8 @@ def localbusiness():
                 **({"datePublished": r["datum"]} if r.get("datum") else {}),
             }
             for r in REVIEWS["reviews"]
-        ],
-    }
+        ]
+    return gegevens
 
 
 def breadcrumbs(kruimels):
@@ -720,6 +727,23 @@ HEAD = """<!DOCTYPE html>
 </html>
 """
 
+def werk_csp_bij():
+    """Het ene script dat in de pagina zelf staat (zie HEAD) mag van de
+    Content-Security-Policy in vercel.json alleen draaien als zijn hash daar
+    genoemd staat. Verandert dat script, dan zetten we de nieuwe hash er hier
+    vanzelf in; anders zou de browser het online stilletjes tegenhouden."""
+    script = re.search(r"<script>(.*?)</script>", HEAD, re.S).group(1)
+    hash_ = "sha256-" + base64.b64encode(hashlib.sha256(script.encode("utf-8")).digest()).decode("ascii")
+    pad = ROOT / "vercel.json"
+    tekst = pad.read_text(encoding="utf-8")
+    nieuw, aantal = re.subn(r"'sha256-[A-Za-z0-9+/=]+'", "'%s'" % hash_, tekst)
+    if aantal != 1:
+        raise SystemExit("vercel.json: de Content-Security-Policy mist de hash van het script in de pagina")
+    if nieuw != tekst:
+        pad.write_text(nieuw, encoding="utf-8")
+        print("  vercel.json: hash in de Content-Security-Policy bijgewerkt")
+
+
 # Bezoekers tellen met Vercel Web Analytics: zonder cookies en zonder iets op het
 # toestel van de bezoeker, dus zonder cookiebanner. Niet op de Max-modus en het
 # rapport (noindex): die adressen bevatten een sleutel en horen nergens in een
@@ -755,7 +779,7 @@ def render(slug, meta, inhoud, ver):
             % (meta["preload"]["src"], meta["preload"]["srcset"], meta["preload"].get("sizes", "100vw"))
         )
 
-    graph = [localbusiness()]
+    graph = [localbusiness(met_reviews='<article class="review' in inhoud)]
     kruimels = [("Home", "/")] + [
         (n, u) for n, u in meta.get("kruimels", [])
     ]
@@ -886,6 +910,7 @@ def controleer_js(map_=None):
 
 def main():
     controleer_js()
+    werk_csp_bij()
     reviews_verversen()
     ver = css_version()
     paginas = []
@@ -912,7 +937,7 @@ def main():
         doel.parent.mkdir(parents=True, exist_ok=True)
         doel.write_text(substitueer(render(slug, meta, substitueer(inhoud), ver)), encoding="utf-8")
 
-    schrijf_sitemap([(s, m) for s, m, _ in paginas])
+    schrijf_sitemap([(s, m) for s, m, _ in paginas], laatst_gewijzigd(paginas))
     opgeruimd = ruim_op([s for s, _, _ in paginas])
     print(f"{len(paginas)} pagina's gebouwd (css/js-versie {ver})")
     for weg in opgeruimd:
@@ -987,7 +1012,45 @@ def merkpagina(merk, sjabloon):
     return meta, inhoud
 
 
-def schrijf_sitemap(paginas):
+def _git_datum(pad):
+    """De dag van de laatste commit van een bestand, of None."""
+    try:
+        uit = subprocess.run(["git", "log", "-1", "--format=%cs", "--", str(pad)], cwd=ROOT,
+                             capture_output=True, text=True, timeout=10).stdout.strip()
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return uit if re.fullmatch(r"\d{4}-\d{2}-\d{2}", uit) else None
+
+
+def laatst_gewijzigd(paginas):
+    """Per pagina de dag waarop de inhoud voor het laatst veranderde, voor
+    <lastmod> in de sitemap. Google gebruikt die datum alleen als hij klopt,
+    dus hij verspringt niet bij elke build: we bewaren per pagina een hash van
+    de bron (src/gewijzigd.json) en zetten de datum pas op vandaag als die hash
+    verandert. Een wijziging in de navigatie of de footer telt dus niet mee."""
+    pad = ROOT / "src" / "gewijzigd.json"
+    bekend = json.loads(pad.read_text(encoding="utf-8")) if pad.exists() else {}
+    vandaag = time.strftime("%Y-%m-%d")
+    nu = {}
+    for slug, meta, inhoud in paginas:
+        h = hashlib.sha1((json.dumps(meta, sort_keys=True, ensure_ascii=False) + inhoud)
+                         .encode("utf-8")).hexdigest()[:12]
+        oud = bekend.get(slug)
+        if oud and oud["hash"] == h:
+            nu[slug] = oud
+            continue
+        datum = vandaag
+        if not oud:
+            # Eerste keer: de dag van de laatste commit van de bron is eerlijker dan vandaag.
+            bron = SRC / (slug + ".html")
+            datum = _git_datum(bron if bron.exists() else SRC.parent / "merk-sjabloon.html") or vandaag
+        nu[slug] = {"hash": h, "datum": datum}
+    if nu != bekend:
+        pad.write_text(json.dumps(nu, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    return {slug: d["datum"] for slug, d in nu.items()}
+
+
+def schrijf_sitemap(paginas, datums):
     regels = []
     for slug, meta in paginas:
         if meta.get("noindex"):
@@ -995,6 +1058,7 @@ def schrijf_sitemap(paginas):
         prio = meta.get("prioriteit", "0.7")
         regels.append(
             f"  <url><loc>{SITE}{url_for(slug)}</loc>"
+            f"<lastmod>{datums[slug]}</lastmod>"
             f"<changefreq>{meta.get('changefreq', 'monthly')}</changefreq>"
             f"<priority>{prio}</priority></url>"
         )

@@ -421,6 +421,23 @@ Belangrijke keuzes:
 - Automatische mails: bevestiging na betaling, "onderweg" als Max op verzonden zet, en
   "past alles?" vijf dagen later.
 
+## Beveiliging
+
+- **De koppen staan in `vercel.json`** en gelden voor elke pagina en voor de API. `serve.py`
+  stuurt ze lokaal ook mee, dus wat de browser online tegenhoudt, zie je lokaal al in de console.
+- **Content-Security-Policy:** de site laadt alleen scripts, stijlen, lettertypen en
+  beelden van zichzelf. Komt er ooit iets van buiten bij (een YouTube-video, een kaart van
+  Google, een chatknop), dan werkt dat pas als die bron in de regel in `vercel.json` staat.
+  Het ene script dat in de pagina zelf staat (`HEAD` in `build.py`) mag via zijn hash;
+  `build.py` houdt die hash in `vercel.json` zelf bij.
+- **Alleen de gebouwde site staat online.** De bron (`src/`), de generator, de README en
+  LIVEGANG.md staan in `.vercelignore`. `backend/` moet mee omdat de API erop draait;
+  een redirect in `vercel.json` zorgt dat die bestanden niet op te vragen zijn. Een nieuw
+  bestand in de root dat niet voor bezoekers is, hoort ook in `.vercelignore` (met een
+  schuine streep ervoor, anders valt een gelijknamig bestand in `backend/` ook weg).
+- **Geheimen** staan alleen in Vercel (omgevingsvariabelen) en lokaal in `.env`, nooit in
+  de repo.
+
 ## Livegang
 
 Alles wat er voor de echte domeinen ingesteld moet worden, voor alle vier de sites, staat

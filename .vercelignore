@@ -6,3 +6,20 @@ prive
 .data
 .env
 video
+
+# Alleen de gebouwde site hoort online: de bron, de generator en de interne
+# documenten niet. (backend/ en api/ moeten wel mee, daar draait de API op;
+# vercel.json zorgt dat de site die bestanden niet als download aanbiedt.)
+# De schuine streep vooraan is nodig: zonder zou "reviews.py" ook
+# backend/reviews.py weglaten, en die heeft de API nodig.
+/src
+/build.py
+/serve.py
+/deel.py
+/prijslijst.py
+/reviews.py
+/README.md
+/LIVEGANG.md
+/.claude
+/.gegenereerd
+__pycache__
