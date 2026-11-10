@@ -52,7 +52,9 @@ BEDRIJF = {
     "lat": "52.2165193",
     "lon": "5.1715531",
     "email": "info@iwrap.nl",
-    "telefoon": "+31 6 1441 5877",
+    # Zoals een Nederlander het leest. De link (tel:) en de gegevens voor Google
+    # gebruiken telefoon_tel, met landcode.
+    "telefoon": "06 1441 5877",
     "telefoon_tel": "+31614415877",
     "whatsapp": "31614415877",
     "instagram": "https://www.instagram.com/iwrap.nl/",
@@ -445,10 +447,15 @@ def render_nav(slug):
         % ('class="current" ' if s.split("/")[0] == top else "", url_for(s), label)
         for s, label in NAV
     )
+    # Op een telefoon zit het menu achter de knop met de drie streepjes, en dan is
+    # de offerteknop uit beeld zodra je scrolt. Daarom staat hij daar los in de
+    # balk, die meescrolt. Niet op de offertepagina zelf.
+    snel = "" if slug == "offerte" else (
+        '    <a class="nav-snel" href="/offerte" aria-label="Offerte aanvragen">Offerte</a>\n')
     return f"""<header class="site">
   <div class="nav">
     <a class="brand" href="/" aria-label="iWrap, naar de homepage">{LOGO}</a>
-    <button class="nav-toggle" aria-expanded="false" aria-controls="hoofdmenu">
+{snel}    <button class="nav-toggle" aria-expanded="false" aria-controls="hoofdmenu">
       <span class="bars" aria-hidden="true"></span>
       <span class="sr-only">Menu</span>
     </button>

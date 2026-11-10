@@ -117,6 +117,7 @@ header.site{
 .nav-cta:hover{background:var(--mint-deep);transform:translateY(-1px);}
 
 .nav-toggle{display:none;}
+.nav-snel{display:none;}
 
 /* Zes navigatie-items passen pas vanaf ongeveer 1080px naast het logo en de
    offerteknop. Daaronder klappen we in: anders loopt de balk over de rand.
@@ -146,7 +147,20 @@ header.site{
   .navlinks a{padding:14px 4px;border-bottom:1px solid var(--line);font-size:1rem;}
   .navlinks a::after{display:none;}
   .nav-cta{margin:14px 0 16px;text-align:center;padding:14px 20px!important;}
+  /* De offerteknop naast het menu: blijft in beeld terwijl je scrolt. */
+  .nav-snel{
+    display:inline-flex;align-items:center;height:44px;padding:0 18px;order:2;
+    background:var(--ink);color:#fff;border-radius:999px;text-decoration:none;
+    font-family:var(--kop);font-size:.875rem;font-weight:600;white-space:nowrap;
+    transition:background .2s ease;
+  }
+  .nav-snel:hover{background:var(--mint-deep);}
 }
+@media (max-width:374px){
+  .logo-img{height:28px;}
+  .nav-snel{padding:0 14px;}
+}
+@media (max-width:330px){.nav-snel{display:none;}}
 
 /* Knoppen ----------------------------------------------------------------- */
 

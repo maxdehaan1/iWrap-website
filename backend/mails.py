@@ -53,7 +53,7 @@ def _afzender_kop(afzender, accent):
 def _voet(afzender):
     w = cfg.WINKEL
     if afzender == "iWrap":
-        return "iWrap &middot; Neuweg 128, Hilversum &middot; info@iwrap.nl &middot; +31 6 1441 5877"
+        return "iWrap &middot; Neuweg 128, Hilversum &middot; info@iwrap.nl &middot; 06 1441 5877"
     return "%s &middot; %s &middot; %s<br>%s is een handelsnaam van %s, %s" % (
         escape(w["domein"]), escape(w["email"]), escape(w["telefoon"]),
         escape(w["naam"]), escape(w["juridisch"]), escape(w["adres"]))
