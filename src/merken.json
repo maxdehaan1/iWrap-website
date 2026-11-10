@@ -1,0 +1,260 @@
+[
+ {
+  "slug": "weru",
+  "naam": "Weru",
+  "land": "Duitsland",
+  "dealer": true,
+  "kenmerk": "Weru maakt complete ramen en deuren in Duitsland en verkoopt ze via vaste dealers, ook in Nederland.",
+  "beschrijving": "Folie van je Weru-kozijn verkleurd of los? iWrap vervangt alleen die laag met Renolit folie; het kozijn blijft zitten. Weru-dealers verwijzen naar ons door.",
+  "lede": "Een Weru-kozijn gaat lang mee, maar de folie aan de buitenkant vangt al die jaren de zon. Is die verkleurd, dof geworden of laat hij los, dan vervangen wij alleen die laag. Het kozijn zelf blijft zitten.",
+  "over": [
+   "Weru is een Duitse fabrikant uit Rudersberg, bij Stuttgart. Het bedrijf bestaat sinds 1843. Anders dan veel andere merken levert Weru geen losse profielen aan kozijnbouwers: het hele kozijn komt uit de eigen fabriek, en vaste Weru-dealers verkopen en plaatsen het.",
+   "In Nederland staan Weru-kozijnen al tientallen jaren, vaak in crèmewit en met een folie aan de buitenkant. Bekende series zijn Castello en Afino."
+  ],
+  "herkennen": [
+   "Je hebt het kozijn bij een Weru-dealer gekocht: de naam staat dan op je offerte of factuur.",
+   "Aan het beslag en aan de licht afgeronde vorm van het profiel.",
+   "Zet een raam open: in de sponning of op het beslag staat vaak de naam Weru."
+  ],
+  "letop": null,
+  "faq": [
+   {"v": "Kan ik via mijn Weru-dealer bij jullie terecht?",
+    "a": "Ja. Verschillende Weru-dealers verwijzen klanten naar ons door als alleen de folie versleten is. Je kunt ook rechtstreeks een aanvraag doen. Zet er dan even bij dat het om een Weru-kozijn gaat."},
+   {"v": "Krijg ik dezelfde kleur terug als mijn Weru-kozijn nu heeft?",
+    "a": "Daar gaan we van uit. We zoeken de Renolit folie die bij de kleur en de structuur van je kozijn past, zodat de herstelde delen zo goed mogelijk aansluiten op de rest. Wil je juist een andere kleur, geef dat dan aan in je aanvraag."},
+   {"v": "Moet het raam eruit voor het herstel?",
+    "a": "Nee. Het kozijn en het glas blijven zitten. We halen op locatie de oude folie eraf en brengen de nieuwe aan. De meeste klussen zijn in {{feit.doorlooptijd}} klaar."}
+  ]
+ },
+ {
+  "slug": "veka",
+  "naam": "VEKA",
+  "land": "Duitsland",
+  "dealer": false,
+  "kenmerk": "VEKA maakt het profiel waar heel veel Nederlandse kozijnbouwers hun kozijnen van maken. Het merk op je kozijn is daarom vaak een ander dan VEKA.",
+  "beschrijving": "VEKA-profiel met verkleurde of loslatende folie? iWrap brengt nieuwe Renolit folie aan, wie het kozijn ook gemaakt heeft. Het kozijn blijft zitten.",
+  "lede": "Grote kans dat je een VEKA-kozijn hebt zonder het te weten: VEKA maakt het profiel, een kozijnbouwer maakte er jouw kozijn van. Is de folie verkleurd of laat hij los, dan vervangen wij die laag.",
+  "over": [
+   "VEKA komt uit Sendenhorst in Duitsland en is een van de grote makers van kunststof profielen. VEKA bouwt zelf geen kozijnen: kozijnfabrikanten kopen het profiel in en maken er ramen en deuren van. Daarom staat in je oplevermap of op je offerte meestal de naam van de kozijnbouwer, niet die van VEKA.",
+   "De bekendste reeks heet Softline, met profielen van 70, 76 of 82 millimeter diep. Voor het herstel van de folie maakt die diepte niet uit: wij kijken naar de buitenkant."
+  ],
+  "herkennen": [
+   "In de sponning of op de stalen versterking staat vaak een VEKA-stempel.",
+   "Zoek in je offerte of bestek naar het woord profiel of systeem: daar staat dan VEKA of Softline bij."
+  ],
+  "letop": {
+   "klasse": "callout",
+   "kop": "VEKA Spectral: ultramat en zonder nerf",
+   "tekst": [
+    "Nieuwere VEKA-kozijnen hebben soms de afwerking VEKA Spectral: een ultramat oppervlak dat fluweelachtig aanvoelt en geen houtnerf heeft. Heb je zo'n kozijn, zet dat dan in je aanvraag. We kijken aan de hand van je foto's of nieuwe folie daar de goede oplossing is."
+   ]
+  },
+  "faq": [
+   {"v": "Op mijn kozijn staat een ander merk dan VEKA. Maakt dat uit?",
+    "a": "Nee. De naam op je papieren is die van de kozijnbouwer; het profiel eronder kan heel goed van VEKA zijn. Voor het herstel maakt het niet uit wie het kozijn in elkaar heeft gezet."},
+   {"v": "Hoe weet ik of ik Softline 70 of Softline 82 heb?",
+    "a": "Dat hoef je niet te weten. Wij hebben foto's van de buitenkant nodig en moeten weten welke delen mee moeten. De diepte van het profiel verandert daar niets aan."},
+   {"v": "Kunnen jullie ook alleen de onderdorpel doen?",
+    "a": "Ja. Vaak is alleen de zonkant aangetast, of alleen de onderdorpel. In de aanvraag streep je op een foto aan welke delen mee moeten, en daar maken we de prijs op."}
+  ]
+ },
+ {
+  "slug": "schuco",
+  "naam": "Schüco",
+  "land": "Duitsland",
+  "dealer": false,
+  "kenmerk": "Schüco maakt kunststof én aluminium kozijnen. De profielen zitten veel in nieuwbouw en in projecten van woningcorporaties.",
+  "beschrijving": "Kunststof Schüco-kozijn met verkleurde of loslatende folie? iWrap brengt nieuwe Renolit folie aan. Zo zie je of je kunststof of aluminium hebt.",
+  "lede": "Schüco maakt zowel kunststof als aluminium kozijnen. Heb je de kunststof uitvoering en is de folie verkleurd of laat hij los, dan brengen wij een nieuwe aan.",
+  "over": [
+   "Schüco komt uit Bielefeld in Duitsland en is vooral bekend van aluminium gevels en kozijnen, maar maakt ook kunststof profielen. Net als bij VEKA en Kömmerling bouwt een kozijnfabrikant daar het kozijn van.",
+   "Schüco-profielen zitten veel in nieuwbouw en in projecten van woningcorporaties. Bekende kunststof systemen zijn CT 70 en het nieuwere LivIng, met een dieper profiel."
+  ],
+  "herkennen": [
+   "Aan het strakke, hoekige profiel en het Schüco-beslag.",
+   "Kunststof heeft licht afgeronde kanten. Aluminium is strak en metaalachtig, met scherpe kanten.",
+   "Woon je in een complex, dan weet de VvE of de verhuurder meestal welk systeem er zit."
+  ],
+  "letop": {
+   "klasse": "let-op",
+   "kop": "Eerst kijken: kunststof of aluminium",
+   "tekst": [
+    "Onze folie is bedoeld voor kunststof kozijnen. Op een aluminium Schüco-kozijn hecht hij niet zoals het hoort, en dat zeggen we je dan vooraf. Twijfel je welke van de twee je hebt, stuur dan ook een foto van dichtbij mee."
+   ]
+  },
+  "faq": [
+   {"v": "Hoe zie ik of mijn Schüco-kozijn van kunststof of van aluminium is?",
+    "a": "Kijk naar de kanten aan de buitenkant. Kunststof is licht afgerond; aluminium is strak, metaalachtig en heeft scherpe kanten. Zie je het niet, stuur dan een foto van dichtbij mee. Wij zien het meestal direct."},
+   {"v": "Ons hele complex heeft Schüco-kozijnen. Kunnen jullie het hele gebouw doen?",
+    "a": "Ja. Voor VvE's en woningcorporaties werken we per gevel of per blok. Hoe zo'n project loopt, staat op <a href='/vve-en-woningcorporaties'>de pagina voor VvE's en woningcorporaties</a>."},
+   {"v": "Kan de kleur anders worden dan hij nu is?",
+    "a": "Ja. De meeste mensen houden dezelfde kleur, maar je kunt ook een andere houtnerffolie kiezen. Geef het aan in je aanvraag, dan nemen we het mee in de offerte."}
+  ]
+ },
+ {
+  "slug": "gealan",
+  "naam": "Gealan",
+  "land": "Duitsland",
+  "dealer": false,
+  "kenmerk": "Gealan wordt veel gebruikt voor kozijnen met een houtnerf aan de buitenkant. Het merk heeft ook een eigen kleurlaag zonder folie: acrylcolor.",
+  "beschrijving": "Gealan-kozijn met verkleurde of opkrullende houtnerffolie? iWrap brengt nieuwe Renolit folie aan. Het verschil tussen folie en acrylcolor uitgelegd.",
+  "lede": "Bij Gealan bestaan twee soorten gekleurde kozijnen: met een houtnerffolie en met acrylcolor. Is het folie, en is die verkleurd of laat hij los, dan vervangen wij hem.",
+  "over": [
+   "Gealan is een Duitse maker van kunststof profielen. Kozijnbouwers maken daar ramen en deuren van; in Nederland is dat meestal het systeem S 9000 NL.",
+   "Gealan wordt veel gebruikt voor kozijnen met een houtnerf aan de buitenkant. Daarnaast heeft het merk een eigen manier van kleuren, acrylcolor, en die werkt anders dan folie."
+  ],
+  "herkennen": [
+   "Folie: je ziet en voelt een houtnerf. Bij schade zie je een rand waar de laag loslaat of opkrult.",
+   "Acrylcolor: een glad, zijdemat oppervlak zonder nerf. De binnenkant van het kozijn is dan meestal wit.",
+   "Op je papieren staat de kozijnbouwer; bij het profiel staat Gealan of S 9000."
+  ],
+  "letop": {
+   "klasse": "let-op",
+   "kop": "Folie of acrylcolor?",
+   "tekst": [
+    "Acrylcolor is geen folie. De kleurlaag wordt in de fabriek samen met het profiel gemaakt en zit er onlosmakelijk aan vast. Er is dus geen laag die kan loslaten.",
+    "Heb je acrylcolor en ben je niet meer tevreden over hoe het eruitziet, stuur dan foto's mee. We zeggen eerlijk of nieuwe folie daar een goede oplossing is."
+   ]
+  },
+  "faq": [
+   {"v": "Hoe weet ik of ik folie of acrylcolor heb?",
+    "a": "Voel aan de buitenkant. Een houtnerf die je ziet en voelt is folie. Een glad, zijdemat oppervlak zonder nerf is waarschijnlijk acrylcolor. Twijfel je, stuur dan een foto van dichtbij mee."},
+   {"v": "De houtnerffolie van mijn Gealan-kozijn krult op. Kunnen jullie dat herstellen?",
+    "a": "Ja, dat is precies het werk dat we doen. We halen de oude folie eraf en brengen nieuwe Renolit folie aan, zodat het kozijn er weer strak en egaal uitziet."},
+   {"v": "Krijg ik weer een houtnerf terug?",
+    "a": "Ja. We werken met houtnerffolie van Renolit, in de kleur die bij je kozijn past."}
+  ]
+ },
+ {
+  "slug": "finstral",
+  "naam": "Finstral",
+  "land": "Italië",
+  "dealer": false,
+  "kenmerk": "Finstral maakt zijn kozijnen helemaal zelf, van kunststof of met een aluminium schil aan de buitenkant. Niet elke uitvoering is geschikt voor folie.",
+  "beschrijving": "Finstral-kozijn opknappen? Niet elke uitvoering is geschikt voor folieherstel. Zo zie je wat je hebt; iWrap zegt vooraf eerlijk of het kan.",
+  "lede": "Finstral werkt anders dan de meeste merken, en dat bepaalt of folieherstel bij jouw kozijn past. Stuur foto's mee, dan hoor je vooraf eerlijk of het kan.",
+  "over": [
+   "Finstral is een familiebedrijf uit Zuid-Tirol, in het noorden van Italië. Het maakt de profielen, het isolatieglas en het hele kozijn in eigen fabrieken en verkoopt via vaste partners.",
+   "Finstral levert kozijnen van kunststof en kozijnen met een aluminium schil aan de buitenkant. Bij de kunststof uitvoering wordt de structuur vaak rechtstreeks in het oppervlak gewalst, zonder een opgeplakte folie."
+  ],
+  "herkennen": [
+   "Aluminium schil: aan de buitenkant een strak, metaalachtig profiel met scherpe kanten.",
+   "Kunststof: licht afgeronde vormen, met een glad, gesatineerd of fijn gestructureerd oppervlak.",
+   "Het kozijn is via een Finstral-partner geleverd: de naam staat op je offerte of factuur."
+  ],
+  "letop": {
+   "klasse": "let-op",
+   "kop": "Niet elk Finstral-kozijn is geschikt",
+   "tekst": [
+    "Zit er een aluminium schil op, dan is folieherstel niet aan de orde: op aluminium hecht de folie niet zoals het hoort.",
+    "Heeft je kozijn een kunststof oppervlak zonder folie, dan kijken we aan de hand van je foto's of nieuwe folie een goede oplossing is. Je hoort het vooraf, niet achteraf."
+   ]
+  },
+  "faq": [
+   {"v": "Mijn Finstral-kozijn heeft een aluminium buitenkant. Kunnen jullie die opknappen?",
+    "a": "Nee. Onze folie is bedoeld voor kunststof; op aluminium hecht hij niet zoals het hoort. Dat zeggen we liever vooraf dan dat je er later last van krijgt."},
+   {"v": "Hoe zie ik welke uitvoering ik heb?",
+    "a": "Kijk naar de buitenkant. Een strak, metaalachtig profiel met scherpe kanten is aluminium. Licht afgeronde vormen zijn kunststof. Een foto van dichtbij is voor ons meestal genoeg om het te zien."},
+   {"v": "Wat als herstel bij mijn kozijn niet kan?",
+    "a": "Dan zeggen we dat, en waarom. We maken alleen een offerte als herstel bij jouw kozijn een goede oplossing is."}
+  ]
+ },
+ {
+  "slug": "knipping",
+  "naam": "Knipping",
+  "land": "Nederland",
+  "dealer": false,
+  "kenmerk": "Knipping is een Nederlands familiebedrijf dat zijn kozijnen zelf maakt in Zwaagdijk en veel in de woningbouw en renovatie zit.",
+  "beschrijving": "Knipping-kozijn met verkleurde of loslatende folie? iWrap vervangt alleen die laag met Renolit folie. Ook kozijnen van dakkapellen; het kozijn blijft zitten.",
+  "lede": "Knipping-kozijnen komen uit West-Friesland en zitten in veel Nederlandse woningen. Is de folie verkleurd, dof geworden of laat hij los, dan vervangen wij alleen die laag.",
+  "over": [
+   "Knipping is een Nederlands familiebedrijf met een eigen fabriek in Zwaagdijk, in West-Friesland. Het maakt kozijnen, deuren, schuifpuien en dakkapellen en verkoopt ze via eigen showrooms door het hele land.",
+   "Knipping zit veel in de woningbouw en renovatie. Je vindt de kozijnen vaak in seriematige woningbouw uit de jaren negentig en later. Omdat Knipping ook dakkapellen maakt: hoe we de kozijnen daarvan herstellen, lees je op <a href='/dakkapel-kozijnen'>de pagina over dakkapelkozijnen</a>."
+  ],
+  "herkennen": [
+   "Je hebt het kozijn bij een Knipping-showroom gekocht: de naam staat op je offerte of factuur.",
+   "Je woont in een rij woningen uit de jaren negentig of later, met overal dezelfde kunststof kozijnen.",
+   "Zet een raam open en kijk in de sponning en op het beslag of er een naam staat."
+  ],
+  "letop": {
+   "klasse": "let-op",
+   "kop": "Nieuwere kozijnen: kunststof met aluminium",
+   "tekst": [
+    "Nieuwere Knipping-kozijnen combineren kunststof met aluminium aan de buitenkant. Op aluminium is onze folie niet de oplossing. Oudere Knipping-kozijnen met een folie op het kunststof kunnen we wel herstellen. Aan je foto's zien we welke van de twee je hebt."
+   ]
+  },
+  "faq": [
+   {"v": "Ik heb een dakkapel van Knipping. Kunnen jullie de kozijnen daarvan herstellen?",
+    "a": "Ja, als het kunststof kozijnen met een folie zijn. Hoe we bij een dakkapel werken, staat op <a href='/dakkapel-kozijnen'>de pagina over dakkapelkozijnen</a>."},
+   {"v": "Hoe weet ik of mijn Knipping-kozijn een aluminium buitenkant heeft?",
+    "a": "Aluminium is strak en metaalachtig, met scherpe kanten. Kunststof met folie heeft licht afgeronde kanten en meestal een houtnerf. Stuur bij twijfel een foto van dichtbij mee."},
+   {"v": "Mijn kozijnen zijn uit de jaren negentig. Is herstellen dan nog zinvol?",
+    "a": "Meestal wel. De folie is na {{feit.levensduur_folie}} versleten, maar het profiel eronder gaat {{feit.levensduur_profiel}} mee. Met nieuwe folie ziet het kozijn er weer uit als nieuw."}
+  ]
+ },
+ {
+  "slug": "kommerling",
+  "naam": "Kömmerling",
+  "land": "Duitsland",
+  "dealer": false,
+  "kenmerk": "Kömmerling-profielen kom je zowel in nieuwbouw als in renovatieprojecten tegen. Het Nederlandse profiel K-Vision is ook van Kömmerling.",
+  "beschrijving": "Kömmerling-kozijn met verkleurde of loslatende folie? iWrap brengt nieuwe Renolit folie aan; het kozijn blijft zitten. Ook voor KBE, Trocal en K-Vision.",
+  "lede": "Kömmerling-profielen zitten in veel Nederlandse kozijnen, in nieuwbouw en in renovatie. Is de folie verkleurd of laat hij los, dan vervangen wij alleen die laag.",
+  "over": [
+   "Kömmerling is een Duits profielmerk uit Pirmasens en hoort bij de profine-groep, net als KBE en Trocal. Kozijnbouwers maken van die profielen ramen en deuren.",
+   "Je komt Kömmerling zowel in nieuwbouw als in renovatieprojecten tegen. De gangbare systemen zijn 76 en 88 millimeter diep. Speciaal voor Nederland maakt Kömmerling het profiel K-Vision; daarvoor hebben we <a href='/kozijnmerken/kvision'>een eigen pagina</a>."
+  ],
+  "herkennen": [
+   "Aan de brede aanslag van het profiel en het Kömmerling-logo in de sponning.",
+   "In je oplevermap staat de kozijnbouwer; bij het profiel staat Kömmerling, K-Vision of profine."
+  ],
+  "letop": {
+   "klasse": "callout",
+   "kop": "Kömmerling of K-Vision?",
+   "tekst": [
+    "Sluiten de hoeken van je kozijn recht op elkaar aan, zoals bij een houten kozijn, in plaats van schuin in verstek? Dan kan het K-Vision zijn. Voor het herstel maakt het geen verschil: in beide gevallen vervangen we de folie."
+   ]
+  },
+  "faq": [
+   {"v": "Wat is het verschil tussen Kömmerling en K-Vision?",
+    "a": "K-Vision is een profiel van Kömmerling dat speciaal voor Nederland is ontworpen, met de verhoudingen van een houten kozijn. Het gewone Kömmerling-profiel wordt in heel Europa gebruikt."},
+   {"v": "Mijn kozijn is van KBE of Trocal. Kunnen jullie dat ook?",
+    "a": "Ja. KBE en Trocal horen bij dezelfde groep als Kömmerling. Zit er een folie op het kunststof, dan kunnen we die vervangen."},
+   {"v": "Moet ik weten of ik het systeem van 76 of van 88 millimeter heb?",
+    "a": "Nee. Voor de folie maakt de diepte van het profiel niet uit. Foto's van de buitenkant zijn genoeg."}
+  ]
+ },
+ {
+  "slug": "kvision",
+  "naam": "K-Vision",
+  "land": "Kömmerling, voor Nederland",
+  "dealer": false,
+  "kenmerk": "K-Vision is het profiel dat Kömmerling speciaal voor Nederlandse kozijnen maakt, met de uitstraling van een houten kozijn.",
+  "beschrijving": "K-Vision-kozijn met verkleurde of loslatende folie? iWrap brengt nieuwe houtnerffolie van Renolit aan, ook in crèmewit. Het kozijn blijft zitten.",
+  "lede": "K-Vision is gemaakt om op een Nederlands houten kozijn te lijken. Is de folie verkleurd of laat hij los, dan brengen wij nieuwe houtnerffolie aan en ziet het kozijn er weer uit als nieuw.",
+  "over": [
+   "K-Vision is geen kozijnfabrikant, maar een profiel van Kömmerling dat speciaal voor Nederland is ontwikkeld. Nederlandse kozijnbouwers maken er ramen en deuren van en verkopen die onder hun eigen naam.",
+   "Het profiel heeft de verhoudingen van een Nederlands houten kozijn. De hoeken kunnen recht op elkaar aansluiten zoals bij hout, in plaats van schuin in verstek. K-Vision-kozijnen zijn meestal crèmewit of hebben een houtnerf aan de buitenkant."
+  ],
+  "herkennen": [
+   "Hoeken die recht op elkaar aansluiten, zoals bij een houten kozijn.",
+   "Meestal crèmewit of met een houtnerf aan de buitenkant.",
+   "Op je papieren staat de kozijnbouwer; bij het profiel staat K-Vision of Kömmerling."
+  ],
+  "letop": {
+   "klasse": "callout",
+   "kop": "Stuur ook een foto van een hoek mee",
+   "tekst": [
+    "Bij een hoek die recht aansluit loopt de folie anders dan bij een verstekhoek. Maak daarom ook een foto van dichtbij van een hoek van het kozijn. Dan weten we vooraf hoe het in elkaar zit."
+   ]
+  },
+  "faq": [
+   {"v": "Is K-Vision hetzelfde als Kömmerling?",
+    "a": "K-Vision is een profiel van Kömmerling, speciaal voor Nederland. Het kozijn zelf is gemaakt door een Nederlandse kozijnbouwer; diens naam staat op je papieren."},
+   {"v": "Mijn K-Vision-kozijn is crèmewit. Kan dat ook hersteld worden?",
+    "a": "Ja. Bij <a href='/voorbeelden#cremewitte-kozijnen'>de voorbeelden</a> staat een project met crèmewitte kozijnen."},
+   {"v": "Hoe lang gaat de nieuwe folie mee?",
+    "a": "De folie gaat {{feit.levensduur_folie}} mee. Je krijgt {{feit.garantie_folie}} en {{feit.garantie_montage}}."}
+  ]
+ }
+]

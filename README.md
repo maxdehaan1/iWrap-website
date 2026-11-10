@@ -120,9 +120,19 @@ kruimelpad), gevolgd door de inhoud. Moet de pagina in de navigatie, zet hem dan
 
 ### Een kozijnmerk toevoegen
 
-Eén regel bijzetten in `MERKEN` in `build.py` en bouwen. Alle merkpagina's delen
-`src/merk-sjabloon.html`, dus ze blijven vanzelf gelijk. Zet `"dealer": True` bij een
-merk waarvan de dealers naar je doorverwijzen — dan komt daar een extra blok op.
+Een blok bijzetten in `src/merken.json` en bouwen. Alle merkpagina's delen de opmaak
+van `src/merk-sjabloon.html`, maar elk merk heeft zijn **eigen tekst**: wie het merk is
+(`over`), hoe je het herkent (`herkennen`), waar het bij dat merk op aankomt (`letop`) en
+drie eigen vragen (`faq`, die ook als gegevens voor Google meegaan). Dat is met opzet:
+pagina's die alleen in de merknaam verschillen, ziet Google als dubbele inhoud en slaat
+het over. Neem dus geen tekst van een ander merk over.
+
+- Schrijf alleen feiten over een merk die na te zoeken zijn (de site van het merk zelf),
+  en schrijf niets over wat wij bij dat merk meemaken zonder dat Max het bevestigd heeft.
+- `beschrijving` is de regel onder de titel in Google: hooguit 160 tekens, de build
+  controleert dat.
+- Zet `"dealer": true` bij een merk waarvan de dealers naar je doorverwijzen. Dan komt
+  daar een extra blok op.
 
 ### Een foto toevoegen
 

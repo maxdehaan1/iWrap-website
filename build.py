@@ -137,91 +137,13 @@ FOOTER_KOLOMMEN = [
 ]
 
 # ---------------------------------------------------------------------------
-# Kozijnmerken. Uit deze lijst komen de merkpagina's, de hub en de sitemap.
-# Een merk toevoegen = hier een regel bijzetten en bouwen.
+# Kozijnmerken. Uit src/merken.json komen de merkpagina's, de hub en de sitemap.
+# Elk merk heeft daar zijn eigen tekst: wie het merk is, hoe je het herkent,
+# waar het bij dat merk op aankomt en een paar eigen vragen. Zo lijken de
+# pagina's niet op elkaar, en dat is voor Google het hele punt van een pagina
+# per merk. Een merk toevoegen = daar een blok bijzetten en bouwen.
 # ---------------------------------------------------------------------------
-MERKEN = [
-    {
-        "slug": "weru",
-        "naam": "Weru",
-        "land": "Duitsland",
-        "kenmerk": "Weru levert al decennia kunststof kozijnen in Nederland, vaak in "
-                   "crèmewit en met een gecacheerde buitenzijde.",
-        "herkenning": "Een Weru-kozijn herken je meestal aan het beslag en aan de "
-                      "typerende, licht afgeronde profielvorm.",
-        "dealer": True,
-    },
-    {
-        "slug": "veka",
-        "naam": "VEKA",
-        "land": "Duitsland",
-        "kenmerk": "VEKA maakt het profiel waar heel veel Nederlandse kozijnbouwers "
-                   "hun kozijnen van maken -- het merk op je kozijn is daarom vaak "
-                   "een ander dan VEKA.",
-        "herkenning": "In de sponning of op de stalen versterking staat vaak een "
-                      "VEKA-stempel.",
-        "dealer": False,
-    },
-    {
-        "slug": "schuco",
-        "naam": "Schüco",
-        "land": "Duitsland",
-        "kenmerk": "Schüco-profielen zitten veel in nieuwbouw en in projecten van "
-                   "woningcorporaties.",
-        "herkenning": "Herkenbaar aan het strakke, hoekige profiel en het "
-                      "Schüco-beslag.",
-        "dealer": False,
-    },
-    {
-        "slug": "gealan",
-        "naam": "Gealan",
-        "land": "Duitsland",
-        "kenmerk": "Gealan wordt veel gebruikt voor kozijnen met een houtnerfdecor "
-                   "aan de buitenzijde.",
-        "herkenning": "De houtnerf in de folie loopt bij Gealan meestal in de "
-                      "lengterichting van het profiel.",
-        "dealer": False,
-    },
-    {
-        "slug": "finstral",
-        "naam": "Finstral",
-        "land": "Italië",
-        "kenmerk": "Finstral levert kozijnen met een aluminium schil of met folie, "
-                   "afhankelijk van de uitvoering.",
-        "herkenning": "Zit er een aluminium schaal op, dan is folieherstel niet aan "
-                      "de orde -- dat vertellen we je eerlijk.",
-        "dealer": False,
-    },
-    {
-        "slug": "knipping",
-        "naam": "Knipping",
-        "land": "Nederland",
-        "kenmerk": "Knipping is een Nederlandse fabrikant die veel in de "
-                   "woningbouw en renovatie zit.",
-        "herkenning": "Vaak te vinden in seriematige woningbouw uit de jaren "
-                      "negentig en later.",
-        "dealer": False,
-    },
-    {
-        "slug": "kommerling",
-        "naam": "Kömmerling",
-        "land": "Duitsland",
-        "kenmerk": "Kömmerling-profielen kom je zowel in nieuwbouw als in "
-                   "renovatieprojecten tegen.",
-        "herkenning": "Het profiel is herkenbaar aan de brede aanslag en het "
-                      "Kömmerling-logo in de sponning.",
-        "dealer": False,
-    },
-    {
-        "slug": "kvision",
-        "naam": "K-Vision",
-        "land": "Nederland",
-        "kenmerk": "K-Vision levert kunststof kozijnen aan particulieren via "
-                   "eigen vestigingen.",
-        "herkenning": "Meestal crèmewit of met houtnerfdecor aan de buitenzijde.",
-        "dealer": False,
-    },
-]
+MERKEN = json.loads((ROOT / "src" / "merken.json").read_text(encoding="utf-8"))
 
 # ---------------------------------------------------------------------------
 # Werkgebied. Regio's met de plaatsen waar iWrap daadwerkelijk gewerkt heeft.
@@ -973,30 +895,31 @@ def ruim_op(slugs):
 
 
 def merkpagina(merk, sjabloon):
-    """Vult het merksjabloon; alle merkpagina's delen dus één opmaak."""
+    """Vult het merksjabloon met de eigen tekst van het merk (src/merken.json).
+    De opmaak is voor alle merken gelijk, de inhoud niet."""
     n = merk["naam"]
     meta = {
         "title": f"{n} kozijn verkleurd? Folie herstellen | iWrap",
-        "description": (
-            f"Folie van je {n}-kozijn laat los of is verkleurd? iWrap haalt de "
-            f"oude laag eraf en brengt nieuwe Renolit folie aan. Vaak zonder het "
-            f"kozijn te vervangen."
-        ),
+        "description": merk["beschrijving"],
         "ogtitle": f"{n}-kozijnen herstellen met Renolit folie",
         "bodyclass": "tekstpagina",
         "css": ["content"],
         "kruimels": [("Kozijnmerken", "/kozijnmerken"), (n, f"/kozijnmerken/{merk['slug']}")],
         "ogimage": "/images/na-herstelde-kozijnhoek-1600.webp",
+        # Voor Google de vragen als platte tekst, zonder de links uit het antwoord.
+        "faq": [{"v": q["v"], "a": re.sub(r"<[^>]+>", "", q["a"])} for q in merk["faq"]],
     }
-    inhoud = sjabloon
-    for sleutel, waarde in [
-        ("naam", n),
-        ("slug", merk["slug"]),
-        ("land", merk["land"]),
-        ("kenmerk", merk["kenmerk"]),
-        ("herkenning", merk["herkenning"]),
-    ]:
-        inhoud = inhoud.replace("{{merk." + sleutel + "}}", waarde)
+    if len(meta["description"]) > 160:
+        raise SystemExit(f"src/merken.json: de beschrijving van {n} is langer dan 160 tekens")
+
+    def alineas(lijst, inspringen="      "):
+        return "\n".join(f"{inspringen}<p>{a}</p>" for a in lijst)
+
+    letop = ""
+    if merk.get("letop"):
+        l = merk["letop"]
+        letop = (f'      <div class="{l["klasse"]}">\n        <h3>{l["kop"]}</h3>\n'
+                 + alineas(l["tekst"], "        ") + "\n      </div>")
     dealerblok = ""
     if merk.get("dealer"):
         dealerblok = (
@@ -1008,7 +931,28 @@ def merkpagina(merk, sjabloon):
             "weten we meteen om welk profiel het gaat.</p>\n"
             "</div>"
         )
-    inhoud = inhoud.replace("{{merk.dealerblok}}", dealerblok)
+    faq = '      <div class="faq">\n' + "\n".join(
+        f'        <details>\n          <summary>{q["v"]}</summary>\n'
+        f'          <div class="antwoord"><p>{q["a"]}</p></div>\n        </details>'
+        for q in merk["faq"]) + "\n      </div>"
+
+    inhoud = sjabloon
+    for sleutel, waarde in [
+        ("naam", n),
+        ("slug", merk["slug"]),
+        ("land", merk["land"]),
+        ("lede", merk["lede"]),
+        ("over", alineas(merk["over"])),
+        ("herkennen", '      <ul class="vinklijst">\n'
+                      + "\n".join(f"        <li>{h}</li>" for h in merk["herkennen"])
+                      + "\n      </ul>"),
+        ("letop", letop),
+        ("dealerblok", dealerblok),
+        ("faq", faq),
+    ]:
+        inhoud = inhoud.replace("{{merk." + sleutel + "}}", waarde)
+    if "{{merk." in inhoud:
+        raise SystemExit("merk-sjabloon.html: er staat nog een onbekend {{merk.…}}-veld in")
     return meta, inhoud
 
 

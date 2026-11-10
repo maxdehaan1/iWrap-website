@@ -5,8 +5,7 @@
     </nav>
     <p class="opschrift">{{merk.naam}} &middot; {{merk.land}}</p>
     <h1>{{merk.naam}}-kozijn verkleurd of folie los?</h1>
-    <p class="lede">Wij herstellen {{merk.naam}}-kozijnen met Renolit folie: de
-    aangetaste toplaag eraf, een nieuwe folie erop. Het kozijn zelf blijft zitten.</p>
+    <p class="lede">{{merk.lede}}</p>
     <div class="knoprij">
       <a class="knop knop-primair" href="/offerte">Offerte aanvragen</a>
       <a class="knop knop-tweede" href="/kosten">Wat kost het?</a>
@@ -19,52 +18,35 @@
   <div class="wrap zij-indeling">
     <div class="tekst">
       <h2>Over {{merk.naam}}-kozijnen</h2>
-      <p>{{merk.kenmerk}}</p>
-      <p>{{merk.herkenning}}</p>
+{{merk.over}}
 
-      <h2>Waarom juist die kozijnen verkleuren</h2>
-      <p>Een kunststof kozijn — van welk merk dan ook — bestaat uit een pvc-profiel met
-      daaroverheen een dunne folie. Die folie geeft het kozijn zijn kleur en zijn
-      structuur, en is de enige laag die de zon rechtstreeks opvangt. Na {{feit.levensduur_folie}} is die laag versleten: hij verkleurt, wordt dof of laat los.</p>
-      <p>Het profiel eronder is dan meestal nog helemaal in orde. Kunststof profiel gaat
-      {{feit.levensduur_profiel}} mee. Een {{merk.naam}}-kozijn vervangen omdat de
-      buitenlaag versleten is, betekent dus een constructie weggooien die nog decennia
-      meekan.</p>
+      <h2>Zo herken je een {{merk.naam}}-kozijn</h2>
+{{merk.herkennen}}
+
+{{merk.letop}}
 
       <figure>
         <x-beeld src="voor-gebarsten-dorpel" sizes="(max-width:940px) 100vw, 720px" alt="Onderdorpel van een kunststof kozijn met gebarsten, opgekrulde folie">
         <figcaption>Het beeld dat we het vaakst krijgen toegestuurd: een dorpel aan de zonkant.</figcaption>
       </figure>
 
-      <h2>Past de folie op een {{merk.naam}}-profiel?</h2>
-      <p>Ja. Kunststof kozijnen worden in de fabriek gecacheerd: op het pvc-profiel wordt
-      een folie gewalst. Dat is hetzelfde principe en vaak letterlijk hetzelfde merk
-      folie als wat wij gebruiken — wij doen op locatie wat de fabriek in de
-      productielijn doet.</p>
-      <p>Wat wél uitmaakt is de <em>staat</em> van het profiel:</p>
-      <ul class="vinklijst">
-        <li>Doffe, grauwe of verkleurde folie — dat lossen we op</li>
-        <li>Folie die loslaat, bobbelt of bladdert — ook</li>
-        <li>Krassen, scheuren en losgescheurde folie — ook</li>
-      </ul>
-      <ul class="kruislijst">
-        <li>Een kozijn dat krom staat of niet meer sluit — niet</li>
-        <li>Versleten beslag of scharnieren — niet</li>
-        <li>Lekkage of condens tussen het glas — niet</li>
-      </ul>
+      <h2>Wat we aan je {{merk.naam}}-kozijn herstellen</h2>
+      <p>De folie is de enige laag die de zon rechtstreeks opvangt. Na
+      {{feit.levensduur_folie}} is hij versleten: hij verkleurt, wordt dof of laat los.
+      Het profiel eronder gaat {{feit.levensduur_profiel}} mee en is dan meestal nog
+      helemaal goed. Wij halen de oude folie eraf en brengen nieuwe Renolit folie aan,
+      zodat het kozijn er weer strak en egaal uitziet. Wat wel en niet kan, staat op
+      <a href="/kunststof-kozijn-herstellen">de pagina over kozijnherstel</a>.</p>
 
       {{merk.dealerblok}}
 
-      <h2>Wat het kost</h2>
-      <p>Dat hangt af van de afmetingen, het aantal kozijnen en welke delen mee moeten —
-      te veel om er vooraf een bedrag aan te hangen dat ergens op slaat. Stuur een paar
-      foto's mee met je aanvraag, dan krijg je een vaste totaalprijs. Op
-      <a href="/kosten">de kostenpagina</a> staat wat die prijs bepaalt.</p>
+      <h2>Prijs en garantie</h2>
+      <p>Je krijgt een vaste totaalprijs op basis van je foto's. Wat die prijs bepaalt,
+      staat op <a href="/kosten">de kostenpagina</a>. Op het werk krijg je
+      {{feit.garantie_folie}} en {{feit.garantie_montage}}. Wij besteden niets uit.</p>
 
-      <h2>Garantie</h2>
-      <p>Je krijgt {{feit.garantie_folie}} en {{feit.garantie_montage}}. Die
-      montagegarantie kunnen we geven omdat wij niets uitbesteden: we weten precies wie
-      het werk gedaan heeft.</p>
+      <h2>Veelgestelde vragen over {{merk.naam}}-kozijnen</h2>
+{{merk.faq}}
 
       <div class="callout">
         <h3>Weet je niet zeker of je een {{merk.naam}}-kozijn hebt?</h3>
