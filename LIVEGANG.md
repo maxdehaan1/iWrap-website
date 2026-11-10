@@ -13,11 +13,64 @@ weinig misgaan.
 
 ---
 
-## Hoe het er nu voor staat (nagekeken op 25 oktober 2026)
+## Eerst alleen iwrap.nl: de route
+
+Wil je iwrap.nl als eerste live hebben, dan zijn dit de stappen, in deze volgorde. De
+details staan verderop bij het stapnummer. kozijnwrap.nl, kozijnhorren.nl en de app kunnen
+later. Reken op een uur klaarzetten, een paar dagen testen, en een maandagochtend voor de
+overstap.
+
+**Het contactformulier is `/offerte`.** De contactpagina heeft geen eigen formulier: daar
+staan je telefoon, WhatsApp en mail, en de knop naar `/offerte`. Een aanvraag komt binnen
+in **info@iwrap.nl**, verstuurd vanuit info@iwrap.nl zelf (via Microsoft 365), met de
+foto's als bijlagen. De klant krijgt een bevestiging, en als je op de aanvraag antwoordt,
+gaat je antwoord naar de klant. Zolang de koppeling er niet is, zegt het formulier eerlijk
+"Versturen staat nog uit" met een knop om te mailen; er gaat dus nu niets verloren.
+
+**A. Klaarzetten (kan nu al, ongeveer een uur)**
+
+- [ ] **[Max]** Vercel op **Pro** zetten (stap 1). Nodig voor een bedrijfssite.
+- [ ] **[Max]** Tweestapsverificatie op GitHub, Vercel en GPO, en de GitHub-repo op privé (stap 1).
+- [ ] **[Max]** Opslag: Upstash for Redis koppelen, regio Frankfurt (stap 2). **Zonder opslag
+      werkt het formulier niet.**
+- [ ] **[Max]** Mail: de app-registratie in Microsoft Entra, en de drie `MS_`-waarden in
+      Vercel (README "Mail via Microsoft 365"). **Dit is wat het formulier naar info@iwrap.nl
+      laat mailen.** Zet de verloopdatum van het client secret meteen in je agenda.
+- [ ] **[Max]** `MAX_WACHTWOORD`, `GEHEIM`, `CRON_SECRET` en de tijdelijke `IWRAP_URL` (stap 2).
+- [ ] **[Max]** Mag later: de Google-sleutel voor live reviews. Zonder sleutel staat de stand
+      van de laatste build op de site.
+- [ ] **[Max]** Redeploy, en laat het Claude weten.
+
+**B. Testen op iwrap-website.vercel.app (een paar dagen)**
+
+- [ ] **[Claude]** Nakijken dat alles gekoppeld is (opslag, mail) en alle pagina's nalopen.
+- [ ] **[Max]** Drie testaanvragen op `/offerte` (aanstrepen, maten, papier) met je eigen
+      privémailadres als klant. Kijk of ze in info@iwrap.nl staan met de foto's, of de
+      bevestiging op je privémail aankomt, en of "Beantwoorden" naar dat privéadres gaat.
+- [ ] **[Max]** `/max`: inloggen werkt.
+- [ ] **[Max]** De privacyverklaring nalezen (stap 1).
+
+**C. Twee dagen voor de overstap**
+
+- [ ] **[Max]** Bij GPO de TTL van het A-record, het AAAA-record en `www` van iwrap.nl op 300
+      seconden. Ze staan nu op 86400 (24 uur): pas als die 24 uur voorbij zijn, gaat de
+      overstap snel. Daarom twee dagen van tevoren.
+- [ ] **[Max]** Een volledige back-up van de WordPress-site.
+
+**D. De overstap (een maandagochtend, ongeveer een uur):** alles bij stap 3. Let op het
+**AAAA-record**: dat moet weg, anders ziet iedereen met IPv6 nog de oude site.
+
+**E. Dezelfde week:** Search Console en je Google Bedrijfsprofiel (stap 5).
+
+**Na een maand:** de webhosting bij GPO opzeggen, alleen de hosting (stap 7).
+
+---
+
+## Hoe het er nu voor staat (nagekeken op 25 oktober 2026, iwrap.nl opnieuw op 10 november)
 
 | Site | Testadres | Echt domein nu | Nog te doen |
 |---|---|---|---|
-| iwrap.nl | iwrap-website.vercel.app | WordPress bij GPO (A-record `91.198.171.121`) | Alles hieronder |
+| iwrap.nl | iwrap-website.vercel.app | WordPress bij GPO (A-record `91.198.171.121`, AAAA-record `2a0b:c140:ab::6401`, www is een CNAME naar iwrap.nl) | Alles hieronder. Op 10 november nog geen omgevingsvariabelen en geen domeinen bij iwrap-website |
 | kozijnwrap.nl | kozijnwrap-website.vercel.app | Wijst nog naar GPO: een lege standaardpagina. **Nog niet gekoppeld in Vercel** | Domein koppelen (kan nu al, zie stap 4) |
 | houtnerffolie.nl | houtnerffolie-website.vercel.app | Draait al op Vercel (www.houtnerffolie.nl) | Alleen Search Console |
 | kozijnhorren.nl | kozijnhorren.vercel.app | **Nog vrij**, niet geregistreerd | Alleen als de winkel live gaat |
@@ -52,8 +105,8 @@ weinig misgaan.
       houtnerffolie en iwrap-app als die openbaar staan.
 - [ ] **[Max] Tweestapsverificatie aan** op GitHub, Vercel en bij GPO (waar het DNS staat).
       Wie in een van die drie komt, kan de site overnemen.
-- [ ] **[Max] KvK-nummer en btw-id** doorgeven. **[Claude]** zet ze in `build.py` (footer
-      en contactpagina) en, voor de winkel, in `backend/data/winkel.json`.
+- [x] **KvK-nummer en btw-id** staan in de footer van elke pagina (10 november), uit je
+      bedrijfsgegevens bij de offertes. Ook al in `backend/data/winkel.json` voor de winkel.
 - [x] "Gecertificeerde monteurs in vaste dienst" is overal vervangen door **"wij besteden
       niets uit"** (25 oktober, akkoord Max).
 - [x] **Levensduur van de folie:** overal "vijftien tot vijfentwintig jaar", en "versleten"
@@ -123,9 +176,10 @@ Kies een **maandag** (je kantoordag): dan zit je achter je mail als er iets is. 
 een uur, en daarna wachten tot het DNS overal is bijgewerkt (meestal binnen een uur, soms
 langer).
 
-- [ ] **[Max] De dag ervoor:** zet bij GPO de TTL van het A-record en het www-record van
-      iwrap.nl op 300 seconden (5 minuten), als GPO dat toelaat. Dan gaat de overstap sneller.
-- [ ] **[Max] De dag ervoor:** maak een volledige back-up van de WordPress-site (bij GPO,
+- [ ] **[Max] Twee dagen ervoor:** zet bij GPO de TTL van het A-record, het AAAA-record en
+      het www-record van iwrap.nl op 300 seconden (5 minuten), als GPO dat toelaat. Nu staan
+      ze op 86400 (24 uur); pas als die oude 24 uur voorbij zijn, gaat de overstap snel.
+- [ ] **[Max] Twee dagen ervoor:** maak een volledige back-up van de WordPress-site (bij GPO,
       of met een back-up-plugin). Na de overstap is die site niet meer te bereiken via het
       domein.
 - [ ] **[Max] Vercel:** haal de tijdelijke `IWRAP_URL` weg bij de omgevingsvariabelen.
@@ -135,12 +189,15 @@ langer).
       `www.iwrap.nl` toe. Zet **iwrap.nl (zonder www) als hoofddomein**, en www als
       doorverwijzing naar iwrap.nl. Zo kent Google de site nu al, en zo houd je je
       posities. Vercel toont daarna welke DNS-waarden het wil zien.
-- [ ] **[Max] GPO, DNS van iwrap.nl:** verander **alleen** deze twee records, naar de
-      waarden die Vercel toont:
-      - het A-record `@`: nu `91.198.171.121`, wordt het IP van Vercel (bij houtnerffolie.nl
-        was dat `216.198.79.1`)
-      - `www`: wordt een CNAME naar het adres dat Vercel geeft (eindigt op `vercel-dns.com`
-        of iets vergelijkbaars)
+- [ ] **[Max] GPO, DNS van iwrap.nl:** verander **alleen** deze drie records:
+      - het A-record `@`: nu `91.198.171.121`, wordt het IP dat Vercel toont (bij
+        houtnerffolie.nl was dat `216.198.79.1`)
+      - het **AAAA-record** `@` (IPv6): nu `2a0b:c140:ab::6401`, de WordPress-server.
+        **Verwijderen.** Blijft hij staan, dan krijgt iedereen met IPv6 (in Nederland een
+        groot deel van de bezoekers) nog de oude site, en na het opzeggen van de hosting een
+        foutmelding. Zet alleen een nieuw AAAA-record als Vercel daar zelf om vraagt.
+      - `www`: nu een CNAME naar `iwrap.nl`, wordt een CNAME naar het adres dat Vercel geeft
+        (eindigt op `vercel-dns.com` of iets vergelijkbaars)
 
       **Alle andere records blijven staan, anders stopt je mail.** Het gaat om: het MX-record (`iwrap-nl.mail.protection.outlook.com`),
       de TXT-records (`MS=ms88982446` en de SPF met `spf.protection.outlook.com`),
@@ -272,4 +329,4 @@ af van de overstapdag.
 
 ---
 
-*Bijgehouden door Claude. Laatst bijgewerkt: 10 november 2026 (controle van de site op veiligheid, SEO en snelheid).*
+*Bijgehouden door Claude. Laatst bijgewerkt: 10 november 2026 (de route voor alleen iwrap.nl, het AAAA-record bij de overstap, KvK en btw-id op de site).*

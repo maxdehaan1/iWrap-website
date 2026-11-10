@@ -64,9 +64,10 @@ BEDRIJF = {
     # Het aantal jaren rekent zichzelf uit, zodat er nooit een verouderd getal staat.
     "opgericht": "2014",
     "ervaring_jaren": str(time.localtime().tm_year - 2014),
-    # TODO Max: KvK-nummer en btw-id invullen -- horen op de contactpagina te staan
-    "kvk": "",
-    "btw": "",
+    # Wettelijk verplicht op de site. Zelfde gegevens als op de offertes
+    # (Offertes ICM/_referentie/bedrijfsgegevens.md).
+    "kvk": "80710964",
+    "btw": "NL861770225B01",
 }
 
 # ---------------------------------------------------------------------------
