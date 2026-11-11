@@ -187,3 +187,20 @@
 .vve-voorbeeld figcaption b{color:var(--ink);}
 .vve-voorbeeld a{font-weight:600;color:var(--mint-ink);}
 @media (max-width:480px){ .vve-voorbeeld{grid-template-columns:96px 1fr;} }
+
+/* Algemene voorwaarden ------------------------------------------------------ */
+.voorwaarden h2{scroll-margin-top:96px;font-size:1.25rem;}
+.bepalingen{list-style:none;padding:0;margin:0 0 1.4em;}
+.bepalingen li{display:grid;grid-template-columns:3.2em 1fr;gap:0 10px;margin-bottom:.7em;font-size:.97rem;}
+.bepalingen .nr{font-family:var(--kop);font-weight:600;font-size:.86rem;color:var(--mint-ink);padding-top:.15em;}
+.bepalingen ul{margin:.4em 0 0;padding-left:1.1em;}
+.bepalingen ul li{display:list-item;margin-bottom:.25em;font-size:inherit;}
+.modelformulier{background:var(--mint-wash);border:1px solid var(--mint-soft);border-radius:var(--radius);padding:18px 22px;margin:0 0 1.6em;font-size:.93rem;}
+.modelformulier h3{margin:0 0 .6em;font-size:1rem;}
+.modelformulier p{margin:0 0 .45em;}
+.in-het-kort{margin-bottom:2.2em;}
+.in-het-kort ul{margin-bottom:.6em;}
+.inhoud-kaart ol{margin:0;padding-left:0;list-style:none;font-size:.9rem;display:grid;gap:6px;}
+.inhoud-kaart a{color:var(--ink-soft);text-decoration:none;}
+.inhoud-kaart a:hover{color:var(--mint-ink);text-decoration:underline;}
+@media (min-width:901px){ .voorwaarden ~ .zij{position:sticky;top:96px;} }

@@ -3,6 +3,10 @@
   "datum": "2026-09-21",
   "hash": "a02c746c0b60"
  },
+ "algemene-voorwaarden": {
+  "datum": "2026-11-11",
+  "hash": "b7cde5f72195"
+ },
  "contact": {
   "datum": "2026-10-25",
   "hash": "113a2235d206"
@@ -68,8 +72,8 @@
   "hash": "3d021ba59a5b"
  },
  "offerte": {
-  "datum": "2026-11-10",
-  "hash": "d0e318a953f1"
+  "datum": "2026-11-11",
+  "hash": "96f5b4367d32"
  },
  "over-iwrap": {
   "datum": "2026-10-25",

@@ -135,6 +135,7 @@ FOOTER_KOLOMMEN = [
         ("veelgestelde-vragen", "Veelgestelde vragen"),
         ("contact", "Contact"),
         ("offerte", "Offerte aanvragen"),
+        ("algemene-voorwaarden", "Algemene voorwaarden"),
         ("privacy", "Privacy"),
     ]),
 ]
