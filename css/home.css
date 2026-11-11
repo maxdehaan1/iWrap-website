@@ -57,7 +57,16 @@
    op een breed scherm 4 + 2, en dan staat de onderste rij half leeg. */
 .klachten{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
 @media (max-width:900px){ .klachten{grid-template-columns:repeat(2,1fr);} }
-@media (max-width:560px){ .klachten{grid-template-columns:1fr;} }
+@media (max-width:560px){
+  /* Op de telefoon twee naast elkaar, met foto en titel: zes klachten in één oogopslag
+     in plaats van een lange rij onder elkaar. */
+  .klachten{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+  .klacht .beeld{aspect-ratio:1/1;}
+  .klacht .tekst{padding:12px 12px 14px;}
+  .klacht h3{font-size:.92rem;line-height:1.3;}
+  .klacht p{display:none;}
+  .klacht .pijl{font-size:.78rem;}
+}
 .klacht{
   background:var(--white);border:1px solid var(--line);border-radius:var(--radius);
   overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;
