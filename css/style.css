@@ -41,6 +41,10 @@
 }
 
 *{box-sizing:border-box;}
+/* Koppen breken in evenwichtige regels, zodat er nooit één los woord onderaan
+   staat; lopende tekst voorkomt een los laatste woord. */
+h1,h2,h3{text-wrap:balance;}
+p,li,figcaption{text-wrap:pretty;}
 
 /* [hidden] verliest het van elke regel die display zet -- en dat doen .knop
    (inline-flex) en de kaarten allemaal. Zonder deze regel blijft de
