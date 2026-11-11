@@ -128,7 +128,7 @@
 .merkkaart{
   background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:24px;
   text-decoration:none;color:inherit;box-shadow:var(--shadow);display:flex;flex-direction:column;
-  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+  transition:transform var(--middel) var(--beweeg),box-shadow var(--middel) var(--beweeg),border-color var(--middel) var(--beweeg);
 }
 .merkkaart:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--mint);color:inherit;}
 .merkkaart h3{margin:0 0 4px;font-size:1.08rem;}

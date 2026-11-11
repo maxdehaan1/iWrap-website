@@ -1,5 +1,5 @@
-/* Gedeeld gedrag: menu, voor/na-schuif en het rustig in beeld schuiven van
-   secties. Alles is optioneel -- zonder JavaScript werkt elke pagina gewoon,
+/* Gedeeld gedrag: menu, voor/na-schuif, openklappende vragen, foto's die zacht
+   binnenkomen en het rustig in beeld schuiven van secties. Alles is optioneel -- zonder JavaScript werkt elke pagina gewoon,
    alleen staat de voor/na-schuif dan halverwege vast. */
 (function () {
   'use strict';
@@ -24,6 +24,22 @@
         knop.setAttribute('aria-expanded', 'false');
         menu.classList.remove('open');
       }
+    });
+    // De donkere laag achter het open menu. Een tik erop sluit het menu, en je
+    // klikt dan niet per ongeluk iets aan dat eronder zat.
+    var laag = document.createElement('div');
+    laag.className = 'menu-laag';
+    document.body.appendChild(laag);
+    new MutationObserver(function () {
+      laag.classList.toggle('open', menu.classList.contains('open'));
+    }).observe(menu, { attributes: true, attributeFilter: ['class'] });
+    function sluitMenu() {
+      knop.setAttribute('aria-expanded', 'false');
+      menu.classList.remove('open');
+    }
+    laag.addEventListener('click', sluitMenu);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && menu.classList.contains('open')) { sluitMenu(); knop.focus(); }
     });
   }
 
@@ -214,21 +230,88 @@
     }
   }
 
-  /* Zachte intro --------------------------------------------------------- */
-  var doelen = document.querySelectorAll('.verschijn');
-  if (!doelen.length) return;
-  if (!('IntersectionObserver' in window) ||
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    doelen.forEach(function (el) { el.classList.add('zichtbaar'); });
-    return;
-  }
-  var kijker = new IntersectionObserver(function (rijen) {
-    rijen.forEach(function (rij) {
-      if (rij.isIntersecting) {
-        rij.target.classList.add('zichtbaar');
-        kijker.unobserve(rij.target);
-      }
+  /* Vragen die openklappen ------------------------------------------------ */
+  /* Het antwoord klapt vloeiend open en dicht, in dezelfde tijd waarin het
+     plusje draait. Zonder deze code werkt het gewoon, alleen meteen. */
+  document.querySelectorAll('.faq details').forEach(function (vraag) {
+    var kop = vraag.querySelector('summary');
+    var antwoord = vraag.querySelector('.antwoord');
+    if (!kop || !antwoord || weinigBeweging || !antwoord.animate) return;
+    var bezig = null;
+    kop.addEventListener('click', function (e) {
+      e.preventDefault();
+      // Een dichte vraag geeft in sommige browsers toch zijn volle hoogte door;
+      // dicht is dus altijd 0.
+      var van = vraag.open ? antwoord.getBoundingClientRect().height : 0;
+      if (bezig) { bezig.cancel(); bezig = null; }
+      var open = !vraag.open || vraag.classList.contains('sluit');
+      vraag.classList.remove('sluit');
+      vraag.open = true;
+      var naar = open ? antwoord.scrollHeight : 0;
+      var ruimte = getComputedStyle(antwoord).paddingBottom;   // de witruimte onder het antwoord
+      if (!open) vraag.classList.add('sluit');
+      antwoord.style.overflow = 'hidden';
+      bezig = antwoord.animate(
+        [{ height: van + 'px', paddingBottom: van ? ruimte : '0px', opacity: van ? 1 : 0 },
+         { height: naar + 'px', paddingBottom: open ? ruimte : '0px', opacity: open ? 1 : 0 }],
+        { duration: open ? 320 : 240, easing: 'cubic-bezier(.22,.7,.25,1)', fill: 'forwards' });
+      var deze = bezig;
+      deze.onfinish = function () {
+        // Eerst de eindstand vastzetten, dan pas de animatie weghalen: zo is er
+        // geen beeldje waarin het antwoord nog even helemaal te zien is.
+        if (!open) { vraag.open = false; vraag.classList.remove('sluit'); }
+        antwoord.style.overflow = '';
+        deze.cancel();
+        if (bezig === deze) bezig = null;
+      };
     });
-  }, { rootMargin: '0px 0px -60px 0px', threshold: 0.08 });
-  doelen.forEach(function (el) { kijker.observe(el); });
+  });
+
+  /* Foto's die later laden ------------------------------------------------- */
+  /* Zacht in beeld zodra ze binnen zijn (style.css, .beeld-fade). */
+  document.querySelectorAll('main img[loading=lazy]').forEach(function (img) {
+    function klaar() { img.classList.add('geladen'); }
+    if (img.complete && img.naturalWidth) klaar();
+    else {
+      img.addEventListener('load', klaar, { once: true });
+      img.addEventListener('error', klaar, { once: true });
+    }
+  });
+  document.documentElement.classList.add('beeld-fade');
+
+  /* Rustig in beeld schuiven ----------------------------------------------- */
+  /* Alleen wat bij het laden nog onder de rand zit: wat je meteen ziet, staat er
+     gewoon. Een rij kaarten komt kaart voor kaart binnen; een groot blok (zoals
+     het donkere afsluitblok) blijft staan en alleen de inhoud schuift erin. */
+  if (weinigBeweging || !('IntersectionObserver' in window)) return;
+  var doelen = [];
+  document.querySelectorAll('.verschijn').forEach(function (el) {
+    var kinderen = [].slice.call(el.children);
+    var rij = /grid|flex/.test(getComputedStyle(el).display) || el.classList.contains('faq');
+    if (rij && kinderen.length >= 2) doelen.push.apply(doelen, kinderen);
+    else doelen.push(el);
+  });
+  if (!doelen.length) return;
+  var rand = window.innerHeight * 0.92;
+  var kijker = new IntersectionObserver(function (rijen) {
+    var n = 0;
+    rijen.forEach(function (r) {
+      if (!r.isIntersecting) return;
+      var el = r.target;
+      kijker.unobserve(el);
+      el.style.setProperty('--vertraging', Math.min(n++, 5) * 70 + 'ms');
+      el.classList.add('verschijnt');
+      el.classList.remove('wacht');
+      // Daarna weer de gewone overgangen (zoals het optillen bij aanwijzen).
+      setTimeout(function () {
+        el.classList.remove('verschijnt');
+        el.style.removeProperty('--vertraging');
+      }, 1100);
+    });
+  }, { rootMargin: '0px 0px -8% 0px' });
+  doelen.forEach(function (el) {
+    if (el.getBoundingClientRect().top < rand) return;
+    el.classList.add('wacht');
+    kijker.observe(el);
+  });
 })();

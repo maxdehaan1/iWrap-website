@@ -678,6 +678,22 @@ op Vercel verloren. **Zet de site dus pas live als de koppeling werkt.**
 - **Geen analytics ingebouwd.** Wil je zien hoeveel aanvragen er binnenkomen en waar ze
   vandaan komen, dan is Vercel Analytics één regel werk.
 
+## Beweging
+
+Alles beweegt op dezelfde manier: `--beweeg` (de uitloop), `--kort` en `--middel` in
+`:root` van `style.css`. Gebruik die voor nieuwe overgangen in plaats van losse tijden.
+
+- **Inschuiven bij scrollen:** zet `verschijn` op een blok. Is het een raster of rij (grid
+  of flex, of `.faq`), dan komen de kaarten erin één voor één binnen; anders het blok zelf.
+  Wat bij het laden al in beeld staat, wordt nooit verborgen. `main.js` regelt dit met
+  `.wacht` en `.verschijnt`.
+- **Telefoonmenu:** klapt over de pagina heen open met een donkere laag erachter
+  (`.menu-laag`); een tik daarop of Escape sluit het.
+- **Vragen (`.faq`):** klappen vloeiend open en dicht (`main.js`).
+- **Foto's met `loading=lazy`:** komen zacht binnen als ze geladen zijn (`.beeld-fade`).
+- **Offertestappen:** de nieuwe stap begint bovenaan en komt zacht binnen (`offerte.js`).
+- Wie in zijn toestel "minder beweging" aanzet, krijgt alles zonder animatie.
+
 ## Algemene voorwaarden
 
 De tekst staat op één plek: **`voorwaarden.py`**. Dat script maakt de pagina

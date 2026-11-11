@@ -36,6 +36,13 @@
   --shadow:0 1px 2px rgba(34,38,42,.05), 0 8px 24px -12px rgba(34,38,42,.18);
   --shadow-lg:0 2px 4px rgba(34,38,42,.05), 0 26px 60px -28px rgba(34,38,42,.35);
 
+  /* Beweging: overal dezelfde uitloop, zodat alles op dezelfde manier reageert.
+     Snel weg, zacht neer. --kort voor kleur en kleine stapjes, --middel voor
+     kaarten en panelen. */
+  --beweeg:cubic-bezier(.22,.7,.25,1);
+  --kort:.2s;
+  --middel:.3s;
+
   --kop:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   --tekst:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 }
@@ -101,12 +108,12 @@ header.site{
 }
 .nav{display:flex;align-items:center;gap:18px;max-width:1240px;margin:0 auto;padding:12px 24px;}
 .brand{margin-right:auto;display:inline-flex;align-items:center;text-decoration:none;}
-.logo-img{height:34px;width:auto;transition:opacity .2s ease;}
+.logo-img{height:34px;width:auto;transition:opacity var(--kort) var(--beweeg);}
 .brand:hover .logo-img{opacity:.72;}
 
 .navlinks{display:flex;align-items:center;gap:26px;font-family:var(--kop);font-size:.875rem;font-weight:500;}
-.navlinks a{color:var(--ink-soft);text-decoration:none;position:relative;padding:6px 0;white-space:nowrap;transition:color .18s ease;}
-.navlinks a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:2px;background:var(--mint);border-radius:2px;transition:right .24s ease;}
+.navlinks a{color:var(--ink-soft);text-decoration:none;position:relative;padding:6px 0;white-space:nowrap;transition:color var(--kort) var(--beweeg);}
+.navlinks a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:2px;background:var(--mint);border-radius:2px;transition:right var(--middel) var(--beweeg);}
 .navlinks a:hover{color:var(--ink);}
 .navlinks a:hover::after{right:0;}
 .navlinks a.current{color:var(--ink);font-weight:600;}
@@ -115,12 +122,13 @@ header.site{
 .nav-cta{
   background:var(--ink);color:#fff!important;
   padding:10px 20px!important;border-radius:999px;font-weight:600;
-  transition:background .2s ease,transform .2s ease;
+  transition:background var(--kort) var(--beweeg),transform var(--kort) var(--beweeg);
 }
 .nav-cta::after{display:none!important;}
 .nav-cta:hover{background:var(--mint-deep);transform:translateY(-1px);}
 
 .nav-toggle{display:none;}
+.menu-laag{display:none;}
 .nav-snel{display:none;}
 
 /* Zes navigatie-items passen pas vanaf ongeveer 1080px naast het logo en de
@@ -135,19 +143,38 @@ header.site{
     width:44px;height:44px;border:1px solid var(--line-strong);background:var(--white);
     border-radius:12px;cursor:pointer;order:3;
   }
-  .bars,.bars::before,.bars::after{display:block;width:19px;height:2px;background:var(--ink);border-radius:2px;transition:transform .22s ease,opacity .22s ease;}
-  .bars{position:relative;}
-  .bars::before,.bars::after{content:"";position:absolute;left:0;}
+  /* Het icoon: eerst schuiven de streepjes naar het midden, dan draaien ze tot
+     een kruis. Bij dichtgaan precies andersom. */
+  .bars,.bars::before,.bars::after{display:block;width:19px;height:2px;background:var(--ink);border-radius:2px;}
+  .bars{position:relative;transition:background-color 0s linear .15s;}
+  .bars::before,.bars::after{content:"";position:absolute;left:0;transition:translate .15s var(--beweeg) .15s,rotate .15s var(--beweeg);}
   .bars::before{top:-6px;} .bars::after{top:6px;}
-  .nav-toggle[aria-expanded="true"] .bars{background:transparent;}
-  .nav-toggle[aria-expanded="true"] .bars::before{transform:translateY(6px) rotate(45deg);}
-  .nav-toggle[aria-expanded="true"] .bars::after{transform:translateY(-6px) rotate(-45deg);}
+  .nav-toggle[aria-expanded="true"] .bars{background-color:transparent;transition-delay:.12s;}
+  .nav-toggle[aria-expanded="true"] .bars::before,
+  .nav-toggle[aria-expanded="true"] .bars::after{transition:translate .15s var(--beweeg),rotate .15s var(--beweeg) .15s;}
+  .nav-toggle[aria-expanded="true"] .bars::before{translate:0 6px;rotate:45deg;}
+  .nav-toggle[aria-expanded="true"] .bars::after{translate:0 -6px;rotate:-45deg;}
 
+  /* Het menu klapt van boven naar beneden open, over de pagina heen: de pagina
+     zelf blijft staan. Het paneel is meteen dicht (niets schijnt erdoorheen);
+     het wordt alleen van boven naar beneden zichtbaar. Erachter een donkere
+     laag (.menu-laag, main.js). */
   .navlinks{
-    order:4;flex-basis:100%;flex-direction:column;align-items:stretch;gap:0;
-    max-height:0;overflow:hidden;transition:max-height .3s ease;
+    position:absolute;left:0;right:0;top:100%;
+    flex-direction:column;align-items:stretch;gap:0;
+    padding:4px 18px 4px;background:var(--paper);border-bottom:1px solid var(--line);
+    max-height:calc(100vh - 64px);max-height:calc(100dvh - 64px);overflow-y:auto;overscroll-behavior:contain;
+    box-shadow:0 18px 30px -18px rgba(34,38,42,.4);
+    clip-path:inset(0 0 100% 0);visibility:hidden;
+    transition:clip-path var(--middel) var(--beweeg),visibility 0s linear var(--middel);
   }
-  .navlinks.open{max-height:70vh;overflow-y:auto;}
+  .navlinks.open{clip-path:inset(0 0 -60px 0);visibility:visible;transition-delay:0s;}
+  .menu-laag{
+    display:block;position:fixed;inset:0;z-index:99;background:rgba(34,38,42,.3);
+    opacity:0;visibility:hidden;
+    transition:opacity var(--middel) var(--beweeg),visibility 0s linear var(--middel);
+  }
+  .menu-laag.open{opacity:1;visibility:visible;transition-delay:0s;}
   .navlinks a{padding:14px 4px;border-bottom:1px solid var(--line);font-size:1rem;}
   .navlinks a::after{display:none;}
   .nav-cta{margin:14px 0 16px;text-align:center;padding:14px 20px!important;}
@@ -156,7 +183,7 @@ header.site{
     display:inline-flex;align-items:center;height:44px;padding:0 18px;order:2;
     background:var(--ink);color:#fff;border-radius:999px;text-decoration:none;
     font-family:var(--kop);font-size:.875rem;font-weight:600;white-space:nowrap;
-    transition:background .2s ease;
+    transition:background var(--kort) var(--beweeg);
   }
   .nav-snel:hover{background:var(--mint-deep);}
 }
@@ -173,7 +200,7 @@ header.site{
   font-family:var(--kop);font-weight:600;font-size:.95rem;
   padding:15px 28px;border-radius:999px;border:1px solid transparent;
   text-decoration:none;cursor:pointer;
-  transition:transform .18s ease,background .18s ease,box-shadow .18s ease,border-color .18s ease;
+  transition:transform var(--kort) var(--beweeg),background var(--kort) var(--beweeg),box-shadow var(--kort) var(--beweeg),border-color var(--kort) var(--beweeg);
 }
 .knop:hover{transform:translateY(-2px);}
 .knop-primair{background:var(--ink);color:#fff;box-shadow:0 10px 24px -14px rgba(34,38,42,.9);}
@@ -191,7 +218,7 @@ header.site{
 .speelknop{
   width:44px;height:44px;border-radius:50%;display:grid;place-items:center;
   border:0;cursor:pointer;background:rgba(255,255,255,.92);color:var(--ink);box-shadow:var(--shadow);
-  transition:transform .18s ease,background .18s ease;
+  transition:transform var(--kort) var(--beweeg),background var(--kort) var(--beweeg);
 }
 .speelknop:hover{transform:scale(1.06);background:#fff;}
 .speelknop svg{display:none;}
@@ -238,7 +265,7 @@ section{padding:clamp(56px,7vw,96px) 0;}
 
 .vergelijk{
   position:relative;border-radius:var(--radius-lg);overflow:hidden;
-  box-shadow:var(--shadow-lg);background:var(--ink);
+  box-shadow:var(--shadow-lg);background:#e6e3dc;
   touch-action:pan-y;user-select:none;line-height:0;
   --pos:50%;
 }
@@ -312,16 +339,17 @@ section{padding:clamp(56px,7vw,96px) 0;}
 .faq summary{
   display:flex;align-items:flex-start;gap:16px;cursor:pointer;list-style:none;
   padding:22px 4px;font-family:var(--kop);font-weight:600;font-size:1.03rem;
-  transition:color .18s ease;
+  transition:color var(--kort) var(--beweeg);
 }
 .faq summary::-webkit-details-marker{display:none;}
 .faq summary::after{
   content:"";margin-left:auto;flex-shrink:0;width:26px;height:26px;border-radius:50%;
   background:var(--mint-wash) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%233f7468' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E") center/13px no-repeat;
-  transition:transform .22s ease,background-color .22s ease;
+  transition:transform var(--middel) var(--beweeg),background-color var(--middel) var(--beweeg);
 }
 .faq summary:hover{color:var(--mint-deep);}
 .faq details[open] summary::after{transform:rotate(45deg);background-color:var(--mint);}
+.faq details.sluit summary::after{transform:none;background-color:var(--mint-wash);}
 .faq .antwoord{padding:0 42px 22px 0;color:var(--ink-soft);}
 .faq .antwoord :last-child{margin-bottom:0;}
 
@@ -355,7 +383,7 @@ td strong{color:var(--ink);}
   margin-top:26px;padding:11px 20px 11px 16px;
   background:var(--white);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);
   color:var(--ink-soft);text-decoration:none;font-size:.9rem;line-height:1.35;
-  transition:transform .18s ease,box-shadow .18s ease;
+  transition:transform var(--kort) var(--beweeg),box-shadow var(--kort) var(--beweeg);
 }
 .rv-badge:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);color:var(--ink-soft);}
 .rv-badge-cijfer{grid-row:1 / span 2;font-family:var(--kop);font-weight:700;font-size:1.95rem;line-height:1;color:var(--ink);letter-spacing:-.02em;}
@@ -371,7 +399,7 @@ td strong{color:var(--ink);}
   display:inline-flex;align-items:center;gap:16px;padding:14px 24px 14px 18px;
   background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
   color:var(--sub);text-decoration:none;font-size:.88rem;line-height:1.4;
-  transition:transform .18s ease,box-shadow .18s ease;
+  transition:transform var(--kort) var(--beweeg),box-shadow var(--kort) var(--beweeg);
 }
 .rv-totaal:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);color:var(--sub);}
 .rv-cijfer{font-family:var(--kop);font-weight:700;font-size:2.6rem;line-height:1;color:var(--ink);letter-spacing:-.02em;}
@@ -395,7 +423,7 @@ td strong{color:var(--ink);}
   position:relative;scroll-snap-align:start;
   background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:22px 22px 18px;
   box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px;
-  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+  transition:transform var(--kort) var(--beweeg),box-shadow var(--kort) var(--beweeg),border-color var(--kort) var(--beweeg);
 }
 .review:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--line-strong);}
 .review-kop{display:flex;align-items:center;justify-content:space-between;gap:10px;}
@@ -421,7 +449,7 @@ td strong{color:var(--ink);}
 .rv-pijl{
   width:44px;height:44px;border-radius:50%;border:1px solid var(--line-strong);background:var(--white);
   color:var(--ink);font-size:1.5rem;line-height:1;display:grid;place-items:center;cursor:pointer;padding:0 0 3px;
-  transition:background .18s ease,border-color .18s ease,opacity .18s ease;
+  transition:background var(--kort) var(--beweeg),border-color var(--kort) var(--beweeg),opacity var(--kort) var(--beweeg);
 }
 .rv-pijl:hover:not(:disabled){border-color:var(--ink);}
 .rv-pijl:disabled{opacity:.35;cursor:default;}
@@ -454,7 +482,7 @@ td strong{color:var(--ink);}
   background:#fff;color:var(--ink);border-radius:999px;padding:9px 16px 9px 13px;
   font-family:var(--kop);font-weight:600;font-size:.82rem;line-height:1;text-decoration:none;
   box-shadow:0 10px 26px -10px rgba(0,0,0,.45);
-  transition:transform .18s ease;
+  transition:transform var(--kort) var(--beweeg);
 }
 .vlak-donker .slot-score,.slot a.slot-score{color:var(--ink);}
 .slot-score:hover{transform:translateY(-2px);color:var(--ink);}
@@ -474,7 +502,7 @@ td strong{color:var(--ink);}
 .fgrid{display:grid;grid-template-columns:1.6fr repeat(3,1fr);gap:40px 30px;}
 .site-footer h2{font-size:.78rem;font-family:var(--kop);font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--mint);margin:0 0 16px;}
 .site-footer ul{list-style:none;margin:0;padding:0;display:grid;gap:10px;}
-.site-footer a{color:#cfd5da;text-decoration:none;transition:color .18s ease;}
+.site-footer a{color:#cfd5da;text-decoration:none;transition:color var(--kort) var(--beweeg);}
 .site-footer a:hover{color:var(--mint);text-decoration:underline;}
 .fbrand img{height:32px;width:auto;margin-bottom:18px;}
 .fbrand p{max-width:34ch;color:#98a0a8;}
@@ -497,9 +525,16 @@ td strong{color:var(--ink);}
 
 /* Zachte intro ------------------------------------------------------------ */
 
-/* Alleen verbergen als JavaScript daadwerkelijk draait -- de klasse .js wordt
-   in de <head> gezet. Zonder die voorwaarde blijft een sectie leeg staan als
-   het script niet laadt, en dat is erger dan geen animatie. */
-.js .verschijn{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease;}
-.js .verschijn.zichtbaar{opacity:1;transform:none;}
-@media (prefers-reduced-motion:reduce){.js .verschijn{opacity:1;transform:none;}}
+/* main.js zet .wacht alleen op wat bij het laden nog onder de rand van het
+   scherm zit: wat je meteen ziet, staat er gewoon en fadet nooit in. In een rij
+   kaarten komt elke kaart los binnen, net na de vorige (--vertraging). Zonder
+   JavaScript, of als iemand minder beweging wil, wordt er niets verborgen. */
+.js .wacht{opacity:0;transform:translateY(14px);}
+.js .verschijnt{
+  transition:opacity .5s var(--beweeg) var(--vertraging,0s),transform .6s var(--beweeg) var(--vertraging,0s);
+}
+
+/* Foto's die pas laden als je in de buurt komt, komen zacht in beeld in plaats
+   van regel voor regel. Alleen als main.js draait (.beeld-fade). */
+.beeld-fade main img[loading=lazy]{transition:opacity .45s var(--beweeg),transform .45s var(--beweeg);}
+.beeld-fade main img[loading=lazy]:not(.geladen){opacity:0;}

@@ -74,7 +74,7 @@
   display:flex;gap:14px;align-items:flex-start;
   background:transparent;border:1px solid transparent;border-radius:var(--radius);
   padding:14px 16px;font:inherit;font-size:.94rem;line-height:1.5;color:var(--sub);
-  transition:background .25s ease,border-color .25s ease,color .25s ease;
+  transition:background var(--middel) var(--beweeg),border-color var(--middel) var(--beweeg),color var(--middel) var(--beweeg);
 }
 .ds-stappen button:hover{background:var(--paper);}
 .ds-stappen b{display:block;font-family:var(--kop);font-weight:600;font-size:1rem;color:var(--ink);margin-bottom:2px;}
@@ -82,7 +82,7 @@
   flex-shrink:0;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
   font-family:var(--kop);font-weight:700;font-size:.8rem;
   background:var(--paper);color:var(--sub);border:1px solid var(--line);
-  transition:background .25s ease,color .25s ease,border-color .25s ease;
+  transition:background var(--middel) var(--beweeg),color var(--middel) var(--beweeg),border-color var(--middel) var(--beweeg);
 }
 .ds-stappen [aria-current]{background:var(--mint-wash);border-color:var(--mint-soft);color:var(--ink-soft);}
 .ds-stappen [aria-current] .ds-nr{background:var(--mint-ink);border-color:var(--mint-ink);color:#fff;}

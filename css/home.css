@@ -71,11 +71,11 @@
   background:var(--white);border:1px solid var(--line);border-radius:var(--radius);
   overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;
   box-shadow:var(--shadow);
-  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+  transition:transform var(--middel) var(--beweeg),box-shadow var(--middel) var(--beweeg),border-color var(--middel) var(--beweeg);
 }
-.klacht:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--mint);color:inherit;}
+.klacht:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--mint);color:inherit;}
 .klacht .beeld{position:relative;aspect-ratio:3/2;overflow:hidden;background:#e9e7e2;}
-.klacht .beeld img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;}
+.klacht .beeld img{width:100%;height:100%;object-fit:cover;transition:transform .45s var(--beweeg);}
 .klacht:hover .beeld img{transform:scale(1.05);}
 .klacht .tekst{padding:20px 22px 22px;display:flex;flex-direction:column;flex:1;}
 .klacht h3{margin:0 0 6px;font-size:1.05rem;}
@@ -84,7 +84,7 @@
   margin-top:auto;font-family:var(--kop);font-size:.83rem;font-weight:600;color:var(--mint-ink);
   display:inline-flex;align-items:center;gap:7px;
 }
-.klacht .pijl::after{content:"\2192";transition:transform .22s ease;}
+.klacht .pijl::after{content:"\2192";transition:transform var(--middel) var(--beweeg);}
 .klacht:hover .pijl::after{transform:translateX(4px);}
 
 /* Wel/niet ---------------------------------------------------------------- */
@@ -132,13 +132,13 @@
 .doelgroep{
   display:flex;flex-direction:column;background:var(--white);border:1px solid var(--line);
   border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);text-decoration:none;color:inherit;
-  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+  transition:transform var(--middel) var(--beweeg),box-shadow var(--middel) var(--beweeg),border-color var(--middel) var(--beweeg);
 }
-.doelgroep:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--mint);color:inherit;}
+.doelgroep:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--mint);color:inherit;}
 .doelgroep h3{margin-bottom:.4em;}
 .doelgroep p{font-size:.94rem;color:var(--sub);}
 .doelgroep .pijl{margin-top:auto;font-family:var(--kop);font-size:.83rem;font-weight:600;color:var(--mint-ink);display:inline-flex;gap:7px;align-items:center;}
-.doelgroep .pijl::after{content:"\2192";transition:transform .22s ease;}
+.doelgroep .pijl::after{content:"\2192";transition:transform var(--middel) var(--beweeg);}
 .doelgroep:hover .pijl::after{transform:translateX(4px);}
 
 /* Merkenbalk -------------------------------------------------------------- */
@@ -147,7 +147,7 @@
 .merken a{
   font-family:var(--kop);font-size:.88rem;font-weight:500;text-decoration:none;color:var(--ink-soft);
   background:var(--white);border:1px solid var(--line);border-radius:999px;padding:9px 18px;
-  transition:border-color .18s ease,background .18s ease,transform .18s ease,color .18s ease;
+  transition:border-color var(--kort) var(--beweeg),background var(--kort) var(--beweeg),transform var(--kort) var(--beweeg),color var(--kort) var(--beweeg);
 }
 .merken a:hover{border-color:var(--mint);background:var(--mint-wash);color:var(--ink);transform:translateY(-2px);}
 

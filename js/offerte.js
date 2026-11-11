@@ -672,7 +672,19 @@
     if (verschuif) {
       var kop = panelen[nu].querySelector("h2");
       if (kop) { kop.setAttribute("tabindex", "-1"); kop.focus({ preventScroll: true }); }
-      window.scrollTo({ top: form.getBoundingClientRect().top + window.scrollY - 90, behavior: "smooth" });
+      // Meteen naar het begin van de nieuwe stap, zonder eerst langs het midden
+      // ervan te schuiven, en de stap komt zacht binnen.
+      var doel = form.getBoundingClientRect().top + window.scrollY - 90;
+      if (window.scrollY > doel + 4) {
+        var html = document.documentElement, oud = html.style.scrollBehavior;
+        html.style.scrollBehavior = "auto";
+        window.scrollTo(0, doel);
+        html.style.scrollBehavior = oud;
+      }
+      if (panelen[nu].animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        panelen[nu].animate([{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }],
+          { duration: 300, easing: "cubic-bezier(.22,.7,.25,1)" });
+      }
     }
     bewaar();
   }

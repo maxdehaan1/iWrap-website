@@ -82,13 +82,13 @@
   display:flex;flex-direction:column;align-items:center;gap:7px;
   width:100%;padding:0 4px;background:none;border:0;cursor:pointer;
   font-family:var(--kop);font-size:.78rem;font-weight:600;color:var(--sub);
-  transition:color .18s ease;
+  transition:color var(--kort) var(--beweeg);
 }
 .stapknop .nr{
   width:32px;height:32px;border-radius:50%;display:grid;place-items:center;
   background:var(--white);border:2px solid var(--line);
   font-size:.85rem;line-height:1;color:var(--sub);
-  transition:background .2s ease,border-color .2s ease,color .2s ease;
+  transition:background var(--kort) var(--beweeg),border-color var(--kort) var(--beweeg),color var(--kort) var(--beweeg);
 }
 .stapknop .lab{line-height:1.2;text-align:center;}
 
@@ -116,7 +116,7 @@
   transform:translateY(-2px);
   box-shadow:0 4px 10px -4px rgba(47,90,80,.5);
 }
-.stapknop .nr{transition:background .2s ease,border-color .2s ease,color .2s ease,transform .2s ease,box-shadow .2s ease;}
+.stapknop .nr{transition:background var(--kort) var(--beweeg),border-color var(--kort) var(--beweeg),color var(--kort) var(--beweeg),transform var(--kort) var(--beweeg),box-shadow var(--kort) var(--beweeg);}
 .stapknop:active .nr{transform:translateY(0);}
 .stapknop:focus-visible{outline:3px solid var(--mint-ink);outline-offset:3px;border-radius:8px;}
 
@@ -164,7 +164,7 @@
 .keuze .vlak{
   display:flex;flex-direction:column;gap:5px;height:100%;
   border:1.5px solid var(--line);border-radius:var(--radius);background:var(--white);
-  padding:17px 18px;transition:border-color .18s ease,background .18s ease,transform .18s ease,box-shadow .18s ease;
+  padding:17px 18px;transition:border-color var(--kort) var(--beweeg),background var(--kort) var(--beweeg),transform var(--kort) var(--beweeg),box-shadow var(--kort) var(--beweeg);
 }
 .keuze:hover .vlak{border-color:var(--mint);transform:translateY(-2px);box-shadow:var(--shadow);}
 .keuze input:focus-visible + .vlak{outline:3px solid var(--mint-ink);outline-offset:2px;}
@@ -175,7 +175,7 @@
 .keuze .vlak::after{
   content:"";position:absolute;top:16px;right:16px;width:21px;height:21px;
   border:1.5px solid var(--line-strong);border-radius:50%;background:var(--white);
-  transition:border-color .18s ease,background .18s ease;
+  transition:border-color var(--kort) var(--beweeg),background var(--kort) var(--beweeg);
 }
 .keuze.meervoud .vlak::after{border-radius:6px;}
 .keuze input:checked + .vlak::after{
@@ -192,7 +192,7 @@
 .veld input,.veld textarea,.veld select{
   font-family:var(--tekst);font-size:1rem;color:var(--ink);
   border:1.5px solid var(--line-strong);border-radius:12px;padding:13px 15px;background:var(--white);
-  transition:border-color .18s ease,box-shadow .18s ease;width:100%;
+  transition:border-color var(--kort) var(--beweeg),box-shadow var(--kort) var(--beweeg);width:100%;
 }
 .veld textarea{min-height:110px;resize:vertical;}
 .veld input:focus,.veld textarea:focus,.veld select:focus{
@@ -293,7 +293,7 @@
 .manier-vlak{
   display:flex;flex-direction:column;gap:6px;height:100%;
   border:2px solid var(--line);border-radius:var(--radius);background:var(--white);
-  padding:16px 18px 20px;transition:border-color .18s ease,background .18s ease,transform .18s ease,box-shadow .18s ease;
+  padding:16px 18px 20px;transition:border-color var(--kort) var(--beweeg),background var(--kort) var(--beweeg),transform var(--kort) var(--beweeg),box-shadow var(--kort) var(--beweeg);
 }
 .manier:hover .manier-vlak{border-color:var(--mint);transform:translateY(-2px);box-shadow:var(--shadow);}
 .manier input:focus-visible + .manier-vlak{outline:3px solid var(--mint-ink);outline-offset:2px;}
@@ -382,7 +382,7 @@
 .foto-kiezen-vlak{
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;
   min-height:170px;padding:24px;border:2px dashed var(--line-strong);border-radius:var(--radius);
-  background:var(--paper);color:var(--mint-ink);transition:border-color .18s ease,background .18s ease;
+  background:var(--paper);color:var(--mint-ink);transition:border-color var(--kort) var(--beweeg),background var(--kort) var(--beweeg);
 }
 .foto-kiezen-vlak b{font-family:var(--kop);font-size:1.08rem;color:var(--ink);}
 .foto-kiezen-vlak small{font-size:.9rem;color:var(--sub);}
@@ -424,7 +424,7 @@
   display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:10px 18px;
   border:2px solid var(--line-strong);border-radius:999px;background:var(--white);
   font-family:var(--kop);font-weight:600;font-size:.95rem;color:var(--ink-soft);
-  transition:border-color .15s ease,background .15s ease,color .15s ease;
+  transition:border-color var(--kort) var(--beweeg),background var(--kort) var(--beweeg),color var(--kort) var(--beweeg);
 }
 .chip:hover span{border-color:var(--mint-ink);}
 .chip input:checked + span{border-color:var(--ink);background:var(--ink);color:#fff;}
@@ -604,7 +604,7 @@ html.streep-open,html.streep-open body{overflow:hidden;}
   display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:8px 18px 8px 10px;cursor:pointer;
   border:2px solid rgba(255,255,255,.28);border-radius:999px;background:transparent;color:#fff;
   font-family:var(--kop);font-weight:600;font-size:.95rem;
-  transition:border-color .15s ease,background .15s ease;
+  transition:border-color var(--kort) var(--beweeg),background var(--kort) var(--beweeg);
 }
 .streep-pen[aria-pressed="true"]{border-color:#fff;background:rgba(255,255,255,.14);}
 .streep-pen[aria-pressed="true"]::after{content:"\2713";font-weight:700;margin-left:2px;}
