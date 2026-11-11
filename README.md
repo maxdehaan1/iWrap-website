@@ -678,6 +678,16 @@ op Vercel verloren. **Zet de site dus pas live als de koppeling werkt.**
 - **Geen analytics ingebouwd.** Wil je zien hoeveel aanvragen er binnenkomen en waar ze
   vandaan komen, dan is Vercel Analytics één regel werk.
 
+## Algemene voorwaarden
+
+De tekst staat op één plek: **`voorwaarden.py`**. Dat script maakt de pagina
+(`src/pages/algemene-voorwaarden.html`, op /algemene-voorwaarden) én de PDF
+(`documenten/algemene-voorwaarden-iwrap.pdf`, in de opmaak van de offertes). Wijzig je
+iets: pas het daar aan, zet `VERSIE` goed en draai `python3 voorwaarden.py && python3
+build.py`. Kopieer de nieuwe PDF daarna naar `Documents/iWrap/Algemene voorwaarden
+iWrap.pdf`, de versie die bij offertes meegaat. Artikel 2.5 en de offertes noemen het
+adres www.iwrap.nl/algemene-voorwaarden; verander dat adres dus niet.
+
 ## Privacy, lettertypen en bezoekersmeting
 
 - **`/privacy`** beschrijft wat de site echt doet. Verandert er iets aan het formulier,
