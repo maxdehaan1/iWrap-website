@@ -102,6 +102,13 @@ Dat schrijft alle pagina's naar de root en genereert `sitemap.xml` en `robots.tx
 opnieuw. Draai het na élke wijziging in `src/`, `css/` of `js/` — die bestanden krijgen
 een versiehash mee in de URL, en die wordt bij het bouwen bepaald.
 
+**Het mailadres van de zaak staat niet in `build.py`.** Het script leest het uit de
+instelling `IWRAP_EMAIL`: uit je omgeving (eenmalig `export IWRAP_EMAIL=...` in
+`~/.bash_profile`), of anders uit een bestand `.env` in de hoofdmap (`IWRAP_EMAIL=...`;
+staat niet in git en gaat niet online). Zonder die instelling stopt het bouwen met een
+melding. Reden: de privacy-plugin van Claude weigert een script dat het mailadres naast
+klantgegevens (de reviews) bevat; zo kan Claude zelf blijven bouwen.
+
 Lokaal bekijken:
 
 ```bash

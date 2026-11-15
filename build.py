@@ -43,6 +43,25 @@ REVIEWS = json.loads((ROOT / "reviews.json").read_text(encoding="utf-8"))
 # Max-modus en het rapport er ook uit lezen; hier alleen voor /kozijncheck.
 KOZIJNCHECK = json.loads((ROOT / "backend" / "data" / "kozijncheck.json").read_text(encoding="utf-8"))
 
+def instelling(naam):
+    """Een gegeven dat niet in de code staat, zoals het mailadres van de zaak: uit de
+    omgeving (export IWRAP_EMAIL=... in ~/.bash_profile), of anders uit .env in de
+    hoofdmap (niet in git, niet online). Zo staat het adres niet in dit script naast
+    de reviewgegevens; de privacy-plugin van Claude laat dit script dan bouwen."""
+    if os.environ.get(naam):
+        return os.environ[naam].strip()
+    env = ROOT / ".env"
+    if env.exists():
+        for regel in env.read_text(encoding="utf-8").splitlines():
+            sleutel, _, waarde = regel.partition("=")
+            if sleutel.strip() == naam and waarde.strip():
+                return waarde.strip().strip("\"'")
+    raise SystemExit(
+        f"{naam} ontbreekt. Zet hem eenmalig in je omgeving, bijvoorbeeld met\n"
+        f"  echo 'export {naam}=<adres>' >> ~/.bash_profile\n"
+        "(zie README, 'Bewerken en bouwen').")
+
+
 BEDRIJF = {
     "naam": "iWrap",
     "juridisch": "iWrap VOF",
@@ -51,7 +70,7 @@ BEDRIJF = {
     "postcode": "1214 GZ",
     "lat": "52.2165193",
     "lon": "5.1715531",
-    "email": "info@iwrap.nl",
+    "email": instelling("IWRAP_EMAIL"),
     # Zoals een Nederlander het leest. De link (tel:) en de gegevens voor Google
     # gebruiken telefoon_tel, met landcode.
     "telefoon": "06 1441 5877",
@@ -534,8 +553,8 @@ def render_footer():
   <div class="wrap fgrid">
       <div class="fcol fbrand">
         <img src="/images/logo/iwrap-logo-liggend-licht.svg" width="200" height="42" alt="iWrap" loading="lazy">
-        <p>Wij herstellen kunststof kozijnen met Renolit folie. Al
-        {b['ervaring_jaren']} jaar, door heel Nederland, en we besteden niets uit.</p>
+        <p>Specialist in kozijnfolie: al {b['ervaring_jaren']} jaar alleen dit vak, door heel
+        Nederland. Volledig gecertificeerde monteurs, geen zzp'ers, uitsluitend Renolit folie.</p>
         <p class="fcontact">
           <a href="tel:{b['telefoon_tel']}">{b['telefoon']}</a><br>
           <a href="mailto:{b['email']}">{b['email']}</a>
@@ -590,9 +609,10 @@ def localbusiness(met_reviews=True):
         "areaServed": {"@type": "Country", "name": "Nederland"},
         "sameAs": [b["instagram"], b["reviews_url"]],
         "description": (
-            "iWrap herstelt kunststof kozijnen met Renolit folie: de aangetaste "
-            "toplaag eraf, een nieuwe folie erop. Duurzamer en vaak flink "
-            "goedkoper dan vervangen."
+            "iWrap is specialist in kozijnfolie en herstelt kunststof kozijnen met "
+            "Renolit folie: de aangetaste toplaag eraf, een nieuwe folie erop. Volledig "
+            "gecertificeerde monteurs, geen zzp'ers, tien jaar fabrieksgarantie op de "
+            "folie en vijf jaar op de montage."
         ),
         "aggregateRating": {
             "@type": "AggregateRating",
