@@ -142,6 +142,7 @@
 .partnerlogo img{display:block;height:30px;width:auto;}
 .partnerlogo-vierkant img{height:48px;}
 .partnerlogo-breed img{height:24px;}
+@media (max-width:600px){.partnerlogos .partnerlogo{flex:1 1 calc(50% - 6px);min-width:0;padding:12px 10px 10px;}}
 .partnerlogo span{font-family:var(--kop);font-size:.72rem;font-weight:600;line-height:1.2;color:#4a5158;text-align:center;}
 .onderscheid-voet{margin:26px 0 0;max-width:70ch;font-size:.95rem;color:#c2c8ce;}
 .onderscheid-voet a{margin-left:6px;font-weight:600;white-space:nowrap;}
