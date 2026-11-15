@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Inter:wght@400;500;600&display=block">
+<style>
+  html, body { margin: 0; background: #ddd; font: 12px/1.2 system-ui, sans-serif; }
+  #raster { display: grid; gap: 6px; padding: 6px; }
+  figure { margin: 0; background: #fff; }
+  figcaption { padding: 2px 4px; color: #333; }
+  canvas { display: block; }
+</style></head>
+<body><div id="raster"></div>
+<script>
+  // proef.html?src=kozijn3d.js&obj=iwrapKozijn3D&w=1200&h=900&ts=0,1,2&cols=4&cel=420&video=0
+  var q = new URLSearchParams(location.search);
+  var bronnen = (q.get("src") || "kozijn3d.js").split(","), s = { onload: null };
+  function laad(i) {
+    if (i >= bronnen.length) { s.onload(); return; }
+    var e = document.createElement("script"); e.src = bronnen[i]; e.onload = function () { laad(i + 1); }; document.head.appendChild(e);
+  }
+  setTimeout(function () { laad(0); }, 0);
+  s.onload = async function () {
+    try { await Promise.all([document.fonts.load("600 30px Montserrat"), document.fonts.load("700 30px Montserrat"), document.fonts.load("400 20px Inter")]); } catch (e) {}
+    var obj = window[q.get("obj") || "iwrapKozijn3D"];
+    var W = +q.get("w") || 1200, H = +q.get("h") || 900, cols = +q.get("cols") || 4, cel = +q.get("cel") || 420;
+    var ts = (q.get("ts") || "0,2,4,6,8,10,12,14,16,18,20,22").split(",").map(Number);
+    var r = document.getElementById("raster");
+    r.style.gridTemplateColumns = "repeat(" + cols + ", " + cel + "px)";
+    ts.forEach(function (t) {
+      var f = document.createElement("figure"), c = document.createElement("canvas"), cap = document.createElement("figcaption");
+      c.width = W; c.height = H; c.style.width = cel + "px"; c.style.height = (cel * H / W) + "px";
+      try { obj.teken(c.getContext("2d"), t, W, H, { video: q.get("video") === "1", variant: q.get("variant") || "licht", pxPerCss: q.get("video") === "1" ? (H > W * 1.2 ? W / 560 : W / 960) : undefined }); }
+      catch (e) { cap.style.color = "red"; cap.textContent = "FOUT " + e.message; console.error(e); }
+      if (!cap.textContent) cap.textContent = "t = " + t.toFixed(2);
+      f.appendChild(c); f.appendChild(cap); r.appendChild(f);
+    });
+    document.body.setAttribute("data-klaar", "1");
+  };
+</script>
+</body></html>

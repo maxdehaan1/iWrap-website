@@ -1,0 +1,69 @@
+/* 12. Kozijn in 3D: zo herstellen we een kozijn ------------------------------------------
+   Canvas in een paneel met de ronding en schaduw van de site, een ondertitel als pil
+   onderin, rechtsboven "Opnieuw" en eronder de drie vaste stappen. */
+.kozijn-3d{margin:0;}
+.k3d-beeld{position:relative;aspect-ratio:4/3;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
+  background:var(--paper) url("/images/kozijn-3d-start.jpg") center/cover no-repeat;}   /* het beginbeeld, tot het script tekent */
+.k3d-beeld canvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
+.k3d-zin{
+  position:absolute;left:50%;bottom:14px;transform:translateX(-50%);margin:0;
+  width:max-content;max-width:calc(100% - 28px);display:flex;align-items:center;gap:9px;
+  padding:8px 16px 8px 12px;border-radius:999px;background:rgba(255,255,255,.95);
+  box-shadow:0 6px 18px -10px rgba(34,38,42,.45);
+  font-family:var(--kop);font-weight:600;font-size:.84rem;line-height:1.3;color:var(--ink);
+  transition:opacity var(--middel) var(--beweeg),transform var(--middel) var(--beweeg);
+}
+.k3d-zin::before{content:"";flex-shrink:0;width:9px;height:9px;border-radius:50%;background:var(--mint);}
+.k3d-zin.is-leeg{opacity:0;transform:translate(-50%,6px);}
+.k3d-opnieuw{
+  position:absolute;right:12px;top:12px;display:inline-flex;align-items:center;gap:7px;
+  padding:7px 13px 7px 10px;border:0;border-radius:999px;cursor:pointer;
+  background:rgba(255,255,255,.95);box-shadow:0 6px 18px -10px rgba(34,38,42,.45);
+  font-family:var(--kop);font-weight:600;font-size:.8rem;color:var(--mint-ink);
+}
+.k3d-opnieuw::before{
+  content:"";width:15px;height:15px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%233f7468' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5'/%3E%3C/svg%3E") center/15px no-repeat;
+}
+.k3d-opnieuw[hidden]{display:none;}
+.k3d-stappen{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
+.k3d-stappen li{margin:0;}
+.k3d-stappen button{
+  width:100%;height:100%;display:flex;align-items:center;gap:9px;cursor:pointer;text-align:left;
+  padding:8px 12px 8px 8px;border:1px solid var(--line);border-radius:999px;background:var(--white);
+  font-family:var(--kop);font-weight:600;font-size:.8rem;line-height:1.25;color:var(--ink-soft);
+  transition:background var(--middel) var(--beweeg),border-color var(--middel) var(--beweeg),color var(--middel) var(--beweeg);
+}
+.k3d-stappen button:hover{border-color:var(--mint);}
+.k3d-nr{
+  flex-shrink:0;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+  background:var(--mint-soft);color:var(--mint-deep);font-family:var(--kop);font-weight:700;font-size:.76rem;
+  transition:background var(--middel) var(--beweeg),color var(--middel) var(--beweeg);
+}
+.k3d-stappen .is-nu{background:var(--mint-deep);border-color:var(--mint-deep);color:#fff;}
+.k3d-stappen .is-nu .k3d-nr{background:#fff;color:var(--mint-deep);}
+.k3d-stappen .is-klaar .k3d-nr{
+  color:transparent;background:var(--mint-deep) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.6 6.3l2.2 2.2 4.6-5' fill='none' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/13px no-repeat;
+}
+.kozijn-3d figcaption{margin-top:12px;font-size:.85rem;color:var(--sub);}
+html:not(.js) .k3d-opnieuw,html:not(.js) .k3d-zin{display:none;}
+@media (max-width:560px){
+  .k3d-zin{font-size:.76rem;bottom:10px;padding:7px 13px 7px 10px;}
+  .k3d-stappen{gap:6px;}
+  .k3d-stappen button{flex-direction:column;align-items:center;text-align:center;border-radius:14px;padding:8px 6px;font-size:.72rem;}
+}
+/* De voor/na-schuif onder de kop van "Zo ziet het eruit als we klaar zijn" (verhuisd uit de hero) */
+.vergelijk-los{max-width:760px;margin:0 auto 34px;}
+.vergelijk-los figcaption{margin-top:12px;font-size:.85rem;color:var(--sub);text-align:center;}
+/* Het bijschrift in de hero kreeg een schuif-icoontje; bij de 3D-animatie hoort dat niet, bij de verhuisde schuif wel */
+.hero-fig.kozijn-3d figcaption{display:block;}
+.hero-fig.kozijn-3d figcaption::before{content:none;display:none;}
+.vergelijk-los figcaption{display:flex;align-items:center;justify-content:center;gap:8px;}
+.vergelijk-los figcaption::before{
+  content:"";width:16px;height:16px;flex-shrink:0;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23646b73' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6 4 12l5 6M15 6l5 6-5 6'/%3E%3C/svg%3E") center/16px no-repeat;
+}
+@media (prefers-reduced-motion:reduce){ .k3d-zin,.k3d-stappen button,.k3d-nr{transition:none;} }
+/* Zonder WebGL tekent het script niets: dan staat het herstelde kozijn er als foto (het eindbeeld) */
+.kozijn-3d.k3d-geen-webgl .k3d-beeld{background-image:url("/images/kozijn-3d-eind.jpg");}
+.kozijn-3d.k3d-geen-webgl .k3d-stappen button{cursor:default;}

@@ -1,0 +1,50 @@
+iWrap: kozijn in 3D en "van beschadigd naar mooi"
+=================================================
+
+Wat hier staat
+- kozijn3d.js: de 3D-animatie "Zo herstellen we een kozijn" (28,6 seconden). Hetzelfde bestand
+  staat op de site als js/kozijn-3d.js. Getekend met WebGL: echt licht, zachte schaduwen, glans.
+  Zonder WebGL tekent hij niets en blijft er een foto staan (het eindbeeld, via de CSS).
+  kozijn3d.js wordt gemaakt uit de vijf delen in de map src/, met: python3 bouw.py
+    src/a-basis.js    maten, tijdlijn (T), teksten (STAPPEN en ZINNEN), camera (CAM), kleuren (K)
+    src/b-shaders.js  hoe alles eruitziet: de oude folie (barstjes, opgekrulde randen, schilfers),
+                      de nieuwe folie (zijdeglans en een heel fijne nerf), lijm, kunststof, glas,
+                      licht en schaduw
+    src/c-motor.js    de WebGL-motor: de vormen, de schaduwen, één beeld tekenen
+    src/d-verhaal.js  het gereedschap en wat er wanneer gebeurt
+    src/e-speler.js   het afspelen op de site
+- kozijn-sting.src.js: "van beschadigd naar mooi" (6,6 seconden): dichtbij het beschadigde
+  kozijn, dan één haal waarin de oude folie eraf krult en de nieuwe folie erop rolt, een glans,
+  en het logo ernaast. bouw_sting.py maakt daar kozijn-sting.js van (met de vormen van het logo
+  uit ../geo.json). Gebruikt kozijn3d.js.
+- kozijn-klus.js: het close-up van het werk in de klusfilm (13 seconden, op het tempo van de film).
+  De klusfilm (../src/film2.src.js) laat dit zien als WebGL werkt; anders een plat close-up.
+- kozijn-3d.css: de opmaak op de site (staat ook in css/iwrap-site.css, onderdeel 12).
+- demo-site.html: een proefpagina met de 3D-animatie zoals op de site (open hem via een lokale
+  server, bijvoorbeeld: python3 -m http.server, en dan http://localhost:8000/demo-site.html).
+- media/kozijn-3d-start.jpg en media/kozijn-3d-eind.jpg: het begin- en eindbeeld voor de site.
+- videos.json: de lijst met video's die render_video.py maakt (zeven stuks).
+
+Iets veranderen
+- Teksten of tijden: in src/a-basis.js bij STAPPEN, ZINNEN en T. Houd de teksten gelijk aan de site.
+- Hoe de folie eruitziet: in src/b-shaders.js bij oudeFolie en nieuweFolie.
+- Het gereedschap (src/d-verhaal.js) is nagebouwd naar het echte: krabber = een trekkrabber zoals de
+  Bahco 665, doek = de microvezeldoek voor het schoonmaken, rakel = een blauwe folie-rakel met viltstrook.
+- Daarna altijd: python3 bouw.py (en na een wijziging in kozijn-sting.src.js: python3 bouw_sting.py).
+
+Opnieuw maken (laat dit gerust door Claude doen)
+- Proefbeelden:  python3 proef.py proef.png "ts=0,5,10,15,20,25&cols=3&cel=500"
+- Korte versie:  python3 proef.py proef.png "src=kozijn3d.js,kozijn-sting.js&obj=iwrapKozijnSting&ts=0,2,4,6.6&cols=4&cel=400"
+- Klusfilm-close-up: python3 proef.py proef.png "src=kozijn3d.js,kozijn-klus.js&obj=iwrapKozijnKlus&ts=1,3,5,7,9,11&cols=3&cel=500"
+  (de klusfilm zelf maak je in de map erboven met tools/render.py, zie ../LEES MIJ.txt)
+- De video's:    python3 render_video.py videos.json   (komen in de map video/)
+- Begin- en eindbeeld voor de site:
+    python3 poster.py kozijn3d.js iwrapKozijn3D 1200 900 0 media/kozijn-3d-start.jpg
+    python3 poster.py kozijn3d.js iwrapKozijn3D 1200 900 28.6 media/kozijn-3d-eind.jpg
+
+Wat je nodig hebt: Python 3 en Google Chrome of Chromium (de scripts zoeken Chrome zelf; anders het
+pad in de omgevingsvariabele CHROME). Voor de video's: op een Mac de Xcode-commandoregeltools (swiftc),
+of ffmpeg (op Linux en in de cloud). De scripts gebruiken cdp.py en video_maken.py uit ../tools.
+Let op: op een computer zonder grafische kaart (zoals veel cloudomgevingen) rekent Chrome WebGL met de
+processor uit. Dat kan, maar het is trager, en het is hier niet getest. Maak dan eerst één korte video
+(de korte versie) en kijk die na.

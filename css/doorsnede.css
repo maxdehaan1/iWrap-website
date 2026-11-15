@@ -142,3 +142,55 @@ html:not(.js) .ds-opnieuw{display:none;}
   .vergelijking{grid-template-columns:1fr;}
   .vg-of{justify-self:center;margin:-22px 0;}
 }
+
+/* Versie 2 (js/doorsnede.js zet .ds-v2 op de figure) -----------------------
+   Het script tekent de lagen nu zelf per beeldje; de standen hierboven gelden
+   dan niet meer. Zonder JavaScript blijft alles zoals het was (stand 3). */
+
+.ds-v2 .ds-oud,.ds-v2 .ds-barst,.ds-v2 .ds-lijm{opacity:1;transform:none;transition:none;}
+.ds-v2 .ds-folie-nieuw{transition:none;}
+.ds-v2 .ds-flap{transition:opacity .25s ease;}
+
+/* Uitleg in de tekening, per fase */
+.ds-v2 .ds-sub-1,.ds-v2 .ds-sub-2,.ds-v2 .ds-sub-3,.ds-v2 .ds-lijm-uitleg,.ds-v2 .ds-zon{opacity:0;transition:opacity .35s ease;}
+.ds-v2[data-fase="begin"] .ds-sub-1,
+.ds-v2[data-fase="begin"] .ds-zon,
+.ds-v2[data-fase="begin"] .ds-lijm-uitleg,
+.ds-v2[data-fase="eraf"] .ds-lijm-uitleg,
+.ds-v2[data-fase="eraf"] .ds-sub-2,
+.ds-v2[data-fase="reinigen"] .ds-sub-2,
+.ds-v2[data-fase="erop"] .ds-sub-3,
+.ds-v2[data-fase="klaar"] .ds-sub-3{opacity:1;}
+
+/* De rol: opgerolde oude folie, en de rol nieuwe folie */
+.ds-rol circle{stroke-width:2;}
+.ds-rol-oud circle{fill:#878c91;stroke:#6b7075;}
+.ds-rol-nieuw circle{fill:#33383d;stroke:#1f2326;}
+.ds-rol .ds-rol-ring{fill:none;stroke-width:1.6;}
+.ds-rol-oud .ds-rol-ring{stroke:#a6abaf;}
+.ds-rol-nieuw .ds-rol-ring{stroke:#5a6168;}
+.ds-rol-oud .ds-rol-kern{fill:#a6abaf;stroke:none;}
+.ds-rol-nieuw .ds-rol-kern{fill:#5a6168;stroke:none;}
+
+/* Warmte, de doek, de vonkjes en de rakel */
+.ds-warmte path{fill:none;stroke:#e07a4f;stroke-width:3;stroke-linecap:round;}
+.ds-doek path{fill:#fff;stroke:#b5bbb9;stroke-width:1.5;}
+.ds-doek .ds-doek-streep{fill:none;stroke:var(--mint);stroke-width:4;stroke-linecap:round;}
+.ds-vonk{fill:var(--mint-ink);}
+.ds-schoon{fill:none;stroke:var(--mint);stroke-width:16;stroke-linecap:round;opacity:0;}
+.ds-glans{fill:none;stroke:#fff;stroke-width:9;stroke-linecap:round;opacity:0;}
+.ds-rakel-rand{stroke:#1d1e20;stroke-width:13;stroke-linecap:round;}   /* de viltrand */
+
+/* De lagen dikker getekend, zodat je ook op een telefoon ziet wat er gebeurt:
+   de folie als duidelijke band (zichtbaar 11) en de lijm als gele laag ertussen
+   (zichtbaar 5). Ze liggen nog steeds achter het profiel, dus van elke lijn is
+   alleen de buitenste helft te zien: profiel, dan lijm, dan folie. */
+.ds-v2 .ds-folie{stroke-width:22;}
+.ds-v2 .ds-lijm{stroke-width:10;}
+.ds-v2 .ds-flap{stroke-width:9;}
+.ds-rakel{stroke:#2b97d6;stroke-width:10;stroke-linecap:round;}   /* het blauwe kaartje */
+
+/* Alle stappen zijn werk: in mint (de schade is het beginbeeld met de zon) */
+.ds-v2 .ds-stappen [data-naar="1"][aria-current]{background:var(--mint-wash);border-color:var(--mint-soft);}
+.ds-v2 .ds-stappen [data-naar="1"][aria-current] .ds-nr{background:var(--mint-ink);border-color:var(--mint-ink);}
+.ds-v2.ds-speelt [aria-current]::after{animation-duration:var(--ds-duur,3s);}

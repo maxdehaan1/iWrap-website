@@ -3,8 +3,8 @@
   "description": "iWrap zit in Hilversum en herstelt kunststof kozijnen door heel Nederland, van Groningen tot Zeeland. Zo plannen we klussen buiten de regio in.",
   "ogtitle": "Werkgebied — kozijnherstel door heel Nederland",
   "bodyclass": "tekstpagina",
-  "css": ["content", "home"],
-  "js": ["main"],
+  "css": ["content", "home", "iwrap-site"],
+  "js": ["iwrap-animaties", "main"],
   "prioriteit": "0.6",
   "kruimels": [["Werkgebied", "/werkgebied"]]
 } -->
@@ -20,6 +20,13 @@
     Dat is geen verkooppraatje: de meeste van onze klussen liggen gewoon buiten de
     Randstad, omdat deze specialisatie nu eenmaal dun gezaaid is.</p>
     {{reviewbadge}}
+  </div>
+</section>
+
+<!-- Een rit per regio: js/iwrap-animaties.js tekent de scène in de div. -->
+<section class="iw-scene-sectie">
+  <div class="wrap">
+    <div class="iw-scene" data-iwrap="werkgebied"></div>
   </div>
 </section>
 

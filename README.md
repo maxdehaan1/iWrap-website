@@ -187,9 +187,13 @@ css/rapport.css           Het rapport en de kozijncheck-pagina
 css/max.css               De Max-modus
 css/film.css              De film (homepage en /werkwijze)
 css/doorsnede.css         De doorsnede en de vergelijking eronder
+css/iwrap-site.css        De kleine bewegingen, de scènes en het kozijn in 3D (zie Beweging)
 js/main.js                Menu, voor/na-schuif, scroll-animaties
 js/film.js                De film van 15 seconden op de homepage
 js/doorsnede.js           Speelt de doorsnede één keer af als hij in beeld komt
+js/iwrap-site.js          Kleine bewegingen die iets uitleggen, per pagina (zie Beweging)
+js/iwrap-animaties.js     De motor van de uitlegscènes; gebouwd uit beweging/, niet met de hand
+js/kozijn-3d.js           Het kozijn in 3D op de homepage; gebouwd uit beweging/3d kozijn/
 js/offerte.js             Het stappenformulier
 js/fotos.js               Foto's verkleinen op de telefoon en bewaren in de browser
 js/aanstrepen.js          Het aanstreepscherm (met de vinger op de foto)
@@ -197,13 +201,17 @@ js/rapport.js             Vult het rapport vanuit de API
 js/max.js                 De Max-modus
 js/vendor/                QR-code-bibliotheek (MIT), ongewijzigd
 images/                   Elke foto als webp op drie breedtes, met een jpg als terugval
-media/                    Videobestanden die op de site staan (de werkdag-video)
+images/logo/              Het logo als SVG (liggend, licht, wit) en de oude PNG's
+media/                    Videobestanden die op de site staan (de klusfilm)
+favicon.ico, favicon.svg, apple-touch-icon.png, icon-192/512.png, site.webmanifest
+                          Het icoon in het tabblad en op een telefoon
 
 api/index.py              Vercel-ingang van de achterkant
 backend/                  De achterkant: rapporten, kassa, mails (zie hieronder)
 backend/data/             Kozijncheck, horren, prijzen, kleuren, winkelgegevens
 tests/test_backend.py     Loopt de hele stroom door, van klus tot "past alles?"
 prijslijst.py             Inkoopprijzen + marge -> verkoopprijzen voor de winkel
+beweging/                 De bron van de animaties en video's (niet online, zie Beweging)
 kozijnhorren/             kozijnhorren.nl: eigen site, eigen Vercel-project
 video/                    Neemt de film op als MP4 (niet op de site, niet in git)
 ```
@@ -218,6 +226,11 @@ video/                    Neemt de film op als MP4 (niet op de site, niet in git
   onleesbaar.
 - **Letters.** Montserrat voor koppen en knoppen (dat is je bestaande huisstijl, en het
   iWrap-blok op kozijnwrap.nl leent hem bewust), Inter voor de lopende tekst.
+- **Logo.** Als SVG in `images/logo/` (`iwrap-logo-liggend.svg`, `-licht` voor donker,
+  `-wit` voor op mint), gemaakt uit de officiële logobestanden. Het logo in de kop staat
+  in de pagina zelf (`logo_kop()` in `build.py`), zodat het kan uitrollen. Alle andere
+  versies (gestapeld, met tagline, PNG, deelafbeelding) staan in
+  `~/Documents/iWrap/iWrap in beweging/5 - Logo's`.
 
 ## Het offerteformulier
 
@@ -514,8 +527,9 @@ site serveert. Deze opzet houdt de site snel en de reviews in je eigen beheer.
 ## De film op de homepage
 
 Een getekende film van vijftien seconden: verweerd kozijn,
-foto sturen en vaste prijs, het busje voor de deur, oude folie eraf, nieuwe erop, en een
-eindkaart met de drie beloftes en het reviewcijfer. Het kozijn is crème (RAL 9001) met
+foto sturen en vaste prijs, het mint busje met het witte logo voor de deur, oude folie
+eraf, lijmresten eraf met de krabber en een doek die alles vetvrij maakt, nieuwe folie
+erop met de rakel, en een eindkaart met de drie beloftes en het reviewcijfer. Het kozijn is crème (RAL 9001) met
 een dennengroen draairaam (RAL 6009), tegen een rode gevel. Vóór en ná dezelfde kleuren:
 de nieuwe folie maakt het niet anders, alleen weer strak. De kleuren staan in `CREME` en
 `GROEN` bovenin `js/film.js`. Hij speelt vanzelf af zodra hij in beeld komt, pauzeert als
@@ -530,6 +544,9 @@ dus één regel `{{film}}` plus `"film"` in de css- en js-lijst van die pagina (
 één keer per pagina).
 
 - **Teksten** staan in `src/film.html`, als blokken in `.film-tekst`.
+- **De vier kaartjes eronder** (homepage) heten zoals de hoofdstukken van de film en lichten
+  op met het stuk dat speelt; een klik laat de film daar verder spelen (`js/iwrap-site.js`,
+  onderdeel 3, via de gebeurtenis `filmtijd` en `iwrapFilm.speelVanaf`).
 - **Tijden** (wanneer welk blok komt) staan in `BLOKKEN` bovenin `js/film.js`.
 - **Het beeld** tekent `js/film.js` zelf, in SVG. Alles is een functie van de tijd:
   `teken(t)`. Er zit dus geen videobestand op de site.
@@ -547,13 +564,23 @@ blijft in de video een seconde langer staan), zonder geluid. Het script gebruikt
 Google Chrome en start zelf een server op poort 8011. Met `node opname.mjs --beelden 0,8,15`
 krijg je losse PNG's in `video/beelden/` om een moment te bekijken.
 
-## De doorsnede en de vergelijking
+## Het kozijn in 3D, de doorsnede en de vergelijking
 
-Op de homepage (blok "Waarom herstellen werkt") en op `/kunststof-kozijn-herstellen`
-staat een doorsnede van een onderdorpel in drie standen: verweerd (met de gele lijmlaag
-waar de folie los is), oude laag eraf, nieuwe folie om de rand. Hij speelt één keer af
-als hij in beeld komt en blijft dan op de nieuwe folie staan; een klik op een stap zet
-hem daar neer. Wie "minder beweging" aan heeft ziet meteen het eindbeeld.
+**Op de homepage** (blok "Waarom herstellen werkt") staat een hoek van een crème kozijn in
+3D: eerst de verweerde folie, dan de lagen (folie, lijmlaag, kunststof profiel) en dan de
+drie vaste stappen: toplaag eraf met warmte, lijmresten eraf met de krabber en vetvrij met
+een doek, nieuwe folie met de rakel. Bijna 29 seconden; hij speelt één keer als hij in
+beeld komt, pauzeert als je wegscrolt en blijft op het herstelde kozijn staan. De stappen
+ernaast lopen mee en zijn aan te klikken. `js/kozijn-3d.js` tekent met WebGL; zonder WebGL
+toont de CSS een foto van het herstelde kozijn (`images/kozijn-3d-eind.jpg`), en tot het
+script tekent het beginbeeld (`images/kozijn-3d-start.jpg`). De opmaak staat in
+`css/iwrap-site.css` (onderdeel 12). Aanpassen: zie Beweging.
+
+**Op `/kunststof-kozijn-herstellen`** staat een doorsnede van een onderdorpel met
+dezelfde drie stappen: de oude folie rolt eraf, de krabber en de doek maken de ondergrond
+schoon en vetvrij, de nieuwe folie rolt uit met de rakel. Hij speelt één keer af als hij in
+beeld komt en blijft dan op de nieuwe folie staan; een klik op een stap speelt die stap.
+Wie "minder beweging" aan heeft ziet meteen het eindbeeld.
 
 - De tekening en de stapteksten staan in `src/doorsnede.html`, de overgangen in
   `css/doorsnede.css`. De kleur is antraciet, de meest voorkomende foliekleur.
@@ -566,32 +593,30 @@ Daarnaast heeft `/dakkapel-kozijnen` een getekende illustratie bij "Hoe we erbij
 komen" (valbeveiliging, ladder of steiger, een paar pannen eraf), en heeft elk donker
 afsluitblok (`.slot.met-beeld`) rechts een echte werkfoto met het reviewcijfer erop.
 
-## De werkdag-video op /over-iwrap
+## De klusfilm op /over-iwrap
 
-Naast de film staat er nog een tweede animatie van vijftien seconden op de site: *een
-werkdag bij iWrap* (folie inladen, onderweg, aanbellen, steiger, eerst een bakje koffie,
-oude folie eraf, nieuwe erop, hand erop). Die gaat niet over wát er gebeurt maar over wíe
-er komt, en staat daarom bovenaan **Over iWrap**, direct onder de paginakop.
+Bovenaan **Over iWrap** staat de klusfilm: *van aanvraag tot afgeleverd kozijn*, 56
+seconden. Iemand ergens in Nederland stuurt een foto en krijgt een vaste prijs, het mint
+busje rijdt vanuit Hilversum naar de klant, de steiger gaat op, en dan de drie vaste stappen
+van dichtbij (hetzelfde 3D-kozijn als op de homepage), tot de oplevering en de eindkaart.
+Als de film is afgelopen, schuift onderin een balk omhoog met de knop naar de offerte
+(`js/iwrap-site.js`, onderdeel 7). Hij verving de werkdag-video (wit busje, "eerst een
+bakje koffie").
 
-- Het bestand is `media/iwrap-werkdag.mp4` (het origineel staat in
-  `Documents/iWrap/Offertes ICM/_media/`). De poster is `images/werkdag-poster.jpg`, het
-  eerste beeld van de video, zodat het starten naadloos gaat.
-- De video op de site is 1280×720 en 0,7 MB: het origineel (1920×1080, 2,4 MB) is
-  opnieuw gecodeerd, zonder zichtbaar verschil. De site toont hem nergens breder dan
-  1100 pixels, en op een telefoon scheelt het bijna 2 MB. Bij een nieuwe video:
-  `video/node_modules/ffmpeg-static/ffmpeg -i nieuw.mp4 -vf scale=1280:-2 -c:v libx264
-  -preset slow -crf 27 -pix_fmt yuv420p -movflags +faststart -an media/iwrap-werkdag.mp4`
+- Het bestand is `media/iwrap-klusfilm.mp4` (1280×720, 1,4 MB), de poster
+  `images/klusfilm-poster.jpg`. Het origineel (1920×1080) staat in
+  `~/Documents/iWrap/iWrap in beweging/3 - Video's/Liggend 16x9/`. De versie voor de site
+  is daaruit gemaakt met
+  `video/node_modules/ffmpeg-static/ffmpeg -i "<origineel>.mp4" -vf scale=1280:-2:flags=lanczos
+  -c:v libx264 -preset slow -crf 28 -pix_fmt yuv420p -movflags +faststart -an media/iwrap-klusfilm.mp4`:
+  vier keer kleiner dan de 1280×720-versie uit het pakket, zonder zichtbaar verschil.
 - Hij laadt pas als hij in beeld komt (`preload="none"`), speelt dan zonder geluid af,
   pauzeert als je wegscrolt en blijft aan het eind op de eindkaart staan. Dat gedrag zit
-  in `main.js` en werkt voor elke `<figure data-video>`, dus een tweede video ergens anders
-  is alleen opmaak.
-- In de structured data van de pagina staat een `VideoObject`, zodat Google hem als
-  video kan tonen. Vervang je de video, pas dan daar ook de `uploadDate` aan.
-- Vervangen: nieuw bestand onder dezelfde naam in `media/`, nieuwe poster eruit halen met
-  `video/node_modules/ffmpeg-static/ffmpeg -ss 0 -i media/iwrap-werkdag.mp4 -frames:v 1
-  -vf scale=1280:-1 -q:v 3 images/werkdag-poster.jpg`, en bouwen. Let op: `/media/` wordt
-  dertig dagen gecachet, dus wie hem al gezien heeft krijgt pas daarna de nieuwe. Wil je
-  dat meteen, geef het bestand dan een nieuwe naam.
+  in `main.js` en werkt voor elke `<figure data-video>`.
+- In de structured data van de pagina staat een `VideoObject`. Vervang je de video, pas
+  dan daar ook de `uploadDate` aan. Let op: `/media/` wordt dertig dagen gecachet; geef
+  een nieuwe versie dus een nieuwe naam.
+- Lokaal (`serve.py`) kun je in een video niet doorspoelen; op Vercel wel.
 
 ## Mail via Microsoft 365
 
@@ -694,14 +719,55 @@ Alles beweegt op dezelfde manier: `--beweeg` (de uitloop), `--kort` en `--middel
 - **Offertestappen:** de nieuwe stap begint bovenaan en komt zacht binnen (`offerte.js`).
 - Wie in zijn toestel "minder beweging" aanzet, krijgt alles zonder animatie.
 
-### Logo's en animaties uit "iWrap in beweging" (nog niet op de site)
+Daarnaast de bewegingen uit het pakket "iWrap in beweging". De regel daarbij: elke
+animatie legt iets uit of helpt de bezoeker verder. Wat alleen mooi is, staat er bewust
+niet in (geen glans op knoppen, geen tellers die optellen, geen paginawissel).
 
-Op een ander Claude-account is een pakket gemaakt met het logo als SVG, favicons, een
-3D-kozijn, een klusfilm, uitlegscènes en video's voor social media. Het staat uitgepakt in
-`~/Documents/iWrap/iWrap in beweging/` (niet in git: 283 MB, vooral video). Begin daar bij
-`BEGIN HIER.html`; wat er op de site zou komen staat in `2 - Website/OPDRACHT VOOR CLAUDE.md`,
-de bron om iets te veranderen en opnieuw te maken in `4 - Bronbestanden`. Een MP4 pas je
-niet zelf aan: verander de bron en render opnieuw.
+- **Het logo rolt uit.** Komt iemand de site binnen (de vorige pagina was niet van deze
+  site), dan zet het script bovenin de pagina `.logo-uitrol` op `<html>` en bouwt het logo
+  zich in ruim een seconde op: de stippen landen, drie stippen rollen uit tot banen en het
+  woord komt achter het beeldmerk vandaan. Alleen CSS ("De uitrol van het logo" in
+  `style.css`), geen opslag in de browser. Bij aanwijzen veert het beeldmerk even mee.
+- **`js/iwrap-site.js`** (met `css/iwrap-site.css`): elk onderdeel zoekt zijn eigen
+  element en doet niets als het er niet is. Hij staat alleen op de pagina's die hem nodig
+  hebben (de js-lijst in de bron van de pagina):
+  2. de eerste voor/na-schuif gaat één keer zelf heen en weer (homepage, voorbeelden);
+  3. de kaartjes onder de film lopen mee (homepage);
+  4. offerte: een vinkje per stap, de lader tijdens het versturen en het bedankt-moment;
+  5. een ring om de schade op de klachtfoto's (homepage; de plekken staan in `PLEK`, of
+     zet `data-ring="x y r"` op een kaart);
+  6. de dakkapel-tekening speelt na wat het lijstje eronder zegt;
+  7. na de klusfilm de knop naar de offerte (/over-iwrap);
+  8. het voorbeeld op het tekenblad tekent zichzelf (op papier verandert niets);
+  9. op Contact krijgt de rij van vandaag een label (in het weekend een zin eronder);
+  10. op Kozijnmerken: drie kunststof profielen krijgen folie, een aluminium schil niet.
+- **Uitlegscènes** op Werkgebied (een rit per regio), Kozijncheck (vergrootglas en
+  stoplichtrapport), Kosten (herstellen of vervangen), Offerte (foto, strepen, vaste prijs)
+  en de VvE-pagina (blok voor blok): een `<div class="iw-scene" data-iwrap="...">`, die
+  `js/iwrap-animaties.js` zelf tekent. Die motor (60 kB) laadt alleen op die vijf pagina's.
+
+### De bron van de animaties: `beweging/`
+
+De logo-animaties, de scènes, de klusfilm, het 3D-kozijn en alle video's komen uit één bron:
+`beweging/` (gemaakt op 15 november 2026 in een ander Claude-account, als het pakket
+"iWrap in beweging"; zie `beweging/LEES MIJ.txt`). Die map gaat niet online. Het hele
+pakket, met de video's (283 MB) en de logoset, staat in `~/Documents/iWrap/iWrap in beweging/`.
+
+- **Een scène of het logo aanpassen:** verander `beweging/src/` en draai
+  `cd beweging && python3 tools/build.py && cp dist/iwrap-film.js ../js/iwrap-animaties.js`,
+  daarna `python3 build.py`.
+- **Het 3D-kozijn aanpassen:** verander `beweging/3d kozijn/src/` en draai
+  `cd "beweging/3d kozijn" && python3 bouw.py && cp kozijn3d.js ../../js/kozijn-3d.js`.
+  Maak dan ook het begin- en eindbeeld opnieuw (`poster.py`, zie de LEES MIJ daar).
+- **Een video opnieuw maken:** nooit de MP4 zelf bewerken; verander de bron en render met
+  `python3 tools/render.py` (voorbeelden in `beweging/LEES MIJ.txt`). Dat gebruikt je
+  eigen Chrome en op de Mac `swiftc`. Zet de nieuwe video op dezelfde plek in
+  `~/Documents/iWrap/iWrap in beweging/3 - Video's`, met dezelfde naam.
+- Aangepast ten opzichte van het pakket: de offerte-scène zegt "Inclusief voorrijden en
+  materiaal" (voorrijden staat nooit apart in een offerte) en de VvE-scène noemt alleen
+  de blokken, zonder weeknummers. Het logo in de kop en het logo op het busje in de film
+  gebruiken de motor niet meer.
+
 
 ## Algemene voorwaarden
 

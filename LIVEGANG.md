@@ -216,7 +216,9 @@ langer).
         `/backend/app.py` geven een 404.
 - [ ] **[Max] Mail testen:** stuur vanaf een ander adres (je telefoon) een mail naar
       info@iwrap.nl. Die moet gewoon binnenkomen. Doe daarna één echte testaanvraag op
-      iwrap.nl/offerte.
+      iwrap.nl/offerte. Let daarbij op de lader naast de voortgangsbalk tijdens het versturen
+      en het bedankt-moment (het vinkje met de banen uit het logo): die kunnen alleen met een
+      echte aanvraag getest worden.
 
 ## 4. kozijnwrap.nl koppelen (los van de rest, kan nu al)
 
@@ -329,4 +331,4 @@ af van de overstapdag.
 
 ---
 
-*Bijgehouden door Claude. Laatst bijgewerkt: 10 november 2026 (de route voor alleen iwrap.nl, het AAAA-record bij de overstap, KvK en btw-id op de site).*
+*Bijgehouden door Claude. Laatst bijgewerkt: 15 november 2026 (bij de testaanvraag ook de lader en het bedankt-moment nakijken).*

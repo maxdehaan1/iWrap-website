@@ -23,3 +23,6 @@ video
 /.claude
 /.gegenereerd
 __pycache__
+
+# De bron van de animaties en video's: niet online, alleen js/iwrap-animaties.js en js/kozijn-3d.js.
+/beweging

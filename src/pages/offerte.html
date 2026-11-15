@@ -3,8 +3,8 @@
   "description": "Offerte voor kozijnherstel, zonder dat er iemand langs hoeft te komen: streep op een foto aan wat er moet gebeuren, zet de maten erbij of teken het.",
   "ogtitle": "Offerte aanvragen voor kozijnherstel",
   "bodyclass": "offertepagina",
-  "css": ["offerte"],
-  "js": ["main", "fotos", "aanstrepen", "offerte"],
+  "css": ["offerte", "iwrap-site"],
+  "js": ["iwrap-animaties", "main", "fotos", "aanstrepen", "offerte", "iwrap-site"],
   "prioriteit": "0.9",
   "kruimels": [["Offerte aanvragen", "/offerte"]],
   "ogimage": "/images/werk-renolit-folie-aanbrengen-1600.webp",
@@ -35,6 +35,9 @@
     aangebracht worden. Vraag gerust nu aan: dan ligt je offerte klaar en plannen we je
     in zodra het seizoen begint, in maart. Een kleine klus kan soms ook nu al, op een droge dag.
   </p>
+
+  <!-- Zo vraag je aan: foto, strepen, versturen, vaste prijs (js/iwrap-animaties.js). -->
+  <div class="iw-scene iw-scene-smal" data-iwrap="aanvraag"></div>
 
   <div class="offerte-kaart">
     <form id="offerteformulier" data-api="/api" data-mailbox="{{bedrijf.email}}" novalidate>

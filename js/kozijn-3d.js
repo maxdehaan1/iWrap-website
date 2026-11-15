@@ -1,0 +1,1733 @@
+/* ---------------------------------------------------------------------------
+   Kozijn in 3D (versie 3): zo herstellen we een kozijn.
+
+   Een zwevende hoek van een kozijn met een blokprofiel, zoals een hoekmonster:
+   een stuk onderdorpel, een stuk stijl en dubbel glas. Op de doorgezaagde kanten
+   zie je het holle profiel van binnen (de kamers en het staal).
+
+   Getekend met WebGL, met echt licht: een zachte lichtbak linksboven, schaduwen
+   van het gereedschap op het kozijn, glans op de nieuwe folie.
+   - De oude folie ziet eruit zoals op de voor-foto van de site: verweerd, krijtig,
+     gebarsten in eilandjes met opgekrulde randen, vuil in de barsten en hier en
+     daar een schilfer die loslaat.
+   - De nieuwe folie ziet eruit zoals op de na-foto: zijdeglans, een lichtstreep
+     langs de afgeronde rand en een heel fijne houtnerf die je alleen in de glans ziet.
+
+   Het verhaal (27 seconden):
+   - Dichtbij: zo ziet het kozijn er nu uit. Dan de hele hoek.
+   - De lagen komen even los: folie, lijmlaag, kunststof profiel.
+   1. Toplaag eraf: met warmte rolt de oude folie op, van de zaagkant naar de hoek
+      en dan de stijl omhoog. De gele lijm blijft over.
+   2. Reinigen en vetvrij: de krabber (een Bahco-trekkrabber) haalt de lijm weg (stijl omlaag,
+      dorpel naar de zaagkant), dan maakt de doek alles schoon en vetvrij.
+   3. Nieuwe folie erop: de rol rolt uit, de rakel drukt aan en de rand wordt
+      omgezet. Tot slot dichtbij langs de nieuwe folie, en weer de hele hoek.
+
+   Alles hangt af van één getal, de tijd: teken(ctx, t, breedte, hoogte, opties)
+   tekent het beeld van seconde t op een gewoon 2D-canvas. Daardoor speelt dezelfde
+   code live op de site en kan er beeld voor beeld een video van gemaakt worden.
+   Zonder WebGL2 tekent hij niets en blijft het startbeeld (een JPG) staan.
+
+   Maten in millimeters. De lagen zijn iets dikker dan in het echt, anders zie je ze niet.
+
+   Let op bij bewerken: Nederlandse teksten met een apostrof altijd tussen
+   dubbele aanhalingstekens.
+   --------------------------------------------------------------------------- */
+(function () {
+  "use strict";
+
+  /* Maten ------------------------------------------------------------------- */
+  var LEN = 480;            // onderdorpel, rechts doorgezaagd
+  var PH = 70, PD = 70;     // hoogte en diepte van het profiel
+  var SW = 70;              // breedte van de stijl
+  var STI = 230;            // stuk stijl boven de dorpel, boven doorgezaagd
+  var GZ0 = 10, GZ1 = 34;   // het glas zit van z = 10 tot z = 34 (z = PD is de buitenkant)
+  var RV = PD - GZ1;        // de dagkant: van het glas tot de voorkant
+  var RR = 4.6;             // straal van de afgeronde randen van het profiel
+  var DL = 0.9, DO = 1.5, DN = 1.4;   // dikte lijm, oude folie, nieuwe folie
+  var LOS0 = LEN - 165;     // vanaf hier komen de lagen in het begin even los
+  var FLAP = 78;            // zo ver loopt het omzetten van de rand achter de rol aan
+  var MARGE = 34;           // het gereedschap begint en eindigt net buiten het profiel
+  var RAD = Math.PI / 180;
+  var HOEK = 64.56 * RAD, COT = Math.cos(HOEK) / Math.sin(HOEK);   // de schuinte van het logo
+
+  /* Tijdlijn (seconden) ------------------------------------------------------ */
+  var INTRO = 1.6;          // eerst even dichtbij: zo ziet het kozijn er nu uit
+  var DUUR = 28.6;
+  var T = {
+    los: [0.9, 3.9],
+    pel: [4.3, 7.2], pelS: [7.1, 8.6],          // oude folie: dorpel van de zaagkant naar de hoek, dan de stijl omhoog
+    krabS: [9.0, 10.4], krab: [10.3, 13.0],     // krabber: stijl omlaag, dan de dorpel naar de zaagkant
+    doek: [13.35, 15.1], doekS: [15.0, 16.3],   // schoonmaken met een doek: dorpel naar de hoek, dan de stijl omhoog
+    vetvrij: [16.4, 17.3],
+    nieuw: [18.2, 21.3], nieuwS: [21.2, 22.8],  // nieuwe folie: dorpel naar de hoek, dan de stijl omhoog
+    glans: [23.5, 25.5]
+  };
+  // alles na het dichtbij-begin schuift INTRO seconden op
+  (function () { for (var n in T) { T[n][0] += INTRO; T[n][1] += INTRO; } })();
+  // Per bewerking: op welk deel, en welke kant op (+1: u wordt groter).
+  // Dorpel: u = x (0 bij de hoek, LEN bij de zaagkant). Stijl: u = vanaf de bovenkant (0) naar de hoek (STI).
+  var BEW = {
+    pel: ["dorpel", -1], pelS: ["stijl", -1], krabS: ["stijl", 1], krab: ["dorpel", 1],
+    doek: ["dorpel", -1], doekS: ["stijl", -1],
+    nieuw: ["dorpel", -1], nieuwS: ["stijl", -1]
+  };
+  var STAPPEN = [
+    { nr: 1, naam: "Toplaag eraf", van: 4.15 + INTRO, tot: 8.85 + INTRO },
+    { nr: 2, naam: "Reinigen en vetvrij", van: 8.9 + INTRO, tot: 18.0 + INTRO },
+    { nr: 3, naam: "Nieuwe folie erop", van: 18.05 + INTRO, tot: 23.0 + INTRO }
+  ];
+  var ZINNEN = [
+    [0.25, INTRO + 0.55, "Verweerd, gebarsten en dof."],
+    [0.9 + INTRO, 3.85 + INTRO, "Folie, lijmlaag, kunststof profiel."],
+    [4.2 + INTRO, 8.75 + INTRO, "Met warmte gaat de oude folie eraf."],
+    [8.95 + INTRO, 13.05 + INTRO, "De krabber haalt de oude lijmresten weg."],
+    [13.2 + INTRO, 17.95 + INTRO, "Met een doek ontvetten: helemaal schoon en vetvrij."],
+    [18.1 + INTRO, 22.95 + INTRO, "Nieuwe Renolit folie, aangedrukt en om de rand gezet."],
+    [23.2 + INTRO, DUUR, "Tien jaar fabrieksgarantie op de folie."]
+  ];
+  var STIL = [5.8 + INTRO, 11.7 + INTRO, 19.8 + INTRO];      // stilstaand beeld per stap (bij "minder beweging")
+
+  // Camera: sleutelbeelden [t, doel x, doel y, zoom, draaiing, kanteling, (afstand)]. Daartussen loopt een vloeiende
+  // kromme: de camera remt niet af bij elk sleutelbeeld, en volgt het gereedschap rustig.
+  // Het begin en het eind (dichtbij, laag langs de dorpel) zijn zoals de voor- en na-foto op de site.
+  var CAM = [
+    [0.0, 392, 58, 2.5, 68, 15, 760],
+    [1.05, 366, 60, 2.38, 62, 17, 800],
+    [INTRO + 0.6, 262, 104, 1.03, 44, 25],
+    [1.2 + INTRO, 340, 96, 1.06, 40, 23],
+    [2.5 + INTRO, 392, 90, 1.15, 38, 22],
+    [3.8 + INTRO, 388, 90, 1.15, 36, 21],
+    [4.6 + INTRO, 392, 62, 1.2, 33, 20],
+    [7.0 + INTRO, 150, 62, 1.2, 31, 20],
+    [7.7 + INTRO, 100, 140, 1.14, 30, 20],
+    [8.6 + INTRO, 100, 222, 1.12, 30, 20],
+    [9.1 + INTRO, 100, 220, 1.12, 30, 20],
+    [10.3 + INTRO, 104, 118, 1.14, 30, 20],
+    [10.9 + INTRO, 168, 62, 1.21, 31, 20],
+    [12.9 + INTRO, 392, 58, 1.21, 33, 20],
+    [13.6 + INTRO, 360, 64, 1.2, 33, 20],
+    [14.4 + INTRO, 232, 64, 1.2, 32, 20],
+    [15.1 + INTRO, 116, 80, 1.15, 31, 20],
+    [15.7 + INTRO, 100, 160, 1.12, 30, 20],
+    [16.3 + INTRO, 100, 218, 1.12, 30, 20],
+    [17.2 + INTRO, 250, 112, 1.0, 33, 22],
+    [17.9 + INTRO, 340, 92, 1.06, 33, 21],
+    [18.5 + INTRO, 392, 62, 1.2, 33, 20],
+    [21.2 + INTRO, 150, 62, 1.2, 31, 20],
+    [21.9 + INTRO, 100, 140, 1.14, 30, 20],
+    [22.8 + INTRO, 100, 220, 1.12, 30, 20],
+    [23.85 + INTRO, 262, 70, 2.1, 58, 15, 760],
+    [25.15 + INTRO, 318, 62, 2.35, 66, 11, 720],
+    [26.25 + INTRO, 256, 112, 1.04, 38, 23],
+    [DUUR, 240, 120, 0.97, 35, 23]
+  ];
+
+  var K = {
+    papier: "#f7f6f3", inkt: "#22262a", sub: "#646b73", mint: "#a3cdc2", mintDiep: "#2f5a50", mintInkt: "#3f7468",
+    oud: "#ddd6c3", nieuw: "#ebe4d3", lijm: "#d4a43e", lijmDonker: "#a87f29", lijmLicht: "#e8c46c",
+    blad: "#c9d0d4", karton: "#c7a478", hitte: "224,122,79", rubber: "#1d1f21"
+  };
+
+  /* Rekenhulpjes ------------------------------------------------------------- */
+  function klem(x, a, b) { return x < a ? a : x > b ? b : x; }
+  function mix(a, b, p) { return a + (b - a) * p; }
+  function fase(t, van, duur) { return klem((t - van) / duur, 0, 1); }
+  var E = {
+    zacht: function (p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; },
+    uit: function (p) { return 1 - Math.pow(1 - p, 3); },
+    in_: function (p) { return p * p * p; },
+    // rustig op gang, dan gelijkmatig, en rustig weer stil: zo beweegt gereedschap in een hand
+    gelijk: function (p) { var a = 0.2, v = 1 / (1 - a); return p < a ? 0.5 * v * p * p / a : p > 1 - a ? 1 - 0.5 * v * (1 - p) * (1 - p) / a : v * (p - a / 2); }
+  };
+  function kf(t, pts) {
+    if (t <= pts[0][0]) return pts[0][1];
+    for (var i = 1; i < pts.length; i++) {
+      if (t <= pts[i][0]) return mix(pts[i - 1][1], pts[i][1], E.zacht((t - pts[i - 1][0]) / (pts[i][0] - pts[i - 1][0])));
+    }
+    return pts[pts.length - 1][1];
+  }
+  // Een vloeiende kromme door sleutelwaarden: de helling komt uit de buren, dus geen stilstand bij elk punt.
+  function kromme(t, keys, k) {
+    var n = keys.length;
+    if (t <= keys[0][0]) return keys[0][k];
+    if (t >= keys[n - 1][0]) return keys[n - 1][k];
+    var i = 0; while (keys[i + 1][0] < t) i++;
+    var t0 = keys[i][0], t1 = keys[i + 1][0], h = t1 - t0, s = (t - t0) / h;
+    function helling(j) { return (j <= 0 || j >= n - 1) ? 0 : (keys[j + 1][k] - keys[j - 1][k]) / (keys[j + 1][0] - keys[j - 1][0]); }
+    var m0 = helling(i) * h, m1 = helling(i + 1) * h, s2 = s * s, s3 = s2 * s;
+    return (2 * s3 - 3 * s2 + 1) * keys[i][k] + (s3 - 2 * s2 + s) * m0 + (-2 * s3 + 3 * s2) * keys[i + 1][k] + (s3 - s2) * m1;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (s + 0x6D2B79F5) >>> 0; var t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
+  function som(a, b) { return [a[0] + b[0], a[1] + b[1], a[2] + b[2]]; }
+  function ver(a, b) { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; }
+  function maal(a, s) { return [a[0] * s, a[1] * s, a[2] * s]; }
+  function inw(a, b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
+  function uitw(a, b) { return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]; }
+  function een(a) { var l = Math.sqrt(inw(a, a)) || 1; return [a[0] / l, a[1] / l, a[2] / l]; }
+  function lengteV(a) { return Math.sqrt(inw(a, a)); }
+  function binnen(iv, u) { return !!iv && u >= iv[0] && u <= iv[1]; }
+
+  var RGB = {};
+  function rgb(hex) {
+    var c = RGB[hex];
+    if (!c) { var n = parseInt(hex.slice(1), 16); c = RGB[hex] = [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+    return c;
+  }
+  function kleur(hex, k, a) {
+    var c = rgb(hex);
+    return "rgba(" + (klem(c[0] * k, 0, 255) | 0) + "," + (klem(c[1] * k, 0, 255) | 0) + "," + (klem(c[2] * k, 0, 255) | 0) + "," + (a == null ? 1 : a) + ")";
+  }
+
+  /* De bewerkingen: waar is het gereedschap, en waar is het al geweest ------------- */
+  function lengte(deel) { return deel === "dorpel" ? LEN : STI; }
+  function bewGrens(naam, t) {
+    var b = BEW[naam], iv = T[naam], L = lengte(b[0]), p = E.gelijk(fase(t, iv[0], iv[1] - iv[0]));
+    return b[1] > 0 ? mix(-MARGE, L + MARGE, p) : mix(L + MARGE, -MARGE, p);
+  }
+  function klaar(naam, t) {
+    if (t <= T[naam][0]) return null;
+    var g = bewGrens(naam, t);
+    return BEW[naam][1] > 0 ? [-1e5, g] : [g, 1e5];
+  }
+  function werkU(naam, g) { var b = BEW[naam]; return b[1] > 0 ? g : lengte(b[0]) - g; }
+
+  function staat(t) {
+    var s = {};
+    s.los = E.uit(fase(t, T.los[0], 0.8)) * (1 - E.zacht(fase(t, T.los[1] - 0.65, 0.65)));
+    s.labels = fase(t, T.los[0] + 0.45, 0.3) * (1 - fase(t, T.los[1] - 0.95, 0.3));
+    for (var n in BEW) { s[n] = klaar(n, t); s[n + "G"] = bewGrens(n, t); }
+    s.vetvrij = fase(t, T.vetvrij[0], T.vetvrij[1] - T.vetvrij[0]);
+    s.glans = fase(t, T.glans[0], T.glans[1] - T.glans[0]);
+    return s;
+  }
+  // de zones per deel, zoals de motor ze wil hebben: [van, tot] of null
+  function zonesVoor(s) {
+    var r = BEW.nieuw[1], g = s.nieuwG;
+    return {
+      pel: [s.pel, s.pelS], krab: [s.krab, s.krabS], nieuw: [s.nieuw, s.nieuwS], doek: [s.doek, s.doekS],
+      nat: [null, null],
+      // de dagkant van de dorpel krijgt de nieuwe folie pas na het omzetten (die loopt achter de rol aan)
+      nieuwBoven: s.nieuw ? (r > 0 ? [-1e5, g - FLAP] : [g + FLAP, 1e5]) : null,
+      doekG: [s.doek && s.doekG != null ? [s.doekG, BEW.doek[1]] : null, s.doekS && s.doekSG != null ? [s.doekSG, BEW.doekS[1]] : null],
+      los: s.los, los0: LOS0
+    };
+  }
+
+  /* De camera -------------------------------------------------------------------
+     cam = {tx, ty, tz, zoom, yaw, pitch, D, cyF}. De projectie is dezelfde als in de
+     vorige versies: op de diepte van het doel is 1 mm precies S pixels. */
+  function maakCamera(cam, W, H) {
+    var tx = cam.tx, ty = cam.ty, tz = cam.tz == null ? PD * 0.8 : cam.tz, zoom = cam.zoom;
+    var yaw = cam.yaw * RAD, pitch = cam.pitch * RAD;
+    var ca = Math.cos(yaw), sa = Math.sin(yaw), cb = Math.cos(pitch), sb = Math.sin(pitch);
+    var vert = H > W * 1.2, D = cam.D || 1150;
+    var S = (vert ? W / 470 : Math.min(W / 600, H / 450)) * zoom;
+    var cx = W * (cam.cxF != null ? cam.cxF : 0.5), cy = H * (cam.cyF != null ? cam.cyF : (vert ? 0.5 : 0.53));
+    var c = { W: W, H: H, S: S, yaw: yaw, D: D, vert: vert };
+    c.C = [tx + D * cb * sa, ty + D * sb, tz + D * cb * ca];
+    c.p = function (x, y, z) {
+      var dx = x - tx, dy = y - ty, dz = z - tz;
+      var x1 = dx * ca - dz * sa, z1 = dx * sa + dz * ca;
+      var y2 = dy * cb - z1 * sb, z2 = dy * sb + z1 * cb;
+      var k = D / (D - z2);
+      return [cx + x1 * k * S, cy - y2 * k * S, k];
+    };
+    c.q = function (P) { return c.p(P[0], P[1], P[2]); };
+    c.ziet = function (n, P) { return n[0] * (c.C[0] - P[0]) + n[1] * (c.C[1] - P[1]) + n[2] * (c.C[2] - P[2]) > 0; };
+    // voor WebGL: kijk- en projectiematrix (kolom voor kolom)
+    var R0 = [ca, -sb * sa, cb * sa], R1 = [0, cb, sb], R2 = [-sa, -sb * ca, cb * ca];
+    var vx = -(R0[0] * tx + R1[0] * ty + R2[0] * tz), vy = -(R0[1] * tx + R1[1] * ty + R2[1] * tz), vz = -(R0[2] * tx + R1[2] * ty + R2[2] * tz) - D;
+    var V = [R0[0], R0[1], R0[2], 0, R1[0], R1[1], R1[2], 0, R2[0], R2[1], R2[2], 0, vx, vy, vz, 1];
+    var f = S * D, n = Math.max(40, D * 0.15), fa = D + 2600;
+    var P = [2 * f / W, 0, 0, 0, 0, 2 * f / H, 0, 0, -(2 * cx / W - 1), -(1 - 2 * cy / H), -(fa + n) / (fa - n), -1, 0, 0, -2 * fa * n / (fa - n), 0];
+    c.V = V; c.P = P; c.VP = M4.mul(P, V);
+    return c;
+  }
+  CAM.forEach(function (k) { if (k.length < 7) k.push(1150); });   // de 7e waarde: afstand van de camera (dichtbij: meer diepte)
+  function camVoor(t) {
+    return { tx: kromme(t, CAM, 1), ty: kromme(t, CAM, 2), zoom: kromme(t, CAM, 3), yaw: kromme(t, CAM, 4), pitch: kromme(t, CAM, 5), D: kromme(t, CAM, 6) };
+  }
+
+  /* 4x4-matrices (kolom voor kolom) ------------------------------------------------- */
+  var M4 = {
+    mul: function (a, b) {
+      var r = new Array(16);
+      for (var c = 0; c < 4; c++) for (var w = 0; w < 4; w++) {
+        var s = 0; for (var k = 0; k < 4; k++) s += a[k * 4 + w] * b[c * 4 + k]; r[c * 4 + w] = s;
+      }
+      return r;
+    },
+    kijk: function (oog, doel, op) {
+      var z = een(ver(oog, doel)), x = een(uitw(op, z)), y = uitw(z, x);
+      return [x[0], y[0], z[0], 0, x[1], y[1], z[1], 0, x[2], y[2], z[2], 0, -inw(x, oog), -inw(y, oog), -inw(z, oog), 1];
+    },
+    ortho: function (l, r, b, t, n, f) {
+      return [2 / (r - l), 0, 0, 0, 0, 2 / (t - b), 0, 0, 0, 0, -2 / (f - n), 0, -(r + l) / (r - l), -(t + b) / (t - b), -(f + n) / (f - n), 1];
+    },
+    inv: function (m) {
+      var a = m, r = new Array(16);
+      var b00 = a[0] * a[5] - a[1] * a[4], b01 = a[0] * a[6] - a[2] * a[4], b02 = a[0] * a[7] - a[3] * a[4];
+      var b03 = a[1] * a[6] - a[2] * a[5], b04 = a[1] * a[7] - a[3] * a[5], b05 = a[2] * a[7] - a[3] * a[6];
+      var b06 = a[8] * a[13] - a[9] * a[12], b07 = a[8] * a[14] - a[10] * a[12], b08 = a[8] * a[15] - a[11] * a[12];
+      var b09 = a[9] * a[14] - a[10] * a[13], b10 = a[9] * a[15] - a[11] * a[13], b11 = a[10] * a[15] - a[11] * a[14];
+      var det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
+      if (!det) return m.slice();
+      det = 1 / det;
+      r[0] = (a[5] * b11 - a[6] * b10 + a[7] * b09) * det; r[1] = (a[2] * b10 - a[1] * b11 - a[3] * b09) * det;
+      r[2] = (a[13] * b05 - a[14] * b04 + a[15] * b03) * det; r[3] = (a[10] * b04 - a[9] * b05 - a[11] * b03) * det;
+      r[4] = (a[6] * b08 - a[4] * b11 - a[7] * b07) * det; r[5] = (a[0] * b11 - a[2] * b08 + a[3] * b07) * det;
+      r[6] = (a[14] * b02 - a[12] * b05 - a[15] * b01) * det; r[7] = (a[8] * b05 - a[10] * b02 + a[11] * b01) * det;
+      r[8] = (a[4] * b10 - a[5] * b08 + a[7] * b06) * det; r[9] = (a[1] * b08 - a[0] * b10 - a[3] * b06) * det;
+      r[10] = (a[12] * b04 - a[13] * b02 + a[15] * b00) * det; r[11] = (a[9] * b02 - a[8] * b04 - a[11] * b00) * det;
+      r[12] = (a[5] * b07 - a[4] * b09 - a[6] * b06) * det; r[13] = (a[0] * b09 - a[1] * b07 + a[2] * b06) * det;
+      r[14] = (a[13] * b01 - a[12] * b03 - a[14] * b00) * det; r[15] = (a[8] * b03 - a[9] * b01 + a[10] * b00) * det;
+      return r;
+    }
+  };
+
+  /* ======================= De shaders (GLSL ES 3.00) =======================
+     Eén belichting voor alles: een warme lichtbak linksboven (met zachte schaduwen),
+     zacht licht van boven en van de vloer, en weerspiegeling van een lichte studio.
+     De materialen:
+       0  het kozijn zelf: welke laag waar ligt, volgt uit de zones (zie dikte en kozijn)
+       1  effen (gereedschap)       2  oude folie        3  lijm          4  nieuwe folie
+       5  microvezeldoek            6  kopse kant van een rol oude folie
+       7  gloed (hete mond van de föhn)                  8  zaagsnede van het profiel
+       9  kaal kunststof            10 afstandhouder in het glas (met gaatjes)
+       11 glasrand                  12 glas (doorzichtig)  13 rubber
+       14 kopse kant van een rol nieuwe folie (met kartonnen kern) */
+  var GLSL_ALG = [
+    "#version 300 es",
+    "precision highp float; precision highp int; precision highp sampler2D; precision highp sampler2DShadow;",
+    "#define LEN " + LEN.toFixed(1), "#define PH " + PH.toFixed(1), "#define PD " + PD.toFixed(1),
+    "#define SW " + SW.toFixed(1), "#define STI " + STI.toFixed(1), "#define GZ0 " + GZ0.toFixed(1), "#define GZ1 " + GZ1.toFixed(1),
+    "#define RV " + RV.toFixed(1), "#define RR " + RR.toFixed(2), "#define DL " + DL.toFixed(2), "#define DO " + DO.toFixed(2), "#define DN " + DN.toFixed(2),
+    "#define RW 0.9",
+    "uniform vec4 uZa[2]; uniform vec4 uZb[2]; uniform vec4 uZc[2]; uniform vec4 uLos;",
+    // zachte overgang: 1 binnen [van, tot], 0 erbuiten
+    "float bin(float u, vec2 iv){ return clamp(min(u - iv.x, iv.y - u) / RW + 0.5, 0.0, 1.0); }",
+    // hoe dik de lagen zijn op plek u van deel m (0 dorpel, 1 stijl), vlak f (0 voorkant, 1 dagkant)
+    "float dikte(float u, int m, int f){",
+    "  vec4 za = uZa[m], zb = uZb[m], zc = uZc[m];",
+    "  float pel = bin(u, za.xy), krab = bin(u, za.zw);",
+    "  float nw = bin(u, (f == 1 && m == 0) ? zc.zw : zb.xy);",
+    "  float los = (m == 0 && uLos.x > 0.001) ? clamp((u - uLos.y) / RW + 0.5, 0.0, 1.0) : 0.0;",
+    "  float oud = (1.0 - pel) * (DL + DO) + pel * (1.0 - krab) * DL;",
+    "  return mix(oud * (1.0 - los), DN, nw);",
+    "}"
+  ].join("\n");
+
+  var VS_KOZIJN = GLSL_ALG + "\n" + [
+    "in vec3 aPos; in vec3 aNrm; in vec4 aUV; in vec3 aTan;",
+    "uniform mat4 uVP;",
+    "out vec3 vPos; out vec3 vNrm; out vec3 vTan; out vec4 vUV; out vec3 vCol; out vec4 vPrm;",
+    "void main(){",
+    "  int m = int(aUV.z + 0.5), f = int(aUV.w + 0.5);",
+    "  float d = f == 2 ? 0.0 : dikte(aUV.x, m, f);",
+    "  vec3 P = aPos + aNrm * d;",
+    "  vPos = P; vNrm = aNrm; vTan = aTan; vUV = aUV; vCol = vec3(1.0); vPrm = vec4(0.5, 0.0, 0.0, 1.0);",
+    "  gl_Position = uVP * vec4(P, 1.0);",
+    "}"
+  ].join("\n");
+
+  var VS_DING = GLSL_ALG + "\n" + [
+    "in vec3 aPos; in vec3 aNrm; in vec2 aUV; in vec3 aTan; in vec3 aCol; in vec4 aPrm;",
+    "uniform mat4 uVP;",
+    "out vec3 vPos; out vec3 vNrm; out vec3 vTan; out vec4 vUV; out vec3 vCol; out vec4 vPrm;",
+    "void main(){",
+    "  vPos = aPos; vNrm = aNrm; vTan = aTan; vUV = vec4(aUV, 0.0, 0.0); vCol = aCol; vPrm = aPrm;",
+    "  gl_Position = uVP * vec4(aPos, 1.0);",
+    "}"
+  ].join("\n");
+
+  // schaduwkaart: diepte (vanzelf) en hoe ondoorzichtig de schaduwgever is
+  var FS_SCHADUW = GLSL_ALG + "\n" + [
+    "in vec3 vPos; in vec3 vNrm; in vec3 vTan; in vec4 vUV; in vec3 vCol; in vec4 vPrm;",
+    "uniform float uSoort;",
+    "out vec4 uit;",
+    "void main(){ float id = uSoort < 0.5 ? 0.0 : vPrm.z; if (id > 11.5 && id < 12.5) discard; uit = vec4(uSoort < 0.5 ? 1.0 : vPrm.w, 0.0, 0.0, 1.0); }"
+  ].join("\n");
+
+  var FS_OPP = GLSL_ALG + "\n" + [
+    "in vec3 vPos; in vec3 vNrm; in vec3 vTan; in vec4 vUV; in vec3 vCol; in vec4 vPrm;",
+    "out vec4 uit;",
+    "uniform float uSoort;",                          // 0 kozijn, 1 dingen
+    "uniform vec3 uEye; uniform vec3 uLk; uniform vec3 uKey; uniform vec3 uHemel; uniform vec3 uVloer; uniform vec3 uAchter;",
+    "uniform float uBel;",
+    "uniform mat4 uLmat; uniform sampler2DShadow uSh; uniform sampler2D uShRaw; uniform sampler2D uShA; uniform vec3 uShInfo;",
+    "uniform vec4 uHeat; uniform vec4 uDoekG; uniform vec4 uSweep; uniform vec4 uCapL[2]; uniform vec3 uCapA[2]; uniform vec3 uCapB[2]; uniform vec3 uCapI[2];",
+    "const float PI = 3.14159265;",
+    "float h12(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }",
+    "vec2 h22(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * vec3(0.1031, 0.1030, 0.0973)); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.xx + p3.yz) * p3.zy); }",
+    "vec3 vnd(vec2 p){",
+    "  vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f), du = 6.0 * f * (1.0 - f);",
+    "  float a = h12(i), b = h12(i + vec2(1.0, 0.0)), c = h12(i + vec2(0.0, 1.0)), d = h12(i + vec2(1.0, 1.0));",
+    "  float k1 = b - a, k2 = c - a, k4 = a - b - c + d;",
+    "  return vec3(a + k1 * u.x + k2 * u.y + k4 * u.x * u.y, du * vec2(k1 + k4 * u.y, k2 + k4 * u.x));",
+    "}",
+    "float vn(vec2 p){ return vnd(p).x; }",
+    "float fbm(vec2 p){ float s = 0.0, a = 0.5; for (int i = 0; i < 4; i++){ s += a * vn(p); p = p * 2.03 + vec2(1.7, 9.2); a *= 0.5; } return s; }",
+    // Voronoi met de afstand tot de dichtstbijzijnde rand (de barst) en de richting ervan
+    "vec4 vrand(vec2 x){",
+    "  vec2 n = floor(x), f = fract(x), mg = vec2(0.0), mr = vec2(0.0); float md = 8.0;",
+    "  for (int j = -1; j <= 1; j++) for (int i = -1; i <= 1; i++){",
+    "    vec2 g = vec2(float(i), float(j)), o = h22(n + g) * 0.8 + 0.1, r = g + o - f; float d = dot(r, r);",
+    "    if (d < md){ md = d; mr = r; mg = g; }",
+    "  }",
+    "  md = 8.0; vec2 bn = vec2(0.0, 1.0);",
+    "  for (int j = -2; j <= 2; j++) for (int i = -2; i <= 2; i++){",
+    "    vec2 g = mg + vec2(float(i), float(j)), o = h22(n + g) * 0.8 + 0.1, r = g + o - f, dr = r - mr;",
+    "    if (dot(dr, dr) > 1e-5){ vec2 nn = normalize(dr); float d = dot(0.5 * (mr + r), nn); if (d < md){ md = d; bn = nn; } }",
+    "  }",
+    "  return vec4(md, bn, h12(n + mg));",
+    "}",
+    "vec3 srgb(vec3 c){ return pow(c, vec3(2.2)); }",
+    // ---- oude folie: verweerd, krijtig, gebarsten in eilandjes met opgekrulde randen (zoals de voor-foto)
+    "vec3 oudeFolie(vec2 s, float st, inout vec3 nT, out float ro, float pix){",
+    "  vec2 w = vec2(fbm(s * 0.045), fbm(s * 0.045 + 13.7)) - 0.5;",
+    "  float masker = 0.35 + 0.65 * smoothstep(0.3, 0.62, fbm(s * 0.018 + 3.0));",
+    "  float sm = st * masker;",
+    "  vec4 v1 = vrand(vec2(s.x / 15.0, s.y / 9.0) + w * 1.25);",
+    "  float d1 = v1.x * 11.0; vec2 g1 = -v1.yz * vec2(11.0 / 15.0, 11.0 / 9.0); float id = v1.w;",
+    "  vec4 v2 = vrand(vec2(s.x / 5.0, s.y / 3.6) + w * 0.8 + 7.3);",
+    "  float d2 = v2.x * 4.2; vec2 g2 = -v2.yz * vec2(4.2 / 5.0, 4.2 / 3.6);",
+    "  float lod = 1.0 - smoothstep(0.35, 1.5, pix);",
+    "  float fw1 = max(fwidth(d1), 1e-3), fw2 = max(fwidth(d2), 1e-3);",
+    "  float cw = 0.05 + 0.08 * sm;",
+    "  float b1 = (1.0 - smoothstep(cw - fw1, cw + fw1, d1)) * smoothstep(0.08, 0.4, sm);",
+    "  float b2 = (1.0 - smoothstep(0.035 - fw2, 0.035 + fw2, d2)) * smoothstep(0.35, 0.9, sm);",
+    "  float mis = step(id, 0.014 * st * st * masker);",
+    "  float krul = (1.0 - mis) * step(0.014 * st * st * masker, id) * step(id, 0.014 * st * st * masker + 0.16 * sm);",
+    "  float lipH = (0.2 + 0.75 * krul) * sm * lod, lipW = 0.75 + 1.1 * krul;",
+    "  float e = exp(-max(d1 - cw, 0.0) / lipW), e2 = exp(-max(d2 - 0.035, 0.0) / 0.45);",
+    "  vec2 grad = (-lipH / lipW * e * step(cw, d1)) * g1 + (-0.05 * sm * lod / 0.45 * e2 * step(0.035, d2)) * g2;",
+    "  if (mis > 0.5) grad = -grad;",
+    "  nT.xy -= grad * 1.5;",
+    "  float bl = fbm(s * 0.03 + 4.0), str = fbm(vec2(s.x * 0.16, s.y * 0.018) + 9.0);",
+    "  vec3 c = mix(vec3(0.855, 0.835, 0.785), vec3(0.905, 0.89, 0.85), smoothstep(0.3, 0.72, bl));",
+    "  c *= 0.975 + 0.05 * fract(id * 7.13);",
+    "  c = mix(c, vec3(0.80, 0.77, 0.69), smoothstep(0.55, 0.85, fbm(s * 0.012 + 2.0)) * 0.3);",
+    "  c = mix(c, vec3(0.66, 0.645, 0.61), smoothstep(0.5, 0.8, str) * 0.18 * st);",
+    "  c = mix(c, vec3(0.95, 0.945, 0.925), e * (0.18 + 0.4 * krul) * sm * (1.0 - mis));",
+    "  if (mis > 0.5) c = mix(vec3(0.72, 0.64, 0.47), vec3(0.6, 0.57, 0.5), fbm(s * 0.4));",
+    "  c = mix(c, vec3(0.44, 0.42, 0.38), b1 * 0.62);",
+    "  c = mix(c, vec3(0.6, 0.585, 0.55), b2 * 0.4);",
+    "  ro = mix(0.74, 0.88, clamp(b1 + 0.5 * b2, 0.0, 1.0));",
+    "  return srgb(c);",
+    "}",
+    // ---- nieuwe folie: zijdeglans, een heel fijne nerf die je in de glans ziet
+    "vec3 nieuweFolie(vec2 s, inout vec3 nT, out float ro, float pix){",
+    "  float lod = 1.0 - smoothstep(0.1, 0.45, pix);",
+    "  vec3 g = vnd(vec2(s.x * 0.55, s.y * 4.0));",
+    "  vec3 g2 = vnd(vec2(s.x * 0.08, s.y * 1.25) + 3.1);",
+    "  nT.xy -= g.yz * vec2(0.55, 4.0) * 0.018 * lod + g2.yz * vec2(0.08, 1.25) * 0.03;",
+    "  float streep = vn(vec2(s.x * 0.011, s.y * 0.8));",
+    "  vec3 c = vec3(0.928, 0.9, 0.83) * (1.0 + (streep - 0.5) * 0.03);",
+    "  ro = 0.25 + (g2.x - 0.5) * 0.05 + (1.0 - lod) * 0.05;",
+    "  return srgb(c);",
+    "}",
+    // ---- lijm: honinggeel, plakkerig glanzend, met strepen
+    "vec3 lijm(vec2 s, inout vec3 nT, out float ro){",
+    "  float st = fbm(s * 0.035);",
+    "  vec3 r = vnd(s * 0.32), r2 = vnd(vec2(s.x * 0.04, s.y * 0.5) + 5.0);",
+    "  nT.xy -= r.yz * 0.32 * 0.1 + r2.yz * vec2(0.04, 0.5) * 0.035;",
+    "  vec3 c = mix(vec3(0.83, 0.69, 0.41), vec3(0.87, 0.75, 0.48), smoothstep(0.3, 0.7, st));",
+    "  c *= 0.99 + 0.025 * r.x + 0.008 * (r2.x - 0.5);",
+    "  ro = 0.2 + 0.1 * st;",
+    "  return srgb(c);",
+    "}",
+    // ---- kaal kunststof: eerst met een waas van lijm en vet, na de doek schoon
+    "vec3 pvc(vec2 s, float waas, out float ro){",
+    "  float st = fbm(vec2(s.x * 0.035, s.y * 0.5));",
+    "  float res = smoothstep(0.42, 0.78, st) * waas;",
+    "  vec3 c = mix(vec3(0.94, 0.945, 0.935), vec3(0.88, 0.83, 0.68), res * 0.6);",
+    "  ro = mix(0.36, 0.62, waas * 0.6 + res * 0.4);",
+    "  return srgb(c);",
+    "}",
+    // ---- druppels ontvetter
+    "float druppels(vec2 s, inout vec3 nT){",
+    "  vec2 q = s / 3.6, i = floor(q), f = fract(q); float m = 0.0;",
+    "  for (int j = -1; j <= 1; j++) for (int k = -1; k <= 1; k++){",
+    "    vec2 g = vec2(float(k), float(j)), h = h22(i + g);",
+    "    if (h.x > 0.58) continue;",
+    "    vec2 c = g + 0.2 + 0.6 * h - f; float r = 0.12 + 0.3 * fract(h.y * 7.3); float d = length(c) / r;",
+    "    if (d < 1.0){ float z = sqrt(1.0 - d * d); nT = normalize(vec3(-c / r * 0.85, z + 0.15)); m = 1.0; }",
+    "  }",
+    "  return m;",
+    "}",
+    // ---- licht
+    "vec3 omgeving(vec3 r, float ro){",
+    "  float y = r.y;",
+    "  vec3 c = y > 0.0 ? mix(vec3(0.8, 0.81, 0.82), vec3(1.02, 1.02, 1.0), pow(y, 0.6)) : mix(vec3(0.86, 0.86, 0.86), uAchter * 0.92, pow(-y, 0.6));",
+    "  float w = 0.03 + ro * 0.55, k = 1.0 / (1.0 + ro * 3.0);",
+    "  c += vec3(2.4, 2.3, 2.15) * k * smoothstep(0.88 - w, 0.88 + w * 0.4, dot(r, normalize(vec3(-0.5, 0.72, 0.48))));",
+    "  c += vec3(2.5, 2.46, 2.36) * k * smoothstep(0.8 - w, 0.84 + w * 0.3, dot(r, normalize(vec3(-0.42, 0.55, -0.72))));",
+    "  c += vec3(0.9, 0.9, 0.88) * k * smoothstep(0.7 - w, 0.86 + w * 0.2, dot(r, normalize(vec3(-0.62, -0.18, 0.76))));",
+    "  float zij = smoothstep(0.9 - w, 0.9 + w * 0.4, dot(normalize(r.xz + vec2(1e-4)), normalize(vec2(0.95, 0.3)))) * smoothstep(-0.35 - w, 0.1, r.y) * smoothstep(0.8 + w, 0.45, r.y);",
+    "  c += vec3(1.1, 1.12, 1.15) * k * zij;",
+    "  return c;",
+    "}",
+    "const vec2 PS[16] = vec2[16](vec2(-0.94, -0.40), vec2(0.95, -0.77), vec2(-0.09, -0.93), vec2(0.34, 0.29), vec2(-0.92, 0.46), vec2(-0.25, 0.25), vec2(0.40, -0.48), vec2(0.70, 0.71),",
+    "  vec2(-0.72, -0.15), vec2(0.13, 0.82), vec2(-0.44, -0.75), vec2(0.86, 0.15), vec2(-0.57, 0.80), vec2(0.30, -0.12), vec2(-0.08, -0.36), vec2(0.58, -0.92));",
+    "float schaduw(vec3 P, vec3 N){",
+    "  if (uShInfo.x < 0.5) return 1.0;",
+    "  float nl = clamp(dot(N, uLk), 0.0, 1.0);",
+    "  vec4 lp = uLmat * vec4(P + N * (0.5 + 1.2 * (1.0 - nl)), 1.0);",
+    "  vec3 c = lp.xyz / lp.w * 0.5 + 0.5;",
+    "  if (c.x < 0.0 || c.x > 1.0 || c.y < 0.0 || c.y > 1.0 || c.z > 1.0) return 1.0;",
+    "  float dRef = c.z - 0.0004;",
+    "  float bs = 0.0, bn = 0.0, rs = 12.0 * uShInfo.y;",
+    "  for (int i = 0; i < 8; i++){ float d = texture(uShRaw, c.xy + PS[i * 2] * rs).r; if (d < dRef){ bs += d; bn += 1.0; } }",
+    "  if (bn < 0.5) return 1.0;",
+    "  float pen = clamp((dRef - bs / bn) * uShInfo.z, 1.2, 22.0) * uShInfo.y;",
+    "  float v = 0.0;",
+    "  for (int i = 0; i < 16; i++){ vec2 q = c.xy + PS[i] * pen; float s = texture(uSh, vec3(q, dRef)); float a = texture(uShA, q).r; v += 1.0 - (1.0 - s) * a; }",
+    "  return v / 16.0;",
+    "}",
+    "vec3 belicht(vec3 P, vec3 N, vec3 alb, float ro, float me, float ao, float sh){",
+    "  vec3 V = normalize(uEye - P), L = uLk, H = normalize(L + V);",
+    "  float nv = max(dot(N, V), 1e-3), nl = max(dot(N, L), 0.0), nh = max(dot(N, H), 0.0), vh = max(dot(V, H), 0.0);",
+    "  float a = max(ro * ro, 0.003), a2 = a * a, dd = nh * nh * (a2 - 1.0) + 1.0, D = a2 / (PI * dd * dd);",
+    "  float k = a * 0.5, Vs = 0.25 / ((nv * (1.0 - k) + k) * (nl * (1.0 - k) + k));",
+    "  vec3 f0 = mix(vec3(0.04), alb, me), F = f0 + (1.0 - f0) * pow(1.0 - vh, 5.0);",
+    "  vec3 kd = (1.0 - F) * (1.0 - me);",
+    "  vec3 direct = (kd * alb / PI + D * Vs * F) * uKey * nl * sh;",
+    "  vec3 amb = mix(uVloer, uHemel, N.y * 0.5 + 0.5) * alb * (1.0 - me) * ao;",
+    "  vec3 Fe = f0 + (max(vec3(1.0 - ro), f0) - f0) * pow(1.0 - nv, 5.0);",
+    "  vec3 R = reflect(-V, N);",
+    "  vec3 env = omgeving(R, ro) * Fe * ao * mix(0.55, 1.0, sh);",
+    "  return direct + amb + env;",
+    "}",
+    "vec3 filmisch(vec3 x){",
+    "  x *= uBel; float L = max(dot(x, vec3(0.2126, 0.7152, 0.0722)), 1e-5);",
+    "  float Lt = (L * (2.51 * L + 0.03)) / (L * (2.43 * L + 0.59) + 0.14);",
+    "  vec3 y = x * (Lt / L); float m = max(y.r, max(y.g, y.b)); if (m > 1.0) y = mix(y / m, vec3(1.0), clamp((m - 1.0) * 0.28, 0.0, 0.3));",
+    "  return pow(clamp(y, 0.0, 1.0), vec3(1.0 / 2.2));",
+    "}",
+    // ---- de zaagsnede: hol profiel met kamers en het staal
+    "float sdRR(vec2 p, vec2 c, vec2 h, float r){ vec2 q = abs(p - c) - h + r; return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r; }",
+    "const vec4 KAM[5] = vec4[5](vec4(3.5, 3.5, 13.0, 63.0), vec4(20.0, 3.5, 30.0, 9.0), vec4(20.0, 16.0, 30.0, 38.0), vec4(20.0, 57.5, 30.0, 9.0), vec4(53.5, 3.5, 13.0, 63.0));",
+    "vec3 hol(vec2 ab, vec2 c, vec2 h, int k, vec3 kl){",
+    "  vec3 V = normalize(vPos - uEye);",
+    "  float da = dot(V, uCapA[k]), db = dot(V, uCapB[k]), dd = max(dot(V, uCapI[k]), 0.05);",
+    "  float ta = abs(da) < 1e-4 ? 1e5 : ((da > 0.0 ? c.x + h.x : c.x - h.x) - ab.x) / da;",
+    "  float tb = abs(db) < 1e-4 ? 1e5 : ((db > 0.0 ? c.y + h.y : c.y - h.y) - ab.y) / db;",
+    "  float t = min(ta, tb), diep = t * dd;",
+    "  vec3 wn = ta < tb ? -sign(da) * uCapA[k] : -sign(db) * uCapB[k];",
+    "  float l = 0.42 + 0.58 * max(dot(wn, uLk), 0.0);",
+    "  return mix(vec3(0.05, 0.055, 0.06), srgb(kl) * l * 1.05, exp(-diep / 34.0));",
+    "}",
+    "void main(){",
+    "  vec3 N = normalize(vNrm);",
+    "  float id = uSoort < 0.5 ? 0.0 : vPrm.z;",
+    "  bool achter = !gl_FrontFacing && uSoort > 0.5;",
+    "  if (achter) N = -N;",
+    "  vec3 Tt = vTan - N * dot(vTan, N); Tt = dot(Tt, Tt) > 1e-6 ? normalize(Tt) : normalize(cross(N, vec3(0.31, 0.83, 0.47)));",
+    "  vec3 Bt = cross(N, Tt);",
+    "  vec2 s = vUV.xy;",
+    "  float pix = length(fwidth(s));",
+    "  vec3 alb = vec3(0.8), nT = vec3(0.0, 0.0, 1.0), em = vec3(0.0);",
+    "  float ro = 0.5, me = 0.0, ao = 1.0, alpha = uSoort < 0.5 ? 1.0 : vPrm.w, glansBand = 0.0;",
+    "  if (id < 0.5){",
+    // het kozijn
+    "    float u = vUV.x, v = vUV.y; int m = int(vUV.z + 0.5), f = int(vUV.w + 0.5);",
+    "    if (f == 2){ alb = srgb(vec3(0.95, 0.955, 0.95)); ro = 0.45; }",
+    "    else {",
+    "      vec4 za = uZa[m], zb = uZb[m], zc = uZc[m];",
+    "      float pel = bin(u, za.xy), krab = bin(u, za.zw), nw = bin(u, (f == 1 && m == 0) ? zc.zw : zb.xy);",
+    "      float doek = bin(u, zb.zw), nat = bin(u, zc.xy);",
+    "      float los = (m == 0 && uLos.x > 0.001) ? clamp((u - uLos.y) / RW + 0.5, 0.0, 1.0) : 0.0;",
+    "      float wO = (1.0 - pel) * (1.0 - los), wL = pel * (1.0 - krab) * (1.0 - los), wK = max(0.0, 1.0 - wO - wL);",
+    // de stap in hoogte tussen de lagen: de normaal kantelt mee
+    "      float dT = (dikte(u + 0.3, m, f) - dikte(u - 0.3, m, f)) / 0.6;",
+    "      N = normalize(N - Tt * dT * 0.85);",
+    "      Tt = normalize(Tt - N * dot(Tt, N)); Bt = cross(N, Tt);",
+    "      float st = m == 0 ? (f == 1 ? 1.0 : 0.3 + 0.7 * smoothstep(PH * 0.3, PH - 6.0, v)) : (f == 1 ? 0.6 : 0.72);",
+    "      vec3 A = vec3(0.0), NT = vec3(0.0); float R = 0.0;",
+    "      if (wO > 0.001){ vec3 n = vec3(0.0, 0.0, 1.0); float r; vec3 a = oudeFolie(s, st, n, r, pix); A += a * wO; NT += n * wO; R += r * wO; }",
+    "      if (wL > 0.001){ vec3 n = vec3(0.0, 0.0, 1.0); float r; vec3 a = lijm(s, n, r); A += a * wL; NT += n * wL; R += r * wL; }",
+    "      if (wK > 0.001){",
+    "        vec3 n = vec3(0.0, 0.0, 1.0); float r;",
+    "        vec3 a = pvc(s, 1.0 - doek, r);",
+    "        float natw = nat * (1.0 - doek);",
+    "        if (natw > 0.01){ vec3 n2 = n; float dm = druppels(s, n2); n = normalize(mix(n, n2, natw)); r = mix(r, mix(0.16, 0.04, dm), natw); a *= 1.0 - 0.08 * natw; }",
+    "        vec2 dg = m == 0 ? uDoekG.xy : uDoekG.zw;",
+    "        if (dg.y != 0.0){ float acht = dg.y > 0.0 ? dg.x - u : u - dg.x; float gl = (1.0 - smoothstep(0.0, 95.0, acht)) * step(0.0, acht) * doek; r = mix(r, 0.1, gl * 0.8); }",
+    "        A += a * wK; NT += n * wK; R += r * wK;",
+    "      }",
+    "      if (nw > 0.001){ vec3 n = vec3(0.0, 0.0, 1.0); float r; vec3 a = nieuweFolie(s, n, r, pix); A = mix(A, a, nw); NT = mix(NT, n, nw); R = mix(R, r, nw); }",
+    "      alb = A; nT = normalize(NT); ro = R;",
+    // warmte van de föhn
+    "      if (uHeat.w > 0.001){ float hd = length(vPos - uHeat.xyz); float g = exp(-hd * hd / (2.0 * 26.0 * 26.0)) * uHeat.w; em += vec3(1.0, 0.36, 0.1) * g * 0.55; alb *= 1.0 - 0.15 * g; }",
+    // een glans langs de schuinte van het logo (aan het eind), of mint (schoon en vetvrij)
+    "      if (uSweep.z > 0.001){",
+    "        float sp = (m == 0 ? uSweep.x : uSweep.y) - (u + v * " + COT.toFixed(5) + ");",
+    "        float band = exp(-sp * sp / (2.0 * 22.0 * 22.0)) * uSweep.z;",
+    "        if (uSweep.w < 0.5) { glansBand = band * nw; em += vec3(0.16, 0.155, 0.15) * glansBand; }",
+    "        else em += vec3(0.16, 0.32, 0.27) * band * wK * (1.0 - nw);",
+    "      }",
+    // zacht donkerder in de binnenhoeken en tegen het glas
+    "      if (m == 0 && f == 1) ao *= 1.0 - 0.35 * exp(-max(vPos.x - SW, 0.0) / 9.0);",
+    "      if (m == 1 && f == 1) ao *= 1.0 - 0.35 * exp(-max(vPos.y - PH, 0.0) / 9.0);",
+    "      if (f == 1) ao *= 1.0 - 0.32 * exp(-max(vPos.z - GZ1, 0.0) / 4.0);",
+    "    }",
+    "  } else if (id < 1.5){ alb = srgb(vCol); ro = vPrm.x; me = vPrm.y; }",
+    "  else if (id < 2.5){ if (achter){ alb = lijm(s, nT, ro) * 0.85; } else alb = oudeFolie(s, vCol.x, nT, ro, pix); }",
+    "  else if (id < 3.5){ alb = lijm(s, nT, ro); }",
+    "  else if (id < 4.5){ if (achter){ alb = srgb(vec3(0.95, 0.94, 0.9)); ro = 0.25; } else alb = nieuweFolie(s, nT, ro, pix); }",
+    "  else if (id < 5.5){",
+    "    float vez = vn(s * 2.2) * 0.5 + vn(s * 0.6) * 0.5; alb = srgb(vCol) * (0.9 + 0.2 * vez); ro = 0.95;",
+    "    em += srgb(vCol) * pow(1.0 - max(dot(N, normalize(uEye - vPos)), 0.0), 3.0) * 0.18;",
+    "  }",
+    "  else if (id < 6.5 || (id > 13.5 && id < 14.5)){",
+    "    float rr = length(s); bool nieuw = id > 13.5;",
+    "    float ring = smoothstep(0.35, 0.5, abs(fract(rr / (nieuw ? 1.15 : 1.6)) - 0.5));",
+    "    alb = nieuw ? mix(srgb(vec3(0.93, 0.9, 0.83)), srgb(vec3(0.62, 0.56, 0.45)), ring * 0.55) : mix(srgb(vec3(0.86, 0.83, 0.75)), srgb(vec3(0.82, 0.62, 0.25)), ring);",
+    "    ro = 0.6;",
+    "    if (nieuw && rr < 12.0){ alb = rr < 9.0 ? srgb(vec3(0.27, 0.21, 0.15)) : srgb(vec3(0.78, 0.64, 0.45)); ro = 0.85; }",
+    "  }",
+    "  else if (id < 7.5){ alb = vec3(0.0); em = vec3(3.2, 1.1, 0.25) * vPrm.w; ro = 1.0; }",
+    "  else if (id < 8.5){",
+    // zaagsnede
+    "    int k = int(vCol.x + 0.5); vec2 ab = s; vec4 L = uCapL[k];",
+    "    float sd = sdRR(ab, vec2(PD * 0.5, 35.0), vec2(PD * 0.5, 35.0), RR);",
+    "    alb = srgb(vec3(0.93, 0.94, 0.93)); ro = 0.6;",
+    "    if (sd > 0.0){",
+    "      bool kant = (ab.x < 2.0 && ab.y > -2.0 && ab.y < 72.0) || (ab.y > 68.0 && ab.x > -2.0 && ab.x < RV);",
+    "      float tot = L.z > 0.0 ? L.z : L.x + L.y;",
+    "      if (!kant || sd > tot || tot < 0.05) discard;",
+    "      if (L.z > 0.0){ alb = srgb(vec3(0.922, 0.894, 0.828)); ro = 0.35; }",
+    "      else if (sd < L.x){ alb = srgb(vec3(0.80, 0.62, 0.25)); ro = 0.3; }",
+    "      else { alb = srgb(vec3(0.85, 0.82, 0.75)); ro = 0.8; }",
+    "    } else {",
+    "      for (int i = 0; i < 5; i++){",
+    "        vec4 Kk = KAM[i]; vec2 c = Kk.xy + Kk.zw * 0.5, h = Kk.zw * 0.5;",
+    "        if (sdRR(ab, c, h, 1.2) < 0.0){",
+    "          if (i == 2){",
+    "            float so = sdRR(ab, c, h - 3.5, 1.6), si = sdRR(ab, c, h - 5.6, 1.0);",
+    "            if (so < 0.0 && si > 0.0){ alb = srgb(vec3(0.6, 0.63, 0.65)); me = 1.0; ro = 0.4; break; }",
+    "            if (si < 0.0){ em = hol(ab, c, h - 5.6, k, vec3(0.5, 0.53, 0.55)); alb = vec3(0.0); ro = 1.0; break; }",
+    "          }",
+    "          em = hol(ab, c, h, k, vec3(0.9, 0.92, 0.91)); alb = vec3(0.0); ro = 1.0; break;",
+    "        }",
+    "      }",
+    "    }",
+    "  }",
+    "  else if (id < 9.5){ alb = pvc(s, 0.0, ro); }",
+    "  else if (id < 10.5){",
+    "    alb = srgb(vCol); me = 0.9; ro = 0.42;",
+    "    vec2 g = vec2(fract(s.x / 2.1) - 0.5, (s.y - 3.2) / 2.1); if (length(g) < 0.2) { alb *= 0.45; ro = 0.9; }",
+    "  }",
+    "  else if (id < 11.5){ alb = srgb(vec3(0.82, 0.9, 0.88)); ro = 0.12; }",
+    "  else if (id < 12.5){",
+    // glas: weerspiegeling, en een klein beetje grijsgroen
+    "    vec3 V = normalize(uEye - vPos); float nv = max(abs(dot(N, V)), 1e-3);",
+    "    float F = 0.04 + 0.96 * pow(1.0 - nv, 5.0);",
+    "    vec3 envS = filmisch(omgeving(reflect(-V, N), 0.02));",
+    "    float sl = vPos.x + vPos.y * 0.48 + uEye.x * 0.35;",
+    "    float streep = smoothstep(0.0, 18.0, mod(sl, 230.0)) * (1.0 - smoothstep(18.0, 70.0, mod(sl, 230.0))) * 0.05 + smoothstep(0.0, 6.0, mod(sl + 90.0, 230.0)) * (1.0 - smoothstep(6.0, 20.0, mod(sl + 90.0, 230.0))) * 0.035;",
+    "    float tr = 0.88 - 0.05 * smoothstep(PH + 120.0, PH, vPos.y);",
+    "    vec3 c = envS * F + vec3(0.55, 0.64, 0.66) * (1.0 - tr) * (1.0 - F) + vec3(streep);",
+    "    float a = clamp(1.0 - (1.0 - F) * tr + streep, 0.0, 1.0);",
+    "    uit = vec4(c, a) * vPrm.w;",
+    "    return;",
+    "  }",
+    "  else if (id < 13.5){ alb = srgb(vec3(0.07, 0.075, 0.08)); ro = 0.5; }",
+    "  vec3 Np = normalize(Tt * nT.x + Bt * nT.y + N * nT.z);",
+    "  if (glansBand > 0.001){ float a = max(ro * ro, 0.003), a2 = a * a, nh = max(dot(Np, N), 0.0), dd = nh * nh * (a2 - 1.0) + 1.0; em += vec3(1.0, 0.985, 0.95) * glansBand * min(a2 / (PI * dd * dd), 60.0) * 0.032; }",
+    "  float sh = schaduw(vPos, N);",
+    "  vec3 c = belicht(vPos, Np, alb, ro, me, ao, sh) + em;",
+    "  uit = vec4(filmisch(c), 1.0) * alpha;",
+    "}"
+  ].join("\n");
+
+  // de achtergrond: papier (of mint) met een zachte schaduw op de vloer onder het kozijn
+  var VS_ACHTER = "#version 300 es\nin vec2 aPos; void main(){ gl_Position = vec4(aPos, 0.0, 1.0); }";
+  var FS_ACHTER = [
+    "#version 300 es",
+    "precision highp float;",
+    "uniform mat4 uInvVP; uniform vec3 uEye; uniform vec2 uRes; uniform vec3 uC0; uniform vec3 uC1; uniform vec3 uC2; uniform float uDoorzicht; uniform vec3 uSchDir; uniform float uSchK;",
+    "out vec4 uit;",
+    "float sdBox(vec3 p, vec3 c, vec3 h){ vec3 q = abs(p - c) - h; return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0); }",
+    "float wereld(vec3 p){ return min(sdBox(p, vec3(" + (LEN / 2) + ".0, " + (PH / 2) + ".0, " + (PD / 2) + ".0), vec3(" + (LEN / 2) + ".0, " + (PH / 2) + ".0, " + (PD / 2) + ".0)),",
+    "  sdBox(p, vec3(" + (SW / 2) + ".0, " + (PH + STI / 2) + ".0, " + (PD / 2) + ".0), vec3(" + (SW / 2) + ".0, " + (STI / 2) + ".0, " + (PD / 2) + ".0))); }",
+    "void main(){",
+    "  vec2 fc = gl_FragCoord.xy, sc = vec2(fc.x, uRes.y - fc.y);",
+    "  float d = length(sc - vec2(0.6, 0.22) * uRes) / (0.95 * max(uRes.x, uRes.y));",
+    "  vec3 c = d < 0.55 ? mix(uC0, uC1, d / 0.55) : mix(uC1, uC2, clamp((d - 0.55) / 0.45, 0.0, 1.0));",
+    "  vec4 nd = vec4(fc / uRes * 2.0 - 1.0, 1.0, 1.0), w = uInvVP * nd; vec3 rd = normalize(w.xyz / w.w - uEye);",
+    "  float donker = 0.0;",
+    "  if (rd.y < -0.001){",
+    "    float t = (-48.0 - uEye.y) / rd.y; vec3 g = uEye + rd * t;",
+    "    float res = 1.0, tt = 3.0;",
+    "    for (int i = 0; i < 40; i++){ float h = wereld(g + uSchDir * tt); res = min(res, uSchK * h / tt); tt += clamp(h, 2.0, 30.0); if (res < 0.002 || tt > 900.0) break; }",
+    "    res = clamp(res, 0.0, 1.0); res = res * res * (3.0 - 2.0 * res);",
+    "    float ao = exp(-max(wereld(g + vec3(0.0, 30.0, 0.0)), 0.0) / 40.0);",
+    "    donker = (1.0 - res) * 0.12 + ao * 0.13;",
+    "  }",
+    "  if (uDoorzicht > 0.5) uit = vec4(0.0, 0.0, 0.0, clamp(donker, 0.0, 1.0) * 0.8);",
+    "  else uit = vec4(c * (1.0 - donker), 1.0);",
+    "}"
+  ].join("\n");
+
+  /* ======================= De motor ======================= */
+  function lin(hex) { var c = rgb(hex); return [c[0] / 255, c[1] / 255, c[2] / 255]; }   // de shader zet sRGB zelf om
+
+  // Een materiaal voor losse dingen: kleur (sRGB), ruwheid, metaal, soort (zie de shader), doorzichtigheid
+  function mat(hex, ruw, metaal, soort, a) { return { c: Array.isArray(hex) ? hex : lin(hex), r: ruw == null ? 0.5 : ruw, m: metaal || 0, id: soort || 1, a: a == null ? 1 : a }; }
+
+  /* Bouwer: driehoeken met per punt: plek, normaal, uv (mm), raaklijn, kleur, [ruwheid, metaal, soort, alpha] */
+  var STAP = 18;
+  function Bouwer() { this.f = new Float32Array(STAP * 30000); this.n = 0; }
+  Bouwer.prototype.leeg = function () { this.n = 0; };
+  Bouwer.prototype.punt = function (P, N, uv, T, m) {
+    if (this.n + STAP > this.f.length) { var g = new Float32Array(this.f.length * 2); g.set(this.f); this.f = g; }
+    var f = this.f, i = this.n;
+    f[i] = P[0]; f[i + 1] = P[1]; f[i + 2] = P[2]; f[i + 3] = N[0]; f[i + 4] = N[1]; f[i + 5] = N[2];
+    f[i + 6] = uv[0]; f[i + 7] = uv[1]; f[i + 8] = T[0]; f[i + 9] = T[1]; f[i + 10] = T[2];
+    f[i + 11] = m.c[0]; f[i + 12] = m.c[1]; f[i + 13] = m.c[2]; f[i + 14] = m.r; f[i + 15] = m.m; f[i + 16] = m.id; f[i + 17] = m.a;
+    this.n += STAP;
+  };
+  Bouwer.prototype.drie = function (a, b, c, m) { this.punt(a.P, a.N, a.uv, a.T, m); this.punt(b.P, b.N, b.uv, b.T, m); this.punt(c.P, c.N, c.uv, c.T, m); };
+  // een raster van punten [i][j] = {P, N, uv, T}: twee driehoeken per vakje
+  Bouwer.prototype.raster = function (R, m) {
+    for (var i = 0; i + 1 < R.length; i++) for (var j = 0; j + 1 < R[i].length; j++) {
+      var a = R[i][j], b = R[i + 1][j], c = R[i + 1][j + 1], d = R[i][j + 1];
+      this.drie(a, b, c, m); this.drie(a, c, d, m);
+    }
+  };
+  function pt(P, N, uv, T) { return { P: P, N: N, uv: uv || [0, 0], T: T || [1, 0, 0] }; }
+  // normalen uit het raster zelf (voor doek, tong, flap): kruisproduct van de buren
+  function rasterNormalen(R, buiten) {
+    for (var i = 0; i < R.length; i++) for (var j = 0; j < R[i].length; j++) {
+      var a = R[Math.min(i + 1, R.length - 1)][j].P, b = R[Math.max(i - 1, 0)][j].P, c = R[i][Math.min(j + 1, R[i].length - 1)].P, d = R[i][Math.max(j - 1, 0)].P;
+      var n = een(uitw(ver(a, b), ver(c, d)));
+      if (buiten && inw(n, buiten) < 0) n = maal(n, -1);
+      R[i][j].N = n; R[i][j].T = een(ver(a, b));
+    }
+    return R;
+  }
+
+  /* Vormen ------------------------------------------------------------------- */
+  function assen(a) {
+    var e1 = een(uitw(a, Math.abs(a[1]) < 0.9 ? [0, 1, 0] : [1, 0, 0])), e2 = uitw(a, e1);
+    return [e1, e2];
+  }
+  // Cilinder van A naar B met straal r, afgeronde randen. o: {kap: false, kapM, bev, seg, hoek (draaiing van de uv)}
+  function cil(Bw, A, B, r, m, o) {
+    o = o || {};
+    var as = ver(B, A), L = lengteV(as); if (L < 1e-4 || r <= 0) return;
+    var a = maal(as, 1 / L), e = assen(a), e1 = e[0], e2 = e[1];
+    var bev = Math.min(o.bev != null ? o.bev : Math.min(1.4, r * 0.3), L * 0.45, r * 0.9), seg = o.seg || 30, hk = o.hoek || 0;
+    function P(rad, z, h) { var c = Math.cos(h), s = Math.sin(h); return som(som(A, maal(a, z)), som(maal(e1, c * rad), maal(e2, s * rad))); }
+    function Nn(nr, na, h) { var c = Math.cos(h), s = Math.sin(h); return een(som(maal(a, na), som(maal(e1, c * nr), maal(e2, s * nr)))); }
+    // mantel met afgeronde randen
+    var prof = [], k;
+    for (k = 0; k <= 3; k++) { var q = (1 - k / 3) * Math.PI / 2; prof.push([r - bev + bev * Math.cos(q), bev - bev * Math.sin(q), Math.cos(q), -Math.sin(q)]); }
+    for (k = 0; k <= 3; k++) { q = k / 3 * Math.PI / 2; prof.push([r - bev + bev * Math.cos(q), L - bev + bev * Math.sin(q), Math.cos(q), Math.sin(q)]); }
+    var R = [];
+    for (var i = 0; i <= seg; i++) {
+      var h = i / seg * Math.PI * 2, rij = [];
+      for (k = 0; k < prof.length; k++) rij.push(pt(P(prof[k][0], prof[k][1], h), Nn(prof[k][2], prof[k][3], h), [(h + hk) * r, prof[k][1]], a));
+      R.push(rij);
+    }
+    Bw.raster(R, m);
+    if (o.kap === false) return;
+    // de kopse kanten: platte schijven
+    [[0, -1], [L, 1]].forEach(function (z) {
+      var Rk = [];
+      for (var i = 0; i <= seg; i++) {
+        var h = i / seg * Math.PI * 2, rij = [];
+        for (var j = 0; j <= 4; j++) {
+          var rad = (r - bev) * j / 4, c = Math.cos(h), s = Math.sin(h);
+          rij.push(pt(P(rad, z[0], h), maal(a, z[1]), [Math.cos(h + hk * z[1]) * rad, Math.sin(h + hk * z[1]) * rad], e1));
+        }
+        Rk.push(rij);
+      }
+      Bw.raster(Rk, o.kapM || m);
+    });
+  }
+  // Een blok met afgeronde randen: hoek o, randen X, Y, Z (ongeveer haaks op elkaar)
+  function kist(Bw, o, X, Y, Z, m, bev) {
+    var lx = lengteV(X), ly = lengteV(Y), lz = lengteV(Z); if (lx < 1e-4 || ly < 1e-4 || lz < 1e-4) return;
+    var ex = maal(X, 1 / lx), ey = maal(Y, 1 / ly), ez = maal(Z, 1 / lz);
+    var h = [lx / 2, ly / 2, lz / 2];
+    bev = Math.min(bev == null ? 1.2 : bev, h[0] * 0.95, h[1] * 0.95, h[2] * 0.95);
+    var hi = [h[0] - bev, h[1] - bev, h[2] - bev], mid = som(o, maal(som(som(X, Y), Z), 0.5));
+    function ks(a) { var hh = h[a], b = bev; return [-hh, -hh + b * 0.3, -hh + b * 0.7, -hh + b, hh - b, hh - b * 0.7, hh - b * 0.3, hh]; }
+    function wereld(q) { return som(mid, som(som(maal(ex, q[0]), maal(ey, q[1])), maal(ez, q[2]))); }
+    for (var as = 0; as < 3; as++) for (var tk = -1; tk <= 1; tk += 2) {
+      var a1 = (as + 1) % 3, a2 = (as + 2) % 3, c1 = ks(a1), c2 = ks(a2), R = [];
+      for (var i = 0; i < c1.length; i++) {
+        var rij = [];
+        for (var j = 0; j < c2.length; j++) {
+          var q = [0, 0, 0]; q[as] = tk * h[as]; q[a1] = c1[i]; q[a2] = c2[j];
+          var cq = [klem(q[0], -hi[0], hi[0]), klem(q[1], -hi[1], hi[1]), klem(q[2], -hi[2], hi[2])], d = ver(q, cq), dl = lengteV(d);
+          var n = dl > 1e-6 ? maal(d, 1 / dl) : [0, 0, 0]; if (dl <= 1e-6) n[as] = tk;
+          var pl = som(cq, maal(n, bev));
+          var nw = een(som(som(maal(ex, n[0]), maal(ey, n[1])), maal(ez, n[2])));
+          var T = as === 0 ? ey : ex;
+          rij.push(pt(wereld(pl), nw, [pl[a1] + h[a1], pl[a2] + h[a2]], T));
+        }
+        R.push(rij);
+      }
+      Bw.raster(R, m);
+    }
+  }
+  // Een plat kaartje met ronde hoeken (de rakel): midden c, X = breedte, Y = hoogte (in het vlak), N = dikte
+  function kaart(Bw, c, X, Y, N, w, h, dik, r, m) {
+    var ex = een(X), ey = een(Y), ez = een(N), seg = 7, rand = [], i, k, hw = w / 2, hh = h / 2;
+    r = Math.min(r, hw, hh);
+    [[hw - r, hh - r, 0], [-hw + r, hh - r, 90], [-hw + r, -hh + r, 180], [hw - r, -hh + r, 270]].forEach(function (hk) {
+      for (k = 0; k <= seg; k++) { var a = (hk[2] + k * 90 / seg) * RAD; rand.push([hk[0] + Math.cos(a) * r, hk[1] + Math.sin(a) * r, Math.cos(a), Math.sin(a)]); }
+    });
+    rand.push(rand[0]);
+    function P(x, y, z) { return som(c, som(som(maal(ex, x), maal(ey, y)), maal(ez, z))); }
+    var b = Math.min(0.9, dik * 0.3), z1 = dik / 2, R = [];
+    // de rand: een klein facet boven, de zijkant, een klein facet onder
+    var lagen = [[-b, z1, 0.7], [0, z1 - b, 0], [0, -z1 + b, 0], [-b, -z1, -0.7]];
+    for (i = 0; i < rand.length; i++) {
+      var q = rand[i], rij = [];
+      lagen.forEach(function (L) {
+        var x = q[0] + q[2] * L[0], y = q[1] + q[3] * L[0], nr = L[2] ? 0.7 : 1;
+        rij.push(pt(P(x, y, L[1]), een(som(som(maal(ex, q[2] * nr), maal(ey, q[3] * nr)), maal(ez, L[2]))), [x, y], ex));
+      });
+      R.push(rij);
+    }
+    Bw.raster(R, m);
+    [[z1, 1], [-z1, -1]].forEach(function (zz) {
+      var Rk = [];
+      for (i = 0; i < rand.length; i++) {
+        var q = rand[i], x = q[0] - q[2] * b, y = q[1] - q[3] * b;
+        Rk.push([pt(P(0, 0, zz[0]), maal(ez, zz[1]), [0, 0], ex), pt(P(x, y, zz[0]), maal(ez, zz[1]), [x, y], ex)]);
+      }
+      Bw.raster(Rk, m);
+    });
+  }
+  function bol(Bw, c, r, m, seg) {
+    seg = seg || 10; var R = [];
+    for (var i = 0; i <= seg * 2; i++) {
+      var h = i / (seg * 2) * Math.PI * 2, rij = [];
+      for (var j = 0; j <= seg; j++) {
+        var v = j / seg * Math.PI, n = [Math.sin(v) * Math.cos(h), Math.cos(v), Math.sin(v) * Math.sin(h)];
+        rij.push(pt(som(c, maal(n, r)), n, [h * r, v * r], [-Math.sin(h), 0, Math.cos(h)]));
+      }
+      R.push(rij);
+    }
+    Bw.raster(R, m);
+  }
+
+  /* Het kozijn zelf: dorpel en stijl als één doorlopend, afgerond profiel ------------------
+     Per punt: plek, normaal, [u, v, deel, vlak] en de richting van u.
+     vlak: 0 voorkant (met de afgeronde rand), 1 dagkant (tot het glas), 2 de rest (wit, geen folie). */
+  function profielLus(breed, hoog, r, splits, indeling) {
+    // afgeronde rechthoek [0,breed] x [0,hoog], tegen de klok in, met extra punten op de rechte zijden
+    var hoeken = [[breed - r, r, -90], [breed - r, hoog - r, 0], [r, hoog - r, 90], [r, r, 180]], lus = [];
+    for (var h = 0; h < 4; h++) {
+      var hk = hoeken[h];
+      for (var k = 0; k <= 6; k++) { var a = (hk[2] + k * 15) * RAD, n = [Math.cos(a), Math.sin(a)]; lus.push({ p: [hk[0] + n[0] * r, hk[1] + n[1] * r], n: n, hoek: h, k: k }); }
+      var nh = hoeken[(h + 1) % 4], a1 = nh[2] * RAD, start = lus[lus.length - 1].p, eind = [nh[0] + Math.cos(a1) * r, nh[1] + Math.sin(a1) * r];
+      var ns = [Math.cos((hk[2] + 90) * RAD), Math.sin((hk[2] + 90) * RAD)];
+      (splits[h] || []).forEach(function (f) { lus.push({ p: [mix(start[0], eind[0], f), mix(start[1], eind[1], f)], n: ns.slice() }); });
+    }
+    lus.push({ p: lus[0].p.slice(), n: lus[0].n.slice() });
+    var s = 0; lus[0].s = 0;
+    for (var i = 1; i < lus.length; i++) { s += Math.hypot(lus[i].p[0] - lus[i - 1].p[0], lus[i].p[1] - lus[i - 1].p[1]); lus[i].s = s; }
+    // elk stukje tussen twee punten hoort bij een vlak; waar het vlak wisselt, begint een nieuwe strook
+    var stroken = [], cur = null;
+    for (i = 0; i + 1 < lus.length; i++) {
+      var A = lus[i], B = lus[i + 1], f = indeling([(A.p[0] + B.p[0]) / 2, (A.p[1] + B.p[1]) / 2], [(A.n[0] + B.n[0]) / 2, (A.n[1] + B.n[1]) / 2]);
+      if (!cur || cur.f !== f) { cur = { f: f, pts: [A] }; stroken.push(cur); }
+      cur.pts.push(B);
+    }
+    return { lus: lus, stroken: stroken };
+  }
+  function kozijnMesh() {
+    var pos = [], nrm = [], uvw = [], tan = [], idx = [], nV = 0;
+    function strook(prof, deel, uVan, uTot, stap, plek, plekN, U, vNul, om) {
+      var nu = Math.ceil((uTot - uVan) / stap);
+      prof.stroken.forEach(function (st) {
+        var basis = nV, w = st.pts.length;
+        for (var iu = 0; iu <= nu; iu++) {
+          var u = Math.min(uTot, uVan + iu * stap);
+          for (var k = 0; k < w; k++) {
+            var q = st.pts[k], P = plek(u, q.p), N = plekN(q.n);
+            pos.push(P[0], P[1], P[2]); nrm.push(N[0], N[1], N[2]);
+            uvw.push(u, q.s - vNul, deel, st.f); tan.push(U[0], U[1], U[2]);
+            nV++;
+          }
+        }
+        for (iu = 0; iu < nu; iu++) for (k = 0; k + 1 < w; k++) {
+          var a = basis + iu * w + k, b = a + 1, c = a + w, d = c + 1;
+          if (om) idx.push(a, b, c, b, d, c); else idx.push(a, c, b, b, c, d);
+        }
+      });
+    }
+    // Dorpel: doorsnede in (z, y). Voorkant z = PD, dagkant y = PH van de voorkant tot het glas.
+    var fD = (PD - RR - GZ1) / (PD - 2 * RR);
+    var prD = profielLus(PD, PH, RR, [[], [fD], [], []], function (m, n) {
+      if (n[0] > 0.05) return 0;                         // voorkant met de afgeronde randen
+      if (n[1] > 0.7 && m[0] > GZ1) return 1;            // dagkant tot het glas
+      return 2;
+    });
+    var v0D = prD.lus[6].s;                              // v = 0 onderaan de voorkant
+    strook(prD, 0, 0, LEN, 0.5, function (u, p) { return [u, p[1], p[0]]; }, function (n) { return [0, n[1], n[0]]; }, [1, 0, 0], v0D, false);
+    // Stijl: doorsnede in (x, z). Voorkant z = PD, dagkant x = SW. u = vanaf de bovenkant naar beneden.
+    var fS = (GZ1 - RR) / (PD - 2 * RR);
+    var prS = profielLus(SW, PD, RR, [[fS], [], [], []], function (m, n) {
+      if (n[1] > 0.05) return 0;
+      if (n[0] > 0.7 && m[1] > GZ1) return 1;
+      return 2;
+    });
+    var v0S = prS.lus[7 + 1 + 6].s;                      // v = 0 rechts op de voorkant (na de hoek rechtsvoor)
+    strook(prS, 1, 0, STI, 0.5, function (u, p) { return [p[0], PH + STI - u, p[1]]; }, function (n) { return [n[0], 0, n[1]]; }, [0, -1, 0], v0S, true);
+    return { pos: new Float32Array(pos), nrm: new Float32Array(nrm), uvw: new Float32Array(uvw), tan: new Float32Array(tan), idx: new Uint32Array(idx) };
+  }
+
+  /* Vaste dingen rond het kozijn: zaagsneden, glas (afstandhouders, randen), rubbers ---------- */
+  function vasteDingen(Bw) {
+    var M_KAP = function (k) { return { c: [k, 0, 0], r: 0.6, m: 0, id: 8, a: 1 }; };
+    // zaagsnede van de dorpel (x = LEN) en van de stijl (y = PH + STI); iets groter dan het profiel, voor de lagen
+    var e = 8;
+    function vlak(P0, A, B, k, n) {
+      var R = [];
+      for (var i = 0; i <= 1; i++) {
+        var rij = [];
+        for (var j = 0; j <= 1; j++) {
+          var a = -e + i * (PD + 2 * e), b = -e + j * (70 + 2 * e);
+          rij.push(pt(som(P0, som(maal(A, a), maal(B, b))), n, [a, b], A));
+        }
+        R.push(rij);
+      }
+      Bw.raster(R, M_KAP(k));
+    }
+    vlak([LEN + 0.02, 0, PD], [0, 0, -1], [0, 1, 0], 0, [1, 0, 0]);
+    vlak([0, PH + STI + 0.02, PD], [0, 0, -1], [1, 0, 0], 1, [0, 1, 0]);
+    // afstandhouders tussen de ruiten (zichtbaar door het glas) en de rubbers tegen het glas
+    var alu = mat("#b7bcc0", 0.42, 0.9, 10);
+    kist(Bw, [SW, PH - 2, GZ0 + 4.5], [LEN - SW, 0, 0], [0, 9, 0], [0, 0, GZ1 - GZ0 - 9], alu, 0.6);
+    kist(Bw, [SW - 2, PH, GZ0 + 4.5], [9, 0, 0], [0, STI, 0], [0, 0, GZ1 - GZ0 - 9], alu, 0.6);
+    var rub = mat(K.rubber, 0.55, 0, 13);
+    cil(Bw, [SW + 1, PH + 1.7, GZ1 + 1.7], [LEN, PH + 1.7, GZ1 + 1.7], 1.9, rub, { seg: 12, kap: true });
+    cil(Bw, [SW + 1.7, PH + 1, GZ1 + 1.7], [SW + 1.7, PH + STI, GZ1 + 1.7], 1.9, rub, { seg: 12, kap: true });
+    // de randen van de twee ruiten op de zaagkanten
+    var gr = mat("#cfe0dc", 0.15, 0, 11);
+    [[GZ0, GZ0 + 4], [GZ1 - 4, GZ1]].forEach(function (z) {
+      kist(Bw, [LEN - 0.6, PH, z[0]], [0.6, 0, 0], [0, STI, 0], [0, 0, z[1] - z[0]], gr, 0.2);
+      kist(Bw, [SW, PH + STI - 0.6, z[0]], [LEN - SW, 0, 0], [0, 0.6, 0], [0, 0, z[1] - z[0]], gr, 0.2);
+    });
+  }
+  function glasMesh(Bw) {
+    var g = mat("#ffffff", 0.02, 0, 12);
+    [GZ1, GZ0].forEach(function (z, i) {
+      var R = [[pt([SW, PH, z], [0, 0, 1]), pt([SW, PH + STI, z], [0, 0, 1])], [pt([LEN, PH, z], [0, 0, 1]), pt([LEN, PH + STI, z], [0, 0, 1])]];
+      Bw.raster(R, i ? mat("#ffffff", 0.02, 0, 12, 0.5) : g);
+    });
+  }
+
+  /* WebGL opzetten ---------------------------------------------------------------- */
+  var GLM = null;
+  var ATTR = ["aPos", "aNrm", "aUV", "aTan", "aCol", "aPrm"];
+  function maakProgramma(gl, vs, fs) {
+    function sh(type, src) {
+      var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { var log = gl.getShaderInfoLog(s); throw new Error("shader: " + log); }
+      return s;
+    }
+    var p = gl.createProgram(); gl.attachShader(p, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(p, sh(gl.FRAGMENT_SHADER, fs));
+    ATTR.forEach(function (n, i) { gl.bindAttribLocation(p, i, n); });
+    gl.linkProgram(p);
+    if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error("link: " + gl.getProgramInfoLog(p));
+    var u = {}, n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+    for (var i = 0; i < n; i++) { var info = gl.getActiveUniform(p, i), naam = info.name.replace(/\[0\]$/, ""); u[naam] = gl.getUniformLocation(p, info.name); }
+    return { p: p, u: u };
+  }
+  function motorStart(schaduwMaat) {
+    if (GLM) return GLM.ok ? GLM : null;
+    GLM = { ok: false };
+    if (typeof document === "undefined") return null;
+    try {
+      var cv = document.createElement("canvas"); cv.width = 16; cv.height = 16;
+      var gl = cv.getContext("webgl2", { antialias: true, alpha: true, premultipliedAlpha: true, preserveDrawingBuffer: true, depth: true });
+      if (!gl) return null;
+      GLM.cv = cv; GLM.gl = gl;
+      GLM.pK = maakProgramma(gl, VS_KOZIJN, FS_OPP);
+      GLM.pD = maakProgramma(gl, VS_DING, FS_OPP);
+      GLM.sK = maakProgramma(gl, VS_KOZIJN, FS_SCHADUW);
+      GLM.sD = maakProgramma(gl, VS_DING, FS_SCHADUW);
+      GLM.pA = maakProgramma(gl, VS_ACHTER, FS_ACHTER);
+      // het kozijn
+      var km = kozijnMesh();
+      GLM.kVao = gl.createVertexArray(); gl.bindVertexArray(GLM.kVao);
+      function attr(prog, naam, data, n) {
+        var loc = ATTR.indexOf(naam);
+        var b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, n, gl.FLOAT, false, 0, 0);
+      }
+      attr(GLM.pK.p, "aPos", km.pos, 3); attr(GLM.pK.p, "aNrm", km.nrm, 3); attr(GLM.pK.p, "aUV", km.uvw, 4); attr(GLM.pK.p, "aTan", km.tan, 3);
+      var ib = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, km.idx, gl.STATIC_DRAW);
+      GLM.kN = km.idx.length;
+      // vaste dingen en glas
+      GLM.vast = maakDingBuffer(gl); var bw = new Bouwer(); vasteDingen(bw); vulDingBuffer(gl, GLM.vast, bw, gl.STATIC_DRAW);
+      GLM.glas = maakDingBuffer(gl); bw.leeg(); glasMesh(bw); vulDingBuffer(gl, GLM.glas, bw, gl.STATIC_DRAW);
+      GLM.dyn = maakDingBuffer(gl); GLM.dynF = maakDingBuffer(gl);
+      GLM.bw = new Bouwer(); GLM.bwF = new Bouwer();
+      // achtergrond: één driehoek over het hele beeld
+      GLM.aVao = gl.createVertexArray(); gl.bindVertexArray(GLM.aVao);
+      var ab = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, ab); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+      gl.bindVertexArray(null);
+      // schaduwkaart: diepte + hoe ondoorzichtig
+      var SM = schaduwMaat || 2048;
+      GLM.sm = SM;
+      GLM.shD = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, GLM.shD);
+      gl.texStorage2D(gl.TEXTURE_2D, 1, gl.DEPTH_COMPONENT24, SM, SM);
+      GLM.shA = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, GLM.shA);
+      gl.texStorage2D(gl.TEXTURE_2D, 1, gl.R8, SM, SM);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      GLM.shFb = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, GLM.shFb);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, GLM.shD, 0);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, GLM.shA, 0);
+      if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) throw new Error("schaduw-fb");
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      GLM.smpV = gl.createSampler();
+      gl.samplerParameteri(GLM.smpV, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.samplerParameteri(GLM.smpV, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.samplerParameteri(GLM.smpV, gl.TEXTURE_COMPARE_MODE, gl.COMPARE_REF_TO_TEXTURE); gl.samplerParameteri(GLM.smpV, gl.TEXTURE_COMPARE_FUNC, gl.LEQUAL);
+      gl.samplerParameteri(GLM.smpV, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.samplerParameteri(GLM.smpV, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      GLM.smpR = gl.createSampler();
+      gl.samplerParameteri(GLM.smpR, gl.TEXTURE_MIN_FILTER, gl.NEAREST); gl.samplerParameteri(GLM.smpR, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+      gl.samplerParameteri(GLM.smpR, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.samplerParameteri(GLM.smpR, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      cv.addEventListener("webglcontextlost", function (e) { e.preventDefault(); GLM.ok = false; GLM.verloren = true; });
+      GLM.ok = true;
+      return GLM;
+    } catch (err) {
+      if (window.console) console.error("kozijn3d:", err.message);
+      GLM.ok = false; GLM.fout = err.message;
+      return null;
+    }
+  }
+  function maakDingBuffer(gl) {
+    var vao = gl.createVertexArray(); gl.bindVertexArray(vao);
+    var b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b);
+    var namen = [["aPos", 3, 0], ["aNrm", 3, 3], ["aUV", 2, 6], ["aTan", 3, 8], ["aCol", 3, 11], ["aPrm", 4, 14]];
+    namen.forEach(function (a) {
+      var loc = ATTR.indexOf(a[0]);
+      gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, a[1], gl.FLOAT, false, STAP * 4, a[2] * 4);
+    });
+    gl.bindVertexArray(null);
+    return { vao: vao, b: b, n: 0, cap: 0 };
+  }
+  function vulDingBuffer(gl, D, bw, gebruik) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, D.b);
+    if (bw.n > D.cap || gebruik === gl.STATIC_DRAW) { gl.bufferData(gl.ARRAY_BUFFER, bw.f.subarray(0, bw.n), gebruik || gl.DYNAMIC_DRAW); D.cap = bw.n; }
+    else gl.bufferSubData(gl.ARRAY_BUFFER, 0, bw.f.subarray(0, bw.n));
+    D.n = bw.n / STAP;
+  }
+
+  /* Eén beeld renderen ------------------------------------------------------------------
+     sc = { cam: (van maakCamera), z: (zonesVoor), heat: [x,y,z,s], sweep: [posD, posS, sterkte, soort],
+            kap: [[lijm, oud, nieuw], [..]], dingen: function(B, BF) {...}, achtergrond: "licht"|"mint"|null } */
+  var LK = een([-0.42, 0.8, 0.5]);
+  var ACHTERKLEUR = {
+    licht: [lin("#ffffff"), lin(K.papier), lin("#edebe6")],
+    mint: [lin("#c4e3da"), lin("#a9d2c7"), lin("#94c2b6")]
+  };
+  function iv2(iv) { return iv ? [Math.max(-1e5, iv[0]), Math.min(1e5, iv[1])] : [1e6, 1e6]; }
+  // het getekende beeld (linksonder in het WebGL-canvas) op een gewoon canvas zetten
+  function plak(ctx, cv, W, H) { ctx.drawImage(cv, 0, cv.height - H, W, H, 0, 0, W, H); }
+  function renderScene(W, H, sc) {
+    var G = motorStart(sc.schaduwMaat); if (!G) return null;
+    var gl = G.gl, c = sc.cam;
+    // Het WebGL-canvas groeit mee met het grootste beeld en wordt niet steeds opnieuw gemaakt
+    // (twee animaties op één pagina): er wordt linksonder getekend, plak() haalt dat stuk eruit.
+    var cw = Math.max(G.cv.width, W), ch = Math.max(G.cv.height, H);
+    if (G.cv.width !== cw || G.cv.height !== ch) { G.cv.width = cw; G.cv.height = ch; }
+    // dynamische dingen
+    G.bw.leeg(); G.bwF.leeg();
+    if (sc.dingen) sc.dingen(G.bw, G.bwF);
+    vulDingBuffer(gl, G.dyn, G.bw); vulDingBuffer(gl, G.dynF, G.bwF);
+    // zones naar uniforms
+    var z = sc.z, za = [], zb = [], zc = [];
+    for (var m = 0; m < 2; m++) {
+      var pel = iv2(z.pel[m]), krab = iv2(z.krab[m]), nw = iv2(z.nieuw[m]), dk = iv2(z.doek[m]), nat = iv2(z.nat[m]), nb = m === 0 ? iv2(z.nieuwBoven) : [1e6, 1e6];
+      za.push(pel[0], pel[1], krab[0], krab[1]); zb.push(nw[0], nw[1], dk[0], dk[1]); zc.push(nat[0], nat[1], nb[0], nb[1]);
+    }
+    var dg = z.doekG || [null, null];
+    var doekG = [dg[0] ? dg[0][0] : 0, dg[0] ? dg[0][1] : 0, dg[1] ? dg[1][0] : 0, dg[1] ? dg[1][1] : 0];
+    var los = [z.los || 0, z.los0 || LOS0, 0, 0];
+    // lichtmatrix (schaduwkaart)
+    var Lc = [250, 175, 60], Lm = M4.mul(M4.ortho(-470, 470, -470, 470, 500, 2100), M4.kijk(som(Lc, maal(LK, 1300)), Lc, [0, 1, 0]));
+    function zetAlg(P, schaduwPas) {
+      var u = P.u;
+      gl.uniform4fv(u.uZa, za); gl.uniform4fv(u.uZb, zb); gl.uniform4fv(u.uZc, zc); gl.uniform4fv(u.uLos, los);
+      if (schaduwPas) return;
+      gl.uniformMatrix4fv(u.uLmat, false, Lm);
+      gl.uniform3fv(u.uEye, c.C); gl.uniform3fv(u.uLk, LK);
+      gl.uniform3fv(u.uKey, sc.key || [4.1, 3.85, 3.5]); gl.uniform3fv(u.uHemel, sc.hemel || [0.4, 0.44, 0.5]); gl.uniform3fv(u.uVloer, sc.vloer || [0.3, 0.29, 0.27]);
+      gl.uniform3fv(u.uAchter, (ACHTERKLEUR[sc.achtergrond] || ACHTERKLEUR.licht)[1]);
+      gl.uniform1f(u.uBel, sc.belichting || 0.94);
+      gl.uniform3f(u.uShInfo, sc.schaduw === false ? 0 : 1, 1 / G.sm, 0.06 * 1600 / (940 / G.sm));
+      gl.uniform4fv(u.uHeat, sc.heat || [0, 0, 0, 0]); gl.uniform4fv(u.uDoekG, doekG); gl.uniform4fv(u.uSweep, sc.sweep || [0, 0, 0, 0]);
+      var kp = sc.kap || [[0, 0, 0], [0, 0, 0]];
+      gl.uniform4fv(u.uCapL, [kp[0][0], kp[0][1], kp[0][2], 0, kp[1][0], kp[1][1], kp[1][2], 0]);
+      gl.uniform3fv(u.uCapA, [0, 0, -1, 0, 0, -1]); gl.uniform3fv(u.uCapB, [0, 1, 0, 1, 0, 0]); gl.uniform3fv(u.uCapI, [-1, 0, 0, 0, -1, 0]);
+      gl.uniform1i(u.uSh, 0); gl.uniform1i(u.uShRaw, 1); gl.uniform1i(u.uShA, 2);
+    }
+    gl.disable(gl.BLEND); gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LEQUAL); gl.disable(gl.CULL_FACE);
+    // 1. schaduwkaart
+    if (sc.schaduw !== false) {
+      gl.bindFramebuffer(gl.FRAMEBUFFER, G.shFb); gl.viewport(0, 0, G.sm, G.sm);
+      gl.clearColor(1, 0, 0, 1); gl.clearDepth(1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      gl.enable(gl.POLYGON_OFFSET_FILL); gl.polygonOffset(1.5, 2.0);
+      gl.useProgram(G.sK.p); zetAlg(G.sK, true); gl.uniformMatrix4fv(G.sK.u.uVP, false, Lm); gl.uniform1f(G.sK.u.uSoort, 0);
+      gl.bindVertexArray(G.kVao); gl.drawElements(gl.TRIANGLES, G.kN, gl.UNSIGNED_INT, 0);
+      gl.useProgram(G.sD.p); zetAlg(G.sD, true); gl.uniformMatrix4fv(G.sD.u.uVP, false, Lm); gl.uniform1f(G.sD.u.uSoort, 1);
+      [G.vast, G.dyn, G.dynF].forEach(function (D) { if (D.n) { gl.bindVertexArray(D.vao); gl.drawArrays(gl.TRIANGLES, 0, D.n); } });
+      gl.disable(gl.POLYGON_OFFSET_FILL);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    }
+    gl.viewport(0, 0, W, H);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, G.shD); gl.bindSampler(0, G.smpV);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, G.shD); gl.bindSampler(1, G.smpR);
+    gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, G.shA); gl.bindSampler(2, G.smpR);
+    gl.clearColor(0, 0, 0, 0); gl.clearDepth(1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    // 2. achtergrond
+    var ak = ACHTERKLEUR[sc.achtergrond] || ACHTERKLEUR.licht;
+    gl.depthMask(false);
+    gl.useProgram(G.pA.p);
+    gl.uniformMatrix4fv(G.pA.u.uInvVP, false, M4.inv(c.VP)); gl.uniform3fv(G.pA.u.uEye, c.C); gl.uniform2f(G.pA.u.uRes, W, H);
+    gl.uniform3fv(G.pA.u.uC0, ak[0]); gl.uniform3fv(G.pA.u.uC1, ak[1]); gl.uniform3fv(G.pA.u.uC2, ak[2]);
+    gl.uniform1f(G.pA.u.uDoorzicht, sc.achtergrond === null ? 1 : 0);
+    gl.uniform3fv(G.pA.u.uSchDir, een([-0.2, 1, 0.28])); gl.uniform1f(G.pA.u.uSchK, 3.0);
+    if (sc.achtergrond === null) { gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA); }
+    gl.bindVertexArray(G.aVao); gl.drawArrays(gl.TRIANGLES, 0, 3);
+    gl.disable(gl.BLEND); gl.depthMask(true);
+    // 3. het kozijn
+    gl.useProgram(G.pK.p); zetAlg(G.pK); gl.uniformMatrix4fv(G.pK.u.uVP, false, c.VP); gl.uniform1f(G.pK.u.uSoort, 0);
+    gl.enable(gl.CULL_FACE); gl.cullFace(gl.BACK);
+    gl.bindVertexArray(G.kVao); gl.drawElements(gl.TRIANGLES, G.kN, gl.UNSIGNED_INT, 0);
+    gl.disable(gl.CULL_FACE);
+    // 4. vaste en losse dingen (ondoorzichtig)
+    gl.useProgram(G.pD.p); zetAlg(G.pD); gl.uniformMatrix4fv(G.pD.u.uVP, false, c.VP); gl.uniform1f(G.pD.u.uSoort, 1);
+    [G.vast, G.dyn].forEach(function (D) { if (D.n) { gl.bindVertexArray(D.vao); gl.drawArrays(gl.TRIANGLES, 0, D.n); } });
+    // 5. glas
+    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false);
+    gl.bindVertexArray(G.glas.vao); gl.drawArrays(gl.TRIANGLES, 0, G.glas.n);
+    gl.depthMask(true);
+    // 6. dingen die in- of uitfaden: eerst alleen de diepte, dan de kleur (dan schemert een ding niet door zichzelf heen)
+    if (G.dynF.n) {
+      gl.bindVertexArray(G.dynF.vao);
+      gl.disable(gl.BLEND); gl.colorMask(false, false, false, false); gl.drawArrays(gl.TRIANGLES, 0, G.dynF.n);
+      gl.colorMask(true, true, true, true); gl.enable(gl.BLEND); gl.depthFunc(gl.EQUAL);
+      gl.drawArrays(gl.TRIANGLES, 0, G.dynF.n);
+      gl.depthFunc(gl.LEQUAL);
+    }
+    gl.disable(gl.BLEND);
+    gl.bindVertexArray(null);
+    return G.cv;
+  }
+
+  /* ======================= Het verhaal: werkvlakken, gereedschap, scène ======================= */
+  // Een vlak van het kozijn als werkvlak: w(u, v, d) = o + U*u + V*v + n*d (d = hoogte boven het vlak)
+  function Vlak(o, U, V, n) { this.o = o; this.U = U; this.V = V; this.n = n; }
+  Vlak.prototype.w = function (u, v, d) {
+    var o = this.o, U = this.U, V = this.V, n = this.n; d = d || 0;
+    return [o[0] + U[0] * u + V[0] * v + n[0] * d, o[1] + U[1] * u + V[1] * v + n[1] * d, o[2] + U[2] * u + V[2] * v + n[2] * d];
+  };
+  var FVOOR = new Vlak([0, 0, PD], [1, 0, 0], [0, 1, 0], [0, 0, 1]);              // dorpel, voorkant: u = x, v = y
+  var FBOVEN = new Vlak([0, PH, PD], [1, 0, 0], [0, 0, -1], [0, 1, 0]);           // dorpel, dagkant: v = vanaf de voorkant naar binnen
+  var FSVOOR = new Vlak([0, PH + STI, PD], [0, -1, 0], [1, 0, 0], [0, 0, 1]);     // stijl, voorkant: u = vanaf de bovenkant naar beneden, v = x
+  FVOOR.deel = "dorpel"; FSVOOR.deel = "stijl";
+  function omgekeerd(F, L) { var G = new Vlak(F.w(L, 0, 0), maal(F.U, -1), F.V, F.n); G.deel = F.deel; return G; }
+  FVOOR.om = omgekeerd(FVOOR, LEN); FSVOOR.om = omgekeerd(FSVOOR, STI);
+  function werkvlak(F, naam) { return BEW[naam][1] > 0 ? F : F.om; }
+
+  // De dwarsdoorsnede van voorkant, afgeronde rand en dagkant: daarlangs liggen de rollen en de tong.
+  function maakPad(deel) {
+    var pts = [], k, d = deel === "dorpel", H = d ? PH : SW;
+    function o(a, b) { return d ? [0, a, b] : [a, 0, b]; }
+    function n(a, b) { return d ? [0, a, b] : [a, 0, b]; }
+    for (k = 0; k <= 10; k++) { var v = mix(-1.5, H - RR, k / 10); pts.push({ o: o(v, 0), n: n(0, 1), v: v }); }
+    for (k = 1; k <= 7; k++) { var th = k / 7 * Math.PI / 2, sn = Math.sin(th), cs = Math.cos(th); pts.push({ o: o(H - RR + RR * sn, -RR + RR * cs), n: n(sn, cs), v: H - RR + th * RR }); }
+    for (k = 1; k <= 6; k++) { var zo = mix(RR, RV - 1.2, k / 6); pts.push({ o: o(H, -zo), n: n(1, 0), v: H - RR + Math.PI / 2 * RR + zo - RR }); }
+    return pts;
+  }
+  var PAD = { dorpel: maakPad("dorpel"), stijl: maakPad("stijl") };
+  function padPunt(F, u, q, h) { return som(som(F.w(u, 0, 0), q.o), maal(q.n, h)); }
+
+  // Buis langs middelpunten C (straal: getal of lijst), met platte kopse kanten
+  function buis(Bw, C, rad, m, o) {
+    o = o || {};
+    var n = C.length, seg = o.seg || 26, R = [], i, j, hk = o.hoek || 0, r0 = Array.isArray(rad) ? rad[0] : rad;
+    var T = []; for (i = 0; i < n; i++) T.push(een(ver(C[Math.min(i + 1, n - 1)], C[Math.max(i - 1, 0)])));
+    var e1 = assen(T[0])[0], s = 0, fr = [];
+    for (i = 0; i < n; i++) {
+      if (i) { e1 = een(ver(e1, maal(T[i], inw(e1, T[i])))); s += lengteV(ver(C[i], C[i - 1])); }
+      fr.push([e1, uitw(T[i], e1), s]);
+    }
+    function straal(i) { return Array.isArray(rad) ? rad[i] : rad; }
+    for (j = 0; j <= seg; j++) {
+      var h = j / seg * Math.PI * 2, rij = [];
+      for (i = 0; i < n; i++) {
+        var f = fr[i], nn = som(maal(f[0], Math.cos(h)), maal(f[1], Math.sin(h)));
+        rij.push(pt(som(C[i], maal(nn, straal(i))), nn, [(h + hk) * r0, f[2]], T[i]));
+      }
+      R.push(rij);
+    }
+    Bw.raster(R, m);
+    if (o.kap === false) return;
+    [[0, -1], [n - 1, 1]].forEach(function (e) {
+      var i = e[0], f = fr[i], r = straal(i), Rk = [];
+      for (var j = 0; j <= seg; j++) {
+        var h = j / seg * Math.PI * 2, rij = [], nn = som(maal(f[0], Math.cos(h)), maal(f[1], Math.sin(h)));
+        for (var k = 0; k <= 5; k++) { var rr = r * k / 5; rij.push(pt(som(C[i], maal(nn, rr)), maal(T[i], e[1]), [Math.cos(h + hk * e[1]) * rr, Math.sin(h + hk * e[1]) * rr], f[0])); }
+        Rk.push(rij);
+      }
+      Bw.raster(Rk, o.kapM || m);
+    });
+  }
+
+  // Gereedschap gaat in de gewone buffer, of (als het in- of uitfaadt) in de fade-buffer
+  function kies(B, BF, a) { return a >= 0.999 ? { b: B, a: 1 } : { b: BF, a: Math.max(0, a) }; }
+  function M(g, hex, ruw, metaal, soort) { return mat(hex, ruw, metaal, soort, g.a); }
+
+  /* De oude folie komt los: een tong van het vlak naar de rol (de achterkant, met lijm), en de rol zelf.
+     De rol volgt de voorkant, de afgeronde rand en de dagkant. */
+  function rolOud(g, F, uB, r, val) {
+    var d = DL + DO, ur = uB + r * 0.95, pad = PAD[F.deel], w = val || [0, 0, 0];
+    var C = pad.map(function (q) { return som(padPunt(F, ur, q, d + r), w); });
+    buis(g.b, C, r, M(g, [0.62, 0, 0], 0.8, 0, 2), { hoek: -uB / r, kapM: M(g, "#ffffff", 0.6, 0, 6), seg: 30 });
+    if (!val) {
+      var R = [];
+      for (var k = 0; k <= 6; k++) {
+        var f = k / 6, rij = [];
+        pad.forEach(function (q) {
+          // van het vlak (bij uB) in een boog omhoog naar de achterkant van de rol
+          var a = f * Math.PI * 0.62, uu = mix(uB, ur - r * Math.sin(a + 0.25) * 0.85, f), hh = d + 0.15 + (r * 0.95) * (1 - Math.cos(a)) * 0.9;
+          rij.push(pt(padPunt(F, uu, q, hh), q.n, [uu, q.v], F.U));
+        });
+        R.push(rij);
+      }
+      rasterNormalen(R, null);
+      g.b.raster(R, M(g, "#ffffff", 0.35, 0, 3));
+    }
+  }
+  function fohn(g, F, u, v, t) {
+    var doel = F.w(u, v, DL + DO);
+    var terug = een(som(som(maal(F.U, 0.5), maal(F.V, 0.42)), maal(F.n, 0.76))), dir = maal(terug, -1);
+    var tip = som(doel, maal(terug, 30)), mond = som(tip, maal(terug, 40)), lijf = som(mond, maal(terug, 118));
+    var wy = [0, 1, 0], up = een(ver(wy, maal(dir, inw(dir, wy)))), zij = een(uitw(dir, up));
+    if (Math.abs(inw(dir, wy)) > 0.95) { up = een(ver(F.V, maal(dir, inw(dir, F.V)))); zij = een(uitw(dir, up)); }
+    cil(g.b, tip, mond, 9, M(g, "#aeb6ba", 0.3, 1.0, 1), { kapM: M(g, "#2a2f33", 0.6, 0, 1) });
+    cil(g.b, som(tip, maal(terug, 0.2)), som(tip, maal(terug, 0.6)), 6.5, mat("#000000", 1, 0, 7, g.a), { bev: 0.1 });
+    var g0 = som(som(lijf, maal(dir, 42)), maal(zij, -8));
+    kist(g.b, g0, maal(dir, 26), maal(up, -80), maal(zij, 16), M(g, "#2b3035", 0.45, 0, 1), 5);
+    cil(g.b, lijf, mond, 19, M(g, "#353b41", 0.42, 0, 1), { bev: 5, kapM: M(g, "#262a2e", 0.5, 0, 1) });
+    cil(g.b, som(mond, maal(terug, 10)), som(mond, maal(terug, 24)), 19.7, M(g, K.mint, 0.5, 0, 1), { bev: 1.5, kap: false });
+    return { doel: doel, tip: tip, up: up, zij: zij };
+  }
+  // De krabber: een trekkrabber zoals de Bahco 665 ERGO. Een breed hardmetalen blad in een schuine houder,
+  // een zilveren hals, een zwarte bolknop bovenop voor de tweede hand en een lang oranje handvat met een
+  // zwarte grip. Je trekt hem naar je toe: het handvat wijst de kant op waar hij heen gaat, de lijm
+  // komt vóór het blad (onder de houder) bij elkaar.
+  // a: 0..1, het blad zakt van iets boven het vlak op het vlak (en tilt er aan het eind weer af).
+  function krabber(g, F, u, vmax, a) {
+    var lift = (1 - a) * 55, vc = vmax / 2, bw = Math.min(65, vmax - 4);
+    var E0 = F.w(u, vc, DL + 0.35 + lift), hk = 38 * RAD;
+    var b = een(som(maal(F.U, Math.cos(hk)), maal(F.n, Math.sin(hk))));            // van de snijkant schuin omhoog, naar voren
+    var nb = een(uitw(F.V, b)); if (inw(nb, F.U) > 0) nb = maal(nb, -1);           // de achterkant van het blad
+    var o = som(E0, maal(F.V, -bw / 2)), X = maal(F.V, bw);
+    var staal = M(g, "#b9bec1", 0.3, 1.0, 1);
+    kist(g.b, o, X, maal(b, 6), maal(nb, 2.4), M(g, "#41464a", 0.32, 0.9, 1), 0.4);   // hardmetalen snijkant
+    kist(g.b, som(o, maal(b, 5)), X, maal(b, 21), maal(nb, 3.2), M(g, "#9aa1a6", 0.34, 1.0, 1), 0.8);   // de houder
+    var H0 = som(E0, maal(b, 25)), dH = een(som(maal(F.U, 0.86), maal(F.n, 0.5))), H1 = som(H0, maal(dH, 48));
+    kist(g.b, som(som(H0, maal(F.V, -12)), maal(b, -6)), maal(F.V, 24), maal(b, 13), maal(nb, 8.5), staal, 3);   // de kop
+    cil(g.b, H0, H1, 6.5, staal, { bev: 2 });                                           // de hals
+    var K0 = som(H0, maal(F.n, 4)), K1 = som(som(H0, maal(F.n, 28)), maal(F.U, -5));
+    cil(g.b, K0, K1, 5.5, staal);
+    bol(g.b, som(K1, maal(F.n, 13)), 17, M(g, "#1b1c1e", 0.3, 0, 1), 16);               // de zwarte knop
+    // op de dorpel loopt het handvat schuin omhoog langs het kozijn (dan blijft de hele krabber in beeld)
+    var opDorpel = Math.abs(F.U[0]) > 0.5;
+    var dG = een(som(som(maal(F.U, 0.93), maal(F.n, opDorpel ? 0.2 : 0.3)), maal(F.V, opDorpel ? 0.32 : 0))), G0 = som(H1, maal(dG, -6)), G1 = som(G0, maal(dG, 166));
+    cil(g.b, G0, G1, 12, M(g, "#e5560a", 0.82, 0, 1), { bev: 5 });                        // het oranje handvat (Bahco-oranje)
+    cil(g.b, som(G0, maal(dG, 34)), som(G0, maal(dG, 150)), 13.5, M(g, "#1f2123", 0.72, 0, 1), { bev: 4, kap: false });   // de zwarte grip
+  }
+  // Vóór het blad schuift de lijm op tot een golvende rug van kleine bobbels.
+  function lijmrug(B, F, u, vmax, t, a) {
+    if (a <= 0.02) return;
+    var C = [], R = [], n = 26;
+    for (var i = 0; i <= n; i++) {
+      var v = mix(5, vmax - 5, i / n), ruis = 0.5 + 0.5 * Math.sin(i * 2.7 + 1.3) * Math.sin(i * 1.3 + t * 1.6);
+      var rr = (1.5 + 1.3 * ruis) * a;
+      C.push(F.w(u + 1.0 + rr * 0.7, v, DL + rr * 0.35)); R.push(rr);
+    }
+    buis(B, C, R, mat("#ffffff", 0.3, 0, 3), { seg: 14 });
+  }
+  // Af en toe valt er een kruimel lijm van de rug af: klein, rustig tuimelend, en weg.
+  function kruimels(B, naam, F, vmax, t, L) {
+    kruimelsBij(B, F, vmax, t, L, T[naam], function (tk) { return werkU(naam, bewGrens(naam, tk)); });
+  }
+  // dezelfde kruimels, voor een andere tijdlijn: iv = [van, tot], uOp(tk) = waar het blad was op tijd tk
+  function kruimelsBij(B, F, vmax, t, L, iv, uOp) {
+    var n = Math.floor((iv[1] - iv[0]) / 0.1);
+    for (var k = 0; k < n; k++) {
+      var tk = iv[0] + 0.2 + k * 0.1, a = t - tk;
+      if (a < 0 || a > 0.75) continue;
+      var u = uOp(tk);
+      if (u < 8 || u > L - 8) continue;
+      var h1 = ((k * 0.618) % 1), h2 = ((k * 0.414 + 0.3) % 1), h3 = ((k * 0.732 + 0.6) % 1);
+      var P0 = F.w(u + 4, 6 + h1 * (vmax - 12), DL + 2);
+      var P = som(som(P0, maal(F.U, (18 + h2 * 30) * a)), som(maal(F.n, (30 + h3 * 50) * a), [0, (25 + h2 * 35) * a - 760 * a * a, 0]));
+      bol(B, P, 1.3 + h3 * 1.3, mat("#ffffff", 0.35, 0, 3), 6);
+    }
+  }
+  // De rakel: een folie-rakel zoals vakmensen hem gebruiken (zie de voorbeeldfoto van de opdrachtgever):
+  // een blauw kaartje van stevig kunststof, 10 bij 7 cm, met afgeronde hoeken, een opstaande ribbel bovenin
+  // voor de grip, en onderaan een brede zwarte viltstrook die om de rand loopt en over de folie glijdt.
+  // Schuin gehouden, de bovenkant naar achteren.
+  function rakel(g, F, u, vmax, a) {
+    var lift = (1 - a) * 55, w = vmax + 30, h = 70, dik = 3.4, hoek = 30 * RAD;
+    var Yd = een(som(maal(F.U, -Math.cos(hoek)), maal(F.n, Math.sin(hoek))));      // van de viltrand schuin omhoog, naar achteren
+    var nb = een(uitw(F.V, Yd)); if (inw(nb, F.U) < 0) nb = maal(nb, -1);              // de voorkant (in de rijrichting)
+    var rand = F.w(u, vmax / 2, DN + 1.7 + lift), blauw = M(g, "#2b97d6", 0.36, 0, 1);
+    kaart(g.b, som(rand, maal(Yd, h / 2 + 1.2)), F.V, Yd, nb, w, h, dik, 5, blauw);
+    // de ribbel bovenin, aan twee kanten
+    var rib = som(som(rand, maal(Yd, h * 0.74)), maal(F.V, -(w - 7) / 2));
+    kist(g.b, som(rib, maal(nb, -(dik / 2 + 1.5))), maal(F.V, w - 7), maal(Yd, 5.5), maal(nb, dik + 3), M(g, "#2a8fcc", 0.34, 0, 1), 1.6);
+    // de viltstrook: aan beide kanten zo'n 2 cm hoog, en om de onderrand heen
+    var vilt = M(g, "#1d1e20", 0.97, 0, 1);
+    kist(g.b, som(som(rand, maal(F.V, -(w - 1) / 2)), som(maal(Yd, -1.4), maal(nb, -(dik / 2 + 1.3)))), maal(F.V, w - 1), maal(Yd, 22), maal(nb, dik + 2.6), vilt, 1.0);
+  }
+  // De spuitfles staat aan de linkerkant van wat hij nat maakt en spuit schuin op het vlak.
+  function spuitfles(g, F, u, vmax) {
+    var links = F.U[0] > 0.5 ? -1 : (F.U[0] < -0.5 ? 1 : -1);
+    var doel = F.w(u, vmax * 0.45, 0), mond = F.w(u + links * 70, vmax + 4, 66);
+    var dir = een(ver(doel, mond)), wy = [0, 1, 0], up = een(ver(wy, maal(dir, inw(dir, wy)))), zij = een(uitw(dir, up));
+    var kop0 = som(mond, maal(dir, -36)), hals = som(som(kop0, maal(dir, 9)), maal(up, -9)), voet = som(hals, [0, -84, 0]);
+    cil(g.b, voet, hals, 20, M(g, K.mint, 0.38, 0, 1), { bev: 6 });
+    var e0 = som(voet, [0, 24, 0]);
+    cil(g.b, e0, som(e0, [0, 30, 0]), 20.5, M(g, "#fbfbf8", 0.55, 0, 1), { kap: false, bev: 0.5 });
+    cil(g.b, hals, som(hals, maal(up, 9)), 8.5, M(g, K.inkt, 0.45, 0, 1));
+    kist(g.b, som(kop0, maal(zij, -7)), maal(dir, 36), maal(up, 14), maal(zij, 14), M(g, K.inkt, 0.42, 0, 1), 3);
+    kist(g.b, som(som(kop0, maal(dir, 20)), maal(zij, -3.5)), maal(dir, 6), maal(up, -22), maal(zij, 7), M(g, "#3a4045", 0.45, 0, 1), 2);
+    return { mond: mond, doel: doel, up: up, zij: zij };
+  }
+  // Een microvezeldoek, een beetje opgepropt onder de hand
+  // De doek: een opgepropte microvezeldoek onder de hand, met plooien, een zoom en randen die een
+  // beetje opkrullen. Hij poetst schoon en vetvrij en laat een natte glans achter (zie de shader).
+  function doek(g, F, u, v, vmax, t) {
+    var sc = vmax / 70, kl = M(g, "#a3d5c8", 0.95, 0, 5), zoom = M(g, "#6fb1a1", 0.95, 0, 5);
+    var n1 = 44, n2 = 12, R = [], hk = 0.16 * Math.sin(t * 2.7);
+    for (var i = 0; i <= n1; i++) {
+      var h = i / n1 * Math.PI * 2, rij = [];
+      var wob = 1 + 0.1 * Math.sin(h * 3 + 0.7) + 0.06 * Math.sin(h * 5 + 2.1) + 0.04 * Math.sin(h * 9 + 1.3);
+      for (var j = 0; j <= n2; j++) {
+        var f = j / n2, ru = 42 * sc * f * wob, rv = 29 * sc * f * wob;
+        var bult = 15 * Math.pow(Math.cos(f * Math.PI / 2), 1.2);
+        var plooi = 2.8 * Math.sin(h * 4 + f * 5) * f * (1 - f) * 4 + 1.2 * Math.sin(h * 11 + 2) * f;
+        var krul = f > 0.82 ? (f - 0.82) / 0.18 * 3 * (0.5 + 0.5 * Math.sin(h * 2 + 1)) : 0;
+        var du = Math.cos(h + hk) * ru, dv = Math.sin(h + hk) * rv;
+        rij.push(pt(F.w(u + du, v + dv, 0.8 + bult + Math.max(-0.4, plooi) + krul), F.n, [du, dv], F.U));
+      }
+      R.push(rij);
+    }
+    rasterNormalen(R, F.n);
+    g.b.raster(R.map(function (rij) { return rij.slice(0, n2); }), kl);
+    g.b.raster(R.map(function (rij) { return rij.slice(n2 - 1); }), zoom);
+  }
+  // De rol nieuwe folie: crème met een kartonnen kern
+  function rolNieuw(g, F, u, r, vmax, wv) {
+    var as0 = som(F.w(u + r * 0.55, -1, DN + 0.6 + r), wv), as1 = som(F.w(u + r * 0.55, vmax + RV + 1, DN + 0.6 + r), wv);
+    cil(g.b, as0, as1, r, M(g, "#ffffff", 0.35, 0, 4), { hoek: u / r, bev: 1.2, kapM: M(g, "#ffffff", 0.6, 0, 14), seg: 34 });
+  }
+  // Het omzetten: het bovenste deel van de nieuwe baan staat eerst rechtop boven de rand en klapt dan om
+  function omzetten(B, st) {
+    if (!st.nieuw) return;
+    var g = st.nieuwG, r = BEW.nieuw[1];
+    var a = Math.max(SW, r > 0 ? g - FLAP : g), b = Math.min(LEN, r > 0 ? g : g + FLAP);
+    if (b <= a + 0.5) return;
+    var R = [], n = 18;
+    for (var i = 0; i <= n; i++) {
+      var x = mix(a, b, i / n), f = klem(r * (g - x) / FLAP, 0, 1), h = E.zacht(f) * Math.PI / 2, rij = [];
+      for (var k = 0; k <= 6; k++) {
+        var w = k / 6 * (RV - 1.5), P = [x, PH + DN * 0.6 + Math.cos(h) * w, PD + DN * 0.6 - Math.sin(h) * w];
+        rij.push(pt(P, [0, Math.sin(h), Math.cos(h)], [x, PH + w], [1, 0, 0]));
+      }
+      R.push(rij);
+    }
+    rasterNormalen(R, [0, 0.7, 0.7]);
+    B.raster(R, mat("#ffffff", 0.35, 0, 4));
+  }
+  // Schilfers: losgelaten stukjes oude folie die omhoog krullen (tot de oude folie eraf gaat)
+  var SCHILFERS = [
+    { F: "boven", u: 408, v: 9, l: 20, b: 12, krul: 0.9, draai: 0.4 },
+    { F: "boven", u: 446, v: 20, l: 13, b: 9, krul: 0.7, draai: -0.6 },
+    { F: "voor", u: 372, v: PH - 13, l: 16, b: 10, krul: 0.6, draai: 1.9 },
+    { F: "svoor", u: 52, v: 30, l: 14, b: 9, krul: 0.65, draai: 2.6 }
+  ];
+  function schilfers(B, z) {
+    SCHILFERS.forEach(function (s) {
+      var m = s.F === "svoor" ? 1 : 0, F = s.F === "boven" ? FBOVEN : (m ? FSVOOR : FVOOR);
+      if (binnen(z.pel[m], s.u) || (m === 0 && z.los > 0.001 && s.u > LOS0)) return;
+      var R = [], ca = Math.cos(s.draai), sa = Math.sin(s.draai);
+      for (var i = 0; i <= 7; i++) {
+        var rij = [], fi = i / 7;
+        for (var j = 0; j <= 5; j++) {
+          var fj = j / 5 - 0.5, lu = fi * s.l, lv = fj * s.b * (1 - 0.25 * fi * fi);
+          // vast aan het begin, krult naar het eind omhoog en een beetje terug
+          var hk = s.krul * fi * fi * 2.2, hoogte = DL + DO + 0.15 + Math.sin(hk) * s.l * 0.42, terug = (1 - Math.cos(hk)) * s.l * 0.3;
+          var du = (lu - terug) * ca - lv * sa, dv = (lu - terug) * sa + lv * ca;
+          var uvw = (s.F === "boven" ? 1 : 0);
+          rij.push(pt(F.w(s.u + du, s.v + dv, hoogte), F.n, [s.u + du, (uvw ? PH + s.v : s.v) + dv], F.U));
+        }
+        R.push(rij);
+      }
+      rasterNormalen(R, F.n);
+      B.raster(R, mat([0.95, 0, 0], 0.8, 0, 2));
+    });
+  }
+  // De lagen op het stuk bij de zaagsnede komen in het begin even los van de voorkant
+  function losOffset(st, i) { var e = st.los; return i ? [8 * e, 68 * e, 34 * e] : [4 * e, 34 * e, 17 * e]; }
+  function losseLagen(B, st) {
+    var x0 = LOS0, x1 = LEN;
+    var lg = losOffset(st, 0), fo = losOffset(st, 1);
+    kist(B, som([x0, 0, PD], lg), [x1 - x0, 0, 0], [0, PH, 0], [0, 0, 1.4], mat("#ffffff", 0.3, 0, 3), 0.5);
+    kist(B, som([x0, 0, PD + 1.4], fo), [x1 - x0, 0, 0], [0, PH, 0], [0, 0, 1.9], mat([0.6, 0, 0], 0.8, 0, 2), 0.6);
+  }
+
+  /* 2D bovenop het beeld: warme lucht, nevel, vonkjes, uitleg -------------------------------- */
+  function luchtLijnen(ctx, c, f, t, a) {
+    ctx.save(); ctx.globalAlpha = a; ctx.beginPath();
+    for (var k = 0; k < 3; k++) {
+      for (var j = 0; j <= 10; j++) {
+        var q = j / 10, P = som(som(f.tip, maal(ver(f.doel, f.tip), q)), som(maal(f.up, (k - 1) * 6 + Math.sin(q * 7 - t * 7 + k * 2) * 2.2 * q), maal(f.zij, (k - 1) * 3)));
+        var p = c.q(P); if (j) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]);
+      }
+    }
+    ctx.strokeStyle = "rgba(" + K.hitte + ",0.42)"; ctx.lineWidth = 2 * c.S * 0.5; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.stroke();
+    ctx.restore();
+  }
+  var r0 = rng(99), NEVEL = []; for (var di = 0; di < 46; di++) NEVEL.push([r0(), r0(), r0()]);
+  function nevel(ctx, c, s, t, spuit) {
+    if (spuit <= 0) return;
+    var pm = c.q(s.mond), pdl = c.q(s.doel), w = 26 * c.S;
+    var nx = -(pdl[1] - pm[1]), ny = pdl[0] - pm[0], nl = Math.sqrt(nx * nx + ny * ny) || 1; nx /= nl; ny /= nl;
+    var gr = ctx.createLinearGradient(pm[0], pm[1], pdl[0], pdl[1]);
+    gr.addColorStop(0, "rgba(235,246,243," + (0.55 * spuit) + ")"); gr.addColorStop(1, "rgba(235,246,243,0.04)");
+    ctx.fillStyle = gr; ctx.beginPath(); ctx.moveTo(pm[0], pm[1]); ctx.lineTo(pdl[0] + nx * w, pdl[1] + ny * w); ctx.lineTo(pdl[0] - nx * w, pdl[1] - ny * w); ctx.closePath(); ctx.fill();
+    NEVEL.forEach(function (nv) {
+      var f = (nv[0] + t * 2.2) % 1, sp = som(maal(s.zij, (nv[1] - 0.5) * 52 * f), maal(s.up, (nv[2] - 0.5) * 42 * f));
+      var p = c.q(som(som(s.mond, maal(ver(s.doel, s.mond), f)), sp)), pr = (0.9 + f * 1.6) * c.S * 0.5;
+      ctx.fillStyle = "rgba(255,255,255," + (0.85 * spuit * (1 - f * 0.6)) + ")"; ctx.beginPath(); ctx.arc(p[0], p[1], pr, 0, Math.PI * 2); ctx.fill();
+    });
+  }
+  function vonk(ctx, x, y, s, a) {
+    ctx.save(); ctx.globalAlpha *= a;
+    var g = ctx.createRadialGradient(x, y, 0, x, y, s * 9); g.addColorStop(0, "rgba(255,255,255,0.7)"); g.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, s * 9, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x, y - 11 * s); ctx.quadraticCurveTo(x + s, y - s, x + 11 * s, y); ctx.quadraticCurveTo(x + s, y + s, x, y + 11 * s);
+    ctx.quadraticCurveTo(x - s, y + s, x - 11 * s, y); ctx.quadraticCurveTo(x - s, y - s, x, y - 11 * s); ctx.fillStyle = "#fff"; ctx.fill();
+    ctx.restore();
+  }
+  function lijn2(ctx, q, stijl, w) {
+    ctx.beginPath(); ctx.moveTo(q[0][0], q[0][1]); for (var i = 1; i < q.length; i++) ctx.lineTo(q[i][0], q[i][1]);
+    ctx.strokeStyle = stijl; ctx.lineWidth = w; ctx.lineJoin = "round"; ctx.lineCap = "round"; ctx.stroke();
+  }
+  function labels(ctx, c, st, opties) {
+    var a = st.labels, px = opties.pxPerCss || c.W / 700, fs = 15 * px;
+    var oF = losOffset(st, 1), oL = losOffset(st, 0);
+    var ankers = [
+      [c.q(som([LEN - 18, PH * 0.62, PD + 3.3], oF)), "Folie", "verweerd en gescheurd"],
+      [c.q(som([LEN - 12, 12, PD + 1.4], oL)), "Lijmlaag", "houdt de folie vast"],
+      [c.p(LEN, 20, PD * 0.4), "Kunststof profiel", "blijft heel"]
+    ];
+    var x = 0, yMax = 0; ankers.forEach(function (k) { x = Math.max(x, k[0][0]); yMax = Math.max(yMax, k[0][1]); });
+    ctx.font = "600 " + fs.toFixed(1) + "px Montserrat, sans-serif";
+    var breed = ctx.measureText("Kunststof profiel").width, onder = x + 30 * px + breed > c.W - 18 * px;
+    x = onder ? Math.max(24 * px, c.W * 0.5 - breed * 0.2) : Math.min(x + 30 * px, c.W - breed - 18 * px);
+    var y = onder ? yMax + 70 * px : -1e9;
+    ctx.save(); ctx.globalAlpha *= a; ctx.textBaseline = "alphabetic";
+    ankers.forEach(function (k) {
+      var ly = onder ? y : Math.max(y, k[0][1] + 5 * px); y = ly + fs * 2.9;
+      lijn2(ctx, [[k[0][0], k[0][1]], [x - 8 * px, ly - fs * 0.36]], kleur(K.inkt, 1, 0.5), 1.2 * px);
+      ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(k[0][0], k[0][1], 4.6 * px, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = K.inkt; ctx.beginPath(); ctx.arc(k[0][0], k[0][1], 3.1 * px, 0, Math.PI * 2); ctx.fill();
+      ctx.font = "600 " + fs.toFixed(1) + "px Montserrat, sans-serif"; ctx.fillStyle = K.inkt; ctx.fillText(k[1], x, ly);
+      ctx.font = (fs * 0.84).toFixed(1) + "px Inter, sans-serif"; ctx.fillStyle = K.sub; ctx.fillText(k[2], x, ly + fs * 1.2);
+    });
+    ctx.restore();
+  }
+  function rond(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h); ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r); ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath();
+  }
+  /* Alleen voor de video: stappen en ondertitel in beeld (op de site doet de HTML dat) */
+  function videoTekst(ctx, t, W, H) {
+    var vert = H > W * 1.2, s = vert ? W / 1080 * 1.3 : Math.min(W / 1920, H / 1080);
+    var zin = null;
+    ZINNEN.forEach(function (z) { if (t >= z[0] && t < z[1] + 0.4) zin = z; });
+    if (zin) {
+      var a = Math.min(fase(t, zin[0], 0.3), 1 - fase(t, zin[1], 0.35)), fs = 34 * s;
+      ctx.save(); ctx.globalAlpha = a; ctx.font = "600 " + fs.toFixed(1) + "px Montserrat, sans-serif";
+      var regels = [zin[2]], maxW = W - 150 * s;
+      if (ctx.measureText(zin[2]).width > maxW) {
+        var wd = zin[2].split(" "), best = 1, bestD = 1e9;
+        for (var i = 1; i < wd.length; i++) { var d = Math.abs(ctx.measureText(wd.slice(0, i).join(" ")).width - ctx.measureText(wd.slice(i).join(" ")).width); if (d < bestD) { bestD = d; best = i; } }
+        regels = [wd.slice(0, best).join(" "), wd.slice(best).join(" ")];
+      }
+      var tw = 0; regels.forEach(function (r) { tw = Math.max(tw, ctx.measureText(r).width); });
+      var lh = fs * 1.3, h = 80 * s + (regels.length - 1) * lh, w = tw + 110 * s, x = W / 2 - w / 2, y = vert ? H * 0.8 : H - 36 * s - h;
+      var rr = Math.min(h / 2, 40 * s);
+      ctx.fillStyle = "rgba(34,38,42,0.10)"; rond(ctx, x, y + 8 * s, w, h, rr); ctx.fill();
+      ctx.fillStyle = "#fff"; rond(ctx, x, y, w, h, rr); ctx.fill();
+      ctx.fillStyle = K.mint; ctx.beginPath(); ctx.arc(x + 40 * s, y + h / 2, 10 * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = K.inkt; ctx.textBaseline = "middle";
+      regels.forEach(function (r, i) { ctx.fillText(r, x + 76 * s, y + h / 2 + (i - (regels.length - 1) / 2) * lh + 1); });
+      ctx.restore();
+    }
+    var x0 = vert ? 54 * s : 64 * s, y0 = vert ? 120 * s : 60 * s;
+    STAPPEN.forEach(function (sp, k) {
+      var nu = t >= sp.van && t < sp.tot, klaar = t >= sp.tot, a = fase(t, INTRO + 0.4 + k * 0.12, 0.4);
+      if (a <= 0) return;
+      ctx.save(); ctx.globalAlpha = a;
+      ctx.font = "600 " + (24 * s).toFixed(1) + "px Montserrat, sans-serif";
+      var w = ctx.measureText(sp.naam).width + 92 * s, h = 58 * s, y = y0 + k * (h + 12 * s);
+      ctx.fillStyle = "rgba(34,38,42,0.08)"; rond(ctx, x0, y + 6 * s, w, h, h / 2); ctx.fill();
+      ctx.fillStyle = nu ? K.mintDiep : "#fff"; rond(ctx, x0, y, w, h, h / 2); ctx.fill();
+      ctx.fillStyle = nu ? "#fff" : (klaar ? K.mintDiep : "#dbece7"); ctx.beginPath(); ctx.arc(x0 + 30 * s, y + h / 2, 17 * s, 0, Math.PI * 2); ctx.fill();
+      if (klaar) { ctx.strokeStyle = "#fff"; ctx.lineWidth = 3.6 * s; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x0 + 22 * s, y + h / 2); ctx.lineTo(x0 + 28 * s, y + h / 2 + 6 * s); ctx.lineTo(x0 + 38 * s, y + h / 2 - 6 * s); ctx.stroke(); }
+      else { ctx.fillStyle = K.mintDiep; ctx.font = "700 " + (20 * s).toFixed(1) + "px Montserrat, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(String(sp.nr), x0 + 30 * s, y + h / 2 + 1); ctx.textAlign = "start"; }
+      ctx.fillStyle = nu ? "#fff" : K.inkt; ctx.globalAlpha = a * (nu || klaar ? 1 : 0.62);
+      ctx.font = "600 " + (24 * s).toFixed(1) + "px Montserrat, sans-serif"; ctx.textBaseline = "middle"; ctx.fillText(sp.naam, x0 + 60 * s, y + h / 2 + 1);
+      ctx.restore();
+    });
+  }
+
+  /* Het gereedschap van het verhaal, op het juiste moment ------------------------------------ */
+  function gereedschap(B, BF, sc, st, t, boven) {
+    function bezig(naam, voor, na) { var iv = T[naam]; return t > iv[0] - (voor || 0.05) && t < iv[1] + (na || 0.3); }
+    function info(naam, F0, vmax) {
+      var L = lengte(BEW[naam][0]);
+      return { F: werkvlak(F0, naam), L: L, u: werkU(naam, st[naam + "G"]), vmax: vmax, iv: T[naam] };
+    }
+    var heat = [0, 0, 0, 0];
+    /* stap 1: warmte en de rol oude folie */
+    [["pel", FVOOR, PH], ["pelS", FSVOOR, SW]].forEach(function (x) {
+      if (!bezig(x[0])) return;
+      var b = info(x[0], x[1], x[2]), u = b.u;
+      var r = Math.sqrt(30 + Math.max(0, u + MARGE) * (DO + DL) * 1.1 / Math.PI);
+      var aIn = fase(t, b.iv[0], 0.3), val = x[0] === "pel" ? Math.max(0, u - b.L + 4) : 0;
+      var aRol = Math.min(aIn, 1 - fase(u, b.L - 6, 20));
+      if (aRol > 0.003) rolOud(kies(B, BF, aRol), b.F, u, r, val > 0 ? [0, -val * val * 0.08, 0] : null);
+      var aF = Math.min(aIn, 1 - fase(u, b.L - 30, 30));
+      if (aF > 0.003) {
+        var f = fohn(kies(B, BF, aF), b.F, Math.min(u + r * 2 + 20, b.L - 6), x[2] * 0.55, t);
+        heat = [f.doel[0], f.doel[1], f.doel[2], aF];
+        boven.push(function (ctx, c) { luchtLijnen(ctx, c, f, t, aF); });
+      }
+    });
+    sc.heat = heat;
+    /* stap 2: de krabber duwt de lijm voor zich uit */
+    [["krabS", FSVOOR, SW], ["krab", FVOOR, PH]].forEach(function (x) {
+      if (!bezig(x[0])) return;
+      var b = info(x[0], x[1], x[2]), u = b.u;
+      var a = Math.min(fase(t, b.iv[0], 0.3), 1 - fase(t, b.iv[1] - 0.1, 0.3));
+      lijmrug(B, b.F, u, x[2], t, Math.min(fase(u, 0, 22), fase(b.L - u, 0, 22)) * a);
+      kruimels(B, x[0], b.F, x[2], t, b.L);
+      if (a > 0.003) krabber(kies(B, BF, a), b.F, u, x[2], a);
+    });
+    /* stap 2: schoonmaken en ontvetten met een doek: eerst de dorpel, dan de stijl omhoog */
+    [["doek", FVOOR, PH], ["doekS", FSVOOR, SW]].forEach(function (x) {
+      if (!bezig(x[0], 0.1, 0.25)) return;
+      var b = info(x[0], x[1], x[2]);
+      var a = Math.min(fase(t, b.iv[0], 0.2), 1 - fase(t, b.iv[1] - 0.05, 0.25));
+      if (a > 0.003) doek(kies(B, BF, a), b.F, klem(b.u, 14, b.L - 14), x[2] * 0.5 + Math.sin(t * 8.5) * x[2] * 0.08, x[2], t);
+    });
+    /* stap 3: de rol nieuwe folie en de rakel */
+    [["nieuw", FVOOR, PH], ["nieuwS", FSVOOR, SW]].forEach(function (x) {
+      if (!bezig(x[0])) return;
+      var b = info(x[0], x[1], x[2]), u = b.u;
+      var r = Math.sqrt(121 + Math.max(0, b.L + MARGE - u) * DN * 0.62 / Math.PI);
+      var a = Math.min(fase(t, b.iv[0], 0.3), 1 - fase(u, b.L + 6, 22));
+      if (a <= 0.003) return;
+      var g = kies(B, BF, a);
+      rakel(g, b.F, Math.max(-20, u - 22), x[2], Math.min(1, fase(t, b.iv[0], 0.3)));
+      var weg = Math.max(0, u - b.L + 4);
+      rolNieuw(g, b.F, u, r, x[2], maal(b.F.U, weg * 0.5));
+    });
+  }
+
+  /* Een beeld van het verhaal ------------------------------------------------------------- */
+  function kapLaag(z, m, u) {
+    if (m === 0 && z.los > 0.001) return [0, 0, 0];
+    if (binnen(z.nieuw[m], u)) return [0, 0, DN];
+    if (!binnen(z.pel[m], u)) return [DL, DO, 0];
+    if (!binnen(z.krab[m], u)) return [DL, 0, 0];
+    return [0, 0, 0];
+  }
+  function teken(ctx, t, W, H, opties) {
+    opties = opties || {};
+    t = klem(t, 0, DUUR);
+    var st = staat(t), c = maakCamera(camVoor(t), W, H), z = zonesVoor(st), boven = [];
+    var sc = {
+      cam: c, z: z, schaduwMaat: opties.schaduwMaat || 2048,
+      achtergrond: opties.achtergrond === false ? null : (opties.variant === "mint" ? "mint" : "licht"),
+      kap: [kapLaag(z, 0, LEN), kapLaag(z, 1, 0)]
+    };
+    if (st.vetvrij > 0 && st.vetvrij < 1) {
+      var vv = E.zacht(st.vetvrij); sc.sweep = [mix(-80, LEN + 160, vv), mix(-80, STI + 160, vv), Math.sin(Math.PI * st.vetvrij) * 1.1, 1];
+    }
+    if (st.glans > 0 && st.glans < 1) {
+      var gv = E.zacht(st.glans); sc.sweep = [mix(-90, LEN + 200, gv), mix(-90, STI + 200, gv), Math.sin(Math.PI * st.glans), 0];
+    }
+    sc.dingen = function (B, BF) {
+      schilfers(B, z);
+      if (st.los > 0.001) losseLagen(B, st);
+      omzetten(B, st);
+      gereedschap(B, BF, sc, st, t, boven);
+    };
+    var cv = renderScene(W, H, sc);
+    if (!cv) return false;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    if (opties.achtergrond === false) ctx.clearRect(0, 0, W, H);
+    plak(ctx, cv, W, H);
+    boven.forEach(function (f) { f(ctx, c); });
+    // klaar: vonkjes op de nieuwe folie
+    [[150, 0.6, FVOOR, PH], [360, 0.35, FVOOR, PH], [80, 0.5, FSVOOR, SW]].forEach(function (v, k) {
+      var f = fase(t, T.glans[0] + 0.45 + k * 0.22, 0.8), zz = Math.sin(Math.PI * f);
+      if (zz <= 0.01) return;
+      var p = c.q(v[2].w(v[0], v[3] * v[1], DN));
+      vonk(ctx, p[0], p[1], zz * 1.7 * c.S * 0.5, zz);
+    });
+    if (st.labels > 0.01 && opties.labels !== false) labels(ctx, c, st, opties);
+    ctx.restore();
+    if (opties.video) videoTekst(ctx, t, W, H);
+    return true;
+  }
+
+  /* Op de site ------------------------------------------------------------------------
+     <figure class="kozijn-3d" data-kozijn-3d> met een canvas, een ondertitel (.k3d-zin),
+     een knop .k3d-opnieuw en drie knoppen [data-stap]. Speelt één keer zodra hij in beeld
+     komt en blijft dan op het eindbeeld staan. Een klik op een stap speelt vanaf die stap.
+     Wie "minder beweging" aan heeft, ziet het eindbeeld; een klik op een stap laat dan
+     een stilstaand beeld van die stap zien.
+     Zonder WebGL2 doet het script niets: dan blijft het startbeeld (de JPG uit de CSS) staan.
+     Vloeiend afspelen: het canvas tekent op hooguit 1,5 keer de schermresolutie, en als een
+     computer het niet bijhoudt, tekent hij gelijkmatig elk tweede beeld (30 per seconde)
+     in plaats van onregelmatig te haperen. */
+  function speler(fig) {
+    var doek = fig.querySelector("canvas");
+    if (!doek || !doek.getContext || fig.iwrapSpeel) return;
+    if (!motorStart(1536)) { fig.classList.add("k3d-geen-webgl"); return; }
+    var ctx = doek.getContext("2d");
+    var zinEl = fig.querySelector(".k3d-zin"), opnieuw = fig.querySelector(".k3d-opnieuw");
+    var knoppen = Array.prototype.slice.call(fig.querySelectorAll("[data-stap]"));
+    var rustig = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    var t = rustig ? DUUR : 0, stilStap = 0, speelt = false, raf = 0, vorig = 0, W = 0, H = 0, dpr = 1, css = 0, inBeeld = false, gestart = false;
+    var duurGem = 8, traag = false, overslaan = false, getekend = 0;
+
+    function maat() {
+      var r = doek.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      dpr = Math.min(1.5, window.devicePixelRatio || 1); css = r.width;
+      var w = Math.round(r.width * dpr), h = Math.round(r.height * dpr);
+      if (w !== W || h !== H) { W = doek.width = w; H = doek.height = h; }
+      beeld();
+    }
+    function beeld() {
+      if (!W) return;
+      var a = window.performance ? performance.now() : 0;
+      if (teken(ctx, t, W, H, { pxPerCss: dpr * klem(css / 540, 0.8, 1), labels: css >= 460, schaduwMaat: 1536 })) {
+        if (!getekend++) fig.classList.add("k3d-getekend");
+      }
+      if (a) duurGem = duurGem * 0.92 + (performance.now() - a) * 0.08;
+      stand();
+    }
+    function stand() {
+      var z = "";
+      if (rustig) z = stilStap ? ZINNEN[[2, 3, 5][stilStap - 1]][2] : "";
+      else ZINNEN.forEach(function (r) { if (t >= r[0] && t < r[1] + 0.3) z = r[2]; });
+      if (zinEl && zinEl.getAttribute("data-zin") !== z) {
+        zinEl.setAttribute("data-zin", z);
+        if (z) zinEl.textContent = z;
+        zinEl.classList.toggle("is-leeg", !z);
+      }
+      knoppen.forEach(function (k) {
+        var i = +k.getAttribute("data-stap"), sp = STAPPEN[i - 1];
+        var nu = rustig ? stilStap === i : (t >= sp.van && t < sp.tot), klaar = rustig ? !stilStap : t >= sp.tot;
+        k.classList.toggle("is-nu", nu);
+        k.classList.toggle("is-klaar", klaar && !nu);
+        if (nu) k.setAttribute("aria-current", "step"); else k.removeAttribute("aria-current");
+      });
+      if (opnieuw) opnieuw.hidden = rustig || speelt || t < DUUR - 0.01;
+      fig.classList.toggle("k3d-speelt", speelt);
+    }
+    function lus(nu) {
+      if (!speelt) return;
+      raf = requestAnimationFrame(lus);
+      if (traag && (overslaan = !overslaan)) return;          // gelijkmatig 30 beelden per seconde
+      var dt = (nu - vorig) / 1000; vorig = nu;
+      if (dt > 0.25 || dt < 0) dt = 1 / 60;                   // na een pauze (ander tabblad) niet vooruit springen
+      t = Math.min(DUUR, t + dt);
+      beeld();
+      if (duurGem > 11) traag = true;
+      if (t >= DUUR) { speelt = false; cancelAnimationFrame(raf); stand(); }
+    }
+    function speel(van) {
+      gestart = true;
+      if (rustig) return;
+      t = van || 0; speelt = true;
+      cancelAnimationFrame(raf); vorig = performance.now(); raf = requestAnimationFrame(lus);
+    }
+    function pauze() { speelt = false; cancelAnimationFrame(raf); stand(); }
+    function verder() { if (!speelt && gestart && t < DUUR) { speelt = true; vorig = performance.now(); raf = requestAnimationFrame(lus); } }
+
+    knoppen.forEach(function (k) {
+      k.addEventListener("click", function () {
+        var i = +k.getAttribute("data-stap");
+        if (rustig) { stilStap = stilStap === i ? 0 : i; t = stilStap ? STIL[i - 1] : DUUR; beeld(); return; }
+        speel(Math.max(0, STAPPEN[i - 1].van - 0.25));
+      });
+    });
+    if (opnieuw) opnieuw.addEventListener("click", function () { speel(0); });
+    fig.iwrapSpeel = function () { if (rustig) { stilStap = 0; t = DUUR; beeld(); } else speel(0); };
+
+    if (window.ResizeObserver) new ResizeObserver(maat).observe(doek); else window.addEventListener("resize", maat);
+    maat();
+    if (rustig) return;
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          inBeeld = e.isIntersecting && e.intersectionRatio >= 0.35;
+          if (inBeeld && !gestart) speel(0);
+          else if (inBeeld) verder();
+          else if (speelt) { pauze(); }
+        });
+      }, { threshold: [0, 0.35, 0.6] }).observe(fig);
+    } else speel(0);
+  }
+  function start() { Array.prototype.forEach.call(document.querySelectorAll("[data-kozijn-3d]"), speler); }
+  if (typeof document !== "undefined") {
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
+  }
+
+  window.iwrapKozijn3D = {
+    teken: teken, duur: DUUR, stappen: STAPPEN, zinnen: ZINNEN, start: start,
+    // de motor en de onderdelen, zodat de korte versie (kozijn-sting.js) hetzelfde kozijn tekent
+    motor: {
+      render: renderScene, plak: plak, start: motorStart, camera: maakCamera, Bouwer: Bouwer, mat: mat, cil: cil, kist: kist, kaart: kaart, bol: bol, buis: buis,
+      Vlak: Vlak, FVOOR: FVOOR, FBOVEN: FBOVEN, FSVOOR: FSVOOR, PAD: PAD, padPunt: padPunt,
+      rolOud: rolOud, rolNieuw: rolNieuw, rakel: rakel, krabber: krabber, lijmrug: lijmrug, kruimels: kruimelsBij, fohn: fohn, luchtLijnen: luchtLijnen,
+      spuitfles: spuitfles, nevel: nevel, doek: doek, schilfers: schilfers, omzetten: omzetten, kapLaag: kapLaag, kies: kies, vonk: vonk, rond: rond,
+      kromme: kromme, klem: klem, mix: mix, fase: fase, E: E, som: som, ver: ver, maal: maal, een: een, inw: inw, uitw: uitw, rng: rng, binnen: binnen,
+      maten: { LEN: LEN, PH: PH, PD: PD, SW: SW, STI: STI, GZ0: GZ0, GZ1: GZ1, RV: RV, RR: RR, DL: DL, DO: DO, DN: DN, FLAP: FLAP, MARGE: MARGE, COT: COT, RAD: RAD },
+      K: K
+    }
+  };
+})();

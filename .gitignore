@@ -7,3 +7,9 @@ prive/
 video/node_modules/
 video/beelden/
 video/*.mp4
+
+# De bron van de animaties (beweging/): wat de bouwscripts maken, hoort niet in git.
+beweging/dist/
+beweging/artifact/
+beweging/tools/encode
+beweging/3d kozijn/video/

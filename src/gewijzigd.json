@@ -8,24 +8,24 @@
   "hash": "93f204c0d48c"
  },
  "contact": {
-  "datum": "2026-10-25",
-  "hash": "113a2235d206"
+  "datum": "2026-11-15",
+  "hash": "58d47335ac95"
  },
  "dakkapel-kozijnen": {
-  "datum": "2026-10-25",
-  "hash": "09f6e789ae86"
+  "datum": "2026-11-15",
+  "hash": "1328cac1dccb"
  },
  "index": {
-  "datum": "2026-11-10",
-  "hash": "e08b1ea822d9"
+  "datum": "2026-11-15",
+  "hash": "8ee5b7110353"
  },
  "kosten": {
-  "datum": "2026-10-25",
-  "hash": "2487a7b05626"
+  "datum": "2026-11-15",
+  "hash": "1621593335c6"
  },
  "kozijncheck": {
-  "datum": "2026-10-25",
-  "hash": "53fd6f2770bd"
+  "datum": "2026-11-15",
+  "hash": "9782f67c0dd7"
  },
  "kozijnmerken/finstral": {
   "datum": "2026-11-10",
@@ -36,8 +36,8 @@
   "hash": "d9d90a89be05"
  },
  "kozijnmerken/index": {
-  "datum": "2026-09-21",
-  "hash": "5c2c49ff1608"
+  "datum": "2026-11-15",
+  "hash": "a30d88daa1c9"
  },
  "kozijnmerken/knipping": {
   "datum": "2026-11-10",
@@ -72,12 +72,12 @@
   "hash": "3d021ba59a5b"
  },
  "offerte": {
-  "datum": "2026-11-11",
-  "hash": "96f5b4367d32"
+  "datum": "2026-11-15",
+  "hash": "a771a20e4688"
  },
  "over-iwrap": {
-  "datum": "2026-11-11",
-  "hash": "f85be7394e6c"
+  "datum": "2026-11-15",
+  "hash": "e282886df35d"
  },
  "privacy": {
   "datum": "2026-10-25",
@@ -88,8 +88,8 @@
   "hash": "e92a06377e76"
  },
  "tekenblad": {
-  "datum": "2026-10-24",
-  "hash": "1a5f074fb5d9"
+  "datum": "2026-11-15",
+  "hash": "49b233c72f16"
  },
  "veelgestelde-vragen": {
   "datum": "2026-10-25",
@@ -100,19 +100,19 @@
   "hash": "e1ec19afa75e"
  },
  "voorbeelden": {
-  "datum": "2026-11-11",
-  "hash": "18e358cbbad1"
+  "datum": "2026-11-15",
+  "hash": "eec697888c72"
  },
  "vve-en-woningcorporaties": {
-  "datum": "2026-10-25",
-  "hash": "fc9baa382422"
+  "datum": "2026-11-15",
+  "hash": "edee55290f1c"
  },
  "werkgebied": {
-  "datum": "2026-10-25",
-  "hash": "1576fc8556a5"
+  "datum": "2026-11-15",
+  "hash": "29e86661db7c"
  },
  "werkwijze": {
-  "datum": "2026-11-11",
-  "hash": "7d92979314b1"
+  "datum": "2026-11-15",
+  "hash": "dc2f0a1d350d"
  }
 }

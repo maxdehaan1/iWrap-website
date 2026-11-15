@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Inter:wght@400;500;600&display=block">
+<style>html,body{margin:0;background:#fff;overflow:hidden}canvas{display:block}</style></head>
+<body><canvas id="c"></canvas>
+<script>
+  // render.html?src=a.js,b.js&obj=iwrapKozijn3D&w=1920&h=1080&video=1&variant=licht&logo=1
+  var q = new URLSearchParams(location.search), W = +q.get("w"), H = +q.get("h");
+  var vel = document.getElementById("c"); vel.width = W; vel.height = H;
+  var ctx = vel.getContext("2d"), tmp = document.createElement("canvas"); tmp.width = W; tmp.height = H;
+  var tctx = tmp.getContext("2d"), obj = null, opts = { video: q.get("video") === "1", variant: q.get("variant") || "licht", logo: q.get("logo") !== "0", pxPerCss: H > W * 1.2 ? W / 560 : W / 960 };
+  window.KLAAR = false;
+  var bronnen = q.get("src").split(",");
+  (function laad(i) {
+    if (i >= bronnen.length) {
+      Promise.all([document.fonts.load("600 30px Montserrat"), document.fonts.load("700 30px Montserrat"), document.fonts.load("400 20px Inter")]).then(function () {
+        obj = window[q.get("obj")]; window.DUUR = obj.duur; window.KLAAR = true;
+      }, function () { obj = window[q.get("obj")]; window.DUUR = obj.duur; window.KLAAR = true; });
+      return;
+    }
+    var e = document.createElement("script"); e.src = bronnen[i]; e.onload = function () { laad(i + 1); }; document.head.appendChild(e);
+  })(0);
+  // één beeld, gemiddeld over N momenten binnen de sluitertijd (bewegingsonscherpte)
+  window.beeld = function (t, N, sluiter, fps) {
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.clearRect(0, 0, W, H);
+    for (var j = 0; j < N; j++) {
+      var ts = N === 1 ? t : t + (j / (N - 1) - 0.5) * sluiter / fps;
+      tctx.setTransform(1, 0, 0, 1, 0, 0); tctx.clearRect(0, 0, W, H);
+      obj.teken(tctx, Math.max(0, Math.min(obj.duur, ts)), W, H, opts);
+      ctx.globalAlpha = 1 / (j + 1); ctx.drawImage(tmp, 0, 0);
+    }
+    ctx.globalAlpha = 1;
+    return 1;
+  };
+</script></body></html>

@@ -1,0 +1,85 @@
+[
+ {
+  "src": "kozijn3d.js",
+  "obj": "iwrapKozijn3D",
+  "w": 1920,
+  "h": 1080,
+  "video": 1,
+  "uit": "video/iWrap 3D - zo herstellen we een kozijn.mp4",
+  "bitrate": 14000000,
+  "poster": [
+   0,
+   "video/3d-poster.png"
+  ],
+  "samples": 4
+ },
+ {
+  "src": "kozijn3d.js",
+  "obj": "iwrapKozijn3D",
+  "w": 1080,
+  "h": 1920,
+  "video": 1,
+  "uit": "video/iWrap 3D - zo herstellen we een kozijn - staand.mp4",
+  "bitrate": 14000000,
+  "samples": 4
+ },
+ {
+  "src": "kozijn3d.js,kozijn-sting.js",
+  "obj": "iwrapKozijnSting",
+  "w": 1920,
+  "h": 1080,
+  "variant": "licht",
+  "uit": "video/iWrap logo - van beschadigd naar mooi - wit.mp4",
+  "bitrate": 12000000,
+  "poster": [
+   6.6,
+   "video/sting-poster-wit.png"
+  ],
+  "samples": 4
+ },
+ {
+  "src": "kozijn3d.js,kozijn-sting.js",
+  "obj": "iwrapKozijnSting",
+  "w": 1920,
+  "h": 1080,
+  "variant": "mint",
+  "uit": "video/iWrap logo - van beschadigd naar mooi - mint.mp4",
+  "bitrate": 12000000,
+  "poster": [
+   6.6,
+   "video/sting-poster-mint.png"
+  ],
+  "samples": 4
+ },
+ {
+  "src": "kozijn3d.js,kozijn-sting.js",
+  "obj": "iwrapKozijnSting",
+  "w": 1080,
+  "h": 1920,
+  "variant": "licht",
+  "uit": "video/iWrap logo - van beschadigd naar mooi - wit - staand.mp4",
+  "bitrate": 12000000,
+  "samples": 4
+ },
+ {
+  "src": "kozijn3d.js,kozijn-sting.js",
+  "obj": "iwrapKozijnSting",
+  "w": 1080,
+  "h": 1920,
+  "variant": "mint",
+  "uit": "video/iWrap logo - van beschadigd naar mooi - mint - staand.mp4",
+  "bitrate": 12000000,
+  "samples": 4
+ },
+ {
+  "src": "kozijn3d.js,kozijn-sting.js",
+  "obj": "iwrapKozijnSting",
+  "w": 1920,
+  "h": 1080,
+  "variant": "licht",
+  "logo": 0,
+  "uit": "video/iWrap kozijn - van beschadigd naar mooi (zonder logo).mp4",
+  "bitrate": 12000000,
+  "samples": 4
+ }
+]

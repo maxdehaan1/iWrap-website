@@ -1,0 +1,128 @@
+[
+ {
+  "naam": "werkgebied",
+  "bestand": "werkgebied",
+  "scene": "werkgebied",
+  "boven": "IWRAP  ·  WERKGEBIED",
+  "titel": [
+   "Een rit",
+   "per regio"
+  ],
+  "onder": "Dat scheelt je in de reiskosten.",
+  "captions": [
+   {
+    "t0": 0.6,
+    "t1": 6.6,
+    "text": "Aanvragen uit dezelfde regio plannen we achter elkaar."
+   },
+   {
+    "t0": 7.9,
+    "t1": 14.4,
+    "text": "Reiskosten zitten in de prijs. Geen opslag achteraf."
+   },
+   {
+    "t0": 15.5,
+    "t1": 21.4,
+    "text": "Wij komen door heel Nederland."
+   }
+  ],
+  "sceneEind": 23.5
+ },
+ {
+  "naam": "kozijncheck",
+  "bestand": "kozijncheck",
+  "scene": "kozijncheck",
+  "boven": "IWRAP  ·  KOZIJNCHECK",
+  "titel": [
+   "Gratis",
+   "kozijncheck"
+  ],
+  "onder": "Bij elke klus, zonder meerprijs.",
+  "captions": [
+   {
+    "t0": 0.6,
+    "t1": 4.6,
+    "text": "Terwijl we herstellen, kijken we ook naar de rest."
+   },
+   {
+    "t0": 5.0,
+    "t1": 9.8,
+    "text": "Bij de oplevering krijg je een eerlijk stoplichtrapport."
+   }
+  ]
+ },
+ {
+  "naam": "herstellen of vervangen",
+  "bestand": "herstellen-of-vervangen",
+  "scene": "vervangen",
+  "boven": "IWRAP  ·  HERSTELLEN OF VERVANGEN",
+  "titel": [
+   "Herstellen",
+   "of vervangen?"
+  ],
+  "onder": "Let op wat er niet in de offerte staat.",
+  "captions": [
+   {
+    "t0": 0.5,
+    "t1": 3.6,
+    "text": "Vervangen: het oude kozijn wordt eruit gebroken."
+   },
+   {
+    "t0": 4.0,
+    "t1": 7.2,
+    "text": "Herstellen: meestal een tot twee dagen, binnen verandert niets."
+   }
+  ]
+ },
+ {
+  "naam": "offerte aanvragen",
+  "bestand": "offerte-aanvragen",
+  "scene": "aanvraag",
+  "boven": "IWRAP  ·  OFFERTE AANVRAGEN",
+  "titel": [
+   "Een foto en",
+   "een paar strepen"
+  ],
+  "onder": "Wij maken er een vaste prijs van.",
+  "captions": [
+   {
+    "t0": 0.4,
+    "t1": 5.2,
+    "text": "Maak een foto en streep aan wat er moet gebeuren."
+   },
+   {
+    "t0": 5.6,
+    "t1": 10.2,
+    "text": "Je krijgt een vaste prijs. Er hoeft niemand langs te komen."
+   }
+  ]
+ },
+ {
+  "naam": "vve in blokken",
+  "bestand": "vve-in-blokken",
+  "scene": "vve",
+  "boven": "IWRAP  ·  VVE’S EN CORPORATIES",
+  "titel": [
+   "Uitvoering",
+   "in blokken"
+  ],
+  "onder": "Zo staat er niet overal tegelijk een steiger.",
+  "captions": [
+   {
+    "t0": 0.3,
+    "t1": 3.3,
+    "text": "Eerst een korte toelichting voor de bewoners."
+   },
+   {
+    "t0": 3.6,
+    "t1": 10.8,
+    "text": "Daarna blok voor blok, van maart tot november."
+   },
+   {
+    "t0": 11.1,
+    "t1": 13.0,
+    "text": "Eén vaste prijs voor het hele complex."
+   }
+  ]
+ }
+]

@@ -108,8 +108,37 @@ header.site{
 }
 .nav{display:flex;align-items:center;gap:18px;max-width:1240px;margin:0 auto;padding:12px 24px;}
 .brand{margin-right:auto;display:inline-flex;align-items:center;text-decoration:none;}
-.logo-img{height:34px;width:auto;transition:opacity var(--kort) var(--beweeg);}
-.brand:hover .logo-img{opacity:.72;}
+.logo-img{display:block;height:34px;width:auto;aspect-ratio:839.965/175.631;overflow:visible;}
+
+/* De uitrol van het logo. Het logo staat als SVG in de pagina (logo_kop in
+   build.py). Komt iemand de site binnen, dan zet het script bovenin de pagina
+   .logo-uitrol op <html> en bouwt het logo zich in ruim een seconde op, zoals de
+   uitrol uit de Motion Kit: de stippen landen, drie stippen rollen uit tot banen
+   (langs de schuinte van het beeldmerk) en het woord komt achter het beeldmerk
+   vandaan. Daarna staat er precies het officiële logo. Wie al op de site was of
+   "minder beweging" aan heeft, ziet het meteen stil. Bij aanwijzen veert het
+   beeldmerk even mee: aandrukken, niet stuiteren. */
+.lg-anim{opacity:0;}
+.lg-baan{fill:none;stroke-width:61;stroke-linecap:round;}
+.lg-stip{stroke:none;transform-box:fill-box;transform-origin:center;}
+@media screen and (prefers-reduced-motion:no-preference){
+  .logo-uitrol .lg-vast{animation:lg-toon 1ms 1.15s both;}
+  .logo-uitrol .lg-anim{opacity:1;}
+  .logo-uitrol .lg-stip{animation:lg-stip .42s var(--beweeg) both,lg-weg 1ms 1.15s forwards;}
+  .logo-uitrol .lg-s2{animation-delay:.08s,1.15s;}
+  .logo-uitrol .lg-baan{animation:lg-baan .55s var(--beweeg) both,lg-weg 1ms 1.15s forwards;}
+  .logo-uitrol .lg-b1{animation-delay:.16s,1.15s;}
+  .logo-uitrol .lg-b2{animation-delay:.24s,1.15s;}
+  .logo-uitrol .lg-b3{animation-delay:.32s,1.15s;}
+  .logo-uitrol .lg-woord{animation:lg-woord .7s var(--beweeg) .5s both;}
+  .brand:hover .lg-merk{animation:lg-veer .5s var(--beweeg);}
+}
+@keyframes lg-toon{from{opacity:0;}to{opacity:1;}}
+@keyframes lg-weg{to{opacity:0;}}
+@keyframes lg-stip{0%{transform:scale(0);}70%{transform:scale(1.03);}100%{transform:none;}}
+@keyframes lg-baan{0%{stroke-dasharray:.001 2;opacity:0;}15%{opacity:1;}100%{stroke-dasharray:1 2;opacity:1;}}
+@keyframes lg-woord{from{transform:translateX(-545px);}to{transform:none;}}
+@keyframes lg-veer{0%,100%{transform:none;}35%{transform:translate(5px,10.5px);}70%{transform:translate(-1px,-2px);}}
 
 .navlinks{display:flex;align-items:center;gap:26px;font-family:var(--kop);font-size:.875rem;font-weight:500;}
 .navlinks a{color:var(--ink-soft);text-decoration:none;position:relative;padding:6px 0;white-space:nowrap;transition:color var(--kort) var(--beweeg);}

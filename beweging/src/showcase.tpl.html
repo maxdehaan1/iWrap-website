@@ -1,0 +1,714 @@
+<title>iWrap Motion Kit</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Montserrat:wght@500;600;700&family=Urbanist:wght@500;600;700&display=swap">
+<style>
+/* Opzet: één groot podium bovenaan, daaronder een wand van kleinere podia in twee kolommen.
+   Elk podium heeft een vaste merkachtergrond (wit, antraciet of mint); de pagina eromheen blijft stil. */
+:root {
+  --mint: #A7CEC5;
+  --ink: #262626;
+  --stone: #676A6B;
+  --bg: #F4F7F6;
+  --surface: #FFFFFF;
+  --fg: #1E2322;
+  --muted: #5B6563;
+  --line: #DCE5E2;
+  --accent: #2C6B60;
+  --chip: #E6F1EE;
+  --shadow: 0 1px 2px rgba(20, 40, 36, .05), 0 12px 32px -16px rgba(20, 40, 36, .18);
+  --display: 'Urbanist', 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
+  --body: 'Figtree', 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
+  --label: 'Montserrat', 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --slant: 64.56deg;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #151818; --surface: #1D2121; --fg: #EDF2F0; --muted: #A2ADAA; --line: #2D3433;
+    --accent: #A7CEC5; --chip: #24302D; --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 14px 34px -18px rgba(0, 0, 0, .7);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #151818; --surface: #1D2121; --fg: #EDF2F0; --muted: #A2ADAA; --line: #2D3433;
+  --accent: #A7CEC5; --chip: #24302D; --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 14px 34px -18px rgba(0, 0, 0, .7);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 400 16px/1.6 var(--body); -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; letter-spacing: -.015em; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.2rem, 5.4vw, 4.1rem); line-height: 1.02; font-weight: 700; }
+h2 { font-size: clamp(1.55rem, 2.8vw, 2.15rem); line-height: 1.12; }
+h3 { font-size: 1.22rem; line-height: 1.25; }
+p { margin: 0; }
+.eyebrow { font: 500 .7rem/1 var(--label); letter-spacing: .32em; text-transform: uppercase; color: var(--muted); }
+.lead { font-size: 1.1rem; color: var(--muted); max-width: 56ch; }
+code, .mono { font-family: var(--mono); font-size: .86em; }
+
+/* ---- kop ---- */
+.top { padding-block: 44px 28px; display: grid; gap: 30px; }
+.top__head { display: grid; gap: 18px; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: end; }
+.top__copy { display: grid; gap: 16px; min-width: 0; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; min-width: 0; }
+.fact { display: inline-flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 7px 13px; font-size: .84rem; color: var(--muted); white-space: nowrap; }
+.fact b { color: var(--fg); font-weight: 600; font-variant-numeric: tabular-nums; }
+.sw { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, .12); flex: none; }
+
+/* ---- podium ---- */
+.stage { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 22px; overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; min-width: 0; }
+.stage__view { position: relative; aspect-ratio: 16 / 10; max-width: 100%; overflow: hidden; transition: background-color .35s ease; }
+.stage__view[data-theme="light"] { background: #FFFFFF; }
+.stage__view[data-theme="dark"] { background: #262626; }
+.stage__view[data-theme="mint"] { background: #A7CEC5; }
+.stage__view > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.stage--hero .stage__view { aspect-ratio: 2 / 1; }
+.stage__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 12px 16px; border-top: 1px solid var(--line); margin-top: auto; min-height: 63px; }
+.stage__text { padding: 20px 22px 4px; display: grid; gap: 8px; }
+.stage__text p { color: var(--muted); font-size: .97rem; max-width: 60ch; }
+.use { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 22px 18px; }
+.tag { font: 500 .62rem/1 var(--label); letter-spacing: .2em; text-transform: uppercase; color: var(--accent); background: var(--chip); border-radius: 999px; padding: 7px 10px; }
+.spacer { flex: 1 1 auto; }
+
+.seg { display: inline-flex; background: var(--chip); border-radius: 999px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+.seg button { font: 500 .8rem/1 var(--body); color: var(--muted); background: transparent; border: 0; border-radius: 999px; padding: 8px 12px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--fg); box-shadow: 0 1px 2px rgba(0, 0, 0, .12); }
+.dots { display: inline-flex; gap: 6px; align-items: center; }
+.dots button { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--line); cursor: pointer; padding: 0; position: relative; }
+.dots span { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--line); }
+.dots button[aria-pressed="true"]::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--accent); }
+.btn { font: 500 .8rem/1 var(--body); color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 9px 14px; cursor: pointer; display: inline-flex; gap: 7px; align-items: center; }
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---- secties ---- */
+section { padding-block: 44px; }
+.sec-head { display: grid; gap: 10px; margin-bottom: 26px; max-width: 64ch; }
+.sec-head p { color: var(--muted); }
+.grid { display: grid; gap: 22px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.span2 { grid-column: 1 / -1; }
+
+/* ---- gedachte ---- */
+.idea { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 24px; display: grid; gap: 14px; align-content: start; min-width: 0; }
+.idea svg { width: 100%; height: auto; display: block; border-radius: 12px; background: var(--chip); }
+.idea p { color: var(--muted); font-size: .95rem; }
+.idea .num { font: 600 .92rem/1 var(--mono); color: var(--accent); }
+
+/* ---- nep-videobeeld onder de overgang ---- */
+.footage { position: absolute; inset: 0; display: grid; place-items: center; font: 600 clamp(1.4rem, 5vw, 3rem)/1 var(--label); letter-spacing: .34em; color: rgba(255, 255, 255, .92); }
+.footage[data-clip="a"] { background: linear-gradient(135deg, #8E8A80, #6F6A60); }
+.footage[data-clip="b"] { background: linear-gradient(135deg, #3B4348, #23282B); }
+.stage__view--square { aspect-ratio: 16 / 10; }
+.stage--43 .stage__view { aspect-ratio: 4 / 3; background: #F7F6F3; }
+.stage--169 .stage__view { aspect-ratio: 16 / 9; background: #FFFFFF; }
+.stage__view > canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.handover { align-content: start; gap: 12px; }
+.handover ul { margin: 0; padding-left: 1.1em; display: grid; gap: 8px; color: var(--muted); }
+.handover li b { color: var(--fg); }
+.where { font: 600 .74rem/1.3 var(--label); letter-spacing: .08em; color: var(--accent); }
+
+
+/* ---- klusfilm ---- */
+.film .stage__view { aspect-ratio: 16 / 9; background: #F7F6F3; }
+.film__bar { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 14px 18px; border-top: 1px solid var(--line); }
+.film__bar input[type="range"] { width: 100%; accent-color: var(--accent); min-width: 0; }
+.film__time { font: 500 .84rem/1 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 18px 18px; }
+.chapters button { font: 500 .8rem/1 var(--body); color: var(--muted); background: var(--chip); border: 0; border-radius: 999px; padding: 9px 13px; cursor: pointer; }
+.chapters button[aria-current="true"] { background: var(--accent); color: var(--surface); }
+.film__notes { display: grid; gap: 22px; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 22px; }
+.film__notes .panel { padding: 22px; }
+.film__notes p { color: var(--muted); font-size: .95rem; }
+
+/* ---- uitleg ---- */
+.how { display: grid; gap: 22px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 26px; display: grid; gap: 14px; align-content: start; min-width: 0; }
+.panel ol, .panel ul { margin: 0; padding-left: 1.15em; display: grid; gap: 8px; color: var(--muted); }
+.panel li::marker { color: var(--accent); font-weight: 600; }
+.panel li b { color: var(--fg); font-weight: 600; }
+pre { margin: 0; background: var(--chip); border-radius: 14px; padding: 16px; overflow-x: auto; font: 400 .8rem/1.55 var(--mono); color: var(--fg); }
+.files { overflow-x: auto; border: 1px solid var(--line); border-radius: 22px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: .92rem; }
+th, td { text-align: left; padding: 12px 18px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 500 .64rem/1 var(--label); letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+td:first-child { font-weight: 600; white-space: nowrap; }
+td .mono { color: var(--muted); }
+.note { color: var(--muted); font-size: .9rem; max-width: 70ch; margin-top: 14px; }
+footer { padding-block: 26px 48px; color: var(--muted); font-size: .86rem; border-top: 1px solid var(--line); margin-top: 20px; }
+
+@media (max-width: 860px) {
+  .top__head, .grid, .grid--3, .how, .film__notes { grid-template-columns: minmax(0, 1fr); }
+  .film__bar { grid-template-columns: auto minmax(0, 1fr); }
+  .film__time { grid-column: 1 / -1; }
+  .facts { justify-content: flex-start; }
+  .stage--hero .stage__view { aspect-ratio: 4 / 3; }
+  section { padding-block: 32px; }
+}
+@media (prefers-reduced-motion: reduce) { .stage__view { transition: none; } }
+</style>
+
+<div class="wrap">
+
+  <header class="top">
+    <div class="top__head">
+      <div class="top__copy">
+        <span class="eyebrow">iWrap · motion kit</span>
+        <h1>Het logo<br>in beweging</h1>
+        <p class="lead">Animaties die uit het logo zelf komen, een film die laat zien hoe een klus bij jullie gaat, en vijf animaties die precies passen bij pagina's van de nieuwe site. Met een kant-en-klaar pakket voor wie de website bouwt.</p>
+      </div>
+      <div class="facts" aria-label="Kerngegevens">
+        <span class="fact">Hoek <b>64,56°</b></span>
+        <span class="fact"><i class="sw" style="background:#A7CEC5"></i><b class="mono">#A7CEC5</b></span>
+        <span class="fact"><i class="sw" style="background:#262626"></i><b class="mono">#262626</b></span>
+        <span class="fact"><b>__N_VIDEO__</b> videobestanden</span>
+        <span class="fact">Eindstand <b>1-op-1</b> het originele logo</span>
+      </div>
+    </div>
+
+    <figure class="stage stage--hero" data-demo data-scene="uitrol" data-theme="dark" data-frame="1600,800" data-fit="0.4" data-opts='{"lockup":"tagline","hold":1.9}'>
+      <div class="stage__view"></div>
+      <div class="stage__bar">
+        <div class="seg" data-opt="lockup" role="group" aria-label="Logo-opstelling">
+          <button type="button" data-v="tagline" aria-pressed="true">Met tagline</button>
+          <button type="button" data-v="horizontal" aria-pressed="false">Liggend</button>
+          <button type="button" data-v="stacked" aria-pressed="false">Gestapeld</button>
+          <button type="button" data-v="mark" aria-pressed="false">Beeldmerk</button>
+        </div>
+        <span class="spacer"></span>
+        <div class="dots" role="group" aria-label="Achtergrond">
+          <button type="button" data-theme-btn="light" style="background:#FFFFFF" aria-label="Wit" aria-pressed="false"></button>
+          <button type="button" data-theme-btn="dark" style="background:#262626" aria-label="Antraciet" aria-pressed="true"></button>
+          <button type="button" data-theme-btn="mint" style="background:#A7CEC5" aria-label="Mint" aria-pressed="false"></button>
+        </div>
+        <button type="button" class="btn" data-replay>Opnieuw afspelen</button>
+      </div>
+    </figure>
+  </header>
+
+  <section aria-labelledby="h-film">
+    <div class="sec-head">
+      <span class="eyebrow">De klusfilm · __FILM_DUR__ seconden</span>
+      <h2 id="h-film">Van aanvraag tot afgeleverd kozijn</h2>
+      <p>Iemand ergens in Nederland stuurt een foto. Vanuit Hilversum rijden jullie erheen, maken kennis, zetten de steiger op, halen de oude folie eraf en brengen de nieuwe aan. Druk op afspelen, of spring naar een hoofdstuk.</p>
+    </div>
+    <figure class="stage film" id="film">
+      <div class="stage__view" aria-label="De klusfilm"></div>
+      <div class="film__bar">
+        <button type="button" class="btn" id="film-play">Afspelen</button>
+        <input type="range" id="film-seek" min="0" max="1000" value="0" step="1" aria-label="Positie in de film">
+        <span class="film__time" id="film-time">0:00 / 0:00</span>
+      </div>
+      <div class="chapters" id="film-chapters" role="group" aria-label="Hoofdstukken"></div>
+    </figure>
+    <div class="film__notes">
+      <div class="panel"><h3>Jullie eigen verhaal</h3><p>De teksten komen van jullie site: foto sturen en een vaste prijs, weten wie er komt, de drie vaste werkstappen (oude folie eraf, reinigen en vetvrij, nieuwe Renolit folie erop), tien jaar garantie en de gratis kozijncheck.</p></div>
+      <div class="panel"><h3>Jullie eigen wereld</h3><p>De mint bus met het witte logo, zwarte shirts met het beeldmerk, een bakstenen gevel met crème kozijnen en dorpelstenen, zoals op jullie werkfoto's.</p></div>
+      <div class="panel"><h3>Dezelfde beweging als het logo</h3><p>Elke overgang is een rakel die het volgende beeld erin veegt. De oude folie rolt óp tot een rol, de nieuwe rolt úit: precies het idee van het beeldmerk.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-idee">
+    <div class="sec-head">
+      <span class="eyebrow">De gedachte</span>
+      <h2 id="h-idee">Drie afspraken waar elke animatie zich aan houdt</h2>
+      <p>Zo voelt het als één merk, of het nu een intro van vier seconden is of een knopje op de site.</p>
+    </div>
+    <div class="grid grid--3">
+      <div class="idea">
+        <svg id="fig-hoek" viewBox="0 0 360 220" role="img" aria-label="Het beeldmerk met de hoek van 64,56 graden"></svg>
+        <span class="num">64,56°</span>
+        <h3>Eén richting</h3>
+        <p>De banen in het beeldmerk hellen onder 64,56°. Alles wat beweegt, volgt die lijn: uitrollen, vegen, verschuiven.</p>
+      </div>
+      <div class="idea">
+        <svg id="fig-stip" viewBox="0 0 360 220" role="img" aria-label="Een stip rolt uit tot een baan"></svg>
+        <span class="num">stip → baan</span>
+        <h3>Een stip is een opgerolde baan</h3>
+        <p>Het logo bestaat uit twee vormen die eigenlijk dezelfde zijn. Een stip rolt uit tot een strook folie, en weer terug.</p>
+      </div>
+      <div class="idea">
+        <svg id="fig-ease" viewBox="0 0 360 220" role="img" aria-label="Bewegingscurve: snelle start, zachte uitloop"></svg>
+        <span class="num">0,92 s · 0,10 s versprongen</span>
+        <h3>Aandrukken, niet stuiteren</h3>
+        <p>Kort aanzetten, vlot doortrekken en zacht uitlopen: zoals een rakel over folie. Hooguit een paar procent doorveren.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-logo">
+    <div class="sec-head">
+      <span class="eyebrow">Logo-animaties</span>
+      <h2 id="h-logo">Het logo dat zichzelf opbouwt</h2>
+      <p>Wissel de achtergrond met de bolletjes onder elk podium. De eindstand is steeds exact het officiële logo.</p>
+    </div>
+    <div class="grid">
+      <figure class="stage" data-demo data-scene="uitrol" data-theme="light" data-opts='{"lockup":"horizontal"}'>
+        <div class="stage__view"></div>
+        <figcaption class="stage__text"><h3>De uitrol</h3><p>De signatuur. Stippen landen, drie rollen uit tot banen en het woordmerk komt achter het beeldmerk vandaan.</p></figcaption>
+        <div class="use"><span class="tag">Video-intro</span><span class="tag">Website-header</span><span class="tag">Presentatie</span></div>
+        <div class="stage__bar"><div class="dots" role="group" aria-label="Achtergrond">
+          <button type="button" data-theme-btn="light" style="background:#FFFFFF" aria-label="Wit" aria-pressed="true"></button>
+          <button type="button" data-theme-btn="dark" style="background:#262626" aria-label="Antraciet" aria-pressed="false"></button>
+          <button type="button" data-theme-btn="mint" style="background:#A7CEC5" aria-label="Mint" aria-pressed="false"></button></div>
+          <span class="spacer"></span><button type="button" class="btn" data-replay>Opnieuw</button></div>
+      </figure>
+
+      <figure class="stage" data-demo data-scene="wrap" data-theme="dark" data-opts='{"lockup":"horizontal"}'>
+        <div class="stage__view"></div>
+        <figcaption class="stage__text"><h3>De wrap</h3><p>Eerst alleen de lijn, dan veegt de rakel de folie erin. Het verhaal van jullie werk in drie seconden.</p></figcaption>
+        <div class="use"><span class="tag">Video-intro</span><span class="tag">Over-ons-pagina</span></div>
+        <div class="stage__bar"><div class="dots" role="group" aria-label="Achtergrond">
+          <button type="button" data-theme-btn="light" style="background:#FFFFFF" aria-label="Wit" aria-pressed="false"></button>
+          <button type="button" data-theme-btn="dark" style="background:#262626" aria-label="Antraciet" aria-pressed="true"></button>
+          <button type="button" data-theme-btn="mint" style="background:#A7CEC5" aria-label="Mint" aria-pressed="false"></button></div>
+          <span class="spacer"></span><button type="button" class="btn" data-replay>Opnieuw</button></div>
+      </figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-web">
+    <div class="sec-head">
+      <span class="eyebrow">Voor de website</span>
+      <h2 id="h-web">Klein, scherp en altijd in beweging als het moet</h2>
+      <p>Deze draaien als vector in de browser: haarscherp op elk scherm en samen kleiner dan één foto.</p>
+    </div>
+    <div class="grid">
+      <figure class="stage" data-demo data-scene="hover" data-play="hover" data-theme="light" data-opts='{"lockup":"horizontal"}'>
+        <div class="stage__view" tabindex="0" aria-label="Beweeg over het logo"></div>
+        <figcaption class="stage__text"><h3>Aanraken</h3><p>Ga met je muis over het logo (of tik erop). De banen veren kort in en de stippen geven mee.</p></figcaption>
+        <div class="use"><span class="tag">Logo in de menubalk</span><span class="tag">Knoppen</span></div>
+        <div class="stage__bar"><div class="dots" role="group" aria-label="Achtergrond">
+          <button type="button" data-theme-btn="light" style="background:#FFFFFF" aria-label="Wit" aria-pressed="true"></button>
+          <button type="button" data-theme-btn="dark" style="background:#262626" aria-label="Antraciet" aria-pressed="false"></button>
+          <button type="button" data-theme-btn="mint" style="background:#A7CEC5" aria-label="Mint" aria-pressed="false"></button></div>
+          <span class="spacer"></span><button type="button" class="btn" data-replay>Laat zien</button></div>
+      </figure>
+
+      <figure class="stage" data-demo data-scene="loader" data-theme="mint" data-fit="0.3">
+        <div class="stage__view"></div>
+        <figcaption class="stage__text"><h3>De lader</h3><p>Een doorlopende lus voor als iets even duurt: een offerte-aanvraag die verstuurd wordt, een pagina die laadt.</p></figcaption>
+        <div class="use"><span class="tag">Laadscherm</span><span class="tag">Formulier verzenden</span></div>
+        <div class="stage__bar"><div class="dots" role="group" aria-label="Achtergrond">
+          <button type="button" data-theme-btn="light" style="background:#FFFFFF" aria-label="Wit" aria-pressed="false"></button>
+          <button type="button" data-theme-btn="dark" style="background:#262626" aria-label="Antraciet" aria-pressed="false"></button>
+          <button type="button" data-theme-btn="mint" style="background:#A7CEC5" aria-label="Mint" aria-pressed="true"></button></div></div>
+      </figure>
+
+      <figure class="stage" data-demo data-scene="kozijn" data-theme="light" data-frame="1280,800" data-opts='{}'>
+        <div class="stage__view"></div>
+        <figcaption class="stage__text"><h3>Het kozijn krijgt kleur</h3><p>Een idee voor de homepage: de rakel wrapt een kozijn in een nieuwe kleur. Kies er zelf een. De kleuren zijn voorbeelden; hier horen jullie eigen foliekleuren.</p></figcaption>
+        <div class="use"><span class="tag">Homepage</span><span class="tag">Kleurenpagina</span><span class="tag">Idee</span></div>
+        <div class="stage__bar"><div class="dots" data-kozijn role="group" aria-label="Foliekleur"></div></div>
+      </figure>
+
+      <figure class="stage" data-demo data-scene="kleurwissel" data-theme="light" data-opts='{"lockup":"horizontal"}'>
+        <div class="stage__view"></div>
+        <figcaption class="stage__text"><h3>Kleurwissel</h3><p>Het beeldmerk wordt telkens opnieuw gewrapt. Leuk bij een kleurenoverzicht; het echte logo blijft natuurlijk mint.</p></figcaption>
+        <div class="use"><span class="tag">Kleurenpagina</span><span class="tag">Social post</span><span class="tag">Idee</span></div>
+        <div class="stage__bar"><span class="eyebrow">voorbeeldkleuren</span><span class="spacer"></span><div class="dots" data-swatches aria-hidden="true"></div></div>
+      </figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-uit">
+    <div class="sec-head">
+      <span class="eyebrow">Het logo, uitgebreid</span>
+      <h2 id="h-uit">Twee nieuwe merkelementen</h2>
+      <p>Niets verzonnen: het keurmerk gebruikt de letters van jullie eigen tagline, het patroon de stippen en banen uit het beeldmerk.</p>
+    </div>
+    <div class="grid">
+      <figure class="stage" data-demo data-scene="badge" data-theme="light" data-frame="1280,800" data-fit="0.82" data-opts='{"disc":true,"intro":false,"period":26}'>
+        <div class="stage__view"></div>
+        <figcaption class="stage__text"><h3>Het keurmerk</h3><p>Het beeldmerk met de tagline er als een ring omheen, langzaam draaiend. Werkt als sticker in een hoek van de site of van een video.</p></figcaption>
+        <div class="use"><span class="tag">Hoek van de site</span><span class="tag">Video-sticker</span><span class="tag">Profielfoto</span></div>
+        <div class="stage__bar">
+          <div class="seg" data-opt="disc" role="group" aria-label="Uitvoering">
+            <button type="button" data-v="true" aria-pressed="true">Mint schijf</button>
+            <button type="button" data-v="false" aria-pressed="false">Open</button>
+          </div>
+          <span class="spacer"></span>
+          <div class="dots" role="group" aria-label="Achtergrond">
+          <button type="button" data-theme-btn="light" style="background:#FFFFFF" aria-label="Wit" aria-pressed="true"></button>
+          <button type="button" data-theme-btn="dark" style="background:#262626" aria-label="Antraciet" aria-pressed="false"></button></div></div>
+      </figure>
+
+      <figure class="stage" data-demo data-scene="patroon" data-theme="mint" data-frame="1280,800" data-opts='{"bg":true,"patScale":0.86}'>
+        <div class="stage__view"></div>
+        <figcaption class="stage__text"><h3>Het patroon</h3><p>Stippen en banen als doorlopend vlak, dat heel traag schuift en ademt. Een rustige achtergrond die meteen van jullie is.</p></figcaption>
+        <div class="use"><span class="tag">Achtergrond site</span><span class="tag">Achter tekst in video</span><span class="tag">Drukwerk</span></div>
+        <div class="stage__bar"><div class="dots" role="group" aria-label="Achtergrond">
+          <button type="button" data-theme-btn="light" style="background:#FFFFFF" aria-label="Wit" aria-pressed="false"></button>
+          <button type="button" data-theme-btn="dark" style="background:#262626" aria-label="Antraciet" aria-pressed="false"></button>
+          <button type="button" data-theme-btn="mint" style="background:#A7CEC5" aria-label="Mint" aria-pressed="true"></button></div></div>
+      </figure>
+    </div>
+  </section>
+
+
+  <section aria-labelledby="h-pag">
+    <div class="sec-head">
+      <span class="eyebrow">Voor de pagina's van de nieuwe site</span>
+      <h2 id="h-pag">Vijf animaties die precies op hun plek vallen</h2>
+      <p>Gemaakt voor de pagina's die nu alleen tekst hebben. Elke animatie vertelt wat er in de tekst ernaast staat, en stopt op een eindbeeld dat zonder beweging ook alles laat zien.</p>
+    </div>
+    <div class="grid">
+      <figure class="stage stage--43" data-demo data-scene="werkgebied" data-theme="none" data-frame="1200,900">
+        <div class="stage__view"></div>
+        <figcaption class="stage__text"><span class="where">/werkgebied · onder de inleiding</span><h3>Door heel Nederland</h3><p>De plaatsen uit jullie lijst op de kaart. Uit één regio komen drie aanvragen, die vanuit Hilversum in één rit worden gedaan: Zeeland, het noorden, Limburg.</p></figcaption>
+        <div class="use"><span class="tag">We bundelen per regio</span></div>
+      </figure>
+      <figure class="stage stage--43" data-demo data-scene="kozijncheck" data-theme="none" data-frame="1200,900">
+        <div class="stage__view"></div>
+        <figcaption class="stage__text"><span class="where">/kozijncheck · bij "Wat we bekijken"</span><h3>Zes onderdelen, elk een stoplicht</h3><p>Een vergrootglas loopt rubbers, kitwerk, glas, beslag, horren en rolluiken langs; het rapport ernaast vult zich in, net als jullie voorbeeldrapport.</p></figcaption>
+        <div class="use"><span class="tag">Opleverrapport</span></div>
+      </figure>
+      <figure class="stage stage--43" data-demo data-scene="vervangen" data-theme="none" data-frame="1200,900">
+        <div class="stage__view"></div>
+        <figcaption class="stage__text"><span class="where">/kosten · bij "Herstellen tegenover vervangen"</span><h3>Herstellen of vervangen</h3><p>Links wordt het kozijn eruit gebroken en gaat het stucwerk kapot. Rechts gaat er alleen een laag folie af en weer op, en is het klaar.</p></figcaption>
+        <div class="use"><span class="tag">Kosten</span><span class="tag">Homepage</span></div>
+      </figure>
+      <figure class="stage stage--43" data-demo data-scene="aanvraag" data-theme="none" data-frame="1200,900">
+        <div class="stage__view"></div>
+        <figcaption class="stage__text"><span class="where">/offerte · boven het formulier</span><h3>Een foto en een paar strepen</h3><p>Foto maken, aanstrepen (geel voor het kozijn, rood voor een draairaam), maten erbij en versturen. Daarna de offerte met een vaste totaalprijs.</p></figcaption>
+        <div class="use"><span class="tag">Offerte</span><span class="tag">Homepage</span></div>
+      </figure>
+      <figure class="stage stage--43" data-demo data-scene="vve" data-theme="none" data-frame="1200,900">
+        <div class="stage__view"></div>
+        <figcaption class="stage__text"><span class="where">/vve-en-woningcorporaties · bij "Hoe een project bij ons loopt"</span><h3>Blok voor blok</h3><p>Eerst een brief voor de bewoners, dan gaat de hoogwerker per portiek langs. Eindigt op één vaste prijs voor het hele complex.</p></figcaption>
+        <div class="use"><span class="tag">VvE's en corporaties</span></div>
+      </figure>
+      <div class="panel handover">
+        <span class="eyebrow">Doorsturen</span>
+        <h3>Klaar voor wie de website bouwt</h3>
+        <p>Alles voor de website zit in <b>iWrap in beweging.zip</b> (in de map Export 3), in de map <b>Website voor Max</b>:</p>
+        <ul>
+          <li><b>OPDRACHT VOOR CLAUDE</b>: per pagina wat er komt en waar precies, zodat Claude het op de site zet.</li>
+          <li><b>voor-de-site</b>: alle logo's als SVG en PNG, favicon, app-icoon, de deelafbeelding, de scripts en de klusfilm.</li>
+          <li><b>fragmenten</b>: de stukjes HTML voor de pagina's.</li>
+          <li>Open eerst <b>iWrap in beweging - open mij.html</b>: daar staat alles bij elkaar, met demo's.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-video">
+    <div class="sec-head">
+      <span class="eyebrow">Voor video</span>
+      <h2 id="h-video">Van voor naar na, en netjes afsluiten</h2>
+      <p>Twee bouwstenen die je op elke video kunt leggen, liggend en staand.</p>
+    </div>
+    <div class="grid">
+      <figure class="stage" data-demo data-scene="wissel" data-theme="none" data-frame="1280,800" data-opts='{}'>
+        <div class="stage__view"><div class="footage" data-clip="a">VOOR</div></div>
+        <figcaption class="stage__text"><h3>De wissel</h3><p>Banen folie rollen over het beeld, het logo komt even langs en het volgende shot staat er. Gemaakt voor voor-en-na.</p></figcaption>
+        <div class="use"><span class="tag">Overgang</span><span class="tag">Transparant</span></div>
+        <div class="stage__bar">
+          <div class="seg" data-opt="logo" role="group" aria-label="Uitvoering">
+            <button type="button" data-v="true" aria-pressed="true">Met logo</button>
+            <button type="button" data-v="false" aria-pressed="false">Kort, zonder logo</button>
+          </div>
+          <span class="spacer"></span><button type="button" class="btn" data-replay>Opnieuw</button></div>
+      </figure>
+
+      <figure class="stage" data-demo data-scene="eindkaart" data-theme="mint" data-frame="1280,800" data-opts='{"hold":2.4}'>
+        <div class="stage__view"></div>
+        <figcaption class="stage__text"><h3>De eindkaart</h3><p>Het patroon op de achtergrond, het logo met tagline dat zich opbouwt. Onder het logo is ruimte voor een telefoonnummer of website.</p></figcaption>
+        <div class="use"><span class="tag">Einde van de video</span><span class="tag">Liggend en staand</span></div>
+        <div class="stage__bar"><div class="dots" role="group" aria-label="Achtergrond">
+          <button type="button" data-theme-btn="mint" style="background:#A7CEC5" aria-label="Mint" aria-pressed="true"></button>
+          <button type="button" data-theme-btn="dark" style="background:#262626" aria-label="Antraciet" aria-pressed="false"></button>
+          <button type="button" data-theme-btn="light" style="background:#FFFFFF" aria-label="Wit" aria-pressed="false"></button></div>
+          <span class="spacer"></span><button type="button" class="btn" data-replay>Opnieuw</button></div>
+      </figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-3d">
+    <div class="sec-head">
+      <span class="eyebrow">Nieuw · in 3D</span>
+      <h2 id="h-3d">Zo herstellen we een kozijn, en van beschadigd naar mooi</h2>
+      <p>Een kozijn met een blokprofiel in crème, met echt licht en schaduw. Eerst zie je het kozijn zoals het nu is: verweerd, gebarsten en dof, zoals op de voor-foto van de site. Dan gaat de oude folie er met warmte af, haalt de krabber de lijm weg, wordt alles vetvrij en gaat de nieuwe folie erop met de rakel: zijdeglans en een heel fijne nerf, zoals op de na-foto. Daarnaast een afsluiter van zeven seconden: het beschadigde kozijn wordt weer mooi, en dan het logo.</p>
+    </div>
+    <div class="grid">
+      <figure class="stage stage--43" data-canvas="kozijn3d">
+        <div class="stage__view"><canvas aria-hidden="true"></canvas></div>
+        <figcaption class="stage__text"><h3>Kozijn in 3D</h3><p>Eerst dichtbij de verweerde folie, dan komen de lagen even los: folie, lijmlaag, kunststof profiel. Dan de drie vaste stappen, en tot slot dichtbij langs de nieuwe folie. Staat live in de hero van de homepage, en als video met de stappen en ondertitels in beeld.</p></figcaption>
+        <div class="use"><span class="tag">Homepage</span><span class="tag">29 seconden</span><span class="tag">Liggend en staand</span></div>
+        <div class="stage__bar"><span class="spacer"></span><button type="button" class="btn" data-canvas-replay>Opnieuw</button></div>
+      </figure>
+      <figure class="stage stage--169" data-canvas="logo">
+        <div class="stage__view"><canvas aria-hidden="true"></canvas></div>
+        <figcaption class="stage__text"><h3>Van beschadigd naar mooi</h3><p>Dichtbij het verweerde kozijn. Dan één haal: voorop krult de oude folie eraf, vlak erachter rolt de nieuwe folie erop. De camera gaat rustig achteruit, er gaat een glans over de nieuwe folie en het logo komt ernaast.</p></figcaption>
+        <div class="use"><span class="tag">Achter elk filmpje</span><span class="tag">7 seconden</span><span class="tag">Wit en mint</span></div>
+        <div class="stage__bar"><div class="dots" role="group" aria-label="Achtergrond">
+          <button type="button" data-logo-variant="licht" style="background:#FFFFFF" aria-label="Wit" aria-pressed="true"></button>
+          <button type="button" data-logo-variant="mint" style="background:#A7CEC5" aria-label="Mint" aria-pressed="false"></button></div>
+          <span class="spacer"></span><button type="button" class="btn" data-canvas-replay>Opnieuw</button></div>
+      </figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-files">
+    <div class="sec-head">
+      <span class="eyebrow">Wat er klaarstaat</span>
+      <h2 id="h-files">De bestanden in de map</h2>
+      <p>Alles staat in de map <b>iWrap Motion Kit</b>, naast jullie logo-export.</p>
+    </div>
+    <div class="files">
+      <table>
+        <thead><tr><th scope="col">Animatie</th><th scope="col">Bestanden</th><th scope="col">Voor</th></tr></thead>
+        <tbody>__FILE_ROWS__</tbody>
+      </table>
+    </div>
+    <p class="note">MP4 werkt overal: CapCut, Canva, iMovie, Instagram. MOV is ProRes 4444 met transparante achtergrond, voor bovenop je eigen beeld in Final Cut, iMovie of CapCut op de computer. Alles is 30 beelden per seconde, met echte bewegingsonscherpte.</p>
+  </section>
+
+  <section aria-labelledby="h-how">
+    <div class="sec-head">
+      <span class="eyebrow">Zo gebruik je het</span>
+      <h2 id="h-how">In je video en op de site</h2>
+    </div>
+    <div class="how">
+      <div class="panel">
+        <h3>In een video</h3>
+        <ol>
+          <li><b>Intro of eindkaart:</b> sleep de MP4 in je tijdlijn, vóór of na je eigen beeld.</li>
+          <li><b>Logo over je beeld:</b> zet een transparante MOV op het spoor bóven je video. In CapCut heet dat een overlay.</li>
+          <li><b>De wissel:</b> leg hem bovenop de knip tussen twee shots, met het midden van de wissel precies op de knip. Dat midden staat in de bestandsnaam.</li>
+          <li><b>Logo laten staan?</b> Knip het fragment af vlak voordat het logo weer wegrolt.</li>
+        </ol>
+      </div>
+      <div class="panel">
+        <h3>Op de website</h3>
+        <p style="color:var(--muted)">Alles voor de website staat in <b>iWrap in beweging.zip</b>, in de map <b>Website voor Max</b>, met een overzicht per pagina. Kort gezegd: zet <code>iwrap-animaties.js</code> op de site en plaats een animatie zo:</p>
+        <pre id="snippet">&lt;div data-iwrap="uitrol" data-lockup="horizontal"
+     data-theme="light" style="width:220px"&gt;&lt;/div&gt;
+&lt;script src="iwrap-animaties.js" defer&gt;&lt;/script&gt;</pre>
+        <div><button type="button" class="btn" id="copy">Kopieer de code</button></div>
+        <ul>
+          <li><code>data-iwrap</code>: voor de pagina's werkgebied, kozijncheck, vervangen, aanvraag of vve; voor het logo uitrol, wrap, hover, loader, badge, patroon, kleurwissel of kozijn.</li>
+          <li><code>data-theme</code>: light, dark of mint.</li>
+          <li>Wie minder beweging heeft ingesteld op zijn apparaat, ziet meteen het stilstaande logo.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    iWrap Motion Kit · opgebouwd uit de vectoren in “Export 3” · mint <span class="mono">#A7CEC5</span>, antraciet <span class="mono">#262626</span>, grijs <span class="mono">#676A6B</span>
+  </footer>
+</div>
+
+<script>
+/*__ENGINE__*/
+</script>
+<script>
+/*__KOZIJN3D__*/
+</script>
+<script>
+/* De 3D-animatie en "van kozijn naar logo": spelen één keer als ze in beeld komen; Opnieuw speelt opnieuw. */
+(function () {
+  var rustig = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  Array.prototype.forEach.call(document.querySelectorAll("[data-canvas]"), function (fig) {
+    var cv = fig.querySelector("canvas"), ctx = cv.getContext("2d"), logo = fig.getAttribute("data-canvas") === "logo";
+    var obj = logo ? window.iwrapKozijnSting : window.iwrapKozijn3D;
+    if (!obj) return;
+    var t = rustig ? obj.duur : 0, speelt = false, vorig = 0, variant = "licht", d = 1;
+    function teken() { if (cv.width) obj.teken(ctx, t, cv.width, cv.height, { variant: variant, pxPerCss: d * 0.9 }); }
+    function maat() {
+      var r = cv.getBoundingClientRect(); d = Math.min(2, window.devicePixelRatio || 1);
+      var w = Math.round(r.width * d), h = Math.round(r.height * d);
+      if (w && (cv.width !== w || cv.height !== h)) { cv.width = w; cv.height = h; }
+      teken();
+    }
+    function lus(nu) {
+      if (!speelt) return;
+      t = Math.min(obj.duur, t + Math.min(0.05, (nu - vorig) / 1000)); vorig = nu; teken();
+      if (t >= obj.duur) speelt = false; else requestAnimationFrame(lus);
+    }
+    function speel() { if (rustig) { t = obj.duur; teken(); return; } t = 0; speelt = true; vorig = performance.now(); requestAnimationFrame(lus); }
+    fig.querySelector("[data-canvas-replay]").addEventListener("click", speel);
+    Array.prototype.forEach.call(fig.querySelectorAll("[data-logo-variant]"), function (b) {
+      b.addEventListener("click", function () {
+        variant = b.getAttribute("data-logo-variant");
+        Array.prototype.forEach.call(fig.querySelectorAll("[data-logo-variant]"), function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+        speel();
+      });
+    });
+    if (window.ResizeObserver) new ResizeObserver(maat).observe(cv); else window.addEventListener("resize", maat);
+    maat();
+    var gezien = false;
+    if (window.IntersectionObserver) new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting && !gezien) { gezien = true; speel(); } }); }, { threshold: 0.5 }).observe(fig);
+    else speel();
+  });
+})();
+</script>
+<script>
+(function () {
+  var IW = window.iWrapMotion, G = IW.geo, NS = 'http://www.w3.org/2000/svg';
+  function el(n, a, p) { var e = document.createElementNS(NS, n); for (var k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; }
+
+  /* ---------- podia ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll('[data-demo]'), function (fig) {
+    var view = fig.querySelector('.stage__view');
+    var st = { scene: fig.dataset.scene, theme: fig.dataset.theme || 'light', opts: JSON.parse(fig.dataset.opts || '{}') };
+    var frame = (fig.dataset.frame || '1280,800').split(',').map(Number);
+    var fit = fig.dataset.fit ? +fig.dataset.fit : null, player = null, footage = view.querySelector('.footage');
+
+    function build(fromStart) {
+      if (player) player.destroy();
+      if (st.theme !== 'none') view.dataset.theme = st.theme;
+      var vw = view.clientWidth || 640, vh = view.clientHeight || 400, small = vw < 520;
+      var fr = [frame[0], Math.round(frame[0] * vh / vw)];
+      var o = { frame: fr, play: fig.dataset.play || 'loop', start: fromStart ? 0 : 'rest' }, k;
+      if (st.theme !== 'none') o.theme = st.theme;
+      if (fit) o.fit = small ? Math.min(0.8, fit * 1.5) : fit; else if (small) o.fit = 0.62;
+      for (k in st.opts) o[k] = st.opts[k];
+      if (st.scene === 'uitrol' && o.lockup === 'mark') o.fit = small ? 0.36 : 0.2;
+      if (st.scene === 'uitrol' && o.lockup === 'stacked') { o.fit = small ? 0.46 : 0.3; o.fitH = 0.62; }
+      if (st.scene === 'uitrol' && o.lockup === 'horizontal' && fig.classList.contains('stage--hero')) o.fit = small ? 0.72 : 0.46;
+      player = IW.mount(view, st.scene, o);
+      if (footage) {
+        var cut = player.scene.cut;
+        player.onframe = function (t) {
+          var c = t >= cut ? 'b' : 'a';
+          if (footage.dataset.clip !== c) { footage.dataset.clip = c; footage.textContent = c === 'a' ? 'VOOR' : 'NA'; }
+        };
+      }
+      if (st.scene === 'kozijn') kozijnUI(fig, player);
+      var sw = fig.querySelector('[data-swatches]');
+      if (sw && player.scene.colors && !sw.children.length) player.scene.colors.forEach(function (c) { var d = document.createElement('span'); d.style.background = c; sw.appendChild(d); });
+    }
+    Array.prototype.forEach.call(fig.querySelectorAll('[data-theme-btn]'), function (b) {
+      b.addEventListener('click', function () {
+        st.theme = b.dataset.themeBtn;
+        Array.prototype.forEach.call(fig.querySelectorAll('[data-theme-btn]'), function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        build(false);
+      });
+    });
+    Array.prototype.forEach.call(fig.querySelectorAll('.seg[data-opt]'), function (seg) {
+      Array.prototype.forEach.call(seg.querySelectorAll('button'), function (b) {
+        b.addEventListener('click', function () {
+          var v = b.dataset.v;
+          st.opts[seg.dataset.opt] = v === 'true' ? true : v === 'false' ? false : v;
+          Array.prototype.forEach.call(seg.querySelectorAll('button'), function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+          build(true);
+        });
+      });
+    });
+    var rp = fig.querySelector('[data-replay]');
+    if (rp) rp.addEventListener('click', function () { if (player) player.replay(); });
+    build(false);
+  });
+
+  /* ---------- kleurkiezer bij het kozijn ---------- */
+  function kozijnUI(fig, player) {
+    var box = fig.querySelector('[data-kozijn]');
+    if (!box || !player.scene.colors) return;
+    box.innerHTML = '';
+    player.scene.colors.forEach(function (c, i) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.style.background = c[0]; b.setAttribute('aria-label', c[1]); b.title = c[1];
+      b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', function () { player.scene.pick(i, player.t); player.play(); });
+      box.appendChild(b);
+    });
+    player.onframe = function () {
+      var cur = player.scene.current();
+      Array.prototype.forEach.call(box.children, function (b, i) { var v = i === cur ? 'true' : 'false'; if (b.getAttribute('aria-pressed') !== v) b.setAttribute('aria-pressed', v); });
+    };
+  }
+
+
+  /* ---------- klusfilm: afspeler met hoofdstukken ---------- */
+  (function () {
+    var fig = document.getElementById('film');
+    if (!fig || !IW.scenes.klus) { if (fig) fig.closest('section').hidden = true; return; }
+    var view = fig.querySelector('.stage__view'), btn = document.getElementById('film-play'), rng = document.getElementById('film-seek');
+    var tm = document.getElementById('film-time'), chBox = document.getElementById('film-chapters');
+    var p = IW.mount(view, 'klus', { frame: [1920, 1080], play: 'manual', at: 18.7, force: true }), sc = p.scene, T = sc.T, dur = sc.duration, fresh = true;
+    var chapters = [['De kaart', 0], ['Aanvraag', T.book], ['Onderweg', T.route], ['Aankomst', T.street], ['Kennismaken', T.street + 4.4], ['Steiger op', T.street + 8.1],
+      ['Oude folie eraf', T.close], ['Reinigen', T.close + 4.85], ['Nieuwe folie erop', T.close + 8.15], ['Oplevering', T.back + 0.6], ['Door heel Nederland', T.mapOut + 0.4], ['Eindkaart', T.end + 0.4]];
+    function mmss(t) { var s = Math.floor(t); return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
+    var chBtns = chapters.map(function (c) {
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = c[0];
+      b.addEventListener('click', function () { fresh = false; p.seek(c[1]); p.play(); sync(); });
+      chBox.appendChild(b); return b;
+    });
+    function sync() {
+      rng.value = Math.round(p.t / dur * 1000);
+      tm.textContent = mmss(p.t) + ' / ' + mmss(dur);
+      btn.textContent = p.playing ? 'Pauze' : (p.t >= dur - 0.05 ? 'Opnieuw' : 'Afspelen');
+      var cur = 0; chapters.forEach(function (c, i) { if (p.t >= c[1] - 0.01) cur = i; });
+      chBtns.forEach(function (b, i) { var v = i === cur ? 'true' : 'false'; if (b.getAttribute('aria-current') !== v) b.setAttribute('aria-current', v); });
+    }
+    p.onframe = sync;
+    btn.addEventListener('click', function () {
+      if (p.playing) p.pause();
+      else { if (fresh || p.t >= dur - 0.05) p.seek(0); fresh = false; p.play(); }
+      sync();
+    });
+    rng.addEventListener('input', function () { fresh = false; p.pause(); p.seek(rng.value / 1000 * dur); sync(); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { if (!p.playing) p.seek(p.t); });
+    setInterval(function () { if (!p.playing) sync(); }, 400);
+    sync();
+  })();
+
+  /* ---------- drie uitlegfiguren ---------- */
+  var mint = '#A7CEC5', M = G.mark, ang = IW.angle * Math.PI / 180, ux = Math.cos(ang), uy = Math.sin(ang);
+  function drawMark(svg, x, y, s, fill, opacity) {
+    var g = el('g', { transform: 'translate(' + x + ' ' + y + ') scale(' + s + ')', fill: fill, opacity: opacity == null ? 1 : opacity }, svg);
+    var sc = IW.create('uitrol', { lockup: 'mark', pad: 0 });
+    sc.render(sc.rest);
+    Array.prototype.forEach.call(sc.svg.querySelectorAll('circle, path'), function (n) { var c = n.cloneNode(); c.removeAttribute('fill'); g.appendChild(c); });
+    return g;
+  }
+  (function () {   // 1. de hoek: raaklijn langs de rechterstip, evenwijdig aan de banen
+    var svg = document.getElementById('fig-hoek'), s = 0.74, x = 40, y = 40, cot = ux / uy;
+    drawMark(svg, x, y, s, mint);
+    var d1 = M.dots[1], ex = d1.cx + d1.r * uy - (d1.cy - d1.r * ux) * cot + 10;   // x op y = 0 (logo-eenheden)
+    var by = y + M.h * s + 16, bx = x + (ex + (M.h + 16 / s) * cot) * s;
+    var g = el('g', { stroke: 'currentColor', fill: 'none', 'stroke-width': 1.4, style: 'color:var(--fg)' }, svg);
+    el('line', { x1: 24, y1: by, x2: 336, y2: by, 'stroke-dasharray': '3 4', opacity: .5 }, g);
+    el('line', { x1: bx - ux * 172, y1: by - uy * 172, x2: bx, y2: by, opacity: .9 }, g);
+    var r = 30, a0 = Math.PI, a1 = Math.PI + ang;
+    el('path', { d: 'M' + (bx + r * Math.cos(a0)).toFixed(1) + ' ' + (by + r * Math.sin(a0)).toFixed(1) + 'A' + r + ' ' + r + ' 0 0 1 ' + (bx + r * Math.cos(a1)).toFixed(1) + ' ' + (by + r * Math.sin(a1)).toFixed(1) }, g);
+    var t = el('text', { x: bx - 88, y: by - 9, 'font-size': 13, 'font-family': 'ui-monospace, Menlo, monospace', style: 'fill:var(--fg)' }, svg);
+    t.textContent = '64,56°';
+  })();
+  (function () {   // 2. stip -> baan (levend)
+    var svg = document.getElementById('fig-stip');
+    var sc = IW.create('loader', { pad: 0 }), holder = el('g', { transform: 'translate(70 50) scale(0.74)' }, svg);
+    Array.prototype.forEach.call(sc.svg.querySelectorAll('circle, path'), function (n) { holder.appendChild(n); });
+    var t0 = performance.now(), on = false, reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function tick(now) { if (!on) return; sc.render((now - t0) / 1000); requestAnimationFrame(tick); }
+    sc.render(0.72);
+    if (!reduce && 'IntersectionObserver' in window) new IntersectionObserver(function (es) {
+      on = es[0].isIntersecting; if (on) requestAnimationFrame(tick);
+    }).observe(svg);
+  })();
+  (function () {   // 3. de curve
+    var svg = document.getElementById('fig-ease'), x0 = 56, y0 = 176, w = 250, h = 124, e = IW.ease.roll, d = '', i, v;
+    var g = el('g', { stroke: 'currentColor', fill: 'none', style: 'color:var(--fg)' }, svg);
+    el('line', { x1: x0, y1: y0, x2: x0 + w, y2: y0, 'stroke-width': 1, opacity: .35 }, g);
+    el('line', { x1: x0, y1: y0 - h, x2: x0 + w, y2: y0 - h, 'stroke-width': 1, 'stroke-dasharray': '3 4', opacity: .35 }, g);
+    for (i = 0; i <= 60; i++) { v = e(i / 60); d += (i ? 'L' : 'M') + (x0 + w * i / 60).toFixed(1) + ' ' + (y0 - h * v).toFixed(1); }
+    el('path', { d: d, stroke: mint, 'stroke-width': 5, 'stroke-linecap': 'round', fill: 'none' }, svg);
+    el('circle', { cx: x0, cy: y0, r: 6, fill: mint }, svg);
+    el('circle', { cx: x0 + w, cy: y0 - h, r: 6, fill: mint }, svg);
+    var a = el('text', { x: x0, y: y0 + 22, 'font-size': 12, 'font-family': 'ui-monospace, Menlo, monospace', style: 'fill:var(--muted)' }, svg); a.textContent = 'start';
+    var b = el('text', { x: x0 + w - 44, y: y0 + 22, 'font-size': 12, 'font-family': 'ui-monospace, Menlo, monospace', style: 'fill:var(--muted)' }, svg); b.textContent = 'op zijn plek';
+  })();
+
+  /* ---------- kopieerknop ---------- */
+  var cp = document.getElementById('copy'), sn = document.getElementById('snippet');
+  cp.addEventListener('click', function () {
+    var txt = sn.textContent;
+    function done() { cp.textContent = 'Gekopieerd'; setTimeout(function () { cp.textContent = 'Kopieer de code'; }, 1800); }
+    function fallback() { var r = document.createRange(); r.selectNodeContents(sn); var s = getSelection(); s.removeAllRanges(); s.addRange(r); cp.textContent = 'Geselecteerd: druk op Cmd+C'; }
+    try { navigator.clipboard.writeText(txt).then(done, fallback); } catch (e) { fallback(); }
+  });
+})();
+</script>

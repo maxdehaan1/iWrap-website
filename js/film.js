@@ -130,6 +130,7 @@
   function knip(id) { return maak("clipPath", { id: id }, defs); }
   var knipOud = rechthoek(DORPEL, {}, knip("film-knip-oud"));
   var knipNieuw = rechthoek([DORPEL[0], DORPEL[1], 0, DORPEL[3]], {}, knip("film-knip-nieuw"));
+  var knipLijm = rechthoek(DORPEL, {}, knip("film-knip-lijm"));
   DELEN.forEach(function (deel, i) { deel.knip = rechthoek(deel.d, {}, knip("film-knip-deel-" + i)); });
   var knipKozijn = knip("film-knip-kozijn");
   DELEN.forEach(function (deel) { if (!deel.raam) rechthoek(deel.d, {}, knipKozijn); });
@@ -222,6 +223,11 @@
   // De onderdorpel in drie lagen: kaal profiel, nieuwe folie, oude folie.
   rechthoek(DORPEL, { fill: KLEUR.kaal }, wereld);
   maak("rect", { x: 320, y: 436, width: 260, height: 4, fill: "#cdd0cf" }, wereld);
+  // Reinigen: de lijmlaag die onder de oude folie vandaan komt. De krabber haalt hem
+  // vlak achter het warmtepistool weg; de doek komt erachter (zie "De krabber" in teken).
+  var lijmlaag = maak("g", { "clip-path": "url(#film-knip-lijm)" }, wereld);
+  rechthoek(DORPEL, { fill: KLEUR.lijm, opacity: 0.85 }, lijmlaag);
+  maak("path", { d: "M326 412l7 26M346 412l7 26M366 412l7 26M386 412l7 26M406 412l7 26M426 412l7 26M446 412l7 26M466 412l7 26M486 412l7 26M506 412l7 26M526 412l7 26M546 412l7 26M566 412l7 26", stroke: "#b38c2c", "stroke-width": 1.2, opacity: 0.45 }, lijmlaag);
   var nieuw = maak("g", { "clip-path": "url(#film-knip-nieuw)" }, wereld);
   rechthoek(DORPEL, { fill: CREME.nieuw }, nieuw);
   maak("path", { d: "M320 409.4h260", stroke: CREME.licht, "stroke-width": 1.8 }, nieuw);
@@ -252,13 +258,15 @@
   var bak = maak("g", {}, busje);
   maak("path", {
     d: "M10 -24 L10 -150 Q10 -165 25 -165 L245 -165 Q262 -165 272 -150 L312 -100 Q330 -96 330 -78 L330 -38 Q330 -24 316 -24 Z",
-    fill: "#fff", stroke: "#cfccc4", "stroke-width": 1.5
+    fill: KLEUR.mint, stroke: "#8dbcb0", "stroke-width": 1.5
   }, bak);
   maak("path", { d: "M258 -150 L268 -150 L305 -104 L258 -104 Z", fill: KLEUR.inktZacht }, bak);
   maak("path", { d: "M266 -146 L276 -146 L286 -132 L270 -132 Z", fill: "#fff", opacity: 0.35 }, bak);
-  maak("path", { d: "M250 -150 V-30 M250 -86 h-10", stroke: "#d9d6cf", "stroke-width": 2, "stroke-linecap": "round" }, bak);
-  maak("rect", { x: 10, y: -68, width: 320, height: 12, fill: KLEUR.mint }, bak);
-  maak("image", { href: "/images/logo/iwrap-logo-donker-88.png", x: 40, y: -132, width: 172, height: 36 }, bak);
+  maak("path", { d: "M250 -150 V-30 M250 -86 h-10", stroke: "#8dbcb0", "stroke-width": 2, "stroke-linecap": "round" }, bak);
+  // Het logo zoals op de echte bus: wit, met de tagline eronder.
+  maak("image", { href: "/images/logo/iwrap-logo-liggend-wit.svg", x: 40, y: -136, width: 172, height: 36 }, bak);
+  maak("text", { x: 41, y: -88, fill: "#fff", "font-family": "Montserrat, sans-serif", "font-weight": 600,
+    "font-size": 8.6, "letter-spacing": 1.6 }, bak).textContent = "SPECIALIST IN KOZIJNFOLIE";
   maak("rect", { x: 300, y: -36, width: 34, height: 11, rx: 4, fill: "#cfccc4" }, bak);
   maak("rect", { x: 4, y: -36, width: 16, height: 11, rx: 4, fill: "#cfccc4" }, bak);
   maak("rect", { x: 321, y: -86, width: 9, height: 11, rx: 2, fill: "#f2dc8c" }, bak);
@@ -349,16 +357,36 @@
     return { el: g, schijf: schijf, draai: draai, arc: arc };
   }
   var krul = rol("#d3c5a1", "#a3946f", "#a3946f");
+  // De doek: komt achter de krabber aan en maakt de ondergrond schoon en vetvrij.
+  var doek = maak("g", { opacity: 0 }, svg);
+  maak("path", { d: "M-29 -25Q0 -35 27 -24Q36 0 25 26Q-2 35 -28 24Q-37 0 -29 -25Z", fill: "#fff", stroke: "#b5bbb9", "stroke-width": 1.5 }, doek);
+  maak("path", { d: "M-12 -16Q4 -4 -6 15M6 -18Q19 -2 11 17", fill: "none", stroke: KLEUR.mint, "stroke-width": 4, "stroke-linecap": "round" }, doek);
+  // De krabber (een trekkrabber zoals de Bahco 665): het hardmetalen blad op x = 0 haalt de
+  // lijmresten weg; de arm komt van rechtsonder. Achter de krabber maakt de doek alles schoon.
+  var krabber = maak("g", { opacity: 0 }, svg);
+  maak("path", { d: "M138 92 L900 650 L900 780 L118 128 Z", fill: KLEUR.inktZacht }, krabber);
+  maak("rect", { x: -3, y: -40, width: 9, height: 80, rx: 2, fill: "#41464a" }, krabber);
+  maak("rect", { x: 5, y: -37, width: 22, height: 74, rx: 5, fill: "#aeb4b8" }, krabber);
+  maak("path", { d: "M20 6 L64 38 L56 50 L16 20 Z", fill: "#b9bec1" }, krabber);
+  maak("rect", { x: 12, y: -60, width: 8, height: 26, rx: 3, fill: "#b9bec1" }, krabber);
+  maak("circle", { cx: 16, cy: -68, r: 16, fill: "#1b1c1e" }, krabber);
+  maak("circle", { cx: 11, cy: -73, r: 5, fill: "#ffffff", opacity: 0.2 }, krabber);
+  maak("path", { d: "M58 36 L150 104 Q158 112 152 120 Q145 128 136 122 L48 54 Z", fill: "#d9600f" }, krabber);
+  maak("path", { d: "M84 54 L140 96 L128 112 L72 70 Z", fill: "#26282a" }, krabber);
+  maak("rect", { x: 92, y: 66, width: 58, height: 42, rx: 18, fill: KLEUR.handschoen, transform: "rotate(37 121 87)" }, krabber);
+  maak("path", { d: "M104 76h20 M102 90h20", stroke: "#4b535a", "stroke-width": 3, "stroke-linecap": "round", transform: "rotate(37 121 87)" }, krabber);
   var nieuweRol = rol(CREME.nieuw, "#c9bd9f", "#cfc3a6");
   maak("circle", { r: 7, fill: "#b9a27a" }, nieuweRol.el);  // kartonnen kern
 
-  // De rakel. De vilten kant zit op x = 0 en drukt de folie aan; de arm komt
+  // De rakel: een blauw kaartje met een brede zwarte viltrand. De vilten kant zit op x = 0
+  // en drukt de folie aan; de arm komt
   // van rechtsonder, net als bij het warmtepistool.
   var rakel = maak("g", {}, svg);
   maak("path", { d: "M64 -27 L900 -46 L900 62 L64 27 Z", fill: KLEUR.inktZacht }, rakel);
   maak("path", { d: "M64 -27 L900 -46 L900 -22 L64 -13 Z", fill: "#4b535b" }, rakel);
-  maak("rect", { x: 0, y: -48, width: 54, height: 96, rx: 9, fill: KLEUR.mint, stroke: KLEUR.mintDiep, "stroke-width": 1.5 }, rakel);
-  maak("rect", { x: -4, y: -48, width: 11, height: 96, rx: 3, fill: "#4b535a" }, rakel);
+  maak("rect", { x: 0, y: -48, width: 56, height: 96, rx: 6, fill: "#2b97d6", stroke: "#1f78b0", "stroke-width": 1.5 }, rakel);
+  maak("rect", { x: 44, y: -45, width: 6, height: 90, rx: 3, fill: "#1f78b0" }, rakel);
+  maak("rect", { x: -5, y: -48, width: 20, height: 96, rx: 4, fill: "#1d1e20" }, rakel);
   maak("rect", { x: 24, y: -35, width: 50, height: 70, rx: 23, fill: KLEUR.handschoen }, rakel);
   maak("path", { d: "M30 -17h18 M30 0h18 M30 17h18", stroke: "#4b535a", "stroke-width": 3, "stroke-linecap": "round" }, rakel);
   maak("rect", { x: 64, y: -29, width: 24, height: 58, rx: 8, fill: KLEUR.mint }, rakel);
@@ -465,6 +493,16 @@
     zet(krul.draai, { transform: "rotate(" + (p * 9).toFixed(1) + ")" });
     krul.el.setAttribute("opacity", t > 7.3 ? (1 - fase(t, 8.7, 8.9)).toFixed(3) : 0);
 
+    // De krabber haalt vlak achter het warmtepistool de lijmresten weg; de doek komt erachter
+    // en maakt de ondergrond schoon en vetvrij.
+    var c = mix(318, 600, gang(fase(t, 7.62, 9.12)));
+    zet(knipLijm, { x: Math.min(c, 580), width: Math.max(0, 580 - c) });
+    verplaats(krabber, sx(c), midden + Math.sin(t * 13) * 1.5, 1, Math.sin(t * 13) * 2);
+    krabber.setAttribute("opacity", (fase(t, 7.5, 7.7) * (1 - fase(t, 9.0, 9.18))).toFixed(3));
+    var cd = mix(300, 600, gang(fase(t, 7.85, 9.3)));
+    verplaats(doek, sx(cd), midden + Math.sin(t * 16) * 3, 1, Math.sin(t * 16) * 8);
+    doek.setAttribute("opacity", (fase(t, 7.8, 8.0) * (1 - fase(t, 9.2, 9.36))).toFixed(3));
+
     // Warmtepistool, iets vóór de krul uit.
     var fin = uit(fase(t, 6.95, 7.35)), fuit = erin(fase(t, 8.8, 9.15));
     var fx = Math.min(sx(p) + rk + 30, 830) + (1 - fin) * 320 + fuit * 360;
@@ -542,6 +580,8 @@
     });
 
     if (balk) balk.style.transform = "scaleX(" + (t / DUUR).toFixed(4) + ")";
+    // Voor de stappen onder de film (js/iwrap-site.js, onderdeel 3).
+    film.dispatchEvent(new CustomEvent("filmtijd", { detail: t }));
   }
 
   /* Afspelen ------------------------------------------------------------- */
@@ -582,7 +622,12 @@
   });
 
   // Voor de opname: video/opname.mjs zet zelf elk beeldje neer.
-  window.iwrapFilm = { duur: DUUR, teken: function (t) { stop(); tijd = t; teken(t); } };
+  window.iwrapFilm = {
+    duur: DUUR,
+    teken: function (t) { stop(); tijd = t; teken(t); },
+    // Voor de stappen onder de film: spring naar t en speel verder.
+    speelVanaf: function (t) { stop(); tijd = Math.max(0, Math.min(t, DUUR)); zelfGestopt = false; teken(tijd); speel(); }
+  };
 
   // De opname begint niet vanzelf te lopen: die zet elk beeldje zelf neer.
   if (/[?&]opname\b/.test(location.search)) { teken(0); return; }

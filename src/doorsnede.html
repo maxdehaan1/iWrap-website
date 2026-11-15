@@ -1,6 +1,7 @@
-<!-- De doorsnede: een onderdorpel in drie standen (verweerd, oude laag eraf,
-     nieuwe folie). Staat op de homepage en op /kunststof-kozijn-herstellen via
-     {{doorsnede}}; build.py zet dit bestand daar neer.
+<!-- De doorsnede: een onderdorpel, met de drie vaste stappen (toplaag eraf,
+     reinigen en vetvrij, nieuwe folie erop). Staat op /kunststof-kozijn-herstellen
+     via {{doorsnede}}; build.py zet dit bestand daar neer. (Op de homepage staat
+     op die plek het kozijn in 3D.)
 
      js/doorsnede.js zet data-stand op 1, 2 of 3; de overgangen zelf zitten in
      css/doorsnede.css. Zonder JavaScript blijft hij op stand 3 staan, met alle
@@ -74,22 +75,22 @@
     <li>
       <button type="button" data-naar="1">
         <span class="ds-nr">1</span>
-        <span><b>Na jaren zon</b>
-        De folie verweert, barst of laat los. Waar hij loslaat, zie je de gele lijmlaag.</span>
+        <span><b>Toplaag eraf</b>
+        Waar nog oude folie op zit, halen we die eraf, met warmte en de juiste middelen. Het profiel eronder blijft heel.</span>
       </button>
     </li>
     <li>
       <button type="button" data-naar="2">
         <span class="ds-nr">2</span>
-        <span><b>Oude laag eraf</b>
-        Met warmte en de juiste middelen halen we folie én lijm eraf. Het profiel blijft heel.</span>
+        <span><b>Reinigen en vetvrij</b>
+        Oude lijmresten gaan eraf en de ondergrond wordt helemaal schoon en vetvrij gemaakt.</span>
       </button>
     </li>
     <li>
       <button type="button" data-naar="3">
         <span class="ds-nr">3</span>
-        <span><b>Nieuwe Renolit folie</b>
-        Strak opgebracht en om de rand gezet. Tien jaar fabrieksgarantie op de folie.</span>
+        <span><b>Nieuwe folie erop</b>
+        Een nieuwe, hoogwaardige Renolit folie, strak opgebracht en om de rand gezet, met {{feit.garantie_folie}}.</span>
       </button>
     </li>
   </ol>

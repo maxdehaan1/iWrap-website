@@ -3,8 +3,8 @@
   "description": "Verweerde of loslatende folie? iWrap vervangt alleen de toplaag met Renolit folie; het kozijn blijft zitten. Vaste prijs op basis van je foto's.",
   "ogtitle": "Kunststof kozijnen herstellen met Renolit folie",
   "bodyclass": "home",
-  "css": ["home", "film", "doorsnede"],
-  "js": ["main", "film", "doorsnede"],
+  "css": ["home", "film", "doorsnede", "iwrap-site"],
+  "js": ["main", "film", "iwrap-site", "kozijn-3d"],
   "prioriteit": "1.0",
   "changefreq": "weekly",
   "preload": {
@@ -87,18 +87,19 @@
     {{film}}
     <div class="stappen verschijn">
       <div class="stap">
-        <h3>Je stuurt foto's</h3>
-        <p>Via het aanvraagformulier: streep op de foto aan wat er moet gebeuren, zet de
-        maten erbij, of teken het op papier.</p>
+        <h3>Foto en vaste prijs</h3>
+        <p>Stuur foto's via het aanvraagformulier: streep aan wat er moet gebeuren, zet de
+        maten erbij, of teken het op papier. Je krijgt één totaalprijs, geen nacalculatie
+        achteraf.</p>
       </div>
       <div class="stap">
-        <h3>Je krijgt een offerte</h3>
-        <p>Eén totaalprijs voor de werkzaamheden, geen nacalculatie achteraf.</p>
+        <h3>Afspraak</h3>
+        <p>Je weet vooraf wie er komt, en wanneer.</p>
       </div>
       <div class="stap">
-        <h3>Oude folie eraf</h3>
-        <p>Warmte, geduld en de juiste middelen. Het profiel eronder blijft heel — dat
-        is het hele punt.</p>
+        <h3>Eraf en reinigen</h3>
+        <p>Oude folie en lijmresten eraf, alles vetvrij. Het profiel eronder blijft heel —
+        dat is het hele punt.</p>
       </div>
       <div class="stap">
         <h3>Nieuwe folie erop</h3>
@@ -248,7 +249,30 @@
       kapotmaakt is de folie eroverheen — en die vervang je zonder het kozijn eruit
       te halen.</p>
     </div>
-    {{doorsnede}}
+    <!-- Het kozijn in 3D (js/kozijn-3d.js, opmaak in css/iwrap-site.css onderdeel 12):
+         de lagen, en dan de drie vaste stappen. Speelt één keer als hij in beeld komt;
+         een klik op een stap speelt vanaf daar. Zonder WebGL een foto van het herstelde
+         kozijn, zonder JavaScript gewoon de stappen. -->
+    <figure class="kozijn-3d k3d-kaart" data-kozijn-3d>
+      <div class="k3d-raster">
+        <div class="k3d-beeld">
+          <canvas aria-hidden="true"></canvas>
+          <p class="k3d-zin is-leeg"></p>
+          <button class="k3d-opnieuw" type="button" hidden>Opnieuw</button>
+        </div>
+        <div class="k3d-kant">
+          <ol class="k3d-stappen" aria-label="De drie vaste stappen">
+            <li><button type="button" data-stap="1"><span class="k3d-nr">1</span><span><b>Toplaag eraf</b>
+            Waar nog oude folie op zit, halen we die eraf, met warmte en de juiste middelen. Het profiel eronder blijft heel.</span></button></li>
+            <li><button type="button" data-stap="2"><span class="k3d-nr">2</span><span><b>Reinigen en vetvrij</b>
+            Oude lijmresten gaan eraf en de ondergrond wordt helemaal schoon en vetvrij gemaakt.</span></button></li>
+            <li><button type="button" data-stap="3"><span class="k3d-nr">3</span><span><b>Nieuwe folie erop</b>
+            Een nieuwe, hoogwaardige Renolit folie, strak opgebracht en om de rand gezet, met {{feit.garantie_folie}}.</span></button></li>
+          </ol>
+          <figcaption>Getekend in 3D, zo gaat het bij elk kozijn. Klik op een stap om hem nog eens te zien.</figcaption>
+        </div>
+      </div>
+    </figure>
     {{vergelijking}}
   </div>
 </section>

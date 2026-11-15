@@ -192,12 +192,40 @@ def reviews_verversen():
 
 reviews_afleiden()
 
-FAVICON = "/images/logo/iwrap-mark-64.png"
+def logo_kop():
+    """Het logo in de kop, in de pagina zelf: scherp op elk scherm, en het kan bij
+    binnenkomst uitrollen (zie "De uitrol van het logo" in style.css).
 
-LOGO = (
-    '<img class="logo-img" src="/images/logo/iwrap-logo-donker-88.png" '
-    'width="210" height="44" alt="iWrap" fetchpriority="high">'
-)
+    De vormen komen ongewijzigd uit images/logo/iwrap-logo-liggend.svg, die uit
+    de officiële logobestanden is gemaakt. Voor de uitrol staan de stippen er
+    nog eens als cirkel en de banen als lijn met ronde uiteinden: een stip die
+    uitrolt tot een baan. Die zie je alleen tijdens de uitrol; daarna staat er
+    weer precies het officiële logo. Het woord schuift achter het beeldmerk
+    vandaan (de clipPath laat links van x = 300 niets zien)."""
+    svg = (ROOT / "images" / "logo" / "iwrap-logo-liggend.svg").read_text(encoding="utf-8")
+    vormen = dict(re.findall(r'<path fill="(#[0-9A-Fa-f]{6})" d="([^"]+)"', svg))
+    merk, woord = vormen["#A7CEC5"], vormen["#262626"]
+    # Middelpunt van de bovenste en de onderste ronding van elke baan (uit de
+    # logovectoren), en de dikte van een baan.
+    banen = [(56.131, 95.134, 73.359, 130.134), (106.096, 30.505, 153.489, 130.133),
+             (186.153, 30.503, 233.542, 130.135)]
+    lijnen = "".join(
+        f'<path class="lg-anim lg-baan lg-b{i}" d="M{x1} {y1}L{x2} {y2}" pathLength="1"/>'
+        for i, (x1, y1, x2, y2) in enumerate(banen, 1))
+    return (
+        '<svg class="logo-img" viewBox="0 0 839.965 175.631" width="163" height="34" '
+        'aria-hidden="true" focusable="false">'
+        '<defs><clipPath id="lg-knip"><rect x="300" y="-20" width="560" height="216"/></clipPath></defs>'
+        f'<g class="lg-vast"><path class="lg-merk" fill="#A7CEC5" d="{merk}"/></g>'
+        f'<g class="lg-anim-groep" fill="#A7CEC5" stroke="#A7CEC5">{lijnen}'
+        '<circle class="lg-anim lg-stip lg-s1" cx="30.194" cy="30.194" r="30.194"/>'
+        '<circle class="lg-anim lg-stip lg-s2" cx="266.584" cy="30.194" r="30.194"/></g>'
+        f'<g clip-path="url(#lg-knip)"><path class="lg-woord" fill="#262626" d="{woord}"/></g>'
+        '</svg>'
+    )
+
+
+LOGO = logo_kop()
 
 
 # ---------------------------------------------------------------------------
@@ -505,7 +533,7 @@ def render_footer():
     return f"""<footer class="site-footer">
   <div class="wrap fgrid">
       <div class="fcol fbrand">
-        <img src="/images/logo/iwrap-logo-licht-88.png" width="200" height="42" alt="iWrap" loading="lazy">
+        <img src="/images/logo/iwrap-logo-liggend-licht.svg" width="200" height="42" alt="iWrap" loading="lazy">
         <p>Wij herstellen kunststof kozijnen met Renolit folie. Al
         {b['ervaring_jaren']} jaar, door heel Nederland, en we besteden niets uit.</p>
         <p class="fcontact">
@@ -642,9 +670,11 @@ HEAD = """<!DOCTYPE html>
 <meta property="og:image:alt" content="{ogalt}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#22262a">
-<link rel="icon" href="{favicon}" type="image/png">
-<link rel="apple-touch-icon" href="/images/logo/apple-touch-icon.png">
-<script>document.documentElement.className+=" js";</script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<script>(function(d){{d.className+=" js";if(document.referrer.indexOf(location.origin+"/")!==0)d.className+=" logo-uitrol"}})(document.documentElement);</script>
 {fonts}{stylesheets}{preload}<script type="application/ld+json">{jsonld}</script>
 </head>
 <body class="{bodyclass}">
@@ -664,6 +694,8 @@ def werk_csp_bij():
     genoemd staat. Verandert dat script, dan zetten we de nieuwe hash er hier
     vanzelf in; anders zou de browser het online stilletjes tegenhouden."""
     script = re.search(r"<script>(.*?)</script>", HEAD, re.S).group(1)
+    # HEAD is een format-sjabloon: daar staan accolades dubbel, in de pagina enkel.
+    script = script.replace("{{", "{").replace("}}", "}")
     hash_ = "sha256-" + base64.b64encode(hashlib.sha256(script.encode("utf-8")).digest()).decode("ascii")
     pad = ROOT / "vercel.json"
     tekst = pad.read_text(encoding="utf-8")
@@ -744,7 +776,6 @@ def render(slug, meta, inhoud, ver):
         ogbreedte=ogbreedte,
         oghoogte=oghoogte,
         ogalt=meta.get("ogalt", "Hersteld kunststof kozijn met nieuwe Renolit folie"),
-        favicon=FAVICON,
         fonts=fonts_koppen(ver),
         stylesheets=stylesheets,
         preload=preload,

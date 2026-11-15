@@ -1,0 +1,54 @@
+iWrap Motion Kit: bronbestanden
+
+Hiermee kun je de animaties later aanpassen en opnieuw renderen (bijvoorbeeld met Claude).
+
+  src/iwrap-motion.src.js   de logo-animaties
+  src/film.src.js           de klusfilm: kaart, route, ondertitels
+  src/film2.src.js          de klusfilm: straat, poppetjes, steiger, close-up met de drie vaste werkstappen, eindkaart
+                            (het close-up is het 3D-kozijn uit 3d kozijn/kozijn-klus.js; zonder WebGL een plat close-up)
+  src/pages.src.js          de animaties per pagina: werkgebied, kozijncheck, vervangen, aanvraag, vve
+  src/uitleg.src.js         de uitlegvideo's: een pagina-animatie als video in de stijl van de klusfilm (alleen voor video's)
+  uitleg.json               titels en ondertitels van de vijf uitlegvideo's (elke tekst komt van de site)
+  src/showcase.tpl.html     de showcase-pagina
+  3d kozijn/                het 3D-kozijn: de animatie 'Zo herstellen we een kozijn' (ook op de site), 'van beschadigd
+                            naar mooi' en het close-up in de klusfilm; met een eigen LEES MIJ.txt over aanpassen en renderen
+  geo.json                  de vormen van het logo (uit de PDF's in Export 3)
+  nl.json                   de kaart van Nederland
+
+Wat je nodig hebt: Python 3 en Google Chrome of Chromium (de scripts zoeken Chrome zelf; staat hij op een
+andere plek, zet het pad dan in de omgevingsvariabele CHROME). Voor video: op een Mac de Xcode-commandoregeltools
+(swiftc: de eigen encoder wordt dan vanzelf gebouwd), of elders (Linux, de cloud) ffmpeg. Met IWRAP_ENCODER=ffmpeg
+gebruik je altijd ffmpeg. De ffmpeg-route (tools/video_maken.py) is nog niet getest op de Mac waar alles gemaakt is:
+render eerst één korte video en kijk die na.
+
+Bouwen en renderen:
+
+  python3 tools/build.py                          bouwt dist/iwrap-motion.js, dist/iwrap-film.js (de motor voor de site),
+                                                  dist/iwrap-video.js (alleen om te renderen) en de showcase
+  python3 tools/logos.py                          maakt de logoset (SVG, PNG, favicon, deelafbeelding) in web/logo
+  (de encoder wordt zo nodig vanzelf gebouwd; met de hand: swiftc -O -swift-version 5 tools/encode.swift -o tools/encode)
+  python3 tools/render.py '[{"scene":"klus","opts":{},"w":1920,"h":1080,"out":"/pad/naar/film.mp4","codec":"h264","samples":6}]'
+
+Een uitlegvideo renderen: neem de opties uit uitleg.json (scene, boven, titel, onder, captions, eventueel sceneEind)
+en zet "frame" op [1920,1080] (liggend) of [1080,1920] (staand), bijvoorbeeld:
+
+  python3 tools/render.py '[{"scene":"uitleg","opts":{"scene":"kozijncheck","boven":"IWRAP  ·  KOZIJNCHECK","titel":["Gratis","kozijncheck"],"onder":"Bij elke klus, zonder meerprijs.","captions":[],"frame":[1920,1080]},"w":1920,"h":1080,"out":"/pad/naar/kozijncheck.mp4","codec":"h264","samples":6}]'
+
+Gewijzigd op 13 november 2026: de klusfilm laat het reinigen als eigen stap zien (lijmresten eraf, ontvetten,
+nog een keer nadoen) met de drie werkstappen in beeld, en het bakje koffie is eruit. De VvE-scène noemt een
+korte toelichting voor de bewoners, de offerte-scène de stiften van het echte formulier. Nieuw: de vijf uitlegvideo's.
+
+Gewijzigd op 14 november 2026: nieuw zijn de 3D-animatie van een kozijn (crème met houtnerf, met de drie vaste
+stappen: oude folie eraf, lijm eraf met de krabber en ontvetten, nieuwe folie met de rakel) en 'van kozijn naar logo',
+een afsluiter van zes seconden. Beide staan ook op de showcase-pagina.
+
+Later op 14 november 2026: het 3D-kozijn is opnieuw gemaakt met WebGL (echt licht en schaduw; de oude folie zoals de
+voor-foto van de site, de nieuwe zoals de na-foto). 'Van kozijn naar logo' is vervangen door 'van beschadigd naar mooi'.
+In de klusfilm is het close-up van het werk nu hetzelfde 3D-kozijn, met de krabber. Het 3D-kozijn heeft WebGL nodig: op een
+computer zonder grafische kaart rekent Chrome dat met de processor uit (trager, en daar niet getest).
+
+Gewijzigd op 15 november 2026: het gereedschap is nagebouwd naar het echte. Een trekkrabber zoals de Bahco 665
+haalt de lijm weg, een doek maakt schoon en vetvrij (geen spuitfles meer), en de rakel is een blauwe folie-rakel met
+een zwarte viltstrook. Zo in de 3D-animatie, het close-up van de klusfilm, de werkwijzefilm en de doorsnede.
+
+De kaart is gebaseerd op Natural Earth (publiek domein), vereenvoudigd; Flevoland is met de hand toegevoegd.
