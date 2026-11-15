@@ -63,7 +63,8 @@
     roest: "#a8523a",
     handschoen: "#5d666e",
     papier: "#f7f6f3",
-    warm: "#f2b66b"
+    warm: "#f2b66b",
+    mouw: "#a3cdc2"        // de monteur draagt de huisstijlkleur, net als het busje
   };
 
   /* Hulpjes --------------------------------------------------------------- */
@@ -335,7 +336,7 @@
     return maak("path", { d: d }, lucht);
   });
   var pistool = maak("g", {}, fohn);
-  maak("path", { d: "M126 138 L186 138 L270 900 L150 900 Z", fill: KLEUR.inktZacht }, pistool);
+  maak("path", { d: "M126 138 L186 138 L270 900 L150 900 Z", fill: KLEUR.mouw }, pistool);
   maak("path", { d: "M170 138 L186 138 L270 900 L246 900 Z", fill: "#4b535b" }, pistool);
   maak("rect", { x: 0, y: -10, width: 60, height: 20, rx: 3, fill: "#a7adb2" }, pistool);
   maak("rect", { x: 0, y: -11, width: 7, height: 22, rx: 2, fill: "#7c8288" }, pistool);
@@ -364,7 +365,7 @@
   // De krabber (een trekkrabber zoals de Bahco 665): het hardmetalen blad op x = 0 haalt de
   // lijmresten weg; de arm komt van rechtsonder. Achter de krabber maakt de doek alles schoon.
   var krabber = maak("g", { opacity: 0 }, svg);
-  maak("path", { d: "M138 92 L900 650 L900 780 L118 128 Z", fill: KLEUR.inktZacht }, krabber);
+  maak("path", { d: "M138 92 L900 650 L900 780 L118 128 Z", fill: KLEUR.mouw }, krabber);
   maak("rect", { x: -3, y: -40, width: 9, height: 80, rx: 2, fill: "#41464a" }, krabber);
   maak("rect", { x: 5, y: -37, width: 22, height: 74, rx: 5, fill: "#aeb4b8" }, krabber);
   maak("path", { d: "M20 6 L64 38 L56 50 L16 20 Z", fill: "#b9bec1" }, krabber);
@@ -382,7 +383,7 @@
   // en drukt de folie aan; de arm komt
   // van rechtsonder, net als bij het warmtepistool.
   var rakel = maak("g", {}, svg);
-  maak("path", { d: "M64 -27 L900 -46 L900 62 L64 27 Z", fill: KLEUR.inktZacht }, rakel);
+  maak("path", { d: "M64 -27 L900 -46 L900 62 L64 27 Z", fill: KLEUR.mouw }, rakel);
   maak("path", { d: "M64 -27 L900 -46 L900 -22 L64 -13 Z", fill: "#4b535b" }, rakel);
   maak("rect", { x: 0, y: -48, width: 56, height: 96, rx: 6, fill: "#2b97d6", stroke: "#1f78b0", "stroke-width": 1.5 }, rakel);
   maak("rect", { x: 44, y: -45, width: 6, height: 90, rx: 3, fill: "#1f78b0" }, rakel);

@@ -690,7 +690,7 @@
     var plat = G(lift);
     Rc(plat, -90, 0, 180, 16, 4, K.mint);
     Li(plat, -84, 0, -84, -50, K.mintDeep, 5); Li(plat, 84, 0, 84, -50, K.mintDeep, 5); Li(plat, -84, -50, 84, -50, K.mintDeep, 5);
-    var worker = new Person(plat, { shirt: K.ink, pants: K.inkSoft, skin: K.skin, hair: 'cap', hairColor: '#17191B', logo: true });
+    var worker = new Person(plat, { shirt: K.mint, pants: K.inkSoft, skin: K.skin, hair: 'cap', hairColor: '#17191B', logo: true });   // in de huisstijlkleur
     worker.set({ x: 22, y: 0, face: -1, s: 0.46, a: [150, 20], b: [20, 10] });
     var cap = o.captions === false ? function () {} : Caption(R, [{ t0: 0.4, t1: 3.3, text: 'Eerst een korte toelichting voor de bewoners' },
       { t0: 3.3, t1: 11.5, text: 'Daarna blok voor blok, van maart tot november' }, { t0: 11.5, text: 'Eén vaste prijs voor het hele complex' }], 600, 836, 820);

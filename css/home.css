@@ -123,8 +123,8 @@
 .cijfers{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:30px;}
 .cijfer strong{display:block;font-family:var(--kop);font-weight:700;font-size:clamp(1.9rem,1.4rem + 1.6vw,2.6rem);line-height:1;color:var(--ink);letter-spacing:-.03em;}
 .vlak-donker .cijfer strong{color:#fff;}
-.cijfer span{display:block;margin-top:9px;font-size:.9rem;color:var(--sub);}
-.vlak-donker .cijfer span{color:#a8b0b7;}
+.cijfer > span{display:block;margin-top:9px;font-size:.9rem;color:var(--sub);}   /* alleen de regel eronder; het live reviewcijfer staat in een eigen span */
+.vlak-donker .cijfer > span{color:#a8b0b7;}
 
 /* Voor wie ---------------------------------------------------------------- */
 

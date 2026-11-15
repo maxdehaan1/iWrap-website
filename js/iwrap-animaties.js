@@ -1429,9 +1429,8 @@
     Rc(cam, 1150, 836, 436, 28, 12, K.hedge);
     Rc(cam, 838, 822, 46, 42, 18, K.hedge2);
     var scaf = new Scaffold(cam);
-    var back = G(cam);                                    // mensen achter de bus
-    var wA = new Person(back, { shirt: K.ink, pants: K.inkSoft, skin: K.skin, hair: 'cap', hairColor: '#17191B', logo: true });
-    var wB = new Person(back, { shirt: K.ink, pants: K.inkSoft, skin: '#EBC09C', hair: 'bun', hairColor: K.hair, logo: true });
+    var back = G(cam);                                    // mensen achter de bus: één monteur en de klant
+    var wA = new Person(back, { shirt: K.mint, pants: K.inkSoft, skin: K.skin, hair: 'cap', hairColor: '#17191B', logo: true });   // in de huisstijlkleur
     var cu = new Person(back, { shirt: K.mustard, pants: '#6C7B88', skin: '#EDC2A0', hair: 'short', hairColor: '#C9CED0' });
     var van = new Van(cam);
     // voor/na-scheidslijn en labels
@@ -1475,6 +1474,7 @@
         pA.o = seg(ts, 2.95, 0.25);
         var sh = seg(ts, 4.95, 0.35, E.out) * (1 - seg(ts, 6.75, 0.3, E.inOut));
         if (sh > 0) pA.a = [lerp(4, 62, sh), lerp(12, 28, sh) + 9 * Math.sin((ts - 5.3) * 15) * seg(ts, 5.3, 0.2) * (1 - seg(ts, 6.5, 0.2))];
+        if (ts > 9.2 && ts < 11.8) pA.a = [52, 78];          // samen het kozijn nalopen: hij wijst het aan
         if (climb >= 1) { pA.a = [78 + 4 * Math.sin(ts * 5), 34]; pA.b = [58, 50]; }
       } else {
         var dn = seg(tb, 0.2, 0.7, E.inOut), wk = seg(tb, 0.9, 0.9, E.inOut);
@@ -1484,22 +1484,6 @@
         if (k > 0) pA.a = [lerp(4, 152, k), lerp(12, 18, k) + 10 * Math.sin(tb * 9) * k];
       }
       wA.set(pA);
-      // --- monteur B (knot)
-      var pB = { face: 1, y: 862 };
-      if (!done) {
-        var b1 = seg(ts, 3.45, 1.2, E.inOut), b2 = seg(ts, 7.3, 1.5, E.inOut);
-        pB.x = lerp(lerp(600, 742, b1), 1170, b2);
-        pB.wt = Math.max(ww(b1), ww(b2));
-        pB.o = seg(ts, 3.4, 0.25);
-        k = seg(ts, 5.0, 0.4, E.out) * (1 - seg(ts, 6.8, 0.3, E.inOut));
-        if (k > 0) pB.a = [lerp(4, 158, k), lerp(12, 24, k) + 16 * Math.sin(ts * 10) * k];
-        if (ts > 9.2 && ts < 12.6) pB.a = [52, 78];
-      } else {
-        pB.x = 1010;
-        k = seg(tb, 3.5, 0.4, E.out);
-        if (k > 0) { pB.a = [lerp(4, 150, k), lerp(12, 20, k) - 10 * Math.sin(tb * 9) * k]; pB.b = [lerp(-2, 150, k), 20]; }
-      }
-      wB.set(pB);
       // --- klant
       var pC = { face: -1, y: 862 };
       if (!done) {
@@ -2505,7 +2489,7 @@
     var plat = G(lift);
     Rc(plat, -90, 0, 180, 16, 4, K.mint);
     Li(plat, -84, 0, -84, -50, K.mintDeep, 5); Li(plat, 84, 0, 84, -50, K.mintDeep, 5); Li(plat, -84, -50, 84, -50, K.mintDeep, 5);
-    var worker = new Person(plat, { shirt: K.ink, pants: K.inkSoft, skin: K.skin, hair: 'cap', hairColor: '#17191B', logo: true });
+    var worker = new Person(plat, { shirt: K.mint, pants: K.inkSoft, skin: K.skin, hair: 'cap', hairColor: '#17191B', logo: true });   // in de huisstijlkleur
     worker.set({ x: 22, y: 0, face: -1, s: 0.46, a: [150, 20], b: [20, 10] });
     var cap = o.captions === false ? function () {} : Caption(R, [{ t0: 0.4, t1: 3.3, text: 'Eerst een korte toelichting voor de bewoners' },
       { t0: 3.3, t1: 11.5, text: 'Daarna blok voor blok, van maart tot november' }, { t0: 11.5, text: 'Eén vaste prijs voor het hele complex' }], 600, 836, 820);
