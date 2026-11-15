@@ -730,7 +730,8 @@ niet in (geen glans op knoppen, geen tellers die optellen, geen paginawissel).
   `style.css`), geen opslag in de browser. Bij aanwijzen veert het beeldmerk even mee.
 - **`js/iwrap-site.js`** (met `css/iwrap-site.css`): elk onderdeel zoekt zijn eigen
   element en doet niets als het er niet is. Hij staat alleen op de pagina's die hem nodig
-  hebben (de js-lijst in de bron van de pagina):
+  hebben (de js-lijst in de bron van de pagina). Onderdeel 1, het logo, is vervangen door
+  de CSS hierboven; de nummers van de rest zijn gebleven zoals in het pakket:
   2. de eerste voor/na-schuif gaat één keer zelf heen en weer (homepage, voorbeelden);
   3. de kaartjes onder de film lopen mee (homepage);
   4. offerte: een vinkje per stap, de lader tijdens het versturen en het bedankt-moment;
