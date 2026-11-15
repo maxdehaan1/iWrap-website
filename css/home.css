@@ -134,10 +134,15 @@
 .onderscheid h3::before{content:"";flex-shrink:0;width:22px;height:22px;margin-top:-1px;border-radius:50%;
   background:var(--mint) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.6 6.3l2.2 2.2 4.6-5' fill='none' stroke='%2322262a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat;}
 .onderscheid p{margin:0;padding-left:33px;font-size:.93rem;line-height:1.55;color:#a8b0b7;}
-/* Een logo van een partner (Appcademy) staat onveranderd op een wit kaartje, ook op donker. */
-.partnerlogo{display:inline-flex;align-items:center;margin:14px 0 0 33px;padding:8px 14px;background:#fff;border-radius:10px;}
-.partnerlogo img{display:block;height:22px;width:auto;}
-.partnerlogo-los{margin:22px 0 0;}
+/* Logo's van wie ons certificeerde, opleidde of inhuurt (Renolit, Avery Dennison, Appcademy):
+   onveranderd op een wit kaartje, ook op donker, met eronder waarvoor. */
+.partnerlogos{display:flex;flex-wrap:wrap;align-items:stretch;gap:12px;margin-top:24px;}
+.partnerlogo{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  min-width:150px;padding:14px 20px 12px;background:#fff;border-radius:12px;}
+.partnerlogo img{display:block;height:30px;width:auto;}
+.partnerlogo-vierkant img{height:48px;}
+.partnerlogo-breed img{height:24px;}
+.partnerlogo span{font-family:var(--kop);font-size:.72rem;font-weight:600;line-height:1.2;color:#4a5158;text-align:center;}
 .onderscheid-voet{margin:26px 0 0;max-width:70ch;font-size:.95rem;color:#c2c8ce;}
 .onderscheid-voet a{margin-left:6px;font-weight:600;white-space:nowrap;}
 .onderscheid-voet a::after{content:" \2197";}
