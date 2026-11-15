@@ -694,6 +694,15 @@ Alles beweegt op dezelfde manier: `--beweeg` (de uitloop), `--kort` en `--middel
 - **Offertestappen:** de nieuwe stap begint bovenaan en komt zacht binnen (`offerte.js`).
 - Wie in zijn toestel "minder beweging" aanzet, krijgt alles zonder animatie.
 
+### Logo's en animaties uit "iWrap in beweging" (nog niet op de site)
+
+Op een ander Claude-account is een pakket gemaakt met het logo als SVG, favicons, een
+3D-kozijn, een klusfilm, uitlegscènes en video's voor social media. Het staat uitgepakt in
+`~/Documents/iWrap/iWrap in beweging/` (niet in git: 283 MB, vooral video). Begin daar bij
+`BEGIN HIER.html`; wat er op de site zou komen staat in `2 - Website/OPDRACHT VOOR CLAUDE.md`,
+de bron om iets te veranderen en opnieuw te maken in `4 - Bronbestanden`. Een MP4 pas je
+niet zelf aan: verander de bron en render opnieuw.
+
 ## Algemene voorwaarden
 
 De tekst staat op één plek: **`voorwaarden.py`**. Dat script maakt de pagina
