@@ -597,18 +597,21 @@ afsluitblok (`.slot.met-beeld`) rechts een echte werkfoto met het reviewcijfer e
 
 Bovenaan **Over iWrap** staat de klusfilm: *van aanvraag tot afgeleverd kozijn*, 56
 seconden. Iemand ergens in Nederland stuurt een foto en krijgt een vaste prijs, het mint
-busje rijdt vanuit Hilversum naar de klant, de steiger gaat op, en dan de drie vaste stappen
+busje rijdt vanuit Hilversum naar de klant, er komt één monteur (zo gaat het bij iWrap; Max,
+15 november 2026), de steiger gaat op, en dan de drie vaste stappen
 van dichtbij (hetzelfde 3D-kozijn als op de homepage), tot de oplevering en de eindkaart.
 Als de film is afgelopen, schuift onderin een balk omhoog met de knop naar de offerte
 (`js/iwrap-site.js`, onderdeel 7). Hij verving de werkdag-video (wit busje, "eerst een
 bakje koffie").
 
-- Het bestand is `media/iwrap-klusfilm.mp4` (1280×720, 1,4 MB), de poster
-  `images/klusfilm-poster.jpg`. Het origineel (1920×1080) staat in
+- Het bestand is `media/iwrap-klusfilm-v2.mp4` (1280×720, ongeveer 1,4 MB), de poster
+  `images/klusfilm-poster-v2.jpg` (seconde 45 uit de film: de oplevering). Ze hebben een
+  versienummer omdat `/media/` dertig dagen en `/images/` een jaar gecachet worden: een
+  nieuwe versie krijgt dus een nieuwe naam. Het origineel (1920×1080) staat in
   `~/Documents/iWrap/iWrap in beweging/3 - Video's/Liggend 16x9/`. De versie voor de site
   is daaruit gemaakt met
   `video/node_modules/ffmpeg-static/ffmpeg -i "<origineel>.mp4" -vf scale=1280:-2:flags=lanczos
-  -c:v libx264 -preset slow -crf 28 -pix_fmt yuv420p -movflags +faststart -an media/iwrap-klusfilm.mp4`:
+  -c:v libx264 -preset slow -crf 28 -pix_fmt yuv420p -movflags +faststart -an media/iwrap-klusfilm-v2.mp4`:
   vier keer kleiner dan de 1280×720-versie uit het pakket, zonder zichtbaar verschil.
 - Hij laadt pas als hij in beeld komt (`preload="none"`), speelt dan zonder geluid af,
   pauzeert als je wegscrolt en blijft aan het eind op de eindkaart staan. Dat gedrag zit
