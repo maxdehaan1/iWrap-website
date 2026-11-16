@@ -47,11 +47,13 @@
   var DETAIL = { x: 450, y: 425, s: 3.2 };  // de onderdorpel
   var GEVEL = { x: 450, y: 400, s: 1 };     // het huis met het busje
 
-  // Het kozijn is crème (RAL 9001), het draairaam dennengroen (RAL 6009). De
-  // nieuwe folie heeft dezelfde kleur als de oude: het wordt niet anders, het
-  // wordt weer strak.
+  // De voordeur van het huis: crème kozijn (RAL 9001), dennengroene deur (RAL 6009).
   var CREME = { nieuw: "#f2ecda", licht: "#fffcf3", donker: "#d6cbb0", oud: "#d5cbb1", vlek: "#b8ab8c", barst: "#8f8366" };
   var GROEN = { nieuw: "#2e4434", licht: "#4f6855", oud: "#65715f", barst: "#b4bcae" };
+  // Het raam zelf is antraciet met houtnerf, de meest voorkomende foliekleur (net als de hero op de homepage):
+  // nieuw diep en egaal, verweerd krijtgrijs en vlekkerig. Zo zie je in één oogopslag wat er verandert.
+  var KOZIJN = { nieuw: "#3e4347", licht: "#5f666c", donker: "#2a2e32", oud: "#8d9297", vlek: "#b4b8bb", barst: "#5c6166" };
+  var RAAMKL = { nieuw: "#3a3f43", licht: "#5a6066", oud: "#878c91", barst: "#c3c7ca" };
 
   var KLEUR = {
     kaal: "#e2e4e3",       // het kunststof profiel onder de folie
@@ -113,10 +115,10 @@
   // Verweerde crème: vlekkerig en vergeeld.
   var vlek = maak("pattern", { id: "film-vlek", width: 26, height: 20, patternUnits: "userSpaceOnUse" }, defs);
   [[6, 5, 5, 3], [18, 13, 6, 3.5], [11, 17, 3, 2], [22, 3, 2.5, 1.6]].forEach(function (e) {
-    maak("ellipse", { cx: e[0], cy: e[1], rx: e[2], ry: e[3], fill: CREME.vlek, opacity: 0.3 }, vlek);
+    maak("ellipse", { cx: e[0], cy: e[1], rx: e[2], ry: e[3], fill: KOZIJN.vlek, opacity: 0.2 }, vlek);
   });
-  maak("circle", { cx: 3, cy: 12, r: 0.5, fill: CREME.barst, opacity: 0.6 }, vlek);
-  maak("circle", { cx: 16, cy: 6, r: 0.4, fill: CREME.barst, opacity: 0.6 }, vlek);
+  maak("circle", { cx: 3, cy: 12, r: 0.5, fill: KOZIJN.barst, opacity: 0.6 }, vlek);
+  maak("circle", { cx: 16, cy: 6, r: 0.4, fill: KOZIJN.barst, opacity: 0.6 }, vlek);
   // Verweerd groen: verkrijt.
   var kalk = maak("pattern", { id: "film-kalk", width: 7, height: 6, patternUnits: "userSpaceOnUse" }, defs);
   maak("circle", { cx: 1.6, cy: 1.8, r: 0.6, fill: "#c3cbbd", opacity: 0.55 }, kalk);
@@ -127,6 +129,9 @@
   maak("stop", { offset: 1, "stop-color": "#7d959e" }, glas);
   maak("filter", { id: "film-schaduw", x: "-20%", y: "-20%", width: "140%", height: "150%" }, defs)
     .appendChild(maak("feDropShadow", { dx: 0, dy: 12, stdDeviation: 14, "flood-color": KLEUR.inkt, "flood-opacity": 0.22 }));
+  // Een kleinere schaduw voor het gereedschap: het zweeft net boven het kozijn.
+  maak("filter", { id: "film-schaduw-klein", x: "-30%", y: "-30%", width: "160%", height: "170%" }, defs)
+    .appendChild(maak("feDropShadow", { dx: 4, dy: 9, stdDeviation: 6, "flood-color": KLEUR.inkt, "flood-opacity": 0.28 }));
 
   function knip(id) { return maak("clipPath", { id: id }, defs); }
   var knipOud = rechthoek(DORPEL, {}, knip("film-knip-oud"));
@@ -184,11 +189,11 @@
   // Het kozijn in nieuwe staat. Daaroverheen ligt per deel de oude, verweerde
   // folie, die aan het eind wordt weggehaald (deel.knip).
   var vers = maak("g", {}, wereld);
-  DELEN.forEach(function (deel) { if (!deel.raam) rechthoek(deel.d, { fill: CREME.nieuw }, vers); });
-  maak("path", { d: RAAM, fill: GROEN.nieuw, "fill-rule": "evenodd" }, vers);
-  maak("path", { d: "M321 201.2h258 M321.2 222v186 M442.2 222v186 M559.2 222v186", stroke: CREME.licht, "stroke-width": 1.6 }, vers);
-  maak("path", { d: "M341 222v186 M458 222v186 M579 200v208", stroke: CREME.donker, "stroke-width": 1.4 }, vers);
-  maak("path", { d: "M460 223.2h97 M460.2 223v184 M472 395.2h73", stroke: GROEN.licht, "stroke-width": 1.4 }, vers);
+  DELEN.forEach(function (deel) { if (!deel.raam) rechthoek(deel.d, { fill: KOZIJN.nieuw }, vers); });
+  maak("path", { d: RAAM, fill: RAAMKL.nieuw, "fill-rule": "evenodd" }, vers);
+  maak("path", { d: "M321 201.2h258 M321.2 222v186 M442.2 222v186 M559.2 222v186", stroke: KOZIJN.licht, "stroke-width": 1.6 }, vers);
+  maak("path", { d: "M341 222v186 M458 222v186 M579 200v208", stroke: KOZIJN.donker, "stroke-width": 1.4 }, vers);
+  maak("path", { d: "M460 223.2h97 M460.2 223v184 M472 395.2h73", stroke: RAAMKL.licht, "stroke-width": 1.4 }, vers);
 
   var SCHADE = [
     "M326 258l4 8-2 7 4 9 M330 300l5 5 M327 336l4 6-1 7",
@@ -200,18 +205,18 @@
   DELEN.forEach(function (deel, i) {
     var g = maak("g", { "clip-path": "url(#film-knip-deel-" + i + ")" }, wereld);
     if (deel.raam) {
-      maak("path", { d: RAAM, fill: GROEN.oud, "fill-rule": "evenodd" }, g);
+      maak("path", { d: RAAM, fill: RAAMKL.oud, "fill-rule": "evenodd" }, g);
       maak("path", { d: RAAM, fill: "url(#film-kalk)", "fill-rule": "evenodd" }, g);
-      barsten(SCHADE[i], GROEN.barst, g);
+      barsten(SCHADE[i], RAAMKL.barst, g);
     } else {
-      rechthoek(deel.d, { fill: CREME.oud }, g);
+      rechthoek(deel.d, { fill: KOZIJN.oud }, g);
       rechthoek(deel.d, { fill: "url(#film-vlek)" }, g);
-      barsten(SCHADE[i], CREME.barst, g);
+      barsten(SCHADE[i], KOZIJN.barst, g);
     }
     if (i === 0) {
       // Een hoekje folie dat loskomt, met de gele lijmlaag eronder.
       maak("path", { d: "M342 380v28h-20z", fill: KLEUR.lijm }, g);
-      maak("path", { d: "M342 380q12 5 17 19l-17 9z", fill: "#efe7d2", stroke: "#a3946f", "stroke-width": 0.6, "stroke-linejoin": "round" }, g);
+      maak("path", { d: "M342 380q12 5 17 19l-17 9z", fill: "#a7acb0", stroke: "#6f7479", "stroke-width": 0.6, "stroke-linejoin": "round" }, g);
     }
   });
 
@@ -230,18 +235,18 @@
   rechthoek(DORPEL, { fill: KLEUR.lijm, opacity: 0.85 }, lijmlaag);
   maak("path", { d: "M326 412l7 26M346 412l7 26M366 412l7 26M386 412l7 26M406 412l7 26M426 412l7 26M446 412l7 26M466 412l7 26M486 412l7 26M506 412l7 26M526 412l7 26M546 412l7 26M566 412l7 26", stroke: "#b38c2c", "stroke-width": 1.2, opacity: 0.45 }, lijmlaag);
   var nieuw = maak("g", { "clip-path": "url(#film-knip-nieuw)" }, wereld);
-  rechthoek(DORPEL, { fill: CREME.nieuw }, nieuw);
-  maak("path", { d: "M320 409.4h260", stroke: CREME.licht, "stroke-width": 1.8 }, nieuw);
-  maak("rect", { x: 320, y: 436, width: 260, height: 4, fill: CREME.donker }, nieuw);
+  rechthoek(DORPEL, { fill: KOZIJN.nieuw }, nieuw);
+  maak("path", { d: "M320 409.4h260", stroke: KOZIJN.licht, "stroke-width": 1.8 }, nieuw);
+  maak("rect", { x: 320, y: 436, width: 260, height: 4, fill: KOZIJN.donker }, nieuw);
   var oudDorpel = maak("g", { "clip-path": "url(#film-knip-oud)" }, wereld);
-  rechthoek(DORPEL, { fill: CREME.oud }, oudDorpel);
+  rechthoek(DORPEL, { fill: KOZIJN.oud }, oudDorpel);
   rechthoek(DORPEL, { fill: "url(#film-vlek)" }, oudDorpel);
   maak("path", { d: "M380 440l3-7 6-2 5 3 7-1 4 4 2 3z", fill: KLEUR.lijm }, oudDorpel);
   barsten("M352 415l5 4 6-1 5 5 7 0 M372 431l6-4 5 2 8-5 M404 413l4 5 7 1 3 6 M468 420l7 3 5-3 6 4 9-1 " +
-    "M512 433l5-5 6 1 4-6 M540 414l6 6 8-2 M430 426l6 2 4 5", CREME.barst, oudDorpel);
+    "M512 433l5-5 6 1 4-6 M540 414l6 6 8-2 M430 426l6 2 4 5", KOZIJN.barst, oudDorpel);
   // De randen waar de oude folie loskomt en de nieuwe ophoudt.
-  var randOud = maak("path", { stroke: "#a3946f", "stroke-width": 1.3 }, wereld);
-  var randNieuw = maak("path", { stroke: CREME.donker, "stroke-width": 1.3 }, wereld);
+  var randOud = maak("path", { stroke: "#6f7479", "stroke-width": 1.3 }, wereld);
+  var randNieuw = maak("path", { stroke: KOZIJN.donker, "stroke-width": 1.3 }, wereld);
 
   // Glansstreepjes die over elk deel trekken als het zijn nieuwe folie krijgt.
   var glansKozijn = maak("g", { "clip-path": "url(#film-knip-kozijn)" }, wereld);
@@ -335,9 +340,7 @@
   var golven = ["M-6 -6 q-20 10 -40 0 t-40 0", "M-6 0 q-22 12 -44 0 t-46 0", "M-6 6 q-20 10 -40 0 t-40 0"].map(function (d) {
     return maak("path", { d: d }, lucht);
   });
-  var pistool = maak("g", {}, fohn);
-  maak("path", { d: "M126 138 L186 138 L270 900 L150 900 Z", fill: KLEUR.mouw }, pistool);
-  maak("path", { d: "M170 138 L186 138 L270 900 L246 900 Z", fill: "#4b535b" }, pistool);
+  var pistool = maak("g", { filter: "url(#film-schaduw-klein)" }, fohn);
   maak("rect", { x: 0, y: -10, width: 60, height: 20, rx: 3, fill: "#a7adb2" }, pistool);
   maak("rect", { x: 0, y: -11, width: 7, height: 22, rx: 2, fill: "#7c8288" }, pistool);
   maak("rect", { x: 50, y: -13, width: 14, height: 26, rx: 3, fill: "#8a9096" }, pistool);
@@ -357,15 +360,14 @@
     var arc = maak("path", { fill: "none", stroke: spiraal, "stroke-width": 2, "stroke-linecap": "round" }, draai);
     return { el: g, schijf: schijf, draai: draai, arc: arc };
   }
-  var krul = rol("#d3c5a1", "#a3946f", "#a3946f");
+  var krul = rol("#9ea3a8", "#6f7479", "#6f7479");
   // De doek: komt achter de krabber aan en maakt de ondergrond schoon en vetvrij.
   var doek = maak("g", { opacity: 0 }, svg);
   maak("path", { d: "M-29 -25Q0 -35 27 -24Q36 0 25 26Q-2 35 -28 24Q-37 0 -29 -25Z", fill: "#fff", stroke: "#b5bbb9", "stroke-width": 1.5 }, doek);
   maak("path", { d: "M-12 -16Q4 -4 -6 15M6 -18Q19 -2 11 17", fill: "none", stroke: KLEUR.mint, "stroke-width": 4, "stroke-linecap": "round" }, doek);
   // De krabber (een trekkrabber zoals de Bahco 665): het hardmetalen blad op x = 0 haalt de
-  // lijmresten weg; de arm komt van rechtsonder. Achter de krabber maakt de doek alles schoon.
-  var krabber = maak("g", { opacity: 0 }, svg);
-  maak("path", { d: "M138 92 L900 650 L900 780 L118 128 Z", fill: KLEUR.mouw }, krabber);
+  // lijmresten weg, vastgehouden door een handschoen met een mint manchet. Achter de krabber maakt de doek alles schoon.
+  var krabber = maak("g", { opacity: 0, filter: "url(#film-schaduw-klein)" }, svg);
   maak("rect", { x: -3, y: -40, width: 9, height: 80, rx: 2, fill: "#41464a" }, krabber);
   maak("rect", { x: 5, y: -37, width: 22, height: 74, rx: 5, fill: "#aeb4b8" }, krabber);
   maak("path", { d: "M20 6 L64 38 L56 50 L16 20 Z", fill: "#b9bec1" }, krabber);
@@ -376,15 +378,13 @@
   maak("path", { d: "M84 54 L140 96 L128 112 L72 70 Z", fill: "#26282a" }, krabber);
   maak("rect", { x: 92, y: 66, width: 58, height: 42, rx: 18, fill: KLEUR.handschoen, transform: "rotate(37 121 87)" }, krabber);
   maak("path", { d: "M104 76h20 M102 90h20", stroke: "#4b535a", "stroke-width": 3, "stroke-linecap": "round", transform: "rotate(37 121 87)" }, krabber);
-  var nieuweRol = rol(CREME.nieuw, "#c9bd9f", "#cfc3a6");
+  maak("rect", { x: 138, y: 76, width: 22, height: 40, rx: 8, fill: KLEUR.mint, transform: "rotate(37 121 87)" }, krabber);   // de manchet
+  var nieuweRol = rol(KOZIJN.nieuw, "#2a2e32", "#5a6066");
   maak("circle", { r: 7, fill: "#b9a27a" }, nieuweRol.el);  // kartonnen kern
 
   // De rakel: een blauw kaartje met een brede zwarte viltrand. De vilten kant zit op x = 0
-  // en drukt de folie aan; de arm komt
-  // van rechtsonder, net als bij het warmtepistool.
-  var rakel = maak("g", {}, svg);
-  maak("path", { d: "M64 -27 L900 -46 L900 62 L64 27 Z", fill: KLEUR.mouw }, rakel);
-  maak("path", { d: "M64 -27 L900 -46 L900 -22 L64 -13 Z", fill: "#4b535b" }, rakel);
+  // en drukt de folie aan. Net als het warmtepistool zonder arm: een handschoen met een mint manchet.
+  var rakel = maak("g", { filter: "url(#film-schaduw-klein)" }, svg);
   maak("rect", { x: 0, y: -48, width: 56, height: 96, rx: 6, fill: "#2b97d6", stroke: "#1f78b0", "stroke-width": 1.5 }, rakel);
   maak("rect", { x: 44, y: -45, width: 6, height: 90, rx: 3, fill: "#1f78b0" }, rakel);
   maak("rect", { x: -5, y: -48, width: 20, height: 96, rx: 4, fill: "#1d1e20" }, rakel);

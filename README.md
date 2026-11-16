@@ -536,10 +536,10 @@ site serveert. Deze opzet houdt de site snel en de reviews in je eigen beheer.
 Een getekende film van vijftien seconden: verweerd kozijn,
 foto sturen en vaste prijs, het mint busje met het witte logo voor de deur, oude folie
 eraf, lijmresten eraf met de krabber en een doek die alles vetvrij maakt, nieuwe folie
-erop met de rakel, en een eindkaart met de drie beloftes en het reviewcijfer. Het kozijn is crème (RAL 9001) met
-een dennengroen draairaam (RAL 6009), tegen een rode gevel. Vóór en ná dezelfde kleuren:
-de nieuwe folie maakt het niet anders, alleen weer strak. De kleuren staan in `CREME` en
-`GROEN` bovenin `js/film.js`. Hij speelt vanzelf af zodra hij in beeld komt, pauzeert als
+erop met de rakel, en een eindkaart met de drie beloftes en het reviewcijfer. Het raam is
+antraciet (net als de hero), tegen een rode gevel: vóór krijtgrijs verbleekt, ná weer diep
+antraciet, dezelfde kleur als hij ooit was. De kleuren staan in `KOZIJN` en `RAAMKL` bovenin
+`js/film.js`. Het gereedschap zweeft zonder arm, met een handschoen en een mint manchet. Hij speelt vanzelf af zodra hij in beeld komt, pauzeert als
 je wegscrolt en blijft aan het eind op de eindkaart staan. Wie op zijn telefoon "minder
 beweging" aan heeft staan, ziet meteen het eindbeeld met een afspeelknop.
 
