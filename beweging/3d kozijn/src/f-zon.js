@@ -101,8 +101,9 @@
   };
 
   // Alles wat het licht betreft op tijdstip t: richting, kleuren, de lucht en de zon in de achtergrond
-  function zonLicht(t, W, H, zichtbaar) {
-    var z = zonStand(t), dag = z.op ? 1 : 0;
+  // vast: { s } voor een zon die op één plek staat (de werkwijzefilm, het kozijn bij "Waarom herstellen werkt")
+  function zonLicht(t, W, H, zichtbaar, vast) {
+    var z = vast ? { s: vast.s, op: true, hoogte: Math.sin(Math.PI * vast.s), v: 0, Y: 5 } : zonStand(t);
     // onder de horizon: schemer. Snel: het licht schommelt nauwelijks nog (geen geknipper), de zon trekt een spoor.
     var demp = klem((z.v - 1.1) / 3.2, 0, 1) * 0.85;
     // alleen het eerste jaar een echte schemer; daarna zakt het licht nauwelijks nog (dan lijkt de folie niet van kleur te veranderen)

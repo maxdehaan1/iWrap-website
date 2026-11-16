@@ -533,13 +533,16 @@ site serveert. Deze opzet houdt de site snel en de reviews in je eigen beheer.
 
 ## De film op de homepage
 
-Een getekende film van vijftien seconden: verweerd kozijn,
-foto sturen en vaste prijs, het mint busje met het witte logo voor de deur, oude folie
-eraf, lijmresten eraf met de krabber en een doek die alles vetvrij maakt, nieuwe folie
-erop met de rakel, en een eindkaart met de drie beloftes en het reviewcijfer. Het raam is
-crème met een dennengroen draairaam, tegen een rode gevel. Vóór en ná dezelfde kleur: de
-folie verweert (dof, krijtig, gebarsten, loslatend) maar verkleurt niet (Max, 16 november
-2026). De kleuren staan in `KOZIJN` en `RAAMKL` bovenin `js/film.js`. Het gereedschap zweeft zonder arm, met een handschoen en een mint manchet. Hij speelt vanzelf af zodra hij in beeld komt, pauzeert als
+Een film van twintig seconden **in 3D**, met hetzelfde crème kozijn, dezelfde lucht en zon als
+de hero (16 november 2026; daarvoor een platte tekening): het verweerde kozijn met twee ringen
+om de schade, een telefoon die een foto maakt en met een mint stift aanstreept wat er moet
+gebeuren (zoals op het aanvraagformulier), een offerte met een vaste prijs, een afspraakkaart
+met de dag, de monteur en het mint busje, en dan het werk in 3D: toplaag eraf met warmte,
+lijmresten eraf en vetvrij, nieuwe folie met de rakel, en een glans. Vóór en ná dezelfde
+kleur: de folie verweert, hij verkleurt niet. Het beeld tekent `js/kozijn-3d.js` (bron:
+`beweging/3d kozijn/src/g-werkwijze.js`, met de tijden in `WBLOKKEN`); `js/film.js` speelt hem
+af en laat de teksten links meelopen. Laad `kozijn-3d.js` daarom vóór `film.js`. De poster is
+`images/werkwijze-3d-start-*`, zonder WebGL staat er `werkwijze-3d-eind-*`. Hij speelt vanzelf af zodra hij in beeld komt, pauzeert als
 je wegscrolt en blijft aan het eind op de eindkaart staan. Wie op zijn telefoon "minder
 beweging" aan heeft staan, ziet meteen het eindbeeld met een afspeelknop.
 
@@ -554,8 +557,9 @@ dus één regel `{{film}}` plus `"film"` in de css- en js-lijst van die pagina (
 - **De vier kaartjes eronder** (homepage) heten zoals de hoofdstukken van de film en lichten
   op met het stuk dat speelt; een klik laat de film daar verder spelen (`js/iwrap-site.js`,
   onderdeel 3, via de gebeurtenis `filmtijd` en `iwrapFilm.speelVanaf`).
-- **Tijden** (wanneer welk blok komt) staan in `BLOKKEN` bovenin `js/film.js`.
-- **Het beeld** tekent `js/film.js` zelf, in SVG. Alles is een functie van de tijd:
+- **Tijden** (wanneer welk blok komt) staan in `WBLOKKEN` in `g-werkwijze.js`; de kaartjes
+  onder de film op de homepage hebben `data-film-van` en `data-film-tot` met dezelfde tijden.
+- **Het beeld** tekent `js/kozijn-3d.js` live, in WebGL. Alles is een functie van de tijd:
   `teken(t)`. Er zit dus geen videobestand op de site.
 
 **De MP4** (om te delen via WhatsApp, mail of met dealers) wordt uit precies die code

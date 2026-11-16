@@ -1,10 +1,10 @@
-<!-- De film van 15 seconden. Staat op de homepage en op /werkwijze via
-     {{film}} in de bron; build.py zet dit bestand daar neer.
+<!-- De werkwijzefilm van 20 seconden, in 3D (hetzelfde crème kozijn als de hero). Staat op de
+     homepage en op /werkwijze via {{film}} in de bron; build.py zet dit bestand daar neer.
 
-     js/film.js tekent het beeld en laat de blokken in .film-tekst in deze
-     volgorde zien, op de tijden in BLOKKEN bovenin film.js. Een tekst
-     aanpassen kan hier. Maak daarna ook de MP4 opnieuw: zie video/ en de
-     README. -->
+     Het beeld tekent js/kozijn-3d.js (bron: beweging/3d kozijn/src/g-werkwijze.js); js/film.js
+     speelt het af en laat de blokken in .film-tekst in deze volgorde zien, op de tijden in
+     WBLOKKEN in g-werkwijze.js. Een tekst aanpassen kan hier. De poster is het beginbeeld
+     (tot het script tekent); zonder WebGL staat er het eindbeeld. -->
 <figure class="film" data-film>
   <img class="film-merk" src="/images/logo/iwrap-logo-liggend.svg" width="210" height="44" alt="">
   <div class="film-tekst">
@@ -27,7 +27,8 @@
     </div>
   </div>
   <div class="film-beeld">
-    <svg class="film-svg" viewBox="0 0 900 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"></svg>
+    <x-beeld src="werkwijze-3d-start" class="film-poster" sizes="(max-width:700px) 100vw, 680px" alt="">
+    <canvas class="film-doek" aria-hidden="true"></canvas>
     <span class="film-label film-voor" aria-hidden="true">Voor</span>
     <span class="film-label film-na" aria-hidden="true">Na</span>
     <button class="film-knop speelknop" type="button" aria-label="Film afspelen">

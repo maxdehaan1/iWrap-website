@@ -108,6 +108,7 @@
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
   }
 
+  window.iwrapKozijnWerkwijze = { teken: tekenWerkwijze, duur: WDUUR, blokken: WBLOKKEN, kan: function () { return !!motorStart(1536); } };
   window.iwrapKozijnZon = { teken: tekenZon, duur: ZDUUR, stappen: ZSTAPPEN, zinnen: ZZINNEN, jaren: tellerJaren };
   window.iwrapKozijn3D = {
     teken: teken, duur: DUUR, stappen: STAPPEN, zinnen: ZINNEN, start: start,
