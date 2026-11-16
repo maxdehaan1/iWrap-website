@@ -377,7 +377,9 @@
       { t0: T.route + 0.5, t1: T.iris - 0.35, text: 'Wij komen naar je toe.' }
     ];
     if (extra) capList = capList.concat(extra.captions);
-    var caps = vert ? new CaptionsV(vui.g, capList, vui.by + vui.bh + 170) : new Captions(root, capList);
+    // Op de site staan de ondertitels als tekst bij de video (leesbaar op een telefoon): dan rendert de film
+    // zonder (opts.ondertitels = false). De lijst gaat mee terug als captions.
+    var caps = o.ondertitels === false ? null : vert ? new CaptionsV(vui.g, capList, vui.by + vui.bh + 170) : new Captions(root, capList);
     if (vert) {
       var L0 = GEO.lockups.horizontal, ls0 = 500 / L0.w, thL = theme({ theme: 'light' }), thM = theme({ theme: 'mint' });
       vui.logo = uitrolInto(st, G(vui.g, { transform: 'translate(' + f(540 - L0.w * ls0 / 2) + ' ' + f(vui.by - 250) + ') scale(' + f(ls0) + ')' }), L0, 'horizontal', thL, { outro: false, hold: 0, shift: false, sheen: false });
@@ -405,7 +407,7 @@
       show(iris, irisOn);
       if (irisOn) { sa(iris, 'cx', f(ds[0])); sa(iris, 'cy', f(ds[1])); sa(iris, 'r', f(ip * 2300)); }
       if (extra) extra.render(t, rakel);
-      caps.render(t);
+      if (caps) caps.render(t);
       if (vert) {
         vui.logo.render(t - 0.2);
         op(vui.url, seg(t, 1.2, 0.5));
@@ -414,5 +416,5 @@
         if (eo > 0) { vui.pat.render(te); vui.endLogo.render(te - 0.35); op(vui.endUrl, seg(te, 0.35 + vui.endLogo.rest - 0.9, 0.5)); }
       }
     }
-    return { svg: st.svg, duration: duration, rest: duration, render: render, T: T };
+    return { svg: st.svg, duration: duration, rest: duration, render: render, T: T, captions: capList };
   };

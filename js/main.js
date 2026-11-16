@@ -102,6 +102,22 @@
       else { zelfGepauzeerd = true; video.pause(); }
     }
     ['play', 'pause', 'ended'].forEach(function (e) { video.addEventListener(e, werkKnop); });
+    // Ondertitels als tekst onder het beeld (de klusfilm): volgen de tijd van de video.
+    var zinEl = blok.querySelector('[data-ondertitels]'), zinnen = [], zinNu = null, zinLus = 0;
+    try { zinnen = zinEl ? JSON.parse(zinEl.getAttribute('data-ondertitels')) : []; } catch (e) { zinnen = []; }
+    function zinBij() {
+      var t = video.currentTime, z = null;
+      for (var i = 0; i < zinnen.length; i++) if (t >= zinnen[i][0] && t < zinnen[i][1] + 0.3) z = zinnen[i][2];
+      if (z === zinNu) return;
+      zinNu = z;
+      if (z) zinEl.textContent = z;
+      zinEl.classList.toggle('is-leeg', !z);
+    }
+    function zinVolg() { zinBij(); if (!video.paused && !video.ended) zinLus = requestAnimationFrame(zinVolg); }
+    if (zinnen.length) {
+      video.addEventListener('play', function () { cancelAnimationFrame(zinLus); zinVolg(); });
+      ['pause', 'ended', 'seeked'].forEach(function (e) { video.addEventListener(e, zinBij); });
+    }
     speelknop.addEventListener('click', wissel);
     video.addEventListener('click', wissel);
     werkKnop();

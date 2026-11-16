@@ -46,6 +46,17 @@
 }
 .video .speelknop{position:absolute;right:18px;bottom:18px;}
 .video figcaption{margin-top:14px;font-size:.88rem;color:var(--sub);max-width:70ch;}
+/* Ondertitels van de klusfilm: onder het beeld, als pil met een mint stip. De ruimte staat
+   altijd vrij, zodat de pagina niet verspringt als er een zin komt of gaat. */
+.video-zin{
+  display:flex;align-items:center;justify-content:center;gap:10px;min-height:3.1em;margin:14px auto 0;
+  font-family:var(--kop);font-weight:600;font-size:clamp(.95rem,1.6vw,1.12rem);line-height:1.3;color:var(--ink);
+  text-align:center;transition:opacity var(--middel) var(--beweeg),transform var(--middel) var(--beweeg);
+}
+.video-zin::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--mint);flex-shrink:0;}
+.video-zin.is-leeg{opacity:0;transform:translateY(4px);}
+html:not(.js) .video-zin{display:none;}
+.video-zin + figcaption{margin-top:4px;}
 @media (max-width:700px){
   .video video{border-radius:var(--radius);}
   .video .speelknop{right:10px;bottom:10px;width:40px;height:40px;}

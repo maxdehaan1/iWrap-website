@@ -642,15 +642,22 @@ Als de film is afgelopen, schuift onderin een balk omhoog met de knop naar de of
 (`js/iwrap-site.js`, onderdeel 7). Hij verving de werkdag-video (wit busje, "eerst een
 bakje koffie").
 
-- Het bestand is `media/iwrap-klusfilm-v2.mp4` (1280×720, ongeveer 1,4 MB), de poster
-  `images/klusfilm-poster-v2.jpg` (seconde 45 uit de film: de oplevering). Ze hebben een
-  versienummer omdat `/media/` dertig dagen en `/images/` een jaar gecachet worden: een
-  nieuwe versie krijgt dus een nieuwe naam. Het origineel (1920×1080) staat in
-  `~/Documents/iWrap/iWrap in beweging/3 - Video's/Liggend 16x9/`. De versie voor de site
-  is daaruit gemaakt met
-  `video/node_modules/ffmpeg-static/ffmpeg -i "<origineel>.mp4" -vf scale=1280:-2:flags=lanczos
-  -c:v libx264 -preset slow -crf 28 -pix_fmt yuv420p -movflags +faststart -an media/iwrap-klusfilm-v2.mp4`:
-  vier keer kleiner dan de 1280×720-versie uit het pakket, zonder zichtbaar verschil.
+- **Ondertitels als tekst.** De versie op de site heeft geen ondertitels in het beeld: die
+  waren op een telefoon zo'n 7 pixels hoog. Ze staan nu als tekst onder de video
+  (`<p class="video-zin" data-ondertitels='[[van, tot, "tekst"], …]'>` in
+  `src/pages/over-iwrap.html`); `main.js` zet de juiste zin neer terwijl de film speelt. De
+  tijden komen uit de film zelf (`captions` in `beweging/src/film.src.js` en `film2.src.js`):
+  verander je daar een zin of een tijd, pas hem dan ook in de pagina aan.
+- Het bestand is `media/iwrap-klusfilm-v3.mp4` (1280×720, ongeveer 1,3 MB), de poster
+  `images/klusfilm-poster-v3.jpg` (seconde 45: de oplevering). Ze hebben een versienummer
+  omdat `/media/` dertig dagen en `/images/` een jaar gecachet worden: een nieuwe versie
+  krijgt dus een nieuwe naam. Gerenderd zonder ondertitels met
+  `python3 tools/render.py '[{"scene":"klus","opts":{"ondertitels":false},"w":1920,"h":1080,"out":"<uit>.mp4","codec":"h264","samples":4}]'`
+  (in `beweging/`, na `python3 tools/build.py`; ruim 7 minuten) en verkleind met
+  `video/node_modules/ffmpeg-static/ffmpeg -i <uit>.mp4 -vf scale=1280:-2 -c:v libx264
+  -preset slow -crf 28 -pix_fmt yuv420p -movflags +faststart -an media/iwrap-klusfilm-v3.mp4`.
+  De versie mét ondertitels in beeld, om te delen via WhatsApp of mail, staat in
+  `~/Documents/iWrap/iWrap in beweging/3 - Video's/Liggend 16x9/`.
 - Hij laadt pas als hij in beeld komt (`preload="none"`), speelt dan zonder geluid af,
   pauzeert als je wegscrolt en blijft aan het eind op de eindkaart staan. Dat gedrag zit
   in `main.js` en werkt voor elke `<figure data-video>`.
