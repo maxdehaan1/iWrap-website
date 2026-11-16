@@ -100,11 +100,15 @@
       }, { threshold: [0, 0.35, 0.6] }).observe(fig);
     } else speel(0);
   }
-  function start() { Array.prototype.forEach.call(document.querySelectorAll("[data-kozijn-3d]"), speler); }
+  function start() {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-kozijn-zon]"), zonSpeler);
+    Array.prototype.forEach.call(document.querySelectorAll("[data-kozijn-3d]"), speler);
+  }
   if (typeof document !== "undefined") {
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
   }
 
+  window.iwrapKozijnZon = { teken: tekenZon, duur: ZDUUR, stappen: ZSTAPPEN, zinnen: ZZINNEN, jaren: tellerJaren };
   window.iwrapKozijn3D = {
     teken: teken, duur: DUUR, stappen: STAPPEN, zinnen: ZINNEN, start: start,
     // de motor en de onderdelen, zodat de korte versie (kozijn-sting.js) hetzelfde kozijn tekent

@@ -24,6 +24,14 @@
 .hero-bewijs > span::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--mint);flex-shrink:0;}
 
 .hero-fig{margin:0;}
+/* Bij de voorbeelden: de echte voor/na-schuif groot links, vier klusfoto's twee bij twee rechts. */
+.vb-raster{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(16px,2.4vw,28px);align-items:start;}
+.vergelijk-los{margin:0;}
+.vergelijk-los figcaption{margin-top:12px;font-size:.85rem;color:var(--sub);}
+.vb-raster .strook{grid-template-columns:repeat(2,minmax(0,1fr));margin:0;}
+.vb-raster .strook img{aspect-ratio:1/1;}
+@media (max-width:900px){ .vb-raster .strook img{aspect-ratio:3/2;} }
+@media (max-width:900px){ .vb-raster{grid-template-columns:1fr;} }
 .hero-fig figcaption{margin-top:14px;font-size:.85rem;color:var(--sub);display:flex;align-items:center;gap:8px;}
 .hero-fig figcaption::before{
   content:"";width:16px;height:16px;flex-shrink:0;

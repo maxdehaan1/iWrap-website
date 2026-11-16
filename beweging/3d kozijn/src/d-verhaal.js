@@ -237,8 +237,12 @@
     { F: "voor", u: 372, v: PH - 13, l: 16, b: 10, krul: 0.6, draai: 1.9 },
     { F: "svoor", u: 52, v: 30, l: 14, b: 9, krul: 0.65, draai: 2.6 }
   ];
-  function schilfers(B, z) {
-    SCHILFERS.forEach(function (s) {
+  // f: hoe ver ze al loslaten (0 = nog vast, 1 = zoals op de voor-foto)
+  function schilfers(B, z, f) {
+    f = f == null ? 1 : f;
+    if (f <= 0.01) return;
+    SCHILFERS.forEach(function (s0) {
+      var s = { F: s0.F, u: s0.u, v: s0.v, l: s0.l * (0.55 + 0.45 * f), b: s0.b, krul: s0.krul * f, draai: s0.draai };
       var m = s.F === "svoor" ? 1 : 0, F = s.F === "boven" ? FBOVEN : (m ? FSVOOR : FVOOR);
       if (binnen(z.pel[m], s.u) || (m === 0 && z.los > 0.001 && s.u > LOS0)) return;
       var R = [], ca = Math.cos(s.draai), sa = Math.sin(s.draai);
@@ -438,8 +442,13 @@
     if (!binnen(z.krab[m], u)) return [DL, 0, 0];
     return [0, 0, 0];
   }
+  // Twee verhalen op één pagina ("zo herstellen we" en "25 jaar zon") gebruiken dezelfde motor met elk een eigen
+  // tijdlijn: wie tekent, zet eerst zijn eigen tijdlijn neer.
+  var STANDAARD = { T: T, BEW: BEW, CAM: CAM };
+  function gebruik(v) { T = v.T; BEW = v.BEW; CAM = v.CAM; }
   function teken(ctx, t, W, H, opties) {
     opties = opties || {};
+    gebruik(STANDAARD);
     t = klem(t, 0, DUUR);
     var st = staat(t), c = maakCamera(camVoor(t), W, H), z = zonesVoor(st), boven = [];
     var sc = {
