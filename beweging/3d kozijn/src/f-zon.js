@@ -230,17 +230,17 @@
   function zonVideoTekst(ctx, t, W, H) {
     var s = Math.min(W, H) / 1000, j = Math.floor(tellerJaren(t) + 1e-6);
     ctx.save();
-    ctx.font = "700 " + (64 * s).toFixed(1) + "px Montserrat, sans-serif"; ctx.fillStyle = K.inkt; ctx.textBaseline = "alphabetic";
+    ctx.font = "700 " + (64 * s).toFixed(1) + "px " + LETTERS; ctx.fillStyle = K.inkt; ctx.textBaseline = "alphabetic";
     var tekst = t < ZR ? String(j) : "", x = 48 * s, y = 104 * s;
     if (tekst) {
       ctx.fillText(tekst, x, y);
       var bw = ctx.measureText(tekst).width;
-      ctx.font = "600 " + (22 * s).toFixed(1) + "px Montserrat, sans-serif"; ctx.fillStyle = K.sub;
+      ctx.font = "600 " + (22 * s).toFixed(1) + "px " + LETTERS; ctx.fillStyle = K.sub;
       ctx.fillText(j === 1 ? "jaar" : "jaar", x + bw + 10 * s, y - 4 * s);
     }
     var zin = null; ZZINNEN.forEach(function (r) { if (t >= r[0] && t < r[1] + 0.3) zin = r[2]; });
     if (zin) {
-      ctx.font = "600 " + (26 * s).toFixed(1) + "px Montserrat, sans-serif";
+      ctx.font = "600 " + (26 * s).toFixed(1) + "px " + LETTERS;
       var w = ctx.measureText(zin).width + 70 * s, hh = 58 * s, xx = (W - w) / 2, yy = H - hh - 30 * s;
       ctx.fillStyle = "rgba(255,255,255,0.92)"; rond(ctx, xx, yy, w, hh, hh / 2); ctx.fill();
       ctx.fillStyle = K.inkt; ctx.textBaseline = "middle"; ctx.fillText(zin, xx + 35 * s, yy + hh / 2 + 1);

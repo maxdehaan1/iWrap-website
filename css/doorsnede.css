@@ -73,14 +73,14 @@
   position:relative;overflow:hidden;width:100%;text-align:left;cursor:pointer;
   display:flex;gap:14px;align-items:flex-start;
   background:transparent;border:1px solid transparent;border-radius:var(--radius);
-  padding:14px 16px;font:inherit;font-size:.94rem;line-height:1.5;color:var(--sub);
+  padding:14px 16px;font:inherit;font-size:1rem;line-height:1.5;color:var(--sub);
   transition:background var(--middel) var(--beweeg),border-color var(--middel) var(--beweeg),color var(--middel) var(--beweeg);
 }
 .ds-stappen button:hover{background:var(--paper);}
 .ds-stappen b{display:block;font-family:var(--kop);font-weight:600;font-size:1rem;color:var(--ink);margin-bottom:2px;}
 .ds-nr{
   flex-shrink:0;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
-  font-family:var(--kop);font-weight:700;font-size:.8rem;
+  font-family:var(--kop);font-weight:700;font-size:0.88rem;
   background:var(--paper);color:var(--sub);border:1px solid var(--line);
   transition:background var(--middel) var(--beweeg),color var(--middel) var(--beweeg),border-color var(--middel) var(--beweeg);
 }
@@ -100,7 +100,7 @@
 .ds-opnieuw{
   display:inline-flex;align-items:center;gap:8px;margin:14px 0 0;padding:6px 0;
   background:none;border:0;cursor:pointer;font-family:var(--kop);font-weight:600;
-  font-size:.83rem;color:var(--mint-ink);
+  font-size:0.91rem;color:var(--mint-ink);
 }
 .ds-opnieuw::before{
   content:"";width:15px;height:15px;
@@ -109,7 +109,7 @@
 .ds-speelt .ds-opnieuw{visibility:hidden;}
 html:not(.js) .ds-opnieuw{display:none;}
 
-.doorsnede figcaption{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:.84rem;color:var(--sub);}
+.doorsnede figcaption{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:0.92rem;color:var(--sub);}
 
 /* Herstellen of een nieuw kozijn (src/vergelijking.html) ------------------
    Staat altijd onder de doorsnede, dus de opmaak staat hier ook. Het
@@ -134,7 +134,7 @@ html:not(.js) .ds-opnieuw{display:none;}
 .vg-of{
   align-self:center;z-index:1;margin:0 -22px;width:52px;height:52px;border-radius:50%;
   display:grid;place-items:center;background:var(--mint);color:var(--ink);
-  font-family:var(--kop);font-weight:700;font-size:.9rem;
+  font-family:var(--kop);font-weight:700;font-size:0.98rem;
   box-shadow:0 0 0 6px var(--paper);
 }
 .vlak-wit .vg-of{box-shadow:0 0 0 6px var(--white);}

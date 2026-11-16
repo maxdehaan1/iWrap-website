@@ -3,37 +3,47 @@
    --------------------------------------------------------------------------- */
 
 .hero{
-  padding:clamp(40px,5vw,74px) 0 clamp(52px,6vw,88px);
+  padding:clamp(44px,5.5vw,84px) 0 clamp(52px,6vw,92px);
+  /* De mintgloed: zacht van boven, en sterker achter de animatie rechts. */
   background:
-    radial-gradient(760px 460px at 88% -8%, var(--mint-wash), transparent 62%),
+    radial-gradient(50% 72% at 76% 48%, rgba(163,205,194,.62), rgba(163,205,194,0) 72%),
+    radial-gradient(80% 62% at 28% -12%, rgba(163,205,194,.34), rgba(163,205,194,0) 70%),
     var(--paper);
 }
 .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.04fr);gap:clamp(30px,4.5vw,64px);align-items:center;}
-.hero h1{margin-bottom:.42em;}
+.hero h1{margin-bottom:.4em;font-size:clamp(2.45rem,1.45rem + 3vw,3.7rem);letter-spacing:-.034em;}
 .hero h1 em{font-style:normal;color:var(--mint-ink);}
-.hero-lede{font-size:1.13rem;color:var(--ink-soft);max-width:44ch;}
-.hero .knoprij{margin-top:30px;}
+.hero-lede{font-size:clamp(1.14rem,1.08rem + .3vw,1.28rem);line-height:1.55;color:var(--ink-soft);max-width:44ch;}
+.hero .knoprij{margin-top:32px;}
 
 .hero-bewijs{
-  display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;
-  margin-top:28px;padding-top:26px;border-top:1px solid var(--line);
-  font-size:.88rem;color:var(--sub);
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 24px;
+  margin-top:30px;padding-top:28px;border-top:1px solid var(--line);
+  font-size:1rem;line-height:1.35;color:var(--ink-soft);
 }
 .hero-bewijs b{color:var(--ink);font-weight:600;}
-.hero-bewijs > span{display:inline-flex;align-items:center;gap:8px;}
-.hero-bewijs > span::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--mint);flex-shrink:0;}
+.hero-bewijs > span{display:flex;align-items:flex-start;gap:10px;}
+/* een vinkje in een mint rondje, zoals in de rest van de site */
+.hero-bewijs > span::before{
+  content:"";width:20px;height:20px;margin-top:1px;border-radius:50%;flex-shrink:0;
+  background:var(--mint) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.6 6.3l2.2 2.2 4.6-5' fill='none' stroke='%2322262a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat;
+}
+@media (max-width:520px){ .hero-bewijs{grid-template-columns:1fr;} }
 
-.hero-fig{margin:0;}
+.hero-fig{margin:0;position:relative;isolation:isolate;}
+/* Een zachte mint aura om de animatie in de hero. */
+.hero-fig::before{content:"";position:absolute;z-index:-1;left:-14%;right:-14%;top:-12%;bottom:-6%;
+  background:radial-gradient(closest-side,rgba(163,205,194,.55),rgba(163,205,194,0));pointer-events:none;}
 /* Bij de voorbeelden: de echte voor/na-schuif groot links, vier klusfoto's twee bij twee rechts. */
 .vb-sectie{padding-top:clamp(8px,2vw,28px);}
 .vb-raster{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(16px,2.4vw,28px);align-items:start;}
 .vergelijk-los{margin:0;}
-.vergelijk-los figcaption{margin-top:12px;font-size:.85rem;color:var(--sub);}
+.vergelijk-los figcaption{margin-top:12px;font-size:.97rem;color:var(--sub);}
 .vb-raster .strook{grid-template-columns:repeat(2,minmax(0,1fr));margin:0;}
 .vb-raster .strook img{aspect-ratio:1/1;}
 @media (max-width:900px){ .vb-raster .strook img{aspect-ratio:3/2;} }
 @media (max-width:900px){ .vb-raster{grid-template-columns:1fr;} }
-.hero-fig figcaption{margin-top:14px;font-size:.85rem;color:var(--sub);display:flex;align-items:center;gap:8px;}
+.hero-fig figcaption{margin-top:14px;font-size:.97rem;color:var(--sub);display:flex;align-items:center;gap:8px;}
 .hero-fig figcaption::before{
   content:"";width:16px;height:16px;flex-shrink:0;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23646b73' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6 4 12l5 6M15 6l5 6-5 6'/%3E%3C/svg%3E") center/16px no-repeat;
@@ -72,25 +82,24 @@
   .klachten{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
   .klacht .beeld{aspect-ratio:1/1;}
   .klacht .tekst{padding:12px 12px 14px;}
-  .klacht h3{font-size:.92rem;line-height:1.3;}
+  .klacht h3{font-size:1rem;line-height:1.3;}
   .klacht p{display:none;}
-  .klacht .pijl{font-size:.78rem;}
+  .klacht .pijl{font-size:.9rem;}
 }
 .klacht{
-  background:var(--white);border:1px solid var(--line);border-radius:var(--radius);
+  background:var(--white);border:1px solid var(--rand-zacht);border-radius:var(--radius);
   overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;
-  box-shadow:var(--shadow);
   transition:transform var(--middel) var(--beweeg),box-shadow var(--middel) var(--beweeg),border-color var(--middel) var(--beweeg);
 }
-.klacht:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--mint);color:inherit;}
+.klacht:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--mint);color:inherit;}
 .klacht .beeld{position:relative;aspect-ratio:3/2;overflow:hidden;background:#e9e7e2;}
 .klacht .beeld img{width:100%;height:100%;object-fit:cover;transition:transform .45s var(--beweeg);}
 .klacht:hover .beeld img{transform:scale(1.05);}
-.klacht .tekst{padding:20px 22px 22px;display:flex;flex-direction:column;flex:1;}
-.klacht h3{margin:0 0 6px;font-size:1.05rem;}
-.klacht p{font-size:.92rem;color:var(--sub);margin:0 0 16px;}
+.klacht .tekst{padding:22px 24px 24px;display:flex;flex-direction:column;flex:1;}
+.klacht h3{margin:0 0 6px;font-size:1.18rem;}
+.klacht p{font-size:1rem;color:var(--sub);margin:0 0 16px;}
 .klacht .pijl{
-  margin-top:auto;font-family:var(--kop);font-size:.83rem;font-weight:600;color:var(--mint-ink);
+  margin-top:auto;font-family:var(--kop);font-size:.98rem;font-weight:600;color:var(--mint-ink);
   display:inline-flex;align-items:center;gap:7px;
 }
 .klacht .pijl::after{content:"\2192";transition:transform var(--middel) var(--beweeg);}
@@ -110,7 +119,7 @@
 .welniet ul{margin-bottom:0;}
 /* Waar we het op doen staat boven de klachtenlijst: dat is een andere soort
    uitspraak dan de klachten zelf en hoort er niet tussen te staan. */
-.welniet .waarop{font-size:.88rem;color:var(--sub);margin:-.3em 0 1.1em;padding-bottom:.9em;border-bottom:1px solid var(--line);}
+.welniet .waarop{font-size:.98rem;color:var(--sub);margin:-.3em 0 1.1em;padding-bottom:.9em;border-bottom:1px solid var(--line);}
 
 /* Stappen ----------------------------------------------------------------- */
 
@@ -118,31 +127,31 @@
 .stap{position:relative;padding-top:14px;}
 .stap::before{
   counter-increment:stap;content:counter(stap);
-  font-family:var(--kop);font-weight:700;font-size:.8rem;
-  width:32px;height:32px;border-radius:50%;background:var(--mint);color:var(--ink);
+  font-family:var(--kop);font-weight:700;font-size:.95rem;
+  width:36px;height:36px;border-radius:50%;background:var(--mint);color:var(--ink);
   display:grid;place-items:center;margin-bottom:16px;
 }
-.stap h3{font-size:1.02rem;margin-bottom:.35em;}
-.stap p{font-size:.93rem;color:var(--sub);margin:0;}
-.vlak-donker .stap p{color:#a8b0b7;}
+.stap h3{font-size:1.18rem;margin-bottom:.35em;}
+.stap p{font-size:1rem;color:var(--sub);margin:0;}
+.vlak-donker .stap p{color:#cfd5da;}
 .vlak-donker .stap::before{background:var(--mint);color:var(--ink);}
 
 /* Cijferblok -------------------------------------------------------------- */
 
 .cijfers{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:30px;}
-.cijfer strong{display:block;font-family:var(--kop);font-weight:700;font-size:clamp(1.9rem,1.4rem + 1.6vw,2.6rem);line-height:1;color:var(--ink);letter-spacing:-.03em;}
+.cijfer strong{display:block;font-family:var(--kop);font-weight:700;font-size:clamp(2.2rem,1.5rem + 2.2vw,3.2rem);line-height:1;color:var(--ink);letter-spacing:-.04em;}
 .vlak-donker .cijfer strong{color:#fff;}
-.cijfer > span{display:block;margin-top:9px;font-size:.9rem;color:var(--sub);}   /* alleen de regel eronder; het live reviewcijfer staat in een eigen span */
-.vlak-donker .cijfer > span{color:#a8b0b7;}
+.cijfer > span{display:block;margin-top:9px;font-size:1rem;color:var(--sub);}   /* alleen de regel eronder; het live reviewcijfer staat in een eigen span */
+.vlak-donker .cijfer > span{color:#cfd5da;}
 
 /* Waarom iWrap: wat ons onderscheidt (homepage, donker vlak) ------------- */
 
 .onderscheid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:clamp(30px,4vw,44px);}
-.onderscheid > div{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);padding:22px 22px 20px;}
-.onderscheid h3{display:flex;align-items:flex-start;gap:11px;margin:0 0 .45em;font-size:1.02rem;line-height:1.3;color:#fff;}
+.onderscheid > div{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:24px 24px 22px;}
+.onderscheid h3{display:flex;align-items:flex-start;gap:11px;margin:0 0 .45em;font-size:1.16rem;line-height:1.3;color:#fff;}
 .onderscheid h3::before{content:"";flex-shrink:0;width:22px;height:22px;margin-top:-1px;border-radius:50%;
   background:var(--mint) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.6 6.3l2.2 2.2 4.6-5' fill='none' stroke='%2322262a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat;}
-.onderscheid p{margin:0;padding-left:33px;font-size:.93rem;line-height:1.55;color:#a8b0b7;}
+.onderscheid p{margin:0;padding-left:33px;font-size:1.02rem;line-height:1.55;color:#cfd5da;}
 /* Logo's van wie ons certificeerde, opleidde of inhuurt (Renolit, Avery Dennison, Appcademy):
    onveranderd op een wit kaartje, ook op donker, met eronder waarvoor. */
 .partnerlogos{display:flex;flex-wrap:wrap;align-items:stretch;gap:12px;margin-top:24px;}
@@ -152,8 +161,8 @@
 .partnerlogo-vierkant img{height:48px;}
 .partnerlogo-breed img{height:24px;}
 @media (max-width:600px){.partnerlogos .partnerlogo{flex:1 1 calc(50% - 6px);min-width:0;padding:12px 10px 10px;}}
-.partnerlogo span{font-family:var(--kop);font-size:.72rem;font-weight:600;line-height:1.2;color:#4a5158;text-align:center;}
-.onderscheid-voet{margin:26px 0 0;max-width:70ch;font-size:.95rem;color:#c2c8ce;}
+.partnerlogo span{font-family:var(--kop);font-size:.84rem;font-weight:600;line-height:1.25;color:#3a4047;text-align:center;}
+.onderscheid-voet{margin:26px 0 0;max-width:70ch;font-size:1.04rem;color:#cfd5da;}
 .onderscheid-voet a{margin-left:6px;font-weight:600;white-space:nowrap;}
 .onderscheid-voet a::after{content:" \2197";}
 
@@ -161,14 +170,14 @@
 
 .doelgroepen{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:22px;}
 .doelgroep{
-  display:flex;flex-direction:column;background:var(--white);border:1px solid var(--line);
-  border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);text-decoration:none;color:inherit;
+  display:flex;flex-direction:column;background:var(--white);border:1px solid var(--rand-zacht);
+  border-radius:var(--radius);padding:30px;text-decoration:none;color:inherit;
   transition:transform var(--middel) var(--beweeg),box-shadow var(--middel) var(--beweeg),border-color var(--middel) var(--beweeg);
 }
-.doelgroep:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--mint);color:inherit;}
+.doelgroep:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--mint);color:inherit;}
 .doelgroep h3{margin-bottom:.4em;}
-.doelgroep p{font-size:.94rem;color:var(--sub);}
-.doelgroep .pijl{margin-top:auto;font-family:var(--kop);font-size:.83rem;font-weight:600;color:var(--mint-ink);display:inline-flex;gap:7px;align-items:center;}
+.doelgroep p{font-size:1.02rem;color:var(--sub);}
+.doelgroep .pijl{margin-top:auto;font-family:var(--kop);font-size:.98rem;font-weight:600;color:var(--mint-ink);display:inline-flex;gap:7px;align-items:center;}
 .doelgroep .pijl::after{content:"\2192";transition:transform var(--middel) var(--beweeg);}
 .doelgroep:hover .pijl::after{transform:translateX(4px);}
 
@@ -176,8 +185,8 @@
 
 .merken{display:flex;flex-wrap:wrap;gap:10px;}
 .merken a{
-  font-family:var(--kop);font-size:.88rem;font-weight:500;text-decoration:none;color:var(--ink-soft);
-  background:var(--white);border:1px solid var(--line);border-radius:999px;padding:9px 18px;
+  font-family:var(--kop);font-size:1rem;font-weight:500;text-decoration:none;color:var(--ink-soft);
+  background:var(--white);border:1px solid var(--rand-zacht);border-radius:999px;padding:11px 20px;
   transition:border-color var(--kort) var(--beweeg),background var(--kort) var(--beweeg),transform var(--kort) var(--beweeg),color var(--kort) var(--beweeg);
 }
 .merken a:hover{border-color:var(--mint);background:var(--mint-wash);color:var(--ink);transform:translateY(-2px);}
@@ -187,8 +196,13 @@
 .keurmerken{display:flex;flex-wrap:wrap;gap:10px 12px;}
 .keurmerk{
   display:inline-flex;align-items:center;gap:9px;background:var(--white);
-  border:1px solid var(--line);border-radius:12px;padding:11px 17px;
-  font-family:var(--kop);font-size:.85rem;font-weight:600;color:var(--ink-soft);
+  border:1px solid var(--rand-zacht);border-radius:14px;padding:12px 18px;
+  font-family:var(--kop);font-size:.96rem;font-weight:600;color:var(--ink-soft);
 }
 .keurmerk::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--mint);flex-shrink:0;}
 .vlak-donker .keurmerk{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);color:#dfe3e6;}
+
+/* De werkwijze staat sinds november 2026 op een licht vlak met een mintgloed (was antraciet). */
+.werkwijze-blok{background:radial-gradient(60% 55% at 50% 38%, rgba(163,205,194,.32), rgba(163,205,194,0) 72%),var(--white);}
+.werkwijze-blok .film{border-color:var(--rand-zacht);}
+.merken{justify-content:center;}

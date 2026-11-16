@@ -552,7 +552,7 @@ def render_footer():
     return f"""<footer class="site-footer">
   <div class="wrap fgrid">
       <div class="fcol fbrand">
-        <img src="/images/logo/iwrap-logo-liggend-licht.svg" width="200" height="42" alt="iWrap" loading="lazy">
+        <img src="/images/logo/iwrap-logo-liggend.svg" width="200" height="42" alt="iWrap" loading="lazy">
         <p>Specialist in kozijnfolie: al {b['ervaring_jaren']} jaar alleen dit vak, door heel
         Nederland. Volledig gecertificeerde monteurs, geen zzp'ers, uitsluitend Renolit folie.</p>
         <p class="fcontact">
@@ -735,13 +735,12 @@ ANALYTICS = '<script defer src="/_vercel/insights/script.js"></script>\n'
 
 
 def fonts_koppen(ver):
-    """De lettertypen staan op de site zelf (css/fonts.css, fonts/): zo gaat het
-    IP-adres van een bezoeker niet naar Google, en is er geen cookiebanner nodig.
-    De twee die bovenaan elke pagina staan worden alvast geladen."""
-    vooraf = "".join(
-        '<link rel="preload" href="/fonts/%s" as="font" type="font/woff2" crossorigin>\n' % f.name
-        for f in sorted((ROOT / "fonts").glob("*-latin-*.woff2")) if "-ext-" not in f.name)
-    return vooraf + '<link rel="stylesheet" href="/css/fonts.css?v=%s">\n' % ver
+    """Sinds 16 november 2026 gebruikt de site het lettertype van het apparaat zelf (San Francisco
+    op een Mac en iPhone, Segoe UI op Windows), net als houtnerffolie.nl: er hoeft niets meer
+    vooraf geladen te worden. css/fonts.css (Montserrat en Inter, op de site zelf, dus zonder
+    Google) blijft staan voor de getekende scènes die die letters nog gebruiken; een browser
+    haalt een lettertype pas op als er echt tekst in staat."""
+    return '<link rel="stylesheet" href="/css/fonts.css?v=%s">\n' % ver
 
 
 def render(slug, meta, inhoud, ver):

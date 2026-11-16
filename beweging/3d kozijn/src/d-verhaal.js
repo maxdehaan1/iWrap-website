@@ -318,7 +318,7 @@
       [c.p(LEN, 20, PD * 0.4), "Kunststof profiel", "blijft heel"]
     ];
     var x = 0, yMax = 0; ankers.forEach(function (k) { x = Math.max(x, k[0][0]); yMax = Math.max(yMax, k[0][1]); });
-    ctx.font = "600 " + fs.toFixed(1) + "px Montserrat, sans-serif";
+    ctx.font = "600 " + fs.toFixed(1) + "px " + LETTERS;
     var breed = ctx.measureText("Kunststof profiel").width, onder = x + 30 * px + breed > c.W - 18 * px;
     x = onder ? Math.max(24 * px, c.W * 0.5 - breed * 0.2) : Math.min(x + 30 * px, c.W - breed - 18 * px);
     var y = onder ? yMax + 70 * px : -1e9;
@@ -328,8 +328,8 @@
       lijn2(ctx, [[k[0][0], k[0][1]], [x - 8 * px, ly - fs * 0.36]], kleur(K.inkt, 1, 0.5), 1.2 * px);
       ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(k[0][0], k[0][1], 4.6 * px, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = K.inkt; ctx.beginPath(); ctx.arc(k[0][0], k[0][1], 3.1 * px, 0, Math.PI * 2); ctx.fill();
-      ctx.font = "600 " + fs.toFixed(1) + "px Montserrat, sans-serif"; ctx.fillStyle = K.inkt; ctx.fillText(k[1], x, ly);
-      ctx.font = (fs * 0.84).toFixed(1) + "px Inter, sans-serif"; ctx.fillStyle = K.sub; ctx.fillText(k[2], x, ly + fs * 1.2);
+      ctx.font = "600 " + fs.toFixed(1) + "px " + LETTERS; ctx.fillStyle = K.inkt; ctx.fillText(k[1], x, ly);
+      ctx.font = (fs * 0.84).toFixed(1) + "px " + LETTERS; ctx.fillStyle = K.sub; ctx.fillText(k[2], x, ly + fs * 1.2);
     });
     ctx.restore();
   }
@@ -345,7 +345,7 @@
     ZINNEN.forEach(function (z) { if (t >= z[0] && t < z[1] + 0.4) zin = z; });
     if (zin) {
       var a = Math.min(fase(t, zin[0], 0.3), 1 - fase(t, zin[1], 0.35)), fs = 34 * s;
-      ctx.save(); ctx.globalAlpha = a; ctx.font = "600 " + fs.toFixed(1) + "px Montserrat, sans-serif";
+      ctx.save(); ctx.globalAlpha = a; ctx.font = "600 " + fs.toFixed(1) + "px " + LETTERS;
       var regels = [zin[2]], maxW = W - 150 * s;
       if (ctx.measureText(zin[2]).width > maxW) {
         var wd = zin[2].split(" "), best = 1, bestD = 1e9;
@@ -367,15 +367,15 @@
       var nu = t >= sp.van && t < sp.tot, klaar = t >= sp.tot, a = fase(t, INTRO + 0.4 + k * 0.12, 0.4);
       if (a <= 0) return;
       ctx.save(); ctx.globalAlpha = a;
-      ctx.font = "600 " + (24 * s).toFixed(1) + "px Montserrat, sans-serif";
+      ctx.font = "600 " + (24 * s).toFixed(1) + "px " + LETTERS;
       var w = ctx.measureText(sp.naam).width + 92 * s, h = 58 * s, y = y0 + k * (h + 12 * s);
       ctx.fillStyle = "rgba(34,38,42,0.08)"; rond(ctx, x0, y + 6 * s, w, h, h / 2); ctx.fill();
       ctx.fillStyle = nu ? K.mintDiep : "#fff"; rond(ctx, x0, y, w, h, h / 2); ctx.fill();
       ctx.fillStyle = nu ? "#fff" : (klaar ? K.mintDiep : "#dbece7"); ctx.beginPath(); ctx.arc(x0 + 30 * s, y + h / 2, 17 * s, 0, Math.PI * 2); ctx.fill();
       if (klaar) { ctx.strokeStyle = "#fff"; ctx.lineWidth = 3.6 * s; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x0 + 22 * s, y + h / 2); ctx.lineTo(x0 + 28 * s, y + h / 2 + 6 * s); ctx.lineTo(x0 + 38 * s, y + h / 2 - 6 * s); ctx.stroke(); }
-      else { ctx.fillStyle = K.mintDiep; ctx.font = "700 " + (20 * s).toFixed(1) + "px Montserrat, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(String(sp.nr), x0 + 30 * s, y + h / 2 + 1); ctx.textAlign = "start"; }
+      else { ctx.fillStyle = K.mintDiep; ctx.font = "700 " + (20 * s).toFixed(1) + "px " + LETTERS; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(String(sp.nr), x0 + 30 * s, y + h / 2 + 1); ctx.textAlign = "start"; }
       ctx.fillStyle = nu ? "#fff" : K.inkt; ctx.globalAlpha = a * (nu || klaar ? 1 : 0.62);
-      ctx.font = "600 " + (24 * s).toFixed(1) + "px Montserrat, sans-serif"; ctx.textBaseline = "middle"; ctx.fillText(sp.naam, x0 + 60 * s, y + h / 2 + 1);
+      ctx.font = "600 " + (24 * s).toFixed(1) + "px " + LETTERS; ctx.textBaseline = "middle"; ctx.fillText(sp.naam, x0 + 60 * s, y + h / 2 + 1);
       ctx.restore();
     });
   }

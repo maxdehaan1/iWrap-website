@@ -49,6 +49,8 @@
   var FLAP = 78;            // zo ver loopt het omzetten van de rand achter de rol aan
   var MARGE = 34;           // het gereedschap begint en eindigt net buiten het profiel
   var RAD = Math.PI / 180;
+  // Letters in het beeld: het lettertype van het apparaat zelf, net als de site (sinds november 2026).
+  var LETTERS = '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
   var HOEK = 64.56 * RAD, COT = Math.cos(HOEK) / Math.sin(HOEK);   // de schuinte van het logo
 
   /* Tijdlijn (seconden) ------------------------------------------------------ */
@@ -1537,7 +1539,7 @@
       [c.p(LEN, 20, PD * 0.4), "Kunststof profiel", "blijft heel"]
     ];
     var x = 0, yMax = 0; ankers.forEach(function (k) { x = Math.max(x, k[0][0]); yMax = Math.max(yMax, k[0][1]); });
-    ctx.font = "600 " + fs.toFixed(1) + "px Montserrat, sans-serif";
+    ctx.font = "600 " + fs.toFixed(1) + "px " + LETTERS;
     var breed = ctx.measureText("Kunststof profiel").width, onder = x + 30 * px + breed > c.W - 18 * px;
     x = onder ? Math.max(24 * px, c.W * 0.5 - breed * 0.2) : Math.min(x + 30 * px, c.W - breed - 18 * px);
     var y = onder ? yMax + 70 * px : -1e9;
@@ -1547,8 +1549,8 @@
       lijn2(ctx, [[k[0][0], k[0][1]], [x - 8 * px, ly - fs * 0.36]], kleur(K.inkt, 1, 0.5), 1.2 * px);
       ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(k[0][0], k[0][1], 4.6 * px, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = K.inkt; ctx.beginPath(); ctx.arc(k[0][0], k[0][1], 3.1 * px, 0, Math.PI * 2); ctx.fill();
-      ctx.font = "600 " + fs.toFixed(1) + "px Montserrat, sans-serif"; ctx.fillStyle = K.inkt; ctx.fillText(k[1], x, ly);
-      ctx.font = (fs * 0.84).toFixed(1) + "px Inter, sans-serif"; ctx.fillStyle = K.sub; ctx.fillText(k[2], x, ly + fs * 1.2);
+      ctx.font = "600 " + fs.toFixed(1) + "px " + LETTERS; ctx.fillStyle = K.inkt; ctx.fillText(k[1], x, ly);
+      ctx.font = (fs * 0.84).toFixed(1) + "px " + LETTERS; ctx.fillStyle = K.sub; ctx.fillText(k[2], x, ly + fs * 1.2);
     });
     ctx.restore();
   }
@@ -1564,7 +1566,7 @@
     ZINNEN.forEach(function (z) { if (t >= z[0] && t < z[1] + 0.4) zin = z; });
     if (zin) {
       var a = Math.min(fase(t, zin[0], 0.3), 1 - fase(t, zin[1], 0.35)), fs = 34 * s;
-      ctx.save(); ctx.globalAlpha = a; ctx.font = "600 " + fs.toFixed(1) + "px Montserrat, sans-serif";
+      ctx.save(); ctx.globalAlpha = a; ctx.font = "600 " + fs.toFixed(1) + "px " + LETTERS;
       var regels = [zin[2]], maxW = W - 150 * s;
       if (ctx.measureText(zin[2]).width > maxW) {
         var wd = zin[2].split(" "), best = 1, bestD = 1e9;
@@ -1586,15 +1588,15 @@
       var nu = t >= sp.van && t < sp.tot, klaar = t >= sp.tot, a = fase(t, INTRO + 0.4 + k * 0.12, 0.4);
       if (a <= 0) return;
       ctx.save(); ctx.globalAlpha = a;
-      ctx.font = "600 " + (24 * s).toFixed(1) + "px Montserrat, sans-serif";
+      ctx.font = "600 " + (24 * s).toFixed(1) + "px " + LETTERS;
       var w = ctx.measureText(sp.naam).width + 92 * s, h = 58 * s, y = y0 + k * (h + 12 * s);
       ctx.fillStyle = "rgba(34,38,42,0.08)"; rond(ctx, x0, y + 6 * s, w, h, h / 2); ctx.fill();
       ctx.fillStyle = nu ? K.mintDiep : "#fff"; rond(ctx, x0, y, w, h, h / 2); ctx.fill();
       ctx.fillStyle = nu ? "#fff" : (klaar ? K.mintDiep : "#dbece7"); ctx.beginPath(); ctx.arc(x0 + 30 * s, y + h / 2, 17 * s, 0, Math.PI * 2); ctx.fill();
       if (klaar) { ctx.strokeStyle = "#fff"; ctx.lineWidth = 3.6 * s; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x0 + 22 * s, y + h / 2); ctx.lineTo(x0 + 28 * s, y + h / 2 + 6 * s); ctx.lineTo(x0 + 38 * s, y + h / 2 - 6 * s); ctx.stroke(); }
-      else { ctx.fillStyle = K.mintDiep; ctx.font = "700 " + (20 * s).toFixed(1) + "px Montserrat, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(String(sp.nr), x0 + 30 * s, y + h / 2 + 1); ctx.textAlign = "start"; }
+      else { ctx.fillStyle = K.mintDiep; ctx.font = "700 " + (20 * s).toFixed(1) + "px " + LETTERS; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(String(sp.nr), x0 + 30 * s, y + h / 2 + 1); ctx.textAlign = "start"; }
       ctx.fillStyle = nu ? "#fff" : K.inkt; ctx.globalAlpha = a * (nu || klaar ? 1 : 0.62);
-      ctx.font = "600 " + (24 * s).toFixed(1) + "px Montserrat, sans-serif"; ctx.textBaseline = "middle"; ctx.fillText(sp.naam, x0 + 60 * s, y + h / 2 + 1);
+      ctx.font = "600 " + (24 * s).toFixed(1) + "px " + LETTERS; ctx.textBaseline = "middle"; ctx.fillText(sp.naam, x0 + 60 * s, y + h / 2 + 1);
       ctx.restore();
     });
   }
@@ -1944,17 +1946,17 @@
   function zonVideoTekst(ctx, t, W, H) {
     var s = Math.min(W, H) / 1000, j = Math.floor(tellerJaren(t) + 1e-6);
     ctx.save();
-    ctx.font = "700 " + (64 * s).toFixed(1) + "px Montserrat, sans-serif"; ctx.fillStyle = K.inkt; ctx.textBaseline = "alphabetic";
+    ctx.font = "700 " + (64 * s).toFixed(1) + "px " + LETTERS; ctx.fillStyle = K.inkt; ctx.textBaseline = "alphabetic";
     var tekst = t < ZR ? String(j) : "", x = 48 * s, y = 104 * s;
     if (tekst) {
       ctx.fillText(tekst, x, y);
       var bw = ctx.measureText(tekst).width;
-      ctx.font = "600 " + (22 * s).toFixed(1) + "px Montserrat, sans-serif"; ctx.fillStyle = K.sub;
+      ctx.font = "600 " + (22 * s).toFixed(1) + "px " + LETTERS; ctx.fillStyle = K.sub;
       ctx.fillText(j === 1 ? "jaar" : "jaar", x + bw + 10 * s, y - 4 * s);
     }
     var zin = null; ZZINNEN.forEach(function (r) { if (t >= r[0] && t < r[1] + 0.3) zin = r[2]; });
     if (zin) {
-      ctx.font = "600 " + (26 * s).toFixed(1) + "px Montserrat, sans-serif";
+      ctx.font = "600 " + (26 * s).toFixed(1) + "px " + LETTERS;
       var w = ctx.measureText(zin).width + 70 * s, hh = 58 * s, xx = (W - w) / 2, yy = H - hh - 30 * s;
       ctx.fillStyle = "rgba(255,255,255,0.92)"; rond(ctx, xx, yy, w, hh, hh / 2); ctx.fill();
       ctx.fillStyle = K.inkt; ctx.textBaseline = "middle"; ctx.fillText(zin, xx + 35 * s, yy + hh / 2 + 1);
@@ -2129,7 +2131,7 @@
     ctx.quadraticCurveTo(93, -58, 97, -52); ctx.lineTo(112, -34); ctx.quadraticCurveTo(120, -32, 120, -24); ctx.lineTo(120, -12);
     ctx.quadraticCurveTo(120, -8, 114, -8); ctx.lineTo(2, -8); ctx.closePath(); ctx.fill();
     ctx.fillStyle = K.inktZacht || "#3a4047"; ctx.beginPath(); ctx.moveTo(90, -52); ctx.lineTo(94, -52); ctx.lineTo(107, -36); ctx.lineTo(90, -36); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = "#ffffff"; ctx.font = "700 15px Montserrat, sans-serif"; ctx.textBaseline = "middle"; ctx.fillText("iWrap", 22, -33);
+    ctx.fillStyle = "#ffffff"; ctx.font = "700 15px " + LETTERS; ctx.textBaseline = "middle"; ctx.fillText("iWrap", 22, -33);
     [[26, -8], [94, -8]].forEach(function (w) {
       ctx.fillStyle = K.inkt; ctx.beginPath(); ctx.arc(w[0], w[1], 10, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#cfd2d3"; ctx.beginPath(); ctx.arc(w[0], w[1], 4.5, 0, Math.PI * 2); ctx.fill();
@@ -2267,7 +2269,7 @@
     if (oIn > 0 && oUit < 1) {
       schaduwKaart(ctx, ox, oy, ow, oh, 26 * s, s);
       ctx.fillStyle = "#ffffff"; rond(ctx, ox, oy, ow, oh, 26 * s); ctx.fill();
-      ctx.fillStyle = K.inkt; ctx.font = "700 " + (34 * s).toFixed(1) + "px Montserrat, sans-serif"; ctx.textBaseline = "alphabetic";
+      ctx.fillStyle = K.inkt; ctx.font = "700 " + (34 * s).toFixed(1) + "px " + LETTERS; ctx.textBaseline = "alphabetic";
       ctx.fillText("Offerte", ox + 34 * s, oy + 64 * s);
       // de foto met de streep
       var fw = 150 * s, fh = 150 * s * 572 / 272 * 0.5, fx = ox + 34 * s, fy = oy + 92 * s, vl = E.zacht(fase(t, 5.3, 0.45));
@@ -2279,7 +2281,7 @@
       [[0, 0.88], [1, 0.7], [2, 0.8]].forEach(function (r) { var ra = fase(t, 5.5 + r[0] * 0.07, 0.2); ctx.globalAlpha = ra; regel(ctx, fx, fy + fh + 34 * s + r[0] * 30 * s, (ow - 68 * s) * r[1], s); });
       ctx.globalAlpha = 1;
       ctx.fillStyle = "#e3e1db"; ctx.fillRect(ox + 34 * s, oy + oh - 104 * s, ow - 68 * s, 2 * s);
-      ctx.fillStyle = K.inkt; ctx.font = "700 " + (28 * s).toFixed(1) + "px Montserrat, sans-serif";
+      ctx.fillStyle = K.inkt; ctx.font = "700 " + (28 * s).toFixed(1) + "px " + LETTERS;
       ctx.fillText("Vaste prijs", ox + 34 * s, oy + oh - 48 * s);
       vinkje(ctx, ox + ow - 64 * s, oy + oh - 58 * s, 24 * s, veer(fase(t, 5.85, 0.35)) * (fase(t, 5.85, 0.01)));
       void vl;
@@ -2291,7 +2293,7 @@
     if (aIn > 0 && aUit < 1) {
       schaduwKaart(ctx, ax, ay, aw, ah, 26 * s, s);
       ctx.fillStyle = "#ffffff"; rond(ctx, ax, ay, aw, ah, 26 * s); ctx.fill();
-      ctx.fillStyle = K.inkt; ctx.font = "700 " + (32 * s).toFixed(1) + "px Montserrat, sans-serif"; ctx.textBaseline = "alphabetic";
+      ctx.fillStyle = K.inkt; ctx.font = "700 " + (32 * s).toFixed(1) + "px " + LETTERS; ctx.textBaseline = "alphabetic";
       ctx.fillText("Afspraak", ax + 34 * s, ay + 60 * s);
       vinkje(ctx, ax + aw - 56 * s, ay + 50 * s, 20 * s, veer(fase(t, 7.6, 0.35)) * fase(t, 7.6, 0.01));
       kalender(ctx, ax + 34 * s, ay + 92 * s, 120 * s, s, fase(t, 7.15, 0.4));

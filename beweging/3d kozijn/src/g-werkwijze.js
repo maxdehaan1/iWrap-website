@@ -65,7 +65,7 @@
     ctx.quadraticCurveTo(93, -58, 97, -52); ctx.lineTo(112, -34); ctx.quadraticCurveTo(120, -32, 120, -24); ctx.lineTo(120, -12);
     ctx.quadraticCurveTo(120, -8, 114, -8); ctx.lineTo(2, -8); ctx.closePath(); ctx.fill();
     ctx.fillStyle = K.inktZacht || "#3a4047"; ctx.beginPath(); ctx.moveTo(90, -52); ctx.lineTo(94, -52); ctx.lineTo(107, -36); ctx.lineTo(90, -36); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = "#ffffff"; ctx.font = "700 15px Montserrat, sans-serif"; ctx.textBaseline = "middle"; ctx.fillText("iWrap", 22, -33);
+    ctx.fillStyle = "#ffffff"; ctx.font = "700 15px " + LETTERS; ctx.textBaseline = "middle"; ctx.fillText("iWrap", 22, -33);
     [[26, -8], [94, -8]].forEach(function (w) {
       ctx.fillStyle = K.inkt; ctx.beginPath(); ctx.arc(w[0], w[1], 10, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#cfd2d3"; ctx.beginPath(); ctx.arc(w[0], w[1], 4.5, 0, Math.PI * 2); ctx.fill();
@@ -203,7 +203,7 @@
     if (oIn > 0 && oUit < 1) {
       schaduwKaart(ctx, ox, oy, ow, oh, 26 * s, s);
       ctx.fillStyle = "#ffffff"; rond(ctx, ox, oy, ow, oh, 26 * s); ctx.fill();
-      ctx.fillStyle = K.inkt; ctx.font = "700 " + (34 * s).toFixed(1) + "px Montserrat, sans-serif"; ctx.textBaseline = "alphabetic";
+      ctx.fillStyle = K.inkt; ctx.font = "700 " + (34 * s).toFixed(1) + "px " + LETTERS; ctx.textBaseline = "alphabetic";
       ctx.fillText("Offerte", ox + 34 * s, oy + 64 * s);
       // de foto met de streep
       var fw = 150 * s, fh = 150 * s * 572 / 272 * 0.5, fx = ox + 34 * s, fy = oy + 92 * s, vl = E.zacht(fase(t, 5.3, 0.45));
@@ -215,7 +215,7 @@
       [[0, 0.88], [1, 0.7], [2, 0.8]].forEach(function (r) { var ra = fase(t, 5.5 + r[0] * 0.07, 0.2); ctx.globalAlpha = ra; regel(ctx, fx, fy + fh + 34 * s + r[0] * 30 * s, (ow - 68 * s) * r[1], s); });
       ctx.globalAlpha = 1;
       ctx.fillStyle = "#e3e1db"; ctx.fillRect(ox + 34 * s, oy + oh - 104 * s, ow - 68 * s, 2 * s);
-      ctx.fillStyle = K.inkt; ctx.font = "700 " + (28 * s).toFixed(1) + "px Montserrat, sans-serif";
+      ctx.fillStyle = K.inkt; ctx.font = "700 " + (28 * s).toFixed(1) + "px " + LETTERS;
       ctx.fillText("Vaste prijs", ox + 34 * s, oy + oh - 48 * s);
       vinkje(ctx, ox + ow - 64 * s, oy + oh - 58 * s, 24 * s, veer(fase(t, 5.85, 0.35)) * (fase(t, 5.85, 0.01)));
       void vl;
@@ -227,7 +227,7 @@
     if (aIn > 0 && aUit < 1) {
       schaduwKaart(ctx, ax, ay, aw, ah, 26 * s, s);
       ctx.fillStyle = "#ffffff"; rond(ctx, ax, ay, aw, ah, 26 * s); ctx.fill();
-      ctx.fillStyle = K.inkt; ctx.font = "700 " + (32 * s).toFixed(1) + "px Montserrat, sans-serif"; ctx.textBaseline = "alphabetic";
+      ctx.fillStyle = K.inkt; ctx.font = "700 " + (32 * s).toFixed(1) + "px " + LETTERS; ctx.textBaseline = "alphabetic";
       ctx.fillText("Afspraak", ax + 34 * s, ay + 60 * s);
       vinkje(ctx, ax + aw - 56 * s, ay + 50 * s, 20 * s, veer(fase(t, 7.6, 0.35)) * fase(t, 7.6, 0.01));
       kalender(ctx, ax + 34 * s, ay + 92 * s, 120 * s, s, fase(t, 7.15, 0.4));

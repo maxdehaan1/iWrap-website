@@ -231,8 +231,22 @@ video/                    Neemt de film op als MP4 (niet op de site, niet in git
 - **Let op bij het mint.** `--mint` is voor vlakken, randen en iconen. Zodra er tekst op
   wit komt, gebruik je `--mint-ink` — `--mint` haalt met wit maar 1,7:1 en is dan
   onleesbaar.
-- **Letters.** Montserrat voor koppen en knoppen (dat is je bestaande huisstijl, en het
-  iWrap-blok op kozijnwrap.nl leent hem bewust), Inter voor de lopende tekst.
+- **Letters.** Sinds 16 november 2026 het lettertype van het apparaat zelf, net als
+  houtnerffolie.nl: San Francisco op een Mac en iPhone, Segoe UI op Windows, Roboto op
+  Android (`--kop` en `--tekst` in `style.css`). Strak, goed leesbaar, en er hoeft niets
+  gedownload te worden. Koppen groot en strak (vet, iets in elkaar geschoven), lopende tekst
+  18px. Montserrat en Inter staan nog in `css/fonts.css` voor de getekende scènes die ze
+  gebruiken; een browser haalt ze alleen op waar die scènes staan.
+- **De stijl (november 2026, "iets meer Apple", zoals houtnerffolie.nl).** Licht en rustig:
+  papier (`--paper`) met witte vlakken, een zachte **mintgloed** bovenaan elke pagina en
+  achter de hero, een wit **doorschijnend menu** dat blijft staan, kaarten met een zachte
+  rand in plaats van een schaduw, ronde knoppen in het donkere mint (`--mint-deep`), en
+  gecentreerde kopjes boven de secties op de homepage. Het werkwijzeblok is licht, het
+  slotblok mint, de voet licht; alleen "Waarom iWrap" is nog antraciet, voor de nadruk.
+- **Voor oudere bezoekers.** Lopende tekst 18px, kleine teksten minstens 15px, grijze tekst
+  (`--sub`) donker genoeg voor 7:1, knoppen minstens 54px hoog, geen piepkleine hoofdletters
+  met spaties ertussen (de kopjes boven een titel zijn gewone letters in het mint), en het
+  offerteformulier een maat groter. Zet er geen lichtgrijze of kleine tekst bij.
 - **Logo.** Als SVG in `images/logo/` (`iwrap-logo-liggend.svg`, `-licht` voor donker,
   `-wit` voor op mint), gemaakt uit de officiële logobestanden. Het logo in de kop staat
   in de pagina zelf (`logo_kop()` in `build.py`), zodat het kan uitrollen. Alle andere

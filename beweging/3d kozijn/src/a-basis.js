@@ -49,6 +49,8 @@
   var FLAP = 78;            // zo ver loopt het omzetten van de rand achter de rol aan
   var MARGE = 34;           // het gereedschap begint en eindigt net buiten het profiel
   var RAD = Math.PI / 180;
+  // Letters in het beeld: het lettertype van het apparaat zelf, net als de site (sinds november 2026).
+  var LETTERS = '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
   var HOEK = 64.56 * RAD, COT = Math.cos(HOEK) / Math.sin(HOEK);   // de schuinte van het logo
 
   /* Tijdlijn (seconden) ------------------------------------------------------ */

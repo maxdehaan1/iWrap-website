@@ -35,8 +35,8 @@ html:not(.js) .film,html:not(.js) .film-sectie{display:none;}
 /* Alle tekstblokken liggen op dezelfde plek; film.js laat ze om de beurt zien. */
 .film-tekst > *{grid-area:1/1;visibility:hidden;}
 .film .film-stap{
-  font-family:var(--kop);font-size:1.12cqw;font-weight:600;letter-spacing:.13em;
-  text-transform:uppercase;color:var(--mint-ink);
+  font-family:var(--kop);font-size:1.4cqw;font-weight:600;letter-spacing:-.005em;
+  color:var(--mint-ink);
   display:flex;align-items:center;gap:.8em;margin:0 0 1.1em;
 }
 .film-stap::before{content:"";width:1.8em;height:.26em;border-radius:2px;background:var(--mint);flex-shrink:0;}
@@ -88,13 +88,13 @@ html:not(.js) .film,html:not(.js) .film-sectie{display:none;}
   .film{grid-template-columns:1fr;aspect-ratio:auto;border-radius:var(--radius);}
   .film-beeld{order:-1;aspect-ratio:9/8;}
   .film-tekst{padding:22px 22px 26px;min-height:13.5rem;}
-  .film .film-stap{font-size:.72rem;}
+  .film .film-stap{font-size:.92rem;}
   .film .film-zin{font-size:1.45rem;}
   .film-slot .film-logo{display:none;}
   .film-slot ul{gap:8px;margin-bottom:12px;}
   .film-slot li{font-size:1rem;}
-  .film .film-score{font-size:.88rem;margin-bottom:16px;}
-  .film-cta{font-size:.92rem;}
-  .film-label{top:14px;left:14px;font-size:.8rem;}
+  .film .film-score{font-size:.97rem;margin-bottom:16px;}
+  .film-cta{font-size:1rem;}
+  .film-label{top:14px;left:14px;font-size:.88rem;}
   .film-knop{right:12px;bottom:14px;}
 }
