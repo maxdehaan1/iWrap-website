@@ -535,8 +535,10 @@ site serveert. Deze opzet houdt de site snel en de reviews in je eigen beheer.
 
 Een film van twintig seconden **in 3D**, met hetzelfde crème kozijn, dezelfde lucht en zon als
 de hero (16 november 2026; daarvoor een platte tekening): het verweerde kozijn met twee ringen
-om de schade, een telefoon die een foto maakt en met een mint stift aanstreept wat er moet
-gebeuren (zoals op het aanvraagformulier), een offerte met een vaste prijs, een afspraakkaart
+om de schade, een telefoon die een foto maakt van **het hele kozijn** in de gevel, waarop een
+gele stift de onderdorpel en de stijl aanstreept, precies zoals het aanvraagformulier het vraagt
+(geel voor het kozijn, rood voor een draairaam; Max: "dit moet niet verwarrend zijn"), een
+offerte met dezelfde foto en een vaste prijs, een afspraakkaart
 met de dag, de monteur en het mint busje, en dan het werk in 3D: toplaag eraf met warmte,
 lijmresten eraf en vetvrij, nieuwe folie met de rakel, en een glans. Vóór en ná dezelfde
 kleur: de folie verweert, hij verkleurt niet. Het beeld tekent `js/kozijn-3d.js` (bron:
@@ -570,7 +572,7 @@ python3 build.py
 cd video && npm install && npm run opname
 ```
 
-Dat levert `video/iwrap-zo-werkt-het.mp4` op: 1920×1080, 16 seconden (de eindkaart
+Dat levert `video/iwrap-zo-werkt-het.mp4` op: 1920×1080, 21 seconden (de eindkaart
 blijft in de video een seconde langer staan), zonder geluid. Het script gebruikt je eigen
 Google Chrome en start zelf een server op poort 8011. Met `node opname.mjs --beelden 0,8,15`
 krijg je losse PNG's in `video/beelden/` om een moment te bekijken.
@@ -617,8 +619,10 @@ drie vaste stappen: toplaag eraf met warmte, lijmresten eraf met de krabber en v
 een doek, nieuwe folie met de rakel. Bijna 29 seconden; hij speelt één keer als hij in
 beeld komt, pauzeert als je wegscrolt en blijft op het herstelde kozijn staan. De stappen
 ernaast lopen mee en zijn aan te klikken. `js/kozijn-3d.js` tekent met WebGL; zonder WebGL
-toont de CSS een foto van het herstelde kozijn (`images/kozijn-3d-eind.jpg`), en tot het
-script tekent het beginbeeld (`images/kozijn-3d-start.jpg`). De opmaak staat in
+toont de CSS een foto van het herstelde kozijn (`images/kozijn-3d-eind-v2.jpg`), en tot het
+script tekent het beginbeeld (`images/kozijn-3d-start-v2.jpg`). Sinds 16 november 2026 staat
+hij buiten, net als de hero en de werkwijzefilm: blauwe lucht, de zon linksboven en crème folie
+die verweert maar niet verkleurt (`opties.buiten = false` geeft de oude lichte studio). De opmaak staat in
 `css/iwrap-site.css` (onderdeel 12). Aanpassen: zie Beweging.
 
 **Op `/kunststof-kozijn-herstellen`** staat een doorsnede van een onderdorpel met
@@ -655,14 +659,15 @@ bakje koffie").
   `src/pages/over-iwrap.html`); `main.js` zet de juiste zin neer terwijl de film speelt. De
   tijden komen uit de film zelf (`captions` in `beweging/src/film.src.js` en `film2.src.js`):
   verander je daar een zin of een tijd, pas hem dan ook in de pagina aan.
-- Het bestand is `media/iwrap-klusfilm-v3.mp4` (1280×720, ongeveer 1,3 MB), de poster
-  `images/klusfilm-poster-v3.jpg` (seconde 45: de oplevering). Ze hebben een versienummer
+- Het bestand is `media/iwrap-klusfilm-v4.mp4` (1280×720, ongeveer 1,3 MB), de poster
+  `images/klusfilm-poster-v4.jpg` (seconde 45: de oplevering). Sinds v4 (16 november 2026)
+  staat het close-up van het werk buiten, zoals de hero: blauwe lucht en crème die niet verkleurt. Ze hebben een versienummer
   omdat `/media/` dertig dagen en `/images/` een jaar gecachet worden: een nieuwe versie
   krijgt dus een nieuwe naam. Gerenderd zonder ondertitels met
   `python3 tools/render.py '[{"scene":"klus","opts":{"ondertitels":false},"w":1920,"h":1080,"out":"<uit>.mp4","codec":"h264","samples":4}]'`
   (in `beweging/`, na `python3 tools/build.py`; ruim 7 minuten) en verkleind met
   `video/node_modules/ffmpeg-static/ffmpeg -i <uit>.mp4 -vf scale=1280:-2 -c:v libx264
-  -preset slow -crf 28 -pix_fmt yuv420p -movflags +faststart -an media/iwrap-klusfilm-v3.mp4`.
+  -preset slow -crf 28 -pix_fmt yuv420p -movflags +faststart -an media/iwrap-klusfilm-v4.mp4`.
   De versie mét ondertitels in beeld, om te delen via WhatsApp of mail, staat in
   `~/Documents/iWrap/iWrap in beweging/3 - Video's/Liggend 16x9/`.
 - Hij laadt pas als hij in beeld komt (`preload="none"`), speelt dan zonder geluid af,

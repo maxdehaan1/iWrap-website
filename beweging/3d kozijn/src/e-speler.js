@@ -118,6 +118,7 @@
       Vlak: Vlak, FVOOR: FVOOR, FBOVEN: FBOVEN, FSVOOR: FSVOOR, PAD: PAD, padPunt: padPunt,
       rolOud: rolOud, rolNieuw: rolNieuw, rakel: rakel, krabber: krabber, lijmrug: lijmrug, kruimels: kruimelsBij, fohn: fohn, luchtLijnen: luchtLijnen,
       spuitfles: spuitfles, nevel: nevel, doek: doek, schilfers: schilfers, omzetten: omzetten, kapLaag: kapLaag, kies: kies, vonk: vonk, rond: rond,
+      licht: function (W, H, s) { var L = zonLicht(0, W, H, 1, { s: s == null ? 0.3 : s }); L.lucht.stip = 0; return L; }, FOLIE: FOLIE,
       kromme: kromme, klem: klem, mix: mix, fase: fase, E: E, som: som, ver: ver, maal: maal, een: een, inw: inw, uitw: uitw, rng: rng, binnen: binnen,
       maten: { LEN: LEN, PH: PH, PD: PD, SW: SW, STI: STI, GZ0: GZ0, GZ1: GZ1, RV: RV, RR: RR, DL: DL, DO: DO, DN: DN, FLAP: FLAP, MARGE: MARGE, COT: COT, RAD: RAD },
       K: K

@@ -1675,6 +1675,13 @@
       achtergrond: opties.achtergrond === false ? null : (opties.variant === "mint" ? "mint" : "licht"),
       kap: [kapLaag(z, 0, LEN), kapLaag(z, 1, 0)]
     };
+    // Buiten, net als de hero en de werkwijzefilm: blauwe lucht, de zon linksboven, crème folie die
+    // verweert maar niet verkleurt. (opties.buiten = false: de oude lichte studio.)
+    if (opties.buiten !== false && opties.achtergrond !== false && opties.variant !== "mint") {
+      var LB = zonLicht(0, W, H, 1, { s: 0.3 }); LB.lucht.stip = 0;
+      sc.lk = LB.lk; sc.key = LB.key; sc.hemel = LB.hemel; sc.vloer = LB.vloer; sc.lucht = LB.lucht;
+      sc.folie = FOLIE.cremeZon; sc.schaduwZacht = 5.0; sc.belichting = 0.92;
+    }
     if (st.vetvrij > 0 && st.vetvrij < 1) {
       var vv = E.zacht(st.vetvrij); sc.sweep = [mix(-80, LEN + 160, vv), mix(-80, STI + 160, vv), Math.sin(Math.PI * st.vetvrij) * 1.1, 1];
     }
@@ -2155,23 +2162,57 @@
     if (a > 0) { ctx.strokeStyle = K.mintDiep; ctx.lineWidth = 2.6 * s; ctx.beginPath(); ctx.arc(x + w * 0.6, y + h * 0.65, 11 * s, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * a); ctx.stroke(); }
   }
 
-  // Een uitsnede van het 3D-beeld rond de hoek van het kozijn, in de verhouding van het vak waar hij in komt.
-  // Geeft de bron-rechthoek (in beeldpixels) en een functie die een punt in de wereld naar het vak omrekent.
-  function uitsnede(c, W, H, vx, vy, vw, vh, schaal) {
-    var m = c.q([190, 120, PD]), sh = Math.min(H * 0.92, W * 0.92 * vh / vw) * (schaal || 1), sw = sh * vw / vh;
-    var sx = klem(m[0] - sw * 0.5, 0, W - sw), sy = klem(m[1] - sh * 0.55, 0, H - sh);
-    return { sx: sx, sy: sy, sw: sw, sh: sh, naar: function (P) { var p = c.q(P); return [vx + (p[0] - sx) / sw * vw, vy + (p[1] - sy) / sh * vh]; } };
-  }
-  function strepen(ctx, u, dik, tot) {
-    // de mint stift langs de bovenkant van de dorpel, een beetje met de hand
-    ctx.strokeStyle = "rgba(127,196,178,0.88)"; ctx.lineWidth = dik; ctx.lineCap = "round"; ctx.lineJoin = "round";
-    ctx.beginPath();
-    for (var k = 0; k <= 24; k++) {
-      var f = k / 24 * tot, p = u.naar(FVOOR.w(mix(SW + 30, LEN - 50, f), PH * 0.62 + Math.sin(k * 1.7) * 3, DL + DO));
-      if (k) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]);
+  /* De foto voor de offerte: het HELE kozijn in de gevel, recht van voren, zoals we het vragen.
+     Daarop streept de klant aan wat er moet gebeuren, net als op het aanvraagformulier: geel voor
+     het kozijn (rood is voor een draairaam; dat doen we in dit verhaal niet). Hier: de onderdorpel
+     en de linkerstijl, precies de delen die daarna in 3D hersteld worden.
+     p = hoe ver de gele stift is (0 nog niets, 1 klaar). */
+  function kozijnFoto(ctx, x, y, w, h, p) {
+    var s = w / 300;
+    ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+    // gevel van rode baksteen
+    ctx.fillStyle = "#a35d47"; ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = "rgba(226,214,196,0.55)"; ctx.lineWidth = 1.1 * s;
+    for (var r = 0, yy = y + 6 * s; yy < y + h; yy += 12 * s, r++) {
+      ctx.beginPath(); ctx.moveTo(x, yy); ctx.lineTo(x + w, yy); ctx.stroke();
+      for (var xx = x + (r % 2 ? 0 : 13 * s); xx < x + w; xx += 26 * s) { ctx.beginPath(); ctx.moveTo(xx, yy - 12 * s); ctx.lineTo(xx, yy); ctx.stroke(); }
     }
-    ctx.stroke();
+    // het kozijn: een vast raam links en een draairaam rechts, crème met houtnerf, verweerd (zelfde kleur)
+    var kx = x + w * 0.12, ky = y + h * 0.2, kw = w * 0.76, kh = h * 0.56, b = 15 * s, dorpel = 21 * s;
+    ctx.fillStyle = "#6f3c2f"; ctx.fillRect(kx - 7 * s, ky - 7 * s, kw + 14 * s, kh + 10 * s);           // de dagkant
+    ctx.fillStyle = "#ebe4d0"; ctx.fillRect(kx, ky, kw, kh);
+    var gx1 = kx + b, gw1 = kw * 0.47 - b * 1.5, gx2 = kx + kw * 0.47 + b * 0.5, gw2 = kw - (gx2 - kx) - b, gy = ky + b, gh = kh - b - dorpel;
+    function glas(gx, gy2, gw, gh2) {
+      var g = ctx.createLinearGradient(0, gy2, 0, gy2 + gh2); g.addColorStop(0, "#b7cdd6"); g.addColorStop(1, "#7f97a1");
+      ctx.fillStyle = g; ctx.fillRect(gx, gy2, gw, gh2);
+      ctx.fillStyle = "rgba(255,255,255,0.28)"; ctx.beginPath(); ctx.moveTo(gx + gw * 0.18, gy2); ctx.lineTo(gx + gw * 0.42, gy2); ctx.lineTo(gx, gy2 + gh2 * 0.5); ctx.lineTo(gx, gy2 + gh2 * 0.24); ctx.closePath(); ctx.fill();
+    }
+    glas(gx1, gy, gw1, gh);
+    ctx.strokeStyle = "#ddd5bf"; ctx.lineWidth = 7 * s; ctx.strokeRect(gx2 + 3.5 * s, gy + 3.5 * s, gw2 - 7 * s, gh - 7 * s);   // de vleugel van het draairaam
+    glas(gx2 + 8 * s, gy + 8 * s, gw2 - 16 * s, gh - 16 * s);
+    ctx.fillStyle = "#f4f2ee"; ctx.fillRect(gx2 + 3 * s, gy + gh * 0.45, 4 * s, 16 * s);                  // de kruk
+    // raamdorpel van steen onder het kozijn
+    ctx.fillStyle = "#c2bcb0"; ctx.fillRect(kx - 12 * s, ky + kh + 3 * s, kw + 24 * s, 9 * s);
+    ctx.fillStyle = "rgba(0,0,0,0.15)"; ctx.fillRect(kx - 10 * s, ky + kh + 12 * s, kw + 20 * s, 3 * s);
+    // verweerd: fijne barstjes en een paar loszittende stukjes, in dezelfde kleur
+    ctx.strokeStyle = "rgba(140,128,98,0.55)"; ctx.lineWidth = 0.9 * s;
+    [[0.08, 0.93, 0.2, 0.9], [0.3, 0.95, 0.42, 0.92], [0.55, 0.94, 0.66, 0.97], [0.78, 0.92, 0.9, 0.95], [0.02, 0.3, 0.05, 0.42], [0.02, 0.6, 0.04, 0.7]].forEach(function (l) {
+      ctx.beginPath(); ctx.moveTo(kx + kw * l[0], ky + kh * l[1]); ctx.lineTo(kx + kw * (l[0] + l[2]) / 2, ky + kh * (l[1] + l[3]) / 2 + 2 * s); ctx.lineTo(kx + kw * l[2], ky + kh * l[3]); ctx.stroke();
+    });
+    // de gele stift: eerst de onderdorpel van links naar rechts, dan de linkerstijl omhoog
+    if (p > 0) {
+      var pad = [[kx + 4 * s, ky + kh - dorpel * 0.5], [kx + kw - 4 * s, ky + kh - dorpel * 0.5], [kx + kw - 4 * s, ky + kh - dorpel * 0.5]];
+      var stijl = [[kx + b * 0.5, ky + kh - dorpel * 0.5], [kx + b * 0.5, ky + 4 * s]];
+      ctx.strokeStyle = "rgba(247,206,40,0.82)"; ctx.lineCap = "round"; ctx.lineJoin = "round";
+      ctx.lineWidth = dorpel * 0.95;
+      var d1 = klem(p / 0.62, 0, 1);
+      ctx.beginPath(); ctx.moveTo(pad[0][0], pad[0][1] + Math.sin(0) * s); ctx.lineTo(mix(pad[0][0], pad[1][0], d1), pad[0][1] + 1.5 * s * Math.sin(d1 * 6)); ctx.stroke();
+      var d2 = klem((p - 0.62) / 0.38, 0, 1);
+      if (d2 > 0) { ctx.lineWidth = b * 1.05; ctx.beginPath(); ctx.moveTo(stijl[0][0], stijl[0][1]); ctx.lineTo(stijl[0][0] + 1.2 * s * Math.sin(d2 * 5), mix(stijl[0][1], stijl[1][1], d2)); ctx.stroke(); }
+    }
+    ctx.restore();
   }
+
   /* De 2D-laag over het 3D-beeld: ringen, telefoon, offerte, afspraak ------------------- */
   function werkKaarten(ctx, cv, c, t, W, H) {
     var s = Math.min(W, H) / 1000;
@@ -2192,7 +2233,7 @@
     if (waas > 0.01) { ctx.fillStyle = "rgba(247,246,243," + (0.58 * waas).toFixed(3) + ")"; ctx.fillRect(0, 0, W, H); }
 
     // de telefoon: komt van onderen, maakt een foto, de stift streept de dorpel aan
-    var tIn = E.uit(fase(t, 3.3, 0.5)), tUit = E.in_(fase(t, 5.25, 0.45));
+    var tIn = E.uit(fase(t, 3.3, 0.5)), tUit = E.in_(fase(t, 5.1, 0.42));
     var pw = 300 * s, ph = 600 * s, px = W * 0.62 - pw / 2, py = H * 0.5 - ph / 2 + (1 - tIn) * H * 0.8 + tUit * H * 0.9;
     var schermX = px + 14 * s, schermY = py + 14 * s, schermW = pw - 28 * s, schermH = ph - 28 * s;
     if (tIn > 0 && tUit < 1) {
@@ -2201,12 +2242,8 @@
       schaduwKaart(ctx, px, py, pw, ph, 46 * s, s);
       ctx.fillStyle = K.inkt; rond(ctx, px, py, pw, ph, 46 * s); ctx.fill();
       ctx.save(); rond(ctx, schermX, schermY, schermW, schermH, 34 * s); ctx.clip();
-      // op het scherm: het kozijn zoals de camera het ziet (een uitsnede van het 3D-beeld, zonder waas)
-      var us = uitsnede(c, W, H, schermX, schermY, schermW, schermH, 0.82);
-      ctx.drawImage(cv, us.sx, cv.height - H + us.sy, us.sw, us.sh, schermX, schermY, schermW, schermH);
-      // aanstrepen met de mint stift, zoals op het aanvraagformulier
-      var stift = fase(t, 4.3, 0.55);
-      if (stift > 0) strepen(ctx, us, 15 * s, stift);
+      // op het scherm: het hele kozijn, en dan streept de gele stift aan wat er moet gebeuren
+      kozijnFoto(ctx, schermX, schermY, schermW, schermH, E.zacht(fase(t, 4.3, 0.75)));
       // scherpstellen en de flits
       var richt = fase(t, 3.75, 0.35), fl = t > 4.1 ? Math.exp(-(t - 4.1) * 9) : 0;
       ctx.strokeStyle = "rgba(255,255,255," + (0.6 + 0.4 * Math.sin(Math.PI * richt)).toFixed(2) + ")"; ctx.lineWidth = 4 * s; ctx.lineCap = "round";
@@ -2225,7 +2262,7 @@
     }
 
     // de offerte: schuift van links in, de foto vliegt erheen, en de vaste prijs krijgt een vinkje
-    var oIn = E.uit(fase(t, 4.9, 0.5)), oUit = E.in_(fase(t, 6.55, 0.4));
+    var oIn = E.uit(fase(t, 5.32, 0.45)), oUit = E.in_(fase(t, 6.55, 0.4));
     var ow = 420 * s, oh = 470 * s, ox = W * 0.5 - ow / 2 - (1 - oIn) * W * 0.9 - oUit * W * 0.9, oy = H * 0.5 - oh / 2;
     if (oIn > 0 && oUit < 1) {
       schaduwKaart(ctx, ox, oy, ow, oh, 26 * s, s);
@@ -2233,12 +2270,10 @@
       ctx.fillStyle = K.inkt; ctx.font = "700 " + (34 * s).toFixed(1) + "px Montserrat, sans-serif"; ctx.textBaseline = "alphabetic";
       ctx.fillText("Offerte", ox + 34 * s, oy + 64 * s);
       // de foto met de streep
-      var fw = 150 * s, fh = 112 * s, fx = ox + 34 * s, fy = oy + 92 * s, vl = E.zacht(fase(t, 5.1, 0.45));
-      ctx.save(); ctx.globalAlpha = fase(t, 5.15, 0.2);
+      var fw = 150 * s, fh = 150 * s * 572 / 272 * 0.5, fx = ox + 34 * s, fy = oy + 92 * s, vl = E.zacht(fase(t, 5.3, 0.45));
+      ctx.save(); ctx.globalAlpha = fase(t, 5.35, 0.2);
       ctx.save(); rond(ctx, fx, fy, fw, fh, 12 * s); ctx.clip();
-      var uo = uitsnede(c, W, H, fx, fy, fw, fh, 1);
-      ctx.drawImage(cv, uo.sx, cv.height - H + uo.sy, uo.sw, uo.sh, fx, fy, fw, fh);
-      strepen(ctx, uo, 6 * s, 1);
+      kozijnFoto(ctx, fx, fy, fw, fh, 1);
       ctx.restore(); ctx.restore();
       [[0, 0.95], [1, 0.75], [2, 0.86]].forEach(function (r) { var ra = fase(t, 5.35 + r[0] * 0.07, 0.2); ctx.globalAlpha = ra; regel(ctx, fx + fw + 22 * s, fy + 12 * s + r[0] * 30 * s, (ow - fw - 90 * s) * r[1], s); });
       [[0, 0.88], [1, 0.7], [2, 0.8]].forEach(function (r) { var ra = fase(t, 5.5 + r[0] * 0.07, 0.2); ctx.globalAlpha = ra; regel(ctx, fx, fy + fh + 34 * s + r[0] * 30 * s, (ow - 68 * s) * r[1], s); });
@@ -2431,6 +2466,7 @@
       Vlak: Vlak, FVOOR: FVOOR, FBOVEN: FBOVEN, FSVOOR: FSVOOR, PAD: PAD, padPunt: padPunt,
       rolOud: rolOud, rolNieuw: rolNieuw, rakel: rakel, krabber: krabber, lijmrug: lijmrug, kruimels: kruimelsBij, fohn: fohn, luchtLijnen: luchtLijnen,
       spuitfles: spuitfles, nevel: nevel, doek: doek, schilfers: schilfers, omzetten: omzetten, kapLaag: kapLaag, kies: kies, vonk: vonk, rond: rond,
+      licht: function (W, H, s) { var L = zonLicht(0, W, H, 1, { s: s == null ? 0.3 : s }); L.lucht.stip = 0; return L; }, FOLIE: FOLIE,
       kromme: kromme, klem: klem, mix: mix, fase: fase, E: E, som: som, ver: ver, maal: maal, een: een, inw: inw, uitw: uitw, rng: rng, binnen: binnen,
       maten: { LEN: LEN, PH: PH, PD: PD, SW: SW, STI: STI, GZ0: GZ0, GZ1: GZ1, RV: RV, RR: RR, DL: DL, DO: DO, DN: DN, FLAP: FLAP, MARGE: MARGE, COT: COT, RAD: RAD },
       K: K

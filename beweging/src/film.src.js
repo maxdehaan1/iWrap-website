@@ -238,9 +238,11 @@
     Rc(card, 0, 0, 372, 118, 26, '#FFFFFF');
     Rc(card, 18, 18, 82, 82, 16, K.mintSoft);
     Rc(card, 36, 34, 46, 50, 5, K.creamOld); Rc(card, 43, 41, 32, 36, 2, K.glass1);
-    Li(card, 34, 88, 84, 78, K.rust, 5);
+    // zoals op het aanvraagformulier: een foto van het hele kozijn, met geel aangestreept wat er moet
+    // gebeuren (hier de onderdorpel en de linkerstijl). Max, 16 november 2026: "dit moet niet verwarrend zijn".
+    Li(card, 38, 81, 80, 81, '#F7CE28', 6); Li(card, 39.5, 81, 39.5, 37, '#F7CE28', 5);
     Tx(card, 'Nieuwe aanvraag', 118, 52, 27, 700, K.ink);
-    Tx(card, 'foto + maten', 118, 86, 21, 500, K.sub);
+    Tx(card, 'foto, aangestreept', 118, 86, 21, 500, K.sub);
     var chips = ['Vaste prijs', 'Afspraak gepland'].map(function (s, i) {
       var cg = G(ui), w = i ? 292 : 220;
       Rc(cg, 0, 0, w, 58, 29, K.mintDeep);

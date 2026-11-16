@@ -456,6 +456,13 @@
       achtergrond: opties.achtergrond === false ? null : (opties.variant === "mint" ? "mint" : "licht"),
       kap: [kapLaag(z, 0, LEN), kapLaag(z, 1, 0)]
     };
+    // Buiten, net als de hero en de werkwijzefilm: blauwe lucht, de zon linksboven, crème folie die
+    // verweert maar niet verkleurt. (opties.buiten = false: de oude lichte studio.)
+    if (opties.buiten !== false && opties.achtergrond !== false && opties.variant !== "mint") {
+      var LB = zonLicht(0, W, H, 1, { s: 0.3 }); LB.lucht.stip = 0;
+      sc.lk = LB.lk; sc.key = LB.key; sc.hemel = LB.hemel; sc.vloer = LB.vloer; sc.lucht = LB.lucht;
+      sc.folie = FOLIE.cremeZon; sc.schaduwZacht = 5.0; sc.belichting = 0.92;
+    }
     if (st.vetvrij > 0 && st.vetvrij < 1) {
       var vv = E.zacht(st.vetvrij); sc.sweep = [mix(-80, LEN + 160, vv), mix(-80, STI + 160, vv), Math.sin(Math.PI * st.vetvrij) * 1.1, 1];
     }

@@ -104,6 +104,12 @@
     var Z = zones(t), z = Z.z, boven = [];
     var c = Mo.camera({ tx: kromme(t, CAM, 1), ty: kromme(t, CAM, 2), zoom: kromme(t, CAM, 3), yaw: kromme(t, CAM, 4), pitch: kromme(t, CAM, 5), D: 1150, cyF: 0.56 }, W, H);
     var sc = { cam: c, z: z, schaduwMaat: opties.schaduwMaat || 2048, achtergrond: "licht", kap: [Mo.kapLaag(z, 0, LEN), Mo.kapLaag(z, 1, 0)] };
+    // buiten, zoals de hero en de werkwijzefilm: blauwe lucht, de zon linksboven, crème die verweert maar niet verkleurt
+    if (Mo.licht) {
+      var L = Mo.licht(W, H, 0.3);
+      sc.lk = L.lk; sc.key = L.key; sc.hemel = L.hemel; sc.vloer = L.vloer; sc.lucht = L.lucht;
+      sc.folie = Mo.FOLIE.cremeZon; sc.schaduwZacht = 5.0; sc.belichting = 0.92;
+    }
     if (t > T.vetvrij[0] && t < T.vetvrij[1]) {
       var vp = fase(t, T.vetvrij[0], T.vetvrij[1] - T.vetvrij[0]), vv = E.zacht(vp);
       sc.sweep = [mix(-80, LEN + 160, vv), mix(-80, STI + 160, vv), Math.sin(Math.PI * vp) * 1.1, 1];

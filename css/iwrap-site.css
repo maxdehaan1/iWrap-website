@@ -101,8 +101,8 @@ tr.vandaag-aan .vandaag-chip{opacity:1;transform:scale(1);}
    onderin, rechtsboven "Opnieuw" en eronder de drie vaste stappen. */
 .kozijn-3d{margin:0;}
 .k3d-beeld{position:relative;aspect-ratio:4/3;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
-  background:var(--paper) url("/images/kozijn-3d-start.jpg") center/cover no-repeat;}   /* het beginbeeld, tot het script tekent */
-.kozijn-3d.k3d-geen-webgl .k3d-beeld{background-image:url("/images/kozijn-3d-eind.jpg");}   /* zonder WebGL: het herstelde kozijn als foto */
+  background:var(--paper) url("/images/kozijn-3d-start-v2.jpg") center/cover no-repeat;}   /* het beginbeeld, tot het script tekent */
+.kozijn-3d.k3d-geen-webgl .k3d-beeld{background-image:url("/images/kozijn-3d-eind-v2.jpg");}   /* zonder WebGL: het herstelde kozijn als foto */
 .kozijn-3d.k3d-geen-webgl .k3d-stappen button{cursor:default;}
 .k3d-beeld canvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
 .k3d-zin{
