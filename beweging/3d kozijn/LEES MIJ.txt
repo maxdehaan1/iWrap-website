@@ -5,7 +5,7 @@ Wat hier staat
 - kozijn3d.js: de 3D-animatie "Zo herstellen we een kozijn" (28,6 seconden). Hetzelfde bestand
   staat op de site als js/kozijn-3d.js. Getekend met WebGL: echt licht, zachte schaduwen, glans.
   Zonder WebGL tekent hij niets en blijft er een foto staan (het eindbeeld, via de CSS).
-  kozijn3d.js wordt gemaakt uit de vijf delen in de map src/, met: python3 bouw.py
+  kozijn3d.js wordt gemaakt uit de zeven delen in de map src/, met: python3 bouw.py
     src/a-basis.js    maten, tijdlijn (T), teksten (STAPPEN en ZINNEN), camera (CAM), kleuren (K)
     src/b-shaders.js  hoe alles eruitziet: de oude folie (barstjes, opgekrulde randen, schilfers),
                       de nieuwe folie (zijdeglans en een heel fijne nerf), lijm, kunststof, glas,
@@ -13,6 +13,13 @@ Wat hier staat
     src/c-motor.js    de WebGL-motor: de vormen, de schaduwen, één beeld tekenen
     src/d-verhaal.js  het gereedschap en wat er wanneer gebeurt
     src/e-speler.js   het afspelen op de site
+    src/f-zon.js      "25 jaar zon", de hero op de homepage: nieuw crème kozijn, 25 jaar zon over een boog
+                      (de schaduwen draaien mee), de folie verweert maar verkleurt niet, dan ons herstel.
+                      Ook de buitenlucht (zonLicht) die de andere animaties gebruiken.
+    src/g-werkwijze.js de werkwijzefilm (homepage en /werkwijze): verweerd kozijn, telefoon met een foto van
+                      het hele kozijn en een gele stift, offerte, afspraak, het werk, klaar. js/film.js speelt hem.
+  Sinds 16 november 2026 staat alles buiten: blauwe lucht, de zon linksboven, crème folie die verweert maar
+  niet verkleurt (FOLIE.cremeZon in c-motor.js). Ook deze animatie en het close-up van de klusfilm.
 - kozijn-sting.src.js: "van beschadigd naar mooi" (6,6 seconden): dichtbij het beschadigde
   kozijn, dan één haal waarin de oude folie eraf krult en de nieuwe folie erop rolt, een glans,
   en het logo ernaast. bouw_sting.py maakt daar kozijn-sting.js van (met de vormen van het logo
