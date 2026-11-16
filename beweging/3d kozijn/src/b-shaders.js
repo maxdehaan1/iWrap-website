@@ -18,6 +18,9 @@
     "#define RV " + RV.toFixed(1), "#define RR " + RR.toFixed(2), "#define DL " + DL.toFixed(2), "#define DO " + DO.toFixed(2), "#define DN " + DN.toFixed(2),
     "#define RW 0.9",
     "uniform vec4 uZa[2]; uniform vec4 uZb[2]; uniform vec4 uZc[2]; uniform vec4 uLos;",
+    // uOver 1: de nieuwe laag komt óp de oude folie (wrappen, verf) in plaats van op het kale profiel.
+    // uOff: het kozijn als geheel verplaatst (een kozijn dat eruit gaat en een nieuw dat erin komt).
+    "uniform float uOver; uniform vec3 uOff;",
     // zachte overgang: 1 binnen [van, tot], 0 erbuiten
     "float bin(float u, vec2 iv){ return clamp(min(u - iv.x, iv.y - u) / RW + 0.5, 0.0, 1.0); }",
     // hoe dik de lagen zijn op plek u van deel m (0 dorpel, 1 stijl), vlak f (0 voorkant, 1 dagkant)
@@ -27,7 +30,7 @@
     "  float nw = bin(u, (f == 1 && m == 0) ? zc.zw : zb.xy);",
     "  float los = (m == 0 && uLos.x > 0.001) ? clamp((u - uLos.y) / RW + 0.5, 0.0, 1.0) : 0.0;",
     "  float oud = (1.0 - pel) * (DL + DO) + pel * (1.0 - krab) * DL;",
-    "  return mix(oud * (1.0 - los), DN, nw);",
+    "  return mix(oud * (1.0 - los), DN + uOver * oud * (1.0 - los), nw);",
     "}"
   ].join("\n");
 
@@ -38,7 +41,7 @@
     "void main(){",
     "  int m = int(aUV.z + 0.5), f = int(aUV.w + 0.5);",
     "  float d = f == 2 ? 0.0 : dikte(aUV.x, m, f);",
-    "  vec3 P = aPos + aNrm * d;",
+    "  vec3 P = aPos + aNrm * d + uOff;",
     "  vPos = P; vNrm = aNrm; vTan = aTan; vUV = aUV; vCol = vec3(1.0); vPrm = vec4(0.5, 0.0, 0.0, 1.0);",
     "  gl_Position = uVP * vec4(P, 1.0);",
     "}"
@@ -49,8 +52,8 @@
     "uniform mat4 uVP;",
     "out vec3 vPos; out vec3 vNrm; out vec3 vTan; out vec4 vUV; out vec3 vCol; out vec4 vPrm;",
     "void main(){",
-    "  vPos = aPos; vNrm = aNrm; vTan = aTan; vUV = vec4(aUV, 0.0, 0.0); vCol = aCol; vPrm = aPrm;",
-    "  gl_Position = uVP * vec4(aPos, 1.0);",
+    "  vPos = aPos + uOff; vNrm = aNrm; vTan = aTan; vUV = vec4(aUV, 0.0, 0.0); vCol = aCol; vPrm = aPrm;",
+    "  gl_Position = uVP * vec4(vPos, 1.0);",
     "}"
   ].join("\n");
 
@@ -75,6 +78,11 @@
     "uniform float uLeeftijd; uniform vec4 uZon; uniform vec3 uLuchtB; uniform vec3 uLuchtH;",
     // De kleur van de folie (sRGB): uFN nieuw, uFO verweerd; uNerf: hoe sterk je de houtnerf ziet. Standaard crème.
     "uniform vec3 uFN; uniform vec3 uFO; uniform float uNerf; uniform float uGlansF; uniform float uVuil;",
+    // uFJ: de kleur van de oude folie toen hij nieuw was (folie.jong; standaard dezelfde als uFN). Zo kan een goed
+    // crème kozijn een antraciet wrap krijgen, of een geschilderd kozijn verweren.
+    "uniform vec3 uFJ;",
+    // uSchil: hoeveel stukjes er loslaten als de laag verweert (folie.schil; standaard 1). Verf op folie bladdert meer.
+    "uniform float uSchil;",
     "const float PI = 3.14159265;",
     "float h12(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }",
     "vec2 h22(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * vec3(0.1031, 0.1030, 0.0973)); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.xx + p3.yz) * p3.zy); }",
@@ -115,8 +123,9 @@
     "  float cw = 0.05 + 0.08 * sm;",
     "  float b1 = (1.0 - smoothstep(cw - fw1, cw + fw1, d1)) * smoothstep(0.08, 0.4, sm);",
     "  float b2 = (1.0 - smoothstep(0.035 - fw2, 0.035 + fw2, d2)) * smoothstep(0.35, 0.9, sm);",
-    "  float mis = step(id, 0.014 * st * st * masker);",
-    "  float krul = (1.0 - mis) * step(0.014 * st * st * masker, id) * step(id, 0.014 * st * st * masker + 0.16 * sm);",
+    "  float pm = 0.014 * uSchil * st * st * masker;",
+    "  float mis = step(id, pm);",
+    "  float krul = (1.0 - mis) * step(pm, id) * step(id, pm + 0.16 * sm * min(uSchil, 2.0));",
     "  float lipH = (0.2 + 0.75 * krul) * sm * lod, lipW = 0.75 + 1.1 * krul;",
     "  float e = exp(-max(d1 - cw, 0.0) / lipW), e2 = exp(-max(d2 - 0.035, 0.0) / 0.45);",
     "  vec2 grad = (-lipH / lipW * e * step(cw, d1)) * g1 + (-0.05 * sm * lod / 0.45 * e2 * step(0.035, d2)) * g2;",
@@ -135,7 +144,7 @@
     "  return srgb(c);",
     "}",
     // ---- nieuwe folie: zijdeglans, een heel fijne nerf die je in de glans ziet
-    "vec3 nieuweFolie(vec2 s, inout vec3 nT, out float ro, float pix){",
+    "vec3 nieuweFolieK(vec2 s, inout vec3 nT, out float ro, float pix, vec3 kl){",
     "  float lod = 1.0 - smoothstep(0.1, 0.45, pix);",
     "  vec3 g = vnd(vec2(s.x * 0.55, s.y * 4.0));",
     "  vec3 g2 = vnd(vec2(s.x * 0.08, s.y * 1.25) + 3.1);",
@@ -143,17 +152,18 @@
     "  float streep = vn(vec2(s.x * 0.011, s.y * 0.8));",
     "  float golf = vn(vec2(s.x * 0.006, s.y * 0.04)) * 7.0 + vn(vec2(s.x * 0.0022, s.y * 0.02) + 4.0) * 12.0;",
     "  float nerf = smoothstep(0.25, 0.75, vn(vec2(s.x * 0.012, (s.y + golf) * 0.42))) * 0.7 + vn(vec2(s.x * 0.05, (s.y + golf) * 1.6) + 7.0) * 0.3;",
-    "  vec3 c = uFN * (1.0 + (streep - 0.5) * 0.03 + (nerf - 0.5) * uNerf);",
+    "  vec3 c = kl * (1.0 + (streep - 0.5) * 0.03 + (nerf - 0.5) * uNerf);",
     "  ro = (0.25 + (g2.x - 0.5) * 0.05 + (1.0 - lod) * 0.05) * uGlansF;",
     "  return srgb(c);",
     "}",
+    "vec3 nieuweFolie(vec2 s, inout vec3 nT, out float ro, float pix){ return nieuweFolieK(s, nT, ro, pix, uFN); }",
     // ---- de folie die verweert: van nieuw (zijdeglans) via dof en krijtig naar gebarsten en opgekruld.
     // Eerst gaat de glans eraf, dan verbleekt de kleur, pas in de tweede helft komen de barsten.
     "vec3 folieOud(vec2 s, float st, inout vec3 nT, out float ro, float pix){",
     "  if (uLeeftijd > 0.999) return oudeFolie(s, st, nT, ro, pix);",
     "  float a = uLeeftijd;",
     "  vec3 nN = nT, nO = nT; float rN, rO;",
-    "  vec3 cN = nieuweFolie(s, nN, rN, pix);",
+    "  vec3 cN = nieuweFolieK(s, nN, rN, pix, uFJ);",
     "  float sb = st * smoothstep(0.2, 1.0, a) * (0.55 + 0.45 * smoothstep(0.5, 1.0, a));",
     "  vec3 cO = oudeFolie(s, sb, nO, rO, pix);",
     // de zon bleekt de folie niet overal even snel: vlekkerig, de bovenkant van de dorpel het eerst
@@ -300,7 +310,7 @@
     "      if (nw > 0.001){ vec3 n = vec3(0.0, 0.0, 1.0); float r; vec3 a = nieuweFolie(s, n, r, pix); A = mix(A, a, nw); NT = mix(NT, n, nw); R = mix(R, r, nw); }",
     "      alb = A; nT = normalize(NT); ro = R;",
     // warmte van de föhn
-    "      if (uHeat.w > 0.001){ float hd = length(vPos - uHeat.xyz); float g = exp(-hd * hd / (2.0 * 26.0 * 26.0)) * uHeat.w; em += vec3(1.0, 0.36, 0.1) * g * 0.55; alb *= 1.0 - 0.15 * g; }",
+    "      if (uHeat.w > 0.001){ float hd = length(vPos - uOff - uHeat.xyz); float g = exp(-hd * hd / (2.0 * 26.0 * 26.0)) * uHeat.w; em += vec3(1.0, 0.36, 0.1) * g * 0.55; alb *= 1.0 - 0.15 * g; }",
     // een glans langs de schuinte van het logo (aan het eind), of mint (schoon en vetvrij)
     "      if (uSweep.z > 0.001){",
     "        float sp = (m == 0 ? uSweep.x : uSweep.y) - (u + v * " + COT.toFixed(5) + ");",
@@ -309,9 +319,10 @@
     "        else em += vec3(0.16, 0.32, 0.27) * band * wK * (1.0 - nw);",
     "      }",
     // zacht donkerder in de binnenhoeken en tegen het glas
-    "      if (m == 0 && f == 1) ao *= 1.0 - 0.35 * exp(-max(vPos.x - SW, 0.0) / 9.0);",
-    "      if (m == 1 && f == 1) ao *= 1.0 - 0.35 * exp(-max(vPos.y - PH, 0.0) / 9.0);",
-    "      if (f == 1) ao *= 1.0 - 0.32 * exp(-max(vPos.z - GZ1, 0.0) / 4.0);",
+    "      vec3 Pm = vPos - uOff;",
+    "      if (m == 0 && f == 1) ao *= 1.0 - 0.35 * exp(-max(Pm.x - SW, 0.0) / 9.0);",
+    "      if (m == 1 && f == 1) ao *= 1.0 - 0.35 * exp(-max(Pm.y - PH, 0.0) / 9.0);",
+    "      if (f == 1) ao *= 1.0 - 0.32 * exp(-max(Pm.z - GZ1, 0.0) / 4.0);",
     "    }",
     "  } else if (id < 1.5){ alb = srgb(vCol); ro = vPrm.x; me = vPrm.y; }",
     "  else if (id < 2.5){ if (achter){ alb = lijm(s, nT, ro) * 0.85; } else alb = oudeFolie(s, vCol.x, nT, ro, pix); }",
@@ -366,9 +377,9 @@
     "    vec3 V = normalize(uEye - vPos); float nv = max(abs(dot(N, V)), 1e-3);",
     "    float F = 0.04 + 0.96 * pow(1.0 - nv, 5.0);",
     "    vec3 envS = filmisch(omgeving(reflect(-V, N), 0.02));",
-    "    float sl = vPos.x + vPos.y * 0.48 + uEye.x * 0.35;",
+    "    float sl = (vPos.x - uOff.x) + (vPos.y - uOff.y) * 0.48 + uEye.x * 0.35;",
     "    float streep = smoothstep(0.0, 18.0, mod(sl, 230.0)) * (1.0 - smoothstep(18.0, 70.0, mod(sl, 230.0))) * 0.05 + smoothstep(0.0, 6.0, mod(sl + 90.0, 230.0)) * (1.0 - smoothstep(6.0, 20.0, mod(sl + 90.0, 230.0))) * 0.035;",
-    "    float tr = 0.88 - 0.05 * smoothstep(PH + 120.0, PH, vPos.y);",
+    "    float tr = 0.88 - 0.05 * smoothstep(PH + 120.0, PH, vPos.y - uOff.y);",
     "    vec3 c = envS * F + vec3(0.55, 0.64, 0.66) * (1.0 - tr) * (1.0 - F) + vec3(streep);",
     "    float a = clamp(1.0 - (1.0 - F) * tr + streep, 0.0, 1.0);",
     "    uit = vec4(c, a) * vPrm.w;",
@@ -393,6 +404,7 @@
     // uBoog: midden x, y en straal van de zonnebaan in pixels (y omlaag). uZonP: plek op de baan (0 links, 1 rechts),
     // lengte van het spoor, hoe fel, straal van de zon in pixels. uZonKl: kleur van de zon. uStip: de stippellijn van de baan.
     "uniform float uLucht; uniform vec3 uLB; uniform vec3 uLH; uniform vec3 uLG; uniform vec4 uBoog; uniform vec4 uZonP; uniform vec3 uZonKl; uniform float uStip;",
+    "uniform vec3 uOff;",
     "out vec4 uit;",
     "float hz(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }",
     "vec3 lucht(vec2 sc){",
@@ -440,9 +452,9 @@
     "  if (rd.y < -0.001){",
     "    float t = (-48.0 - uEye.y) / rd.y; vec3 g = uEye + rd * t;",
     "    float res = 1.0, tt = 3.0;",
-    "    for (int i = 0; i < 40; i++){ float h = wereld(g + uSchDir * tt); res = min(res, uSchK * h / tt); tt += clamp(h, 2.0, 30.0); if (res < 0.002 || tt > 900.0) break; }",
+    "    for (int i = 0; i < 40; i++){ float h = wereld(g + uSchDir * tt - uOff); res = min(res, uSchK * h / tt); tt += clamp(h, 2.0, 30.0); if (res < 0.002 || tt > 900.0) break; }",
     "    res = clamp(res, 0.0, 1.0); res = res * res * (3.0 - 2.0 * res);",
-    "    float ao = exp(-max(wereld(g + vec3(0.0, 30.0, 0.0)), 0.0) / 40.0);",
+    "    float ao = exp(-max(wereld(g + vec3(0.0, 30.0, 0.0) - uOff), 0.0) / 40.0);",
     "    donker = (1.0 - res) * 0.12 + ao * 0.13;",
     "  }",
     "  if (uDoorzicht > 0.5) uit = vec4(0.0, 0.0, 0.0, clamp(donker, 0.0, 1.0) * 0.8);",

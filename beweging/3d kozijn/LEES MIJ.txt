@@ -24,6 +24,20 @@ Wat hier staat
   kozijn, dan één haal waarin de oude folie eraf krult en de nieuwe folie erop rolt, een glans,
   en het logo ernaast. bouw_sting.py maakt daar kozijn-sting.js van (met de vormen van het logo
   uit ../geo.json). Gebruikt kozijn3d.js.
+- kozijn-keuze.js: de hero van kozijnwrap.nl, "Herstellen of wrappen?" (17 november 2026). Vier korte
+  verhalen met hetzelfde kozijn, die alle vier in hetzelfde beeld van de hele hoek eindigen: herstel (oude
+  folie eraf, nieuwe erop, zelfde kleur), kleur (antraciet folie over een goed crème kozijn: wrappen), verf
+  (een verfroller, dan drie jaar later bladdert het) en vervang (het tocht, het kozijn gaat eruit, er zakt
+  een nieuw in). teken(ctx, t, W, H, { optie: "herstel" | "kleur" | "verf" | "vervang" }), en de speler
+  voor [data-kozijn-keuze] zit er onderaan in. Gebruikt kozijn3d.js. Op kozijnwrap.nl staan kopieën van
+  allebei in js/ (kozijn-3d.js en kozijn-keuze.js): na een wijziging opnieuw kopiëren.
+  Daarvoor kan de motor sinds deze versie drie dingen (allemaal uit, tenzij je ze zet; de andere
+  animaties zijn pixel voor pixel gelijk gebleven):
+    folie.jong   de kleur van de oude folie toen hij nieuw was (anders folie.nieuw). Een goed crème kozijn
+                 onder een antraciet wrap, of verf die zelf verweert.
+    folie.schil  hoeveel stukjes er loslaten als de laag verweert (standaard 1; verf op folie: 6).
+    sc.over      de nieuwe laag komt óp de oude folie (wrappen, verf) in plaats van op het kale profiel.
+    sc.verschuif [x, y, z]: het hele kozijn verplaatst, met zijn schaduw (vervangen).
 - kozijn-klus.js: het close-up van het werk in de klusfilm (13 seconden, op het tempo van de film).
   De klusfilm (../src/film2.src.js) laat dit zien als WebGL werkt; anders een plat close-up.
 - kozijn-3d.css: de opmaak op de site (staat ook in css/iwrap-site.css, onderdeel 12).
@@ -42,6 +56,10 @@ Iets veranderen
 Opnieuw maken (laat dit gerust door Claude doen)
 - Proefbeelden:  python3 proef.py proef.png "ts=0,5,10,15,20,25&cols=3&cel=500"
 - Korte versie:  python3 proef.py proef.png "src=kozijn3d.js,kozijn-sting.js&obj=iwrapKozijnSting&ts=0,2,4,6.6&cols=4&cel=400"
+- De hero van kozijnwrap.nl: proefbeelden van één keuze met
+    python3 keuze_beelden.py --proef kleur 0,1.5,3,6.4
+  en het startbeeld en de eindbeelden voor de site (rechtstreeks in kozijnwrap-project/images) met
+    python3 keuze_beelden.py
 - Klusfilm-close-up: python3 proef.py proef.png "src=kozijn3d.js,kozijn-klus.js&obj=iwrapKozijnKlus&ts=1,3,5,7,9,11&cols=3&cel=500"
   (de klusfilm zelf maak je in de map erboven met tools/render.py, zie ../LEES MIJ.txt)
 - De video's:    python3 render_video.py videos.json   (komen in de map video/)

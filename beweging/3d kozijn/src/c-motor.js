@@ -356,7 +356,10 @@
 
   /* Eén beeld renderen ------------------------------------------------------------------
      sc = { cam: (van maakCamera), z: (zonesVoor), heat: [x,y,z,s], sweep: [posD, posS, sterkte, soort],
-            kap: [[lijm, oud, nieuw], [..]], dingen: function(B, BF) {...}, achtergrond: "licht"|"mint"|null } */
+            kap: [[lijm, oud, nieuw], [..]], dingen: function(B, BF) {...}, achtergrond: "licht"|"mint"|null,
+            over: true (de nieuwe laag óp de oude folie), verschuif: [x, y, z] (het hele kozijn verplaatst) }
+     sc.folie.jong: de kleur van de oude folie toen hij nieuw was (standaard folie.nieuw); sc.folie.schil: hoeveel
+     stukjes er loslaten als hij verweert (standaard 1). */
   var LK = een([-0.42, 0.8, 0.5]);
   // Folie in twee kleuren (sRGB 0..1). Crème is het kozijn van "zo herstellen we"; antraciet (de meest voorkomende
   // foliekleur, met houtnerf) is het kozijn van "25 jaar zon": daarop zie je het verschil tussen nieuw en verweerd het best.
@@ -400,6 +403,7 @@
     function zetAlg(P, schaduwPas) {
       var u = P.u;
       gl.uniform4fv(u.uZa, za); gl.uniform4fv(u.uZb, zb); gl.uniform4fv(u.uZc, zc); gl.uniform4fv(u.uLos, los);
+      gl.uniform1f(u.uOver, sc.over ? 1 : 0); gl.uniform3fv(u.uOff, sc.verschuif || [0, 0, 0]);
       if (schaduwPas) return;
       gl.uniformMatrix4fv(u.uLmat, false, Lm);
       gl.uniform3fv(u.uEye, c.C); gl.uniform3fv(u.uLk, lk);
@@ -407,7 +411,7 @@
       gl.uniform4f(u.uZon, lk[0], lk[1], lk[2], lu ? (lu.spiegel == null ? 0.6 : lu.spiegel) : 0);
       gl.uniform3fv(u.uLuchtB, lu ? lu.boven : [0, 0, 0]); gl.uniform3fv(u.uLuchtH, lu ? lu.horizon : [0, 0, 0]);
       var fo = sc.folie || FOLIE.creme;
-      gl.uniform3fv(u.uFN, fo.nieuw); gl.uniform3fv(u.uFO, fo.oud); gl.uniform1f(u.uNerf, fo.nerf); gl.uniform1f(u.uGlansF, fo.glans || 1); gl.uniform1f(u.uVuil, fo.vuil == null ? 1 : fo.vuil);
+      gl.uniform3fv(u.uFN, fo.nieuw); gl.uniform3fv(u.uFO, fo.oud); gl.uniform3fv(u.uFJ, fo.jong || fo.nieuw); gl.uniform1f(u.uSchil, fo.schil || 1); gl.uniform1f(u.uNerf, fo.nerf); gl.uniform1f(u.uGlansF, fo.glans || 1); gl.uniform1f(u.uVuil, fo.vuil == null ? 1 : fo.vuil);
       gl.uniform3fv(u.uKey, sc.key || [4.1, 3.85, 3.5]); gl.uniform3fv(u.uHemel, sc.hemel || [0.4, 0.44, 0.5]); gl.uniform3fv(u.uVloer, sc.vloer || [0.3, 0.29, 0.27]);
       gl.uniform3fv(u.uAchter, (ACHTERKLEUR[sc.achtergrond] || ACHTERKLEUR.licht)[1]);
       gl.uniform1f(u.uBel, sc.belichting || 0.94);
@@ -444,7 +448,7 @@
     gl.uniform3fv(G.pA.u.uC0, ak[0]); gl.uniform3fv(G.pA.u.uC1, ak[1]); gl.uniform3fv(G.pA.u.uC2, ak[2]);
     gl.uniform1f(G.pA.u.uDoorzicht, sc.achtergrond === null ? 1 : 0);
     gl.uniform3fv(G.pA.u.uSchDir, sc.lk ? een([lk[0], Math.max(lk[1], 0.12), lk[2]]) : een([-0.2, 1, 0.28])); gl.uniform1f(G.pA.u.uSchK, sc.schaduwZacht || 3.0);
-    gl.uniform1f(G.pA.u.uLucht, lu ? 1 : 0);
+    gl.uniform1f(G.pA.u.uLucht, lu ? 1 : 0); gl.uniform3fv(G.pA.u.uOff, sc.verschuif || [0, 0, 0]);
     if (lu) {
       gl.uniform3fv(G.pA.u.uLB, lu.achterBoven || lu.boven); gl.uniform3fv(G.pA.u.uLH, lu.achterHorizon || lu.horizon); gl.uniform3fv(G.pA.u.uLG, lu.grond);
       gl.uniform4fv(G.pA.u.uBoog, lu.boog); gl.uniform4fv(G.pA.u.uZonP, lu.zon); gl.uniform3fv(G.pA.u.uZonKl, lu.zonKleur); gl.uniform1f(G.pA.u.uStip, lu.stip || 0);
