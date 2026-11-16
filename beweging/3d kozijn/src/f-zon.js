@@ -34,7 +34,7 @@
   ];
   var ZZINNEN = [
     [0.15, 2.85, "Een nieuw kozijn, met nieuwe folie."],
-    [3.0, 7.7, "Elk jaar zon: de folie verliest zijn glans en verbleekt."],
+    [3.0, 7.7, "Elk jaar zon: de folie wordt dof, droog en broos."],
     [7.8, ZR + 0.15, "Na 25 jaar is de folie versleten. Het kozijn zelf is nog goed."],
     [ZR + 0.3, ZR + 2.5, "Toplaag eraf, met warmte."],
     [ZR + 2.6, ZR + 5.7, "Lijmresten eraf, alles vetvrij."],
@@ -94,8 +94,8 @@
   function mix3(a, b, p) { return [mix(a[0], b[0], p), mix(a[1], b[1], p), mix(a[2], b[2], p)]; }
   function hex3(h) { var c = rgb(h); return [c[0] / 255, c[1] / 255, c[2] / 255]; }
   var LUCHT = {
-    hoogB: hex3("#a6c6dc"), hoogH: hex3("#eaf1f0"), hoogG: hex3("#f3f1eb"),
-    laagB: hex3("#cbd6e4"), laagH: hex3("#f6d8bb"), laagG: hex3("#f1e6da"),
+    hoogB: hex3("#86aecd"), hoogH: hex3("#d6e5ee"), hoogG: hex3("#eceae4"),
+    laagB: hex3("#a9bdd6"), laagH: hex3("#f3cfab"), laagG: hex3("#ece0d2"),
     nachtB: hex3("#94a3b8"), nachtH: hex3("#c9c8d0"), nachtG: hex3("#dcdbdc"),
     zonHoog: hex3("#fff1cf"), zonLaag: hex3("#ffbf7e")
   };
@@ -105,13 +105,14 @@
     var z = zonStand(t), dag = z.op ? 1 : 0;
     // onder de horizon: schemer. Snel: het licht schommelt nauwelijks nog (geen geknipper), de zon trekt een spoor.
     var demp = klem((z.v - 1.1) / 3.2, 0, 1) * 0.85;
-    var nacht = z.op ? 0 : Math.sin(Math.PI * klem(z.s - 1, 0, 1)) * (1 - demp);
+    // alleen het eerste jaar een echte schemer; daarna zakt het licht nauwelijks nog (dan lijkt de folie niet van kleur te veranderen)
+    var nacht = z.op ? 0 : Math.sin(Math.PI * klem(z.s - 1, 0, 1)) * (1 - demp) * (z.Y < 1.3 ? 0.42 : 0.12);
     var h = mix(z.hoogte, 0.62, demp), sEff = mix(z.s, 0.42, demp * 0.75);
     if (!z.op) { h = mix(0.05, 0.62, demp); sEff = mix(z.s > 1.5 ? 0 : 1, 0.42, demp); }
     var lk = zonRichting(sEff, h);
-    var laag = 1 - klem(h * 1.6, 0, 1);
+    var laag = (1 - klem(h * 1.6, 0, 1)) * (z.Y < 1.3 ? 1 : 0.45);
     var key = mix3([5.3, 5.0, 4.6], [4.0, 2.75, 1.8], laag);
-    key = mix3(key, [0.35, 0.38, 0.48], nacht);
+    key = mix3(key, [1.5, 1.55, 1.8], nacht);
     var boven = mix3(mix3(LUCHT.hoogB, LUCHT.laagB, laag), LUCHT.nachtB, nacht);
     var horizon = mix3(mix3(LUCHT.hoogH, LUCHT.laagH, laag), LUCHT.nachtH, nacht);
     var grond = mix3(mix3(LUCHT.hoogG, LUCHT.laagG, laag), LUCHT.nachtG, nacht);
@@ -122,8 +123,8 @@
     fel = mix(fel, 1, demp);
     return {
       lk: lk, key: key,
-      hemel: mix3([0.34, 0.39, 0.47], [0.4, 0.36, 0.34], laag * 0.6).map(function (x) { return x * (1 - 0.45 * nacht); }),
-      vloer: mix3([0.25, 0.24, 0.22], [0.28, 0.23, 0.2], laag * 0.6).map(function (x) { return x * (1 - 0.4 * nacht); }),
+      hemel: mix3([0.34, 0.39, 0.47], [0.4, 0.36, 0.34], laag * 0.6).map(function (x) { return x * (1 - 0.2 * nacht); }),
+      vloer: mix3([0.25, 0.24, 0.22], [0.28, 0.23, 0.2], laag * 0.6).map(function (x) { return x * (1 - 0.2 * nacht); }),
       lucht: {
         boven: lin3(boven), horizon: lin3(horizon), spiegel: 0.7,
         achterBoven: boven, achterHorizon: horizon, grond: grond,
@@ -191,7 +192,7 @@
     var sc = {
       cam: c, z: z, schaduwMaat: opties.schaduwMaat || 2048, achtergrond: "licht",
       lk: L.lk, key: L.key, hemel: L.hemel, vloer: L.vloer, lucht: L.lucht, leeftijd: a, schaduwZacht: 5.0,
-      folie: FOLIE[opties.kleur || "antraciet"],
+      folie: FOLIE[opties.kleur || "cremeZon"],
       belichting: 0.92,
       kap: [kapLaag(z, 0, LEN), kapLaag(z, 1, 0)]
     };

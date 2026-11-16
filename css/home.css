@@ -25,6 +25,7 @@
 
 .hero-fig{margin:0;}
 /* Bij de voorbeelden: de echte voor/na-schuif groot links, vier klusfoto's twee bij twee rechts. */
+.vb-sectie{padding-top:clamp(8px,2vw,28px);}
 .vb-raster{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(16px,2.4vw,28px);align-items:start;}
 .vergelijk-los{margin:0;}
 .vergelijk-los figcaption{margin-top:12px;font-size:.85rem;color:var(--sub);}

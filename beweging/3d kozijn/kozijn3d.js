@@ -364,7 +364,7 @@
     // uZon.xyz = richting van de zon, uZon.w = hoeveel de lucht meedoet in de weerspiegeling; uLuchtB/H = lucht boven en aan de horizon.
     "uniform float uLeeftijd; uniform vec4 uZon; uniform vec3 uLuchtB; uniform vec3 uLuchtH;",
     // De kleur van de folie (sRGB): uFN nieuw, uFO verweerd; uNerf: hoe sterk je de houtnerf ziet. Standaard crème.
-    "uniform vec3 uFN; uniform vec3 uFO; uniform float uNerf; uniform float uGlansF;",
+    "uniform vec3 uFN; uniform vec3 uFO; uniform float uNerf; uniform float uGlansF; uniform float uVuil;",
     "const float PI = 3.14159265;",
     "float h12(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }",
     "vec2 h22(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * vec3(0.1031, 0.1030, 0.0973)); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.xx + p3.yz) * p3.zy); }",
@@ -415,8 +415,8 @@
     "  float bl = fbm(s * 0.03 + 4.0), str = fbm(vec2(s.x * 0.16, s.y * 0.018) + 9.0);",
     "  vec3 c = mix(uFO * vec3(0.945, 0.938, 0.924), uFO, smoothstep(0.3, 0.72, bl));",
     "  c *= 0.975 + 0.05 * fract(id * 7.13);",
-    "  c = mix(c, uFO * vec3(0.884, 0.865, 0.81), smoothstep(0.55, 0.85, fbm(s * 0.012 + 2.0)) * 0.3);",
-    "  c = mix(c, uFO * vec3(0.73, 0.725, 0.718), smoothstep(0.5, 0.8, str) * 0.18 * st);",
+    "  c = mix(c, uFO * vec3(0.884, 0.865, 0.81), smoothstep(0.55, 0.85, fbm(s * 0.012 + 2.0)) * 0.3 * uVuil);",
+    "  c = mix(c, uFO * vec3(0.73, 0.725, 0.718), smoothstep(0.5, 0.8, str) * 0.18 * st * uVuil);",
     "  c = mix(c, mix(uFO, vec3(1.0), 0.52), e * (0.18 + 0.4 * krul) * sm * (1.0 - mis));",
     "  if (mis > 0.5) c = mix(vec3(0.72, 0.64, 0.47), vec3(0.6, 0.57, 0.5), fbm(s * 0.4));",
     "  c = mix(c, uFO * vec3(0.486, 0.472, 0.447), b1 * 0.62);",
@@ -444,7 +444,7 @@
     "  float a = uLeeftijd;",
     "  vec3 nN = nT, nO = nT; float rN, rO;",
     "  vec3 cN = nieuweFolie(s, nN, rN, pix);",
-    "  float sb = st * smoothstep(0.32, 1.0, a) * (0.6 + 0.4 * smoothstep(0.55, 1.0, a));",
+    "  float sb = st * smoothstep(0.2, 1.0, a) * (0.55 + 0.45 * smoothstep(0.5, 1.0, a));",
     "  vec3 cO = oudeFolie(s, sb, nO, rO, pix);",
     // de zon bleekt de folie niet overal even snel: vlekkerig, de bovenkant van de dorpel het eerst
     "  float vlek = smoothstep(0.25, 0.75, fbm(s * 0.02 + 5.0));",
@@ -1103,7 +1103,10 @@
   // foliekleur, met houtnerf) is het kozijn van "25 jaar zon": daarop zie je het verschil tussen nieuw en verweerd het best.
   var FOLIE = {
     creme: { nieuw: [0.928, 0.9, 0.83], oud: [0.905, 0.89, 0.85], nerf: 0.0 },
-    antraciet: { nieuw: [0.255, 0.272, 0.286], oud: [0.62, 0.63, 0.635], nerf: 0.065, glans: 0.72 }
+    antraciet: { nieuw: [0.255, 0.272, 0.286], oud: [0.62, 0.63, 0.635], nerf: 0.065, glans: 0.72 },
+    // "25 jaar zon": crème die verweert maar niet verkleurt (Max, 16 november 2026). Oud en nieuw hebben dezelfde
+    // kleur; de zon neemt de glans weg en geeft barsten, krijtige randen en schilfers, nauwelijks vuil.
+    cremeZon: { nieuw: [0.928, 0.9, 0.83], oud: [0.928, 0.9, 0.83], nerf: 0.04, glans: 0.66, vuil: 0.25 }
   };
   var ACHTERKLEUR = {
     licht: [lin("#ffffff"), lin(K.papier), lin("#edebe6")],
@@ -1145,7 +1148,7 @@
       gl.uniform4f(u.uZon, lk[0], lk[1], lk[2], lu ? (lu.spiegel == null ? 0.6 : lu.spiegel) : 0);
       gl.uniform3fv(u.uLuchtB, lu ? lu.boven : [0, 0, 0]); gl.uniform3fv(u.uLuchtH, lu ? lu.horizon : [0, 0, 0]);
       var fo = sc.folie || FOLIE.creme;
-      gl.uniform3fv(u.uFN, fo.nieuw); gl.uniform3fv(u.uFO, fo.oud); gl.uniform1f(u.uNerf, fo.nerf); gl.uniform1f(u.uGlansF, fo.glans || 1);
+      gl.uniform3fv(u.uFN, fo.nieuw); gl.uniform3fv(u.uFO, fo.oud); gl.uniform1f(u.uNerf, fo.nerf); gl.uniform1f(u.uGlansF, fo.glans || 1); gl.uniform1f(u.uVuil, fo.vuil == null ? 1 : fo.vuil);
       gl.uniform3fv(u.uKey, sc.key || [4.1, 3.85, 3.5]); gl.uniform3fv(u.uHemel, sc.hemel || [0.4, 0.44, 0.5]); gl.uniform3fv(u.uVloer, sc.vloer || [0.3, 0.29, 0.27]);
       gl.uniform3fv(u.uAchter, (ACHTERKLEUR[sc.achtergrond] || ACHTERKLEUR.licht)[1]);
       gl.uniform1f(u.uBel, sc.belichting || 0.94);
@@ -1738,7 +1741,7 @@
   ];
   var ZZINNEN = [
     [0.15, 2.85, "Een nieuw kozijn, met nieuwe folie."],
-    [3.0, 7.7, "Elk jaar zon: de folie verliest zijn glans en verbleekt."],
+    [3.0, 7.7, "Elk jaar zon: de folie wordt dof, droog en broos."],
     [7.8, ZR + 0.15, "Na 25 jaar is de folie versleten. Het kozijn zelf is nog goed."],
     [ZR + 0.3, ZR + 2.5, "Toplaag eraf, met warmte."],
     [ZR + 2.6, ZR + 5.7, "Lijmresten eraf, alles vetvrij."],
@@ -1798,8 +1801,8 @@
   function mix3(a, b, p) { return [mix(a[0], b[0], p), mix(a[1], b[1], p), mix(a[2], b[2], p)]; }
   function hex3(h) { var c = rgb(h); return [c[0] / 255, c[1] / 255, c[2] / 255]; }
   var LUCHT = {
-    hoogB: hex3("#a6c6dc"), hoogH: hex3("#eaf1f0"), hoogG: hex3("#f3f1eb"),
-    laagB: hex3("#cbd6e4"), laagH: hex3("#f6d8bb"), laagG: hex3("#f1e6da"),
+    hoogB: hex3("#86aecd"), hoogH: hex3("#d6e5ee"), hoogG: hex3("#eceae4"),
+    laagB: hex3("#a9bdd6"), laagH: hex3("#f3cfab"), laagG: hex3("#ece0d2"),
     nachtB: hex3("#94a3b8"), nachtH: hex3("#c9c8d0"), nachtG: hex3("#dcdbdc"),
     zonHoog: hex3("#fff1cf"), zonLaag: hex3("#ffbf7e")
   };
@@ -1809,13 +1812,14 @@
     var z = zonStand(t), dag = z.op ? 1 : 0;
     // onder de horizon: schemer. Snel: het licht schommelt nauwelijks nog (geen geknipper), de zon trekt een spoor.
     var demp = klem((z.v - 1.1) / 3.2, 0, 1) * 0.85;
-    var nacht = z.op ? 0 : Math.sin(Math.PI * klem(z.s - 1, 0, 1)) * (1 - demp);
+    // alleen het eerste jaar een echte schemer; daarna zakt het licht nauwelijks nog (dan lijkt de folie niet van kleur te veranderen)
+    var nacht = z.op ? 0 : Math.sin(Math.PI * klem(z.s - 1, 0, 1)) * (1 - demp) * (z.Y < 1.3 ? 0.42 : 0.12);
     var h = mix(z.hoogte, 0.62, demp), sEff = mix(z.s, 0.42, demp * 0.75);
     if (!z.op) { h = mix(0.05, 0.62, demp); sEff = mix(z.s > 1.5 ? 0 : 1, 0.42, demp); }
     var lk = zonRichting(sEff, h);
-    var laag = 1 - klem(h * 1.6, 0, 1);
+    var laag = (1 - klem(h * 1.6, 0, 1)) * (z.Y < 1.3 ? 1 : 0.45);
     var key = mix3([5.3, 5.0, 4.6], [4.0, 2.75, 1.8], laag);
-    key = mix3(key, [0.35, 0.38, 0.48], nacht);
+    key = mix3(key, [1.5, 1.55, 1.8], nacht);
     var boven = mix3(mix3(LUCHT.hoogB, LUCHT.laagB, laag), LUCHT.nachtB, nacht);
     var horizon = mix3(mix3(LUCHT.hoogH, LUCHT.laagH, laag), LUCHT.nachtH, nacht);
     var grond = mix3(mix3(LUCHT.hoogG, LUCHT.laagG, laag), LUCHT.nachtG, nacht);
@@ -1826,8 +1830,8 @@
     fel = mix(fel, 1, demp);
     return {
       lk: lk, key: key,
-      hemel: mix3([0.34, 0.39, 0.47], [0.4, 0.36, 0.34], laag * 0.6).map(function (x) { return x * (1 - 0.45 * nacht); }),
-      vloer: mix3([0.25, 0.24, 0.22], [0.28, 0.23, 0.2], laag * 0.6).map(function (x) { return x * (1 - 0.4 * nacht); }),
+      hemel: mix3([0.34, 0.39, 0.47], [0.4, 0.36, 0.34], laag * 0.6).map(function (x) { return x * (1 - 0.2 * nacht); }),
+      vloer: mix3([0.25, 0.24, 0.22], [0.28, 0.23, 0.2], laag * 0.6).map(function (x) { return x * (1 - 0.2 * nacht); }),
       lucht: {
         boven: lin3(boven), horizon: lin3(horizon), spiegel: 0.7,
         achterBoven: boven, achterHorizon: horizon, grond: grond,
@@ -1895,7 +1899,7 @@
     var sc = {
       cam: c, z: z, schaduwMaat: opties.schaduwMaat || 2048, achtergrond: "licht",
       lk: L.lk, key: L.key, hemel: L.hemel, vloer: L.vloer, lucht: L.lucht, leeftijd: a, schaduwZacht: 5.0,
-      folie: FOLIE[opties.kleur || "antraciet"],
+      folie: FOLIE[opties.kleur || "cremeZon"],
       belichting: 0.92,
       kap: [kapLaag(z, 0, LEN), kapLaag(z, 1, 0)]
     };

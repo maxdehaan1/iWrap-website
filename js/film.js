@@ -50,10 +50,11 @@
   // De voordeur van het huis: crème kozijn (RAL 9001), dennengroene deur (RAL 6009).
   var CREME = { nieuw: "#f2ecda", licht: "#fffcf3", donker: "#d6cbb0", oud: "#d5cbb1", vlek: "#b8ab8c", barst: "#8f8366" };
   var GROEN = { nieuw: "#2e4434", licht: "#4f6855", oud: "#65715f", barst: "#b4bcae" };
-  // Het raam zelf is antraciet met houtnerf, de meest voorkomende foliekleur (net als de hero op de homepage):
-  // nieuw diep en egaal, verweerd krijtgrijs en vlekkerig. Zo zie je in één oogopslag wat er verandert.
-  var KOZIJN = { nieuw: "#3e4347", licht: "#5f666c", donker: "#2a2e32", oud: "#8d9297", vlek: "#b4b8bb", barst: "#5c6166" };
-  var RAAMKL = { nieuw: "#3a3f43", licht: "#5a6066", oud: "#878c91", barst: "#c3c7ca" };
+  // Het raam: crème (RAL 9001) met een dennengroen draairaam (RAL 6009), net als de hero op de homepage.
+  // Verweerd is dezelfde kleur, alleen dof, krijtig, gebarsten en loslatend: de folie verweert, hij
+  // verkleurt niet (Max, 16 november 2026). Nieuw is weer strak en glad.
+  var KOZIJN = { nieuw: "#f2ecda", licht: "#fffcf3", donker: "#d6cbb0", oud: "#ebe3cc", vlek: "#c9bfa3", barst: "#8a7e62" };
+  var RAAMKL = { nieuw: "#2e4434", licht: "#4f6855", oud: "#3a4d3f", barst: "#a9b3a2" };
 
   var KLEUR = {
     kaal: "#e2e4e3",       // het kunststof profiel onder de folie
@@ -115,7 +116,7 @@
   // Verweerde crème: vlekkerig en vergeeld.
   var vlek = maak("pattern", { id: "film-vlek", width: 26, height: 20, patternUnits: "userSpaceOnUse" }, defs);
   [[6, 5, 5, 3], [18, 13, 6, 3.5], [11, 17, 3, 2], [22, 3, 2.5, 1.6]].forEach(function (e) {
-    maak("ellipse", { cx: e[0], cy: e[1], rx: e[2], ry: e[3], fill: KOZIJN.vlek, opacity: 0.2 }, vlek);
+    maak("ellipse", { cx: e[0], cy: e[1], rx: e[2], ry: e[3], fill: KOZIJN.vlek, opacity: 0.32 }, vlek);
   });
   maak("circle", { cx: 3, cy: 12, r: 0.5, fill: KOZIJN.barst, opacity: 0.6 }, vlek);
   maak("circle", { cx: 16, cy: 6, r: 0.4, fill: KOZIJN.barst, opacity: 0.6 }, vlek);
@@ -216,7 +217,7 @@
     if (i === 0) {
       // Een hoekje folie dat loskomt, met de gele lijmlaag eronder.
       maak("path", { d: "M342 380v28h-20z", fill: KLEUR.lijm }, g);
-      maak("path", { d: "M342 380q12 5 17 19l-17 9z", fill: "#a7acb0", stroke: "#6f7479", "stroke-width": 0.6, "stroke-linejoin": "round" }, g);
+      maak("path", { d: "M342 380q12 5 17 19l-17 9z", fill: "#efe7d2", stroke: "#a3946f", "stroke-width": 0.6, "stroke-linejoin": "round" }, g);
     }
   });
 
@@ -245,7 +246,7 @@
   barsten("M352 415l5 4 6-1 5 5 7 0 M372 431l6-4 5 2 8-5 M404 413l4 5 7 1 3 6 M468 420l7 3 5-3 6 4 9-1 " +
     "M512 433l5-5 6 1 4-6 M540 414l6 6 8-2 M430 426l6 2 4 5", KOZIJN.barst, oudDorpel);
   // De randen waar de oude folie loskomt en de nieuwe ophoudt.
-  var randOud = maak("path", { stroke: "#6f7479", "stroke-width": 1.3 }, wereld);
+  var randOud = maak("path", { stroke: "#a3946f", "stroke-width": 1.3 }, wereld);
   var randNieuw = maak("path", { stroke: KOZIJN.donker, "stroke-width": 1.3 }, wereld);
 
   // Glansstreepjes die over elk deel trekken als het zijn nieuwe folie krijgt.
@@ -360,7 +361,7 @@
     var arc = maak("path", { fill: "none", stroke: spiraal, "stroke-width": 2, "stroke-linecap": "round" }, draai);
     return { el: g, schijf: schijf, draai: draai, arc: arc };
   }
-  var krul = rol("#9ea3a8", "#6f7479", "#6f7479");
+  var krul = rol("#e3d9bf", "#a3946f", "#a3946f");
   // De doek: komt achter de krabber aan en maakt de ondergrond schoon en vetvrij.
   var doek = maak("g", { opacity: 0 }, svg);
   maak("path", { d: "M-29 -25Q0 -35 27 -24Q36 0 25 26Q-2 35 -28 24Q-37 0 -29 -25Z", fill: "#fff", stroke: "#b5bbb9", "stroke-width": 1.5 }, doek);
@@ -379,7 +380,7 @@
   maak("rect", { x: 92, y: 66, width: 58, height: 42, rx: 18, fill: KLEUR.handschoen, transform: "rotate(37 121 87)" }, krabber);
   maak("path", { d: "M104 76h20 M102 90h20", stroke: "#4b535a", "stroke-width": 3, "stroke-linecap": "round", transform: "rotate(37 121 87)" }, krabber);
   maak("rect", { x: 138, y: 76, width: 22, height: 40, rx: 8, fill: KLEUR.mint, transform: "rotate(37 121 87)" }, krabber);   // de manchet
-  var nieuweRol = rol(KOZIJN.nieuw, "#2a2e32", "#5a6066");
+  var nieuweRol = rol(KOZIJN.nieuw, "#c9bd9f", "#cfc3a6");
   maak("circle", { r: 7, fill: "#b9a27a" }, nieuweRol.el);  // kartonnen kern
 
   // De rakel: een blauw kaartje met een brede zwarte viltrand. De vilten kant zit op x = 0

@@ -537,9 +537,9 @@ Een getekende film van vijftien seconden: verweerd kozijn,
 foto sturen en vaste prijs, het mint busje met het witte logo voor de deur, oude folie
 eraf, lijmresten eraf met de krabber en een doek die alles vetvrij maakt, nieuwe folie
 erop met de rakel, en een eindkaart met de drie beloftes en het reviewcijfer. Het raam is
-antraciet (net als de hero), tegen een rode gevel: vóór krijtgrijs verbleekt, ná weer diep
-antraciet, dezelfde kleur als hij ooit was. De kleuren staan in `KOZIJN` en `RAAMKL` bovenin
-`js/film.js`. Het gereedschap zweeft zonder arm, met een handschoen en een mint manchet. Hij speelt vanzelf af zodra hij in beeld komt, pauzeert als
+crème met een dennengroen draairaam, tegen een rode gevel. Vóór en ná dezelfde kleur: de
+folie verweert (dof, krijtig, gebarsten, loslatend) maar verkleurt niet (Max, 16 november
+2026). De kleuren staan in `KOZIJN` en `RAAMKL` bovenin `js/film.js`. Het gereedschap zweeft zonder arm, met een handschoen en een mint manchet. Hij speelt vanzelf af zodra hij in beeld komt, pauzeert als
 je wegscrolt en blijft aan het eind op de eindkaart staan. Wie op zijn telefoon "minder
 beweging" aan heeft staan, ziet meteen het eindbeeld met een afspeelknop.
 
@@ -573,34 +573,37 @@ krijg je losse PNG's in `video/beelden/` om een moment te bekijken.
 
 ## 25 jaar zon: de hero op de homepage
 
-Naast de kop staat een animatie van een **nieuw antraciet kozijn** (houtnerffolie, zijdeglans)
+Naast de kop staat een animatie van een **nieuw crème kozijn** (houtnerffolie, zijdeglans)
 waar **25 jaar zon** overheen gaat. De zon loopt over een boog boven het kozijn en het licht in
 3D komt van diezelfde plek: de schaduwen draaien mee als bij een zonnewijzer. Het eerste jaar
 gaat rustig (dag en schemer), daarna steeds sneller; dan trekt de zon een spoor en schommelt het
 licht nauwelijks nog, zodat er niets knippert. De teller linksboven telt de boogjes (jaren).
-De folie verliest eerst zijn glans, verbleekt vlekkerig, en pas in de laatste jaren komen de
-barsten en de randen die loslaten. Bij 25 jaar zoomt hij in ("het kozijn zelf is nog goed"),
+De folie verliest eerst zijn glans en wordt dof en krijtig, en in de laatste jaren komen de
+barsten en de randen die loslaten. **Hij verkleurt niet**: oud en nieuw hebben dezelfde kleur,
+de folie verweert alleen (Max, 16 november 2026). Bij 25 jaar zoomt hij in ("het kozijn zelf is nog goed"),
 en dan herstellen we hem met de drie vaste stappen: toplaag eraf met warmte, lijmresten eraf
 en vetvrij, nieuwe folie om de rand. Tot slot schijnt de zon weer op een kozijn als nieuw.
 18,6 seconden; speelt één keer en blijft op het herstelde kozijn staan. Idee van Max
 (16 november 2026).
 
-- Waarom antraciet: de meest voorkomende foliekleur, en het verschil tussen nieuw en verweerd
-  zie je erop in één oogopslag. Het kozijn verderop in "Waarom herstellen werkt" blijft crème.
+- Crème op een blauwe lucht, zodat het kozijn afsteekt. De folie staat in `FOLIE.cremeZon` in
+  `c-motor.js` (`oud` = `nieuw`: geen kleurverschil; `vuil` laag). Antraciet kan ook
+  (`FOLIE.antraciet`), maar daar wordt de oude folie grijs, en dat is verkleuren.
 - Hetzelfde script en dezelfde motor als dat kozijn (`js/kozijn-3d.js`), met een eigen tijdlijn:
   `beweging/3d kozijn/src/f-zon.js` (tijden, teksten, camera, zon en lucht). De folie die
   verweert staat in `b-shaders.js` (`folieOud`), de lucht met de zonnebaan in `FS_ACHTER`.
   Na een wijziging: `python3 bouw.py` in die map en `kozijn3d.js` kopiëren naar `js/kozijn-3d.js`.
 - De poster (het beginbeeld, tot het script tekent; ook voor wie geen WebGL heeft) is
-  `images/kozijn-zon-start-*.webp`, gemaakt met
+  `images/kozijn-zon-creme-*.webp`, gemaakt met
   `python3 poster.py kozijn3d.js iwrapKozijnZon 1600 1600 0 uit.png` en daarna verkleind naar
   640, 1000 en 1600. Hij is maar 7 tot 26 kB en staat als preload bovenaan de homepage.
 - Teller, ondertitel en de drie knoppen (Nieuw, 25 jaar zon, Hersteld) zijn HTML; de opmaak staat
   in `css/iwrap-site.css` onderdeel 13. Een klik op een knop speelt vanaf dat deel.
   Met "minder beweging" aan staat hij meteen op het herstelde kozijn en tonen de knoppen een
   stilstaand beeld.
-- De echte voor/na-schuif stond eerst in de hero; die staat nu bij "Zo ziet het eruit als we
-  klaar zijn", groot naast vier klusfoto's. Het bijschrift onder de animatie verwijst daarheen.
+- De echte voor/na-schuif stond eerst in de hero; die staat nu **direct onder de hero**, in
+  "Zo ziet het eruit als we klaar zijn", groot naast vier klusfoto's: de belangrijkste
+  verkoopfoto, een echte klus, meteen na de animatie (Max, 16 november 2026).
 
 ## Het kozijn in 3D, de doorsnede en de vergelijking
 

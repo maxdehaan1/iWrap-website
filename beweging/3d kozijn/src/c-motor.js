@@ -362,7 +362,10 @@
   // foliekleur, met houtnerf) is het kozijn van "25 jaar zon": daarop zie je het verschil tussen nieuw en verweerd het best.
   var FOLIE = {
     creme: { nieuw: [0.928, 0.9, 0.83], oud: [0.905, 0.89, 0.85], nerf: 0.0 },
-    antraciet: { nieuw: [0.255, 0.272, 0.286], oud: [0.62, 0.63, 0.635], nerf: 0.065, glans: 0.72 }
+    antraciet: { nieuw: [0.255, 0.272, 0.286], oud: [0.62, 0.63, 0.635], nerf: 0.065, glans: 0.72 },
+    // "25 jaar zon": crème die verweert maar niet verkleurt (Max, 16 november 2026). Oud en nieuw hebben dezelfde
+    // kleur; de zon neemt de glans weg en geeft barsten, krijtige randen en schilfers, nauwelijks vuil.
+    cremeZon: { nieuw: [0.928, 0.9, 0.83], oud: [0.928, 0.9, 0.83], nerf: 0.04, glans: 0.66, vuil: 0.25 }
   };
   var ACHTERKLEUR = {
     licht: [lin("#ffffff"), lin(K.papier), lin("#edebe6")],
@@ -404,7 +407,7 @@
       gl.uniform4f(u.uZon, lk[0], lk[1], lk[2], lu ? (lu.spiegel == null ? 0.6 : lu.spiegel) : 0);
       gl.uniform3fv(u.uLuchtB, lu ? lu.boven : [0, 0, 0]); gl.uniform3fv(u.uLuchtH, lu ? lu.horizon : [0, 0, 0]);
       var fo = sc.folie || FOLIE.creme;
-      gl.uniform3fv(u.uFN, fo.nieuw); gl.uniform3fv(u.uFO, fo.oud); gl.uniform1f(u.uNerf, fo.nerf); gl.uniform1f(u.uGlansF, fo.glans || 1);
+      gl.uniform3fv(u.uFN, fo.nieuw); gl.uniform3fv(u.uFO, fo.oud); gl.uniform1f(u.uNerf, fo.nerf); gl.uniform1f(u.uGlansF, fo.glans || 1); gl.uniform1f(u.uVuil, fo.vuil == null ? 1 : fo.vuil);
       gl.uniform3fv(u.uKey, sc.key || [4.1, 3.85, 3.5]); gl.uniform3fv(u.uHemel, sc.hemel || [0.4, 0.44, 0.5]); gl.uniform3fv(u.uVloer, sc.vloer || [0.3, 0.29, 0.27]);
       gl.uniform3fv(u.uAchter, (ACHTERKLEUR[sc.achtergrond] || ACHTERKLEUR.licht)[1]);
       gl.uniform1f(u.uBel, sc.belichting || 0.94);

@@ -74,7 +74,7 @@
     // uZon.xyz = richting van de zon, uZon.w = hoeveel de lucht meedoet in de weerspiegeling; uLuchtB/H = lucht boven en aan de horizon.
     "uniform float uLeeftijd; uniform vec4 uZon; uniform vec3 uLuchtB; uniform vec3 uLuchtH;",
     // De kleur van de folie (sRGB): uFN nieuw, uFO verweerd; uNerf: hoe sterk je de houtnerf ziet. Standaard crème.
-    "uniform vec3 uFN; uniform vec3 uFO; uniform float uNerf; uniform float uGlansF;",
+    "uniform vec3 uFN; uniform vec3 uFO; uniform float uNerf; uniform float uGlansF; uniform float uVuil;",
     "const float PI = 3.14159265;",
     "float h12(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }",
     "vec2 h22(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * vec3(0.1031, 0.1030, 0.0973)); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.xx + p3.yz) * p3.zy); }",
@@ -125,8 +125,8 @@
     "  float bl = fbm(s * 0.03 + 4.0), str = fbm(vec2(s.x * 0.16, s.y * 0.018) + 9.0);",
     "  vec3 c = mix(uFO * vec3(0.945, 0.938, 0.924), uFO, smoothstep(0.3, 0.72, bl));",
     "  c *= 0.975 + 0.05 * fract(id * 7.13);",
-    "  c = mix(c, uFO * vec3(0.884, 0.865, 0.81), smoothstep(0.55, 0.85, fbm(s * 0.012 + 2.0)) * 0.3);",
-    "  c = mix(c, uFO * vec3(0.73, 0.725, 0.718), smoothstep(0.5, 0.8, str) * 0.18 * st);",
+    "  c = mix(c, uFO * vec3(0.884, 0.865, 0.81), smoothstep(0.55, 0.85, fbm(s * 0.012 + 2.0)) * 0.3 * uVuil);",
+    "  c = mix(c, uFO * vec3(0.73, 0.725, 0.718), smoothstep(0.5, 0.8, str) * 0.18 * st * uVuil);",
     "  c = mix(c, mix(uFO, vec3(1.0), 0.52), e * (0.18 + 0.4 * krul) * sm * (1.0 - mis));",
     "  if (mis > 0.5) c = mix(vec3(0.72, 0.64, 0.47), vec3(0.6, 0.57, 0.5), fbm(s * 0.4));",
     "  c = mix(c, uFO * vec3(0.486, 0.472, 0.447), b1 * 0.62);",
@@ -154,7 +154,7 @@
     "  float a = uLeeftijd;",
     "  vec3 nN = nT, nO = nT; float rN, rO;",
     "  vec3 cN = nieuweFolie(s, nN, rN, pix);",
-    "  float sb = st * smoothstep(0.32, 1.0, a) * (0.6 + 0.4 * smoothstep(0.55, 1.0, a));",
+    "  float sb = st * smoothstep(0.2, 1.0, a) * (0.55 + 0.45 * smoothstep(0.5, 1.0, a));",
     "  vec3 cO = oudeFolie(s, sb, nO, rO, pix);",
     // de zon bleekt de folie niet overal even snel: vlekkerig, de bovenkant van de dorpel het eerst
     "  float vlek = smoothstep(0.25, 0.75, fbm(s * 0.02 + 5.0));",
