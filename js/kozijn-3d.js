@@ -1905,7 +1905,8 @@
     var st = staat(t), c = maakCamera(camVoorZon(t), W, H), z = zonesVoor(st), boven = [];
     // de zonnebaan is te zien zolang we niet dichtbij zitten
     var zicht = 1 - klem((camVoorZon(t).zoom - 1.14) / 0.2, 0, 1);
-    var L = zonLicht(t, W, H, zicht), a = leeftijdOp(t);
+    // opties.leeftijd: een vaste leeftijd (voor losse beelden, zoals de voor/na op kozijnwrap.nl)
+    var L = zonLicht(t, W, H, zicht), a = opties.leeftijd != null ? opties.leeftijd : leeftijdOp(t);
     var sc = {
       cam: c, z: z, schaduwMaat: opties.schaduwMaat || 2048, achtergrond: "licht",
       lk: L.lk, key: L.key, hemel: L.hemel, vloer: L.vloer, lucht: L.lucht, leeftijd: a, schaduwZacht: 5.0,

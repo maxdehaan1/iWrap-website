@@ -152,6 +152,23 @@
         {
           "type": "query",
           "key": "utm_source",
+          "value": "kozijnwrap.nl"
+        },
+        {
+          "type": "query",
+          "key": "utm_campaign",
+          "value": "herstel"
+        }
+      ],
+      "destination": "/offerte",
+      "permanent": false
+    },
+    {
+      "source": "/contact",
+      "has": [
+        {
+          "type": "query",
+          "key": "utm_source",
           "value": "houtnerffolie"
         },
         {
