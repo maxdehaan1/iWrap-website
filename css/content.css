@@ -216,3 +216,6 @@ html:not(.js) .video-zin{display:none;}
 .inhoud-kaart a{color:var(--ink-soft);text-decoration:none;}
 .inhoud-kaart a:hover{color:var(--mint-ink);text-decoration:underline;}
 @media (min-width:901px){ .voorwaarden ~ .zij{position:sticky;top:96px;} }
+
+/* Op een smal scherm een smallere foto naast de tekst, anders past "Etten-Leur" er niet naast. */
+@media (max-width:420px){ .vve-voorbeeld{grid-template-columns:90px 1fr;gap:14px;} }

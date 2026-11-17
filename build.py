@@ -708,6 +708,7 @@ HEAD = """<!DOCTYPE html>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/fonts/montserrat-latin-83a31c81.woff2" as="font" type="font/woff2" crossorigin>
 <script>(function(d){{d.className+=" js";if(document.referrer.indexOf(location.origin+"/")!==0)d.className+=" logo-uitrol";var n=new Date(),m=n.getMonth()+1;if(m===12||m<3||(m===11&&n.getDate()>14))d.className+=" winter"}})(document.documentElement);</script>
 {fonts}{stylesheets}{preload}<script type="application/ld+json">{jsonld}</script>
 </head>

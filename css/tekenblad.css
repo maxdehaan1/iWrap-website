@@ -54,3 +54,6 @@
     -webkit-print-color-adjust:exact;print-color-adjust:exact;
   }
 }
+
+/* Op een heel smal scherm mag de kop van het blad onder elkaar (anders schuift de pagina opzij). */
+@media (max-width:400px){ .blad-kop{flex-wrap:wrap;gap:10px;} .blad-kop > *{min-width:0;} }
