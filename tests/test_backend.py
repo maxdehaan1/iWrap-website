@@ -39,7 +39,7 @@ from backend import instellingen as cfg  # noqa: E402
 GOED = 0
 
 
-def verzoek(methode, pad, data=None, token=None, form=None, origin=None, ruw=None):
+def verzoek(methode, pad, data=None, token=None, form=None, origin=None, ruw=None, ip="127.0.0.1"):
     if ruw is not None:
         body, ctype = ruw, "image/jpeg"
     elif form is not None:
@@ -51,7 +51,7 @@ def verzoek(methode, pad, data=None, token=None, form=None, origin=None, ruw=Non
     pad, _, query = pad.partition("?")
     environ = {"REQUEST_METHOD": methode, "PATH_INFO": pad, "QUERY_STRING": query,
                "CONTENT_LENGTH": str(len(body)), "CONTENT_TYPE": ctype,
-               "wsgi.input": io.BytesIO(body), "REMOTE_ADDR": "127.0.0.1"}
+               "wsgi.input": io.BytesIO(body), "REMOTE_ADDR": ip}
     if token:
         environ["HTTP_AUTHORIZATION"] = "Bearer " + token
     if origin:
@@ -100,7 +100,7 @@ def aanvragen_testen():
     r = verzoek("POST", "/api/aanvragen", {"manier": "maten", "kleur_nu": "paars", "klant": "onzin",
                                            "kozijnen": [{"waar": "hoog", "kant": "boven", "heel": True,
                                                          "breedte": "120", "hoogte": "140"}],
-                                           "gegevens": GEGEVENS})
+                                           "gegevens": GEGEVENS}, ip="127.0.0.2")
     klopt(r["status"] == 201, "2e verdieping of hoger is een geldige plek; onbekende keuzes worden genegeerd")
     a = aanvragen.haal(r["json"]["id"])
     klopt(a["kleur_nu"] == "" and a["klant"] == "particulier" and a["kozijnen"][0]["kant"] == "",
@@ -175,13 +175,39 @@ def aanvragen_testen():
           "bevestiging aan de klant, zonder belofte over wanneer")
     klopt("Offertes maken we op maandag" in bevestiging, "de bevestiging zegt dat offertes op maandag gemaakt worden")
 
+    # Een complex (VvE, corporatie): geen kaarten per kozijn, maar het complex, en dan een opname.
+    r = verzoek("POST", "/api/aanvragen", {"manier": "complex", "klant": "vve", "gegevens": GEGEVENS,
+                                           "complex": {"organisatie": "VvE De Proef", "woningen": "0"}}, ip="127.0.0.2")
+    klopt(r["status"] == 422, "een complex zonder aantal woningen en zonder plek wordt geweigerd")
+    r = verzoek("POST", "/api/aanvragen", {"manier": "complex", "klant": "vve", "gegevens": GEGEVENS,
+                                           "complex": {"organisatie": "VvE De Proef", "woningen": "36",
+                                                       "adres": "Proefstraat, Hilversum",
+                                                       "omschrijving": "Alle onderdorpels aan de zonkant", "fotos": 1}}, ip="127.0.0.2")
+    klopt(r["status"] == 201 and r["json"]["fotos"] == ["foto-1.jpg"], "complex aangemaakt; de server verwacht één foto")
+    cid, ctok = r["json"]["id"], r["json"]["token"]
+    verzoek("PUT", "/api/aanvragen/%s/fotos/foto-1.jpg?t=%s" % (cid, ctok), ruw=JPEG)
+    r = verzoek("POST", "/api/aanvragen/%s/versturen?t=%s" % (cid, ctok))
+    klopt(r["status"] == 200, "complex verstuurd")
+    mails = sorted(os.listdir(uitbak))
+    html = open(os.path.join(uitbak, [m for m in mails if m.endswith("-aanvraag.html")][-1]), encoding="utf-8").read()
+    klopt("Aanvraag VvE De Proef, Hilversum: complex van 36 woningen, opname" in html
+          and "Alle onderdorpels aan de zonkant" in html and "foto-1.jpg" in html,
+          "de mail aan Max noemt het complex, het aantal woningen en de foto")
+    bevestiging = open(os.path.join(uitbak, [m for m in mails if m.endswith("-aanvraag-bevestiging.html")][-1]),
+                       encoding="utf-8").read()
+    klopt("opname op locatie" in bevestiging and "vaste totaalprijs" not in bevestiging,
+          "de bevestiging zegt dat we een opname komen inplannen")
+
     klopt("Lindelaan 12, 1214 AB Hilversum" in html, "het adres staat er compleet in, met de straat")
 
     # De Max-modus: de aanvraag staat onder Aanvragen, en wordt met één knop een klus.
     token = verzoek("POST", "/api/max/login", {"wachtwoord": "test"})["json"]["token"]
     klopt(verzoek("GET", "/api/max/aanvragen")["status"] == 401, "aanvragen alleen voor Max")
     lijst = verzoek("GET", "/api/max/aanvragen", token=token)["json"]["aanvragen"]
-    klopt([x["id"] for x in lijst] == [aid] and lijst[0]["wat"] == "2 kozijnen", "verstuurde aanvraag staat in de lijst")
+    ids = [x["id"] for x in lijst]
+    klopt(sorted(ids) == sorted([aid, cid]) and [x for x in lijst if x["id"] == aid][0]["wat"] == "2 kozijnen"
+          and [x for x in lijst if x["id"] == cid][0]["wat"] == "complex, 36 woningen",
+          "verstuurde aanvragen staan in de lijst (ook het complex)")
     d = verzoek("GET", "/api/max/aanvragen/" + aid, token=token)["json"]
     klopt(d["overzicht"][0]["regels"][1] == "Stijl: 2 × 1,30 m = 2,60 m", "Max ziet per kozijn wat er moet gebeuren")
     r = verzoek("GET", "/api/max/aanvragen/%s/fotos/kozijn-1-foto.jpg" % aid, token=token)

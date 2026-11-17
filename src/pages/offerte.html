@@ -130,6 +130,26 @@
               <span class="manier-uitleg">Lukt het andere niet? Stuur ons een mail met je foto's. We zetten erin wat we van je nodig hebben.</span>
             </span>
           </label>
+
+          <!-- Voor een VvE, corporatie of beheerder: geen kaarten per kozijn, maar het complex.
+               Daarna plant Max een opname (zie de VvE-pagina, die hiernaar linkt met ?manier=complex). -->
+          <label class="manier manier-breed">
+            <input type="radio" name="manier" value="complex">
+            <span class="manier-vlak">
+              <svg class="manier-beeld" viewBox="0 0 120 80" aria-hidden="true">
+                <rect width="120" height="80" rx="8" fill="#eef2f4"/>
+                <rect x="26" y="16" width="68" height="56" rx="3" fill="#fff" stroke="#3f7468" stroke-width="2"/>
+                <g fill="#a3cdc2"><rect x="34" y="24" width="12" height="10" rx="1"/><rect x="54" y="24" width="12" height="10" rx="1"/><rect x="74" y="24" width="12" height="10" rx="1"/>
+                <rect x="34" y="40" width="12" height="10" rx="1"/><rect x="54" y="40" width="12" height="10" rx="1"/><rect x="74" y="40" width="12" height="10" rx="1"/></g>
+                <rect x="54" y="56" width="12" height="16" rx="1" fill="#3f7468"/>
+              </svg>
+              <span class="manier-tekst">
+                <span class="manier-label">Voor beheerders</span>
+                <span class="manier-titel">Voor een complex of meerdere woningen</span>
+                <span class="manier-uitleg">VvE, woningcorporatie of beheerder? Vertel ons om welk complex het gaat. Dan nemen we contact op om een opname in te plannen.</span>
+              </span>
+            </span>
+          </label>
         </fieldset>
 
         <!-- De vierde manier: geen formulier, maar een mail. Verschijnt zodra die
@@ -214,6 +234,35 @@
               <label class="chip"><input type="checkbox" name="papier_kant" value="achter"><span>Achterkant</span></label>
               <label class="chip"><input type="checkbox" name="papier_kant" value="zij"><span>Zijkant</span></label>
             </div>
+          </div>
+        </div>
+
+        <!-- Een complex of meerdere woningen -->
+        <div class="complex" data-voor="complex">
+          <div class="veld">
+            <label for="complex_org">Naam van de VvE of organisatie</label>
+            <input id="complex_org" name="complex_org" type="text" maxlength="100" autocomplete="organization">
+          </div>
+          <div class="veldrij">
+            <div class="veld">
+              <label for="complex_woningen">Om hoeveel woningen gaat het?</label>
+              <input id="complex_woningen" name="complex_woningen" type="text" inputmode="numeric" maxlength="5" autocomplete="off">
+            </div>
+            <div class="veld">
+              <label for="complex_adres">Waar staat het complex? <span class="hint">straat en plaats</span></label>
+              <input id="complex_adres" name="complex_adres" type="text" maxlength="120" autocomplete="off">
+            </div>
+          </div>
+          <div class="veld">
+            <label for="complex_omschrijving">Wat moet er gebeuren? <span class="hint">mag kort</span></label>
+            <textarea id="complex_omschrijving" name="complex_omschrijving"
+              placeholder="Bijvoorbeeld: alle onderdorpels aan de zonkant, of alle kozijnen rondom."></textarea>
+          </div>
+          <div class="kozijn-vraag">
+            <p class="vraag-kop">Foto's van de gevels <small>mag, hoeft niet</small></p>
+            <p class="vraag-hint">Een paar foto's helpen ons de opname voor te bereiden.</p>
+            <div class="fotorij" data-rol="complexfoto" data-max="10"
+                 data-label="Foto" data-leeg="Foto's van het complex toevoegen"></div>
           </div>
         </div>
 

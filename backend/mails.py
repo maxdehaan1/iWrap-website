@@ -326,6 +326,11 @@ def _kozijn_fotos(a, nr):
 def _aanvraag_onderwerp(a):
     from .aanvragen import MANIEREN
     g = a["gegevens"]
+    if a["manier"] == "complex":
+        c = a["complex"]
+        # Zelfde opbouw als de andere aanvragen ("Aanvraag wie, waar: wat, hoe"), zodat de
+        # ochtendronde hem op dezelfde manier herkent.
+        return "Aanvraag %s, %s: complex van %d woningen, opname" % (c["organisatie"], g["plaats"], c["woningen"])
     if a["manier"] == "papier":
         wat = "tekening en %d foto%s" % (a["papier"]["fotos"], "'s" if a["papier"]["fotos"] != 1 else "")
     else:
@@ -362,7 +367,14 @@ def aanvraag_voor_max(a):
     ])
 
     blokken, tekstblokken = [], []
-    if a["manier"] == "papier":
+    if a["manier"] == "complex":
+        c = a["complex"]
+        fotos = ", ".join(f["naam"] for f in fotolijst(a)) or "geen"
+        regels = ["Woningen: %d" % c["woningen"], "Waar: %s" % c["adres"]] \
+            + (["Wat: %s" % c["omschrijving"]] if c["omschrijving"] else []) + ["Foto's: %s" % fotos]
+        blokken.append(_werkblok("Complex: %s (opname plannen)" % c["organisatie"], regels))
+        tekstblokken.append("Complex: %s (opname plannen)\n  " % c["organisatie"] + "\n  ".join(regels))
+    elif a["manier"] == "papier":
         p = a["papier"]
         tekeningen = ", ".join("tekening-%d.jpg" % n for n in range(1, p["tekeningen"] + 1))
         fotos = ", ".join("kozijn-%d-foto.jpg" % n for n in range(1, p["fotos"] + 1))
@@ -382,7 +394,7 @@ def aanvraag_voor_max(a):
             tekstblokken.append(_kozijn_kop(k, nr) + "\n  " + "\n  ".join(werk + [fotos]))
 
     samen = ""
-    if a["manier"] != "papier":
+    if a["manier"] not in ("papier", "complex"):
         t = totalen(a)
         delen = ["%d kozijn%s" % (t["kozijnen"], "en" if t["kozijnen"] != 1 else "")]
         if t["stuks"] != t["kozijnen"]:
@@ -445,7 +457,13 @@ def aanvraag_bevestiging(a):
     dat is geen belofte, en het scheelt mails van mensen die vragen of hun aanvraag
     is aangekomen."""
     g = a["gegevens"]
-    if a["manier"] == "papier":
+    complex_ = a["manier"] == "complex"
+    if complex_:
+        c = a["complex"]
+        regels = ["%s: %d woningen, %s" % (c["organisatie"], c["woningen"], c["adres"])]
+        if c["omschrijving"]:
+            regels.append(c["omschrijving"])
+    elif a["manier"] == "papier":
         regels = ["Je tekening en %d foto%s van je kozijnen" % (a["papier"]["fotos"], "'s" if a["papier"]["fotos"] != 1 else "")]
     else:
         regels = []
@@ -459,6 +477,9 @@ def aanvraag_bevestiging(a):
         _p(_aanhef(g["naam"])),
         _p("Bedankt voor je aanvraag. Dit is wat je ons hebt gestuurd:"),
         '<ul style="margin:0 0 16px;padding-left:20px">%s</ul>' % lijst,
+        _p("We nemen contact met je op om een opname op locatie in te plannen. Uit die opname komt één "
+           "vaste prijs voor het geheel, met een opsomming van de werkzaamheden. Maandag is onze "
+           "kantoordag: dan zijn we het best bereikbaar.") if complex_ else
         _p("We bekijken je foto's en sturen je een offerte met een vaste totaalprijs. Offertes maken "
            "we op maandag, onze kantoordag. Kunnen we iets niet goed zien, dan bellen of mailen we je even."),
         _p("Wil je nog iets toevoegen, bijvoorbeeld een extra foto? Beantwoord deze mail gewoon."),
@@ -468,8 +489,10 @@ def aanvraag_bevestiging(a):
         _p("Groet, Max"),
     ]
     html = _opmaak("We hebben je aanvraag ontvangen", "".join(delen), "iWrap", IWRAP_MINT)
-    tekst = "%s\n\nBedankt voor je aanvraag. Dit is wat je ons hebt gestuurd:\n- %s\n\n" \
-            "We bekijken je foto's en sturen je een offerte met een vaste totaalprijs. Offertes maken we op " \
-            "maandag, onze kantoordag. Kunnen we iets niet goed zien, dan bellen of mailen we je even." \
-            "\n\nGroet, Max\niWrap" % (_aanhef(g["naam"]), "\n- ".join(regels))
+    vervolg = ("We nemen contact met je op om een opname op locatie in te plannen. Uit die opname komt één "
+               "vaste prijs voor het geheel." if complex_ else
+               "We bekijken je foto's en sturen je een offerte met een vaste totaalprijs. Offertes maken we op "
+               "maandag, onze kantoordag. Kunnen we iets niet goed zien, dan bellen of mailen we je even.")
+    tekst = "%s\n\nBedankt voor je aanvraag. Dit is wat je ons hebt gestuurd:\n- %s\n\n%s" \
+            "\n\nGroet, Max\niWrap" % (_aanhef(g["naam"]), "\n- ".join(regels), vervolg)
     return "We hebben je aanvraag ontvangen", html, tekst

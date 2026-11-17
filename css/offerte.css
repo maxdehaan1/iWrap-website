@@ -656,3 +656,15 @@ html.streep-open,html.streep-open body{overflow:hidden;}
 .chips-ruim{margin-bottom:6px;}
 .chips + .vraag-hint{margin-top:16px;}
 .stap-paneel > .veld.vervolgveld{margin-top:14px;}
+
+/* De vijfde manier, voor een complex: een brede regel onder de vier kaarten, met het
+   plaatje links. Op een telefoon gewoon een kaart zoals de rest. */
+.manier-breed{grid-column:1 / -1;}
+@media (min-width:821px){
+  .manier-breed .manier-vlak{flex-direction:row;align-items:center;gap:20px;padding:16px 56px 16px 18px;}
+  .manier-breed .manier-beeld{width:120px;flex:none;margin:0;}
+  .manier-breed .manier-tekst{display:flex;flex-direction:column;gap:4px;}
+}
+.manier-tekst{display:contents;}
+@media (min-width:821px){ .manier-breed .manier-tekst{display:flex;} }
+.complex .veld{margin-bottom:18px;}

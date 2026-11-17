@@ -62,6 +62,9 @@
     maten: ["Foto's maken en de maten erbij",
             "Maak van elk kozijn een foto, met het hele kozijn erop. Daarna tik je aan welke " +
             "delen hersteld moeten worden en typ je hoe lang ze zijn."],
+    complex: ["Je complex",
+              "Vertel ons om welk complex het gaat. Daarna nemen we contact op om een opname in te " +
+              "plannen; uit die opname komt één vaste prijs voor het geheel."],
     papier: ["Je tekening en je foto's",
              "Teken je kozijnen op papier en maak er een foto van. Doe er van elk kozijn ook een " +
              "foto bij, met het hele kozijn erop."]
@@ -72,7 +75,10 @@
      (kleur, gegevens) in gewone formuliervelden. De foto's zelf staan als
      Blob in 'blobs', onder een sleutel die ook in IndexedDB gebruikt wordt. */
 
-  var staat = { manier: "", kozijnen: [], papier: { tekening: [], kozijnfoto: [] }, verzending: null, vanaf: "" };
+  // staat.papier bewaart de fotolijsten van de manieren zonder kaarten: de tekening en de
+  // kozijnfoto's (op papier) en de foto's van een complex.
+  var staat = { manier: "", kozijnen: [], papier: { tekening: [], kozijnfoto: [], complexfoto: [] },
+                verzending: null, vanaf: "" };
   var blobs = {};
   var urls = {};
   var voorbeelden = {};   // kozijn-id -> object-URL van de foto met strepen
@@ -159,7 +165,7 @@
 
   function bouwKaarten() {
     kozijnenLijst.innerHTML = "";
-    if (staat.manier === "papier" || staat.manier === "mail") return;
+    if (staat.manier === "papier" || staat.manier === "mail" || staat.manier === "complex") return;
     staat.kozijnen.forEach(function (k) { kozijnenLijst.appendChild(maakKaart(k)); });
     nummerKaarten();
   }
@@ -577,7 +583,8 @@
     var kop = KOPPEN[staat.manier] || ["Je kozijnen", ""];
     paneel.querySelector(".kozijnen-kop").textContent = kop[0];
     paneel.querySelector(".kozijnen-uitleg").textContent = kop[1];
-    if (staat.manier !== "papier" && staat.manier !== "mail" && staat.manier && !staat.kozijnen.length) {
+    if (staat.manier !== "papier" && staat.manier !== "mail" && staat.manier !== "complex" && staat.manier &&
+        !staat.kozijnen.length) {
       staat.kozijnen.push(nieuwKozijn());
     }
     bouwKaarten();
@@ -587,6 +594,9 @@
   Array.prototype.forEach.call(form.querySelectorAll('[name="manier"]'), function (r) {
     r.addEventListener("change", function () {
       staat.manier = r.value;
+      if (r.value === "complex" && waarde("klant") === "particulier") {
+        form.querySelector('[name="klant"][value="vve"]').checked = true;
+      }
       tekenManier();
       zeg("");
       bewaar();
@@ -737,6 +747,14 @@
 
   function kozijnenGeldig(stil) {
     if (!staat.manier) return false;
+    if (staat.manier === "complex") {
+      var ontbreekt = !waarde("complex_org") ? ["complex_org", "Vul de naam van de VvE of de organisatie in."]
+                    : !(parseInt(waarde("complex_woningen"), 10) > 0) ? ["complex_woningen", "Vul in om hoeveel woningen het gaat."]
+                    : !waarde("complex_adres") ? ["complex_adres", "Vul in waar het complex staat."]
+                    : null;
+      if (ontbreekt && !stil) { zeg(ontbreekt[1]); form.querySelector("#" + ontbreekt[0]).focus(); }
+      return !ontbreekt;
+    }
     if (staat.manier === "papier") {
       var mist = !staat.papier.tekening.length ? "Voeg een foto van je tekening toe."
                : !staat.papier.kozijnfoto.length ? "Voeg van elk kozijn een foto toe, met het hele kozijn erop."
@@ -857,7 +875,16 @@
     vak.innerHTML = "";
 
     var werk = overzichtBlok("Wat er moet gebeuren", 1);
-    if (staat.manier === "papier") {
+    if (staat.manier === "complex") {
+      werk.appendChild(maak("p", "ov-titel", waarde("complex_org") + " · " + waarde("complex_woningen") + " woningen"));
+      werk.appendChild(maak("p", "", "Waar: " + waarde("complex_adres")));
+      if (waarde("complex_omschrijving")) werk.appendChild(maak("p", "", waarde("complex_omschrijving")));
+      if (staat.papier.complexfoto.length) {
+        var fotorij = maak("div", "ov-papier");
+        staat.papier.complexfoto.forEach(function (s) { var img = maak("img"); img.src = fotoUrl(s); img.alt = ""; fotorij.appendChild(img); });
+        werk.appendChild(fotorij);
+      }
+    } else if (staat.manier === "papier") {
       var rij = maak("div", "ov-papier");
       staat.papier.tekening.concat(staat.papier.kozijnfoto).forEach(function (s) {
         var img = maak("img");
@@ -937,7 +964,10 @@
   function samenvattingTekst() {
     var regels = ["Naam: " + waarde("naam"), "Adres: " + waarde("straat") + " " + waarde("huisnummer") +
                   ", " + waarde("postcode") + " " + waarde("plaats"), "Telefoon: " + waarde("telefoon"), ""];
-    if (staat.manier === "papier") {
+    if (staat.manier === "complex") {
+      regels.push("Complex: " + waarde("complex_org") + ", " + waarde("complex_woningen") + " woningen, " + waarde("complex_adres"));
+      if (waarde("complex_omschrijving")) regels.push(waarde("complex_omschrijving"));
+    } else if (staat.manier === "papier") {
       regels.push("Ik stuur een foto van mijn tekening en van mijn kozijnen mee.");
     } else {
       staat.kozijnen.forEach(function (k, i) {
@@ -975,7 +1005,11 @@
         toelichting: waarde("toelichting")
       }
     };
-    if (staat.manier === "papier") {
+    if (staat.manier === "complex") {
+      p.complex = { organisatie: waarde("complex_org"), woningen: waarde("complex_woningen"),
+                    adres: waarde("complex_adres"), omschrijving: waarde("complex_omschrijving"),
+                    fotos: staat.papier.complexfoto.length };
+    } else if (staat.manier === "papier") {
       p.papier = { tekeningen: staat.papier.tekening.length, fotos: staat.papier.kozijnfoto.length,
                    waar: waarden("papier_waar"), kant: waarden("papier_kant") };
     } else {
@@ -997,7 +1031,9 @@
 
   // Bij elke bestandsnaam die de server verwacht, de juiste foto.
   function fotoBron(naam) {
-    var m = naam.match(/^tekening-(\d+)\.jpg$/);
+    var m = naam.match(/^foto-(\d+)\.jpg$/);
+    if (m) return Promise.resolve(blobs[staat.papier.complexfoto[m[1] - 1]]);
+    m = naam.match(/^tekening-(\d+)\.jpg$/);
     if (m) return Promise.resolve(blobs[staat.papier.tekening[m[1] - 1]]);
     m = naam.match(/^kozijn-(\d+)-(foto|dichtbij|aangestreept)\.jpg$/);
     if (!m) return Promise.resolve(null);
@@ -1163,7 +1199,8 @@
     var s = d.staat;
     staat.manier = s.manier || "";
     staat.kozijnen = (s.kozijnen || []).map(function (k) { return Object.assign(nieuwKozijn(), k); });
-    staat.papier = { tekening: (s.papier && s.papier.tekening) || [], kozijnfoto: (s.papier && s.papier.kozijnfoto) || [] };
+    staat.papier = { tekening: (s.papier && s.papier.tekening) || [], kozijnfoto: (s.papier && s.papier.kozijnfoto) || [],
+                     complexfoto: (s.papier && s.papier.complexfoto) || [] };
     staat.verzending = s.verzending || null;
     staat.vanaf = s.vanaf || "";
     Object.keys(d.velden || {}).forEach(function (naam) {
@@ -1182,12 +1219,13 @@
     // dan staat bij dat kozijn gewoon weer "Maak of kies een foto".
     var sleutels = [];
     staat.kozijnen.forEach(function (k) { if (k.foto) sleutels.push(k.foto); if (k.dichtbij) sleutels.push(k.dichtbij); });
-    sleutels = sleutels.concat(staat.papier.tekening, staat.papier.kozijnfoto);
+    sleutels = sleutels.concat(staat.papier.tekening, staat.papier.kozijnfoto, staat.papier.complexfoto);
     return Promise.all(sleutels.map(function (x) {
       return Fotos.haal(x).then(function (blob) { if (blob) blobs[x] = blob; });
     })).then(function () {
       staat.papier.tekening = staat.papier.tekening.filter(function (x) { return blobs[x]; });
       staat.papier.kozijnfoto = staat.papier.kozijnfoto.filter(function (x) { return blobs[x]; });
+      staat.papier.complexfoto = staat.papier.complexfoto.filter(function (x) { return blobs[x]; });
       return Promise.all(staat.kozijnen.map(maakVoorbeeld));
     }).then(function () {
       bereikt = d.bereikt || 0;
@@ -1224,6 +1262,10 @@
     // Wie later terugkomt zonder de codes in het adres, houdt de herkomst van toen.
     if (!vanaf && staat.vanaf) vanaf = staat.vanaf;
     staat.vanaf = vanaf;
+    if (!staat.manier && zoek.get("manier") === "complex") {
+      staat.manier = "complex";
+      if (waarde("klant") === "particulier") form.querySelector('[name="klant"][value="vve"]').checked = true;
+    }
     var gekozen = form.querySelector('[name="manier"][value="' + staat.manier + '"]');
     if (gekozen) gekozen.checked = true;
     tekenManier();

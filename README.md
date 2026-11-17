@@ -268,6 +268,14 @@ een telefoon. Daarom kiest de klant zelf **hoe** hij laat zien wat er moet gebeu
 | **Op papier** | Wie liever met pen en papier werkt | Kozijnen natekenen (op een gewoon vel, of op het tekenblad van `/tekenblad`), arceren wat er moet gebeuren, en er een foto van maken. Een maattekening van de leverancier mag ook. |
 | **Gewoon een mail** (zonder formulier) | Wie de andere drie niet lukken | Een uitleg in vier punten wat er in de mail moet, en een knop die een mail aan info@iwrap.nl opent met al die vragen erin. Plus een knop om het mailadres te kopiëren, voor wie met webmail werkt. De stappen hierna zijn dan niet nodig. Hetzelfde mailsjabloon zit achter de uitweg bovenaan het formulier. |
 
+Daaronder staat sinds 17 november 2026 een vijfde, brede keuze: **Voor een complex of meerdere
+woningen** (VvE, corporatie, beheerder). Geen kaarten per kozijn, maar de naam van de VvE of
+organisatie, het aantal woningen, waar het complex staat, wat er moet gebeuren en eventueel
+een paar foto's (`foto-1.jpg` …). "Voor wie" staat dan vanzelf op VvE. De mail heet
+`Aanvraag VvE De Linde, Etten-Leur: complex van 36 woningen, opname`, en de klant krijgt te
+horen dat we een opname komen inplannen (geen offerte op foto's). De knoppen op de VvE-pagina
+openen het formulier met deze keuze al aangevinkt (`/offerte?manier=complex`).
+
 **Bij alle drie hoort een foto van elk kozijn in zijn geheel.** Dat staat al op het
 keuzescherm, zodat niemand erdoor verrast wordt. Daaraan zie je het profiel, de kleur en
 of herstel kan.

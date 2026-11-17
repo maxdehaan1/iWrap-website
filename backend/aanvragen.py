@@ -44,7 +44,8 @@ from . import mail, mails, rapporten
 from .auth import nieuwe_id
 from .opslag import opslag
 
-MANIEREN = {"streep": "Foto en aanstrepen", "maten": "Foto en maten", "papier": "Op papier"}
+MANIEREN = {"streep": "Foto en aanstrepen", "maten": "Foto en maten", "papier": "Op papier",
+            "complex": "Complex of meerdere woningen"}
 WAAR = {"begane-grond": "begane grond", "verdieping": "1e verdieping", "hoog": "2e verdieping of hoger",
         "dakkapel": "dakkapel"}
 KANT = {"voor": "voorkant", "achter": "achterkant", "zij": "zijkant"}
@@ -66,6 +67,7 @@ MAX_KOZIJNEN = 20
 MAX_REGELS = 15          # maatregels per kozijn
 MAX_TEKENINGEN = 5
 MAX_PAPIERFOTOS = 20
+MAX_COMPLEXFOTOS = 10
 FOTO_MAX_BYTES = 1_500_000   # js/fotos.js maakt ze rond de 300 kB
 
 TTL_CONCEPT = 2 * 86400      # nog niet verstuurd
@@ -172,7 +174,7 @@ def schoon(invoer):
     if manier not in MANIEREN:
         raise Afgewezen(["Kies eerst hoe je wilt laten zien wat er moet gebeuren."])
 
-    a = {"manier": manier, "kozijnen": [], "papier": None}
+    a = {"manier": manier, "kozijnen": [], "papier": None, "complex": None}
     if manier == "papier":
         p = invoer.get("papier") if isinstance(invoer.get("papier"), dict) else {}
         a["papier"] = {
@@ -187,6 +189,23 @@ def schoon(invoer):
             fouten.append("Voeg van elk kozijn een foto toe, met het hele kozijn erop.")
         if not a["papier"]["waar"]:
             fouten.append("Geef aan waar de kozijnen zitten.")
+    elif manier == "complex":
+        # Een VvE, corporatie of beheerder: geen kaarten per kozijn, maar het complex. Daarna
+        # plant Max een opname; uit die opname komt één vaste prijs (zie de VvE-pagina).
+        c = invoer.get("complex") if isinstance(invoer.get("complex"), dict) else {}
+        a["complex"] = {
+            "organisatie": _tekst(c.get("organisatie"), 100),
+            "woningen": _geheel(c.get("woningen"), 0, 5000, 0),
+            "adres": _tekst(c.get("adres"), 120),
+            "omschrijving": str(c.get("omschrijving") or "").strip()[:2000],
+            "fotos": _geheel(c.get("fotos"), 0, MAX_COMPLEXFOTOS, 0),
+        }
+        if not a["complex"]["organisatie"]:
+            fouten.append("Vul de naam van de VvE of de organisatie in.")
+        if not a["complex"]["woningen"]:
+            fouten.append("Vul in om hoeveel woningen het gaat.")
+        if not a["complex"]["adres"]:
+            fouten.append("Vul in waar het complex staat.")
     else:
         kozijnen = invoer.get("kozijnen") if isinstance(invoer.get("kozijnen"), list) else []
         if not kozijnen:
@@ -256,6 +275,9 @@ def fotolijst(a):
     Claude bij het uitlezen) meteen ziet wat wat is.
     """
     uit = []
+    if a["manier"] == "complex":
+        return [{"naam": "foto-%d.jpg" % n, "soort": "foto", "kozijn": 0}
+                for n in range(1, a["complex"]["fotos"] + 1)]
     if a["manier"] == "papier":
         for n in range(1, a["papier"]["tekeningen"] + 1):
             uit.append({"naam": "tekening-%d.jpg" % n, "soort": "tekening", "kozijn": 0})
@@ -343,10 +365,10 @@ def voor_claude(a):
     """De aanvraag als gegevens, voor aanvraag.json in de mail. Zonder token."""
     d = {k: a[k] for k in ("id", "manier", "kozijnen", "papier", "kleur", "kleur_anders",
                            "gegevens", "toelichting", "via", "gemaakt")}
-    for k in ("kleur_nu", "zijde", "rolluik", "klant", "wanneer", "bron", "dealer"):
+    for k in ("complex", "kleur_nu", "zijde", "rolluik", "klant", "wanneer", "bron", "dealer"):
         d[k] = a.get(k)
     d["manier_naam"] = MANIEREN[a["manier"]]
-    d["totalen"] = totalen(a) if a["manier"] != "papier" else None
+    d["totalen"] = totalen(a) if a["manier"] not in ("papier", "complex") else None
     d["fotos"] = fotolijst(a)
     d["_uitleg"] = ("Lengtes in centimeters. regels = wat de klant zelf gemeten heeft "
                     "(deel, lengte per stuk, aantal). aantal bij een kozijn = hoe vaak dat kozijn "
@@ -405,6 +427,13 @@ def adres(a):
 def overzicht(a):
     """Per kozijn een kop, wat er moet gebeuren en welke foto's erbij horen.
     Dezelfde tekst als in de mail aan Max."""
+    if a["manier"] == "complex":
+        c = a["complex"]
+        return [{
+            "titel": "%s · %d woningen" % (c["organisatie"], c["woningen"]),
+            "regels": ["Waar: " + c["adres"]] + (["Wat: " + c["omschrijving"]] if c["omschrijving"] else []),
+            "fotos": [f["naam"] for f in fotolijst(a)],
+        }]
     if a["manier"] == "papier":
         p = a["papier"]
         return [{
@@ -421,7 +450,9 @@ def overzicht(a):
 
 
 def lijstregel(a):
-    if a["manier"] == "papier":
+    if a["manier"] == "complex":
+        wat = "complex, %d woningen" % a["complex"]["woningen"]
+    elif a["manier"] == "papier":
         wat = "tekening, %d foto%s" % (a["papier"]["fotos"], "'s" if a["papier"]["fotos"] != 1 else "")
     else:
         t = totalen(a)
@@ -455,6 +486,8 @@ def foto(a, naam):
 def werk_kort(a):
     """Het werk in één regel, als begin voor 'Wat we gedaan hebben' in het
     rapport. Max past het aan naar wat er echt gedaan is."""
+    if a["manier"] == "complex":
+        return "Complex %s, %d woningen: volgens de opname." % (a["complex"]["organisatie"], a["complex"]["woningen"])
     if a["manier"] == "papier":
         return "Volgens de tekening bij de aanvraag."
     delen = []
