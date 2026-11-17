@@ -63,11 +63,13 @@
   .hero-fig{order:3;}
   /* De knoppen direct onder de foto: anders staat "Offerte aanvragen" pas
      na een heel scherm lopende tekst. */
-  .hero-tekst .knoprij{order:4;margin-top:4px;}
-  /* Het reviewcijfer meteen onder de knoppen: daar twijfelt iemand. */
-  .hero-tekst .rv-badge{order:4;justify-self:start;margin-top:0;}
-  .hero-lede{order:5;margin-top:26px;}
-  .hero-tekst .hero-bewijs{order:6;}
+  /* Onder de foto eerst in twee zinnen wat we doen, dan de knoppen en het reviewcijfer.
+     De knoppen hoeven niet meer direct onder de foto: op een telefoon staat de
+     offerteknop altijd in de actiebalk onderin. */
+  .hero-lede{order:4;margin-top:6px;}
+  .hero-tekst .knoprij{order:5;margin-top:4px;}
+  .hero-tekst .rv-badge{order:6;justify-self:start;margin-top:0;}
+  .hero-tekst .hero-bewijs{order:7;}
 }
 
 /* Klachtenraster ---------------------------------------------------------- */
@@ -207,3 +209,25 @@
 .werkwijze-blok{background:radial-gradient(60% 55% at 50% 38%, rgba(163,205,194,.32), rgba(163,205,194,0) 72%),var(--white);}
 .werkwijze-blok .film{border-color:var(--rand-zacht);}
 .merken{justify-content:center;}
+
+/* Voorbeelden op de homepage: vier klusfoto's met de kleur eronder (sinds 17 november;
+   de voor/na-schuif staat nu in de hero). */
+.strook-bijschrift{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;}
+.strook-bijschrift figure{margin:0;}
+.strook-bijschrift img{aspect-ratio:4/3;}
+.strook-bijschrift figcaption{margin-top:9px;font-size:.97rem;color:var(--sub);line-height:1.35;}
+@media (max-width:900px){ .strook-bijschrift{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;} }
+
+/* 25 jaar zon bij "Waarom herstellen werkt": in het midden, niet breder dan een foto. */
+.zon-midden{max-width:600px;margin:0 auto clamp(34px,4.5vw,56px);}
+
+/* De korte linktekst onder een kaart ("Dit herken ik ->") niet over twee regels. */
+.pijl{white-space:nowrap;}
+
+/* Waarom iWrap op een telefoon: de acht redenen als rustige lijst in plaats van acht
+   losse kaarten onder elkaar (scheelt bijna een meter scrollen). */
+@media (max-width:600px){
+  .onderscheid{gap:22px;}
+  .onderscheid > div{background:none;border:0;border-radius:0;padding:0;}
+  .onderscheid h3{font-size:1.1rem;margin-bottom:.3em;}
+}

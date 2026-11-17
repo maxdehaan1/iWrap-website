@@ -8,8 +8,8 @@
   "prioriteit": "1.0",
   "changefreq": "weekly",
   "preload": {
-    "src": "/images/kozijn-zon-creme-1000.webp",
-    "srcset": "/images/kozijn-zon-creme-640.webp 640w, /images/kozijn-zon-creme-1000.webp 1000w, /images/kozijn-zon-creme-1600.webp 1600w",
+    "src": "/images/voor-gebarsten-dorpel-1000.webp",
+    "srcset": "/images/voor-gebarsten-dorpel-640.webp 640w, /images/voor-gebarsten-dorpel-1000.webp 1000w",
     "sizes": "(max-width:900px) 100vw, 560px"
   },
   "schema": [
@@ -58,44 +58,16 @@
         <span>Gecertificeerd, geen zzp'ers</span>
         <span>Door heel Nederland</span>
         <span>Kozijndealers verwijzen naar ons door</span>
+        <span>Afval gaat mee</span>
       </div>
     </div>
 
-    <!-- 25 jaar zon (js/kozijn-3d.js, opmaak in css/iwrap-site.css onderdeel 13): een nieuw kozijn,
-         25 jaar zon die de folie laat verweren, en dan ons herstel. Speelt één keer en blijft staan
-         op het herstelde kozijn. De poster is het beginbeeld, tot het script tekent. -->
-    <figure class="hero-fig kozijn-3d k3d-zon" data-kozijn-zon>
-      <div class="k3d-beeld">
-        <x-beeld src="kozijn-zon-creme" eager class="kz-poster" sizes="(max-width:900px) 100vw, 560px" alt="Getekend crème kunststof kozijn met nieuwe houtnerffolie in de zon">
-        <canvas aria-hidden="true"></canvas>
-        <p class="kz-teller" aria-hidden="true"><span class="kz-jaar">0</span><span class="kz-eenheid">jaar zon</span></p>
-        <p class="k3d-zin is-leeg" aria-live="polite"></p>
-        <button class="k3d-opnieuw" type="button" hidden>Opnieuw</button>
-      </div>
-      <ol class="k3d-stappen" aria-label="Wat zon met folie doet, en hoe wij het herstellen">
-        <li><button type="button" data-stap="1"><span class="k3d-nr">1</span><span>Nieuw</span></button></li>
-        <li><button type="button" data-stap="2"><span class="k3d-nr">2</span><span>25 jaar zon</span></button></li>
-        <li><button type="button" data-stap="3"><span class="k3d-nr">3</span><span>Hersteld</span></button></li>
-      </ol>
-      <figcaption>Een animatie van wat de zon met folie doet. Hieronder zie je echte klussen.</figcaption>
-    </figure>
-  </div>
-</section>
-
-<!-- Direct onder de hero: het bewijs. De echte voor/na-schuif is de belangrijkste verkoopfoto
-     (Max, 16 november 2026): na de animatie meteen een echte klus. -->
-<section class="vb-sectie">
-  <div class="wrap">
-    <div class="sectie-kop midden">
-      <p class="opschrift">Voorbeelden</p>
-      <h2>Zo ziet het eruit als we klaar zijn</h2>
-      <p>Geen renders en geen voorbeelden van een fabrikant: dit zijn foto's van onze
-      eigen klussen. In wit, crème, groen en antraciet.</p>
-    </div>
-    <div class="vb-raster">
-    <figure class="vergelijk-los">
+    <!-- De echte voor/na-schuif: de belangrijkste verkoopfoto, een echte klus (Max, 16 november
+         2026). Sinds de audit van 17 november weer in de hero; de zon-animatie staat nu bij
+         "Waarom herstellen werkt". -->
+    <figure class="hero-fig vergelijk-los">
       <div class="vergelijk" style="--pos:50%">
-        <x-beeld src="voor-gebarsten-dorpel" sizes="(max-width:900px) 100vw, 620px" alt="Onderdorpel van een kunststof kozijn waarvan de folie is gebarsten en opgekruld">
+        <x-beeld src="voor-gebarsten-dorpel" eager sizes="(max-width:900px) 100vw, 620px" alt="Onderdorpel van een kunststof kozijn waarvan de folie is gebarsten en opgekruld">
         <div class="na">
           <x-beeld src="na-gebarsten-dorpel-hersteld" sizes="(max-width:900px) 100vw, 620px" alt="Dezelfde onderdorpel na het aanbrengen van nieuwe Renolit folie: strak en egaal">
         </div>
@@ -107,14 +79,25 @@
       </div>
       <figcaption>Echte klus, dezelfde dorpel. Sleep de schuif om het verschil te zien.</figcaption>
     </figure>
-    <div class="strook verschijn">
-      <x-beeld src="project-raam-na" sizes="(max-width:700px) 50vw, 240px" alt="Klein crème kozijn na het herstel, rondom strak en egaal">
-      <x-beeld src="project-groen-na" sizes="(max-width:700px) 50vw, 240px" alt="Groene onderdorpel in RAL 6009 na het herstel, egaal met houtnerf">
-      <x-beeld src="project-antraciet-na" sizes="(max-width:700px) 50vw, 240px" alt="Antracietgrijze tussendorpel van een deur na het herstel">
-      <x-beeld src="project-verbinding-na" sizes="(max-width:700px) 50vw, 240px" alt="Witte verbinding van stijl en dorpel, de nieuwe folie strak om de hoek">
+  </div>
+</section>
+
+<!-- Direct onder de hero: meer echt werk, met de kleur erbij (dezelfde namen als op /voorbeelden). -->
+<section class="vb-sectie">
+  <div class="wrap">
+    <div class="sectie-kop midden">
+      <p class="opschrift">Voorbeelden</p>
+      <h2>Zo ziet het eruit als we klaar zijn</h2>
+      <p>Geen renders en geen voorbeelden van een fabrikant: dit zijn foto's van onze
+      eigen klussen. In wit, crème, groen en antraciet.</p>
     </div>
+    <div class="strook strook-bijschrift verschijn">
+      <figure><x-beeld src="project-raam-na" sizes="(max-width:560px) 50vw, 270px" alt="Klein crème kozijn na het herstel, rondom strak en egaal"><figcaption>Klein raam &middot; crème</figcaption></figure>
+      <figure><x-beeld src="project-groen-na" sizes="(max-width:560px) 50vw, 270px" alt="Groene onderdorpel in RAL 6009 na het herstel, egaal met houtnerf"><figcaption>Groen &middot; RAL 6009</figcaption></figure>
+      <figure><x-beeld src="project-antraciet-na" sizes="(max-width:560px) 50vw, 270px" alt="Antracietgrijze tussendorpel van een deur na het herstel"><figcaption>Antracietgrijs &middot; RAL 7016</figcaption></figure>
+      <figure><x-beeld src="project-verbinding-na" sizes="(max-width:560px) 50vw, 270px" alt="Witte verbinding van stijl en dorpel, de nieuwe folie strak om de hoek"><figcaption>Wit &middot; houtnerffolie</figcaption></figure>
     </div>
-    <div class="knoprij" style="margin-top:34px">
+    <div class="knoprij" style="margin-top:30px;justify-content:center">
       <a class="knop knop-tweede" href="/voorbeelden">Meer voorbeelden bekijken</a>
     </div>
   </div>
@@ -128,28 +111,6 @@
       <p>Zo gaat het bij vrijwel elke klus. Doorlooptijd: {{feit.doorlooptijd}}.</p>
     </div>
     {{film}}
-    <div class="stappen verschijn">
-      <div class="stap" data-film-van="3.2" data-film-tot="6.6">
-        <h3>Foto en vaste prijs</h3>
-        <p>Stuur foto's via het aanvraagformulier: streep aan wat er moet gebeuren, zet de
-        maten erbij, of teken het op papier. Je krijgt één totaalprijs, geen nacalculatie
-        achteraf.</p>
-      </div>
-      <div class="stap" data-film-van="6.6" data-film-tot="9.0">
-        <h3>Afspraak</h3>
-        <p>Je weet vooraf wie er komt, en wanneer.</p>
-      </div>
-      <div class="stap" data-film-van="9.0" data-film-tot="14.0">
-        <h3>Eraf en reinigen</h3>
-        <p>Oude folie en lijmresten eraf, alles vetvrij. Het profiel eronder blijft heel —
-        dat is het hele punt.</p>
-      </div>
-      <div class="stap" data-film-van="14.0" data-film-tot="17.0">
-        <h3>Nieuwe folie erop</h3>
-        <p>Op maat gesneden, luchtvrij aangebracht, netjes om de randen gezet. Afval
-        gaat mee.</p>
-      </div>
-    </div>
     <p style="margin-top:30px;max-width:62ch">Bij de oplevering krijg je er een
     <a href="/kozijncheck">gratis kozijncheck</a> bij: een eerlijk stoplichtrapport over de
     rubbers, de kit, het glas en het beslag, met je garantie erin.</p>
@@ -321,29 +282,23 @@
       kapotmaakt is de folie eroverheen — en die vervang je zonder het kozijn eruit
       te halen.</p>
     </div>
-    <!-- Het kozijn in 3D (js/kozijn-3d.js, opmaak in css/iwrap-site.css onderdeel 12):
-         de lagen, en dan de drie vaste stappen. Speelt één keer als hij in beeld komt;
-         een klik op een stap speelt vanaf daar. Zonder WebGL een foto van het herstelde
-         kozijn, zonder JavaScript gewoon de stappen. -->
-    <figure class="kozijn-3d k3d-kaart" data-kozijn-3d>
-      <div class="k3d-raster">
-        <div class="k3d-beeld">
-          <canvas aria-hidden="true"></canvas>
-          <p class="k3d-zin is-leeg"></p>
-          <button class="k3d-opnieuw" type="button" hidden>Opnieuw</button>
-        </div>
-        <div class="k3d-kant">
-          <ol class="k3d-stappen" aria-label="De drie vaste stappen">
-            <li><button type="button" data-stap="1"><span class="k3d-nr">1</span><span><b>Toplaag eraf</b>
-            Waar nog oude folie op zit, halen we die eraf, met warmte en de juiste middelen. Het profiel eronder blijft heel.</span></button></li>
-            <li><button type="button" data-stap="2"><span class="k3d-nr">2</span><span><b>Reinigen en vetvrij</b>
-            Oude lijmresten gaan eraf en de ondergrond wordt helemaal schoon en vetvrij gemaakt.</span></button></li>
-            <li><button type="button" data-stap="3"><span class="k3d-nr">3</span><span><b>Nieuwe folie erop</b>
-            Een nieuwe, hoogwaardige Renolit folie, strak opgebracht en om de rand gezet, met {{feit.garantie_folie}}.</span></button></li>
-          </ol>
-          <figcaption>Getekend in 3D, zo gaat het bij elk kozijn. Klik op een stap om hem nog eens te zien.</figcaption>
-        </div>
+    <!-- 25 jaar zon (js/kozijn-3d.js, opmaak in css/iwrap-site.css onderdeel 13; tot 17 november de hero): een nieuw kozijn,
+         25 jaar zon die de folie laat verweren, en dan ons herstel. Speelt één keer en blijft staan
+         op het herstelde kozijn. De poster is het beginbeeld, tot het script tekent. -->
+    <figure class="kozijn-3d k3d-zon zon-midden" data-kozijn-zon>
+      <div class="k3d-beeld">
+        <x-beeld src="kozijn-zon-creme" class="kz-poster" sizes="(max-width:900px) 100vw, 560px" alt="Getekend crème kunststof kozijn met nieuwe houtnerffolie in de zon">
+        <canvas aria-hidden="true"></canvas>
+        <p class="kz-teller" aria-hidden="true"><span class="kz-jaar">0</span><span class="kz-eenheid">jaar zon</span></p>
+        <p class="k3d-zin is-leeg" aria-live="polite"></p>
+        <button class="k3d-opnieuw" type="button" hidden>Opnieuw</button>
       </div>
+      <ol class="k3d-stappen" aria-label="Wat zon met folie doet, en hoe wij het herstellen">
+        <li><button type="button" data-stap="1"><span class="k3d-nr">1</span><span>Nieuw</span></button></li>
+        <li><button type="button" data-stap="2"><span class="k3d-nr">2</span><span>25 jaar zon</span></button></li>
+        <li><button type="button" data-stap="3"><span class="k3d-nr">3</span><span>Hersteld</span></button></li>
+      </ol>
+      <figcaption>Een animatie van wat de zon met folie doet.</figcaption>
     </figure>
     {{vergelijking}}
   </div>
@@ -408,28 +363,6 @@
         <span class="pijl">Samenwerken</span>
       </a>
     </div>
-  </div>
-</section>
-
-<section class="vlak-wit">
-  <div class="wrap">
-    <div class="sectie-kop midden">
-      <p class="opschrift">Merken</p>
-      <h2>Welk kozijn heb je?</h2>
-      <p>Het merk maakt voor het herstel weinig uit — de folie past op vrijwel elk
-      kunststof profiel. Handig om te weten wat je hebt, dat wel.</p>
-    </div>
-    <nav class="merken verschijn" aria-label="Kozijnmerken">
-      <a href="/kozijnmerken/weru">Weru</a>
-      <a href="/kozijnmerken/veka">VEKA</a>
-      <a href="/kozijnmerken/schuco">Schüco</a>
-      <a href="/kozijnmerken/gealan">Gealan</a>
-      <a href="/kozijnmerken/finstral">Finstral</a>
-      <a href="/kozijnmerken/knipping">Knipping</a>
-      <a href="/kozijnmerken/kommerling">Kömmerling</a>
-      <a href="/kozijnmerken/kvision">K-Vision</a>
-      <a href="/kozijnmerken">Alle merken &rarr;</a>
-    </nav>
   </div>
 </section>
 
