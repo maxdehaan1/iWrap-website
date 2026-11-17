@@ -243,7 +243,8 @@ eerder Google hem leert kennen.
       toevoegen en de sitemap aanmelden (`https://kozijnwrap.nl/sitemap.xml` en
       `https://www.houtnerffolie.nl/sitemap.xml`).
 - [ ] **[Max] Google Bedrijfsprofiel:** website `https://iwrap.nl` en de offertelink
-      `https://iwrap.nl/offerte`.
+      `https://iwrap.nl/offerte`. Controleer meteen of het adres al **Neuweg 128, 1214 GZ
+      Hilversum** is: de site en de gegevens voor Google noemen dat adres (audit 17 november).
 - [ ] **[Max]** Instagram-bio, je e-mailhandtekening en eventueel materiaal voor
       Weru-dealers: het adres blijft iwrap.nl. Een link naar `/offerte` is wel handiger
       dan naar `/contact` (die blijft ook gewoon werken).
@@ -281,6 +282,14 @@ iwrap.nl noemt de naam kozijnhorren.nl wel al, maar linkt pas naar de winkel als
       je de mailboxen op `mail.kozijnwrap.nl` of `mail.houtnerffolie.nl` gebruikt; die
       draaien op diezelfde GPO-server.
 - [ ] **[Max] Agenda:** het verloopmoment van het Microsoft client secret (stap 2).
+- [ ] **[Max] SPF opruimen, pas na het opzeggen van de hosting** (audit 17 november, S3). Nu staat er
+      `v=spf1 +a +mx +a:srv1.gpohosting.nl include:spf.esmero.nl include:spf.protection.outlook.com -all`.
+      `+a` betekent "het webadres van iwrap.nl mag mailen": na de overstap is dat een gedeeld
+      adres van Vercel. Als niets meer via GPO mailt, wordt het TXT-record:
+      `v=spf1 include:spf.protection.outlook.com -all`. **[Claude]** controleert daarna met een
+      testmail dat SPF, DKIM en DMARC slagen.
+- [ ] **[Max] Mag ook: DMARC-rapporten.** Zet in het `_dmarc`-record een adres voor de rapporten
+      (`rua=mailto:...`), dan zie je of er mail namens iwrap.nl tegengehouden wordt.
 
 ## 8. iWrap-app
 
@@ -331,4 +340,4 @@ af van de overstapdag.
 
 ---
 
-*Bijgehouden door Claude. Laatst bijgewerkt: 15 november 2026 (bij de testaanvraag ook de lader en het bedankt-moment nakijken).*
+*Bijgehouden door Claude. Laatst bijgewerkt: 17 november 2026 (audit: Bedrijfsprofiel op het nieuwe adres, SPF opruimen na de hosting, DMARC-rapporten).*

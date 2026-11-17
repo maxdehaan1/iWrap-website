@@ -109,8 +109,8 @@ def kozijnhorren_link(tekst="kozijnhorren.nl", nieuw_venster=False):
 
 
 FEITEN = {
-    "garantie_folie": "tien jaar fabrieksgarantie op de folie",
-    "garantie_montage": "vijf jaar op de montage",
+    "garantie_folie": "tien jaar Renolit-garantie op de folie",
+    "garantie_montage": "vijf jaar garantie op de uitvoering",
     # Dezelfde termijnen als getal: het opleverrapport rekent er de einddatum mee uit.
     "garantie_folie_jaren": "10",
     "garantie_montage_jaren": "5",
@@ -575,6 +575,7 @@ def render_footer():
           <a href="{b['whatsapp_url']}">WhatsApp</a><br>
           <a href="mailto:{b['email']}">{b['email']}</a>
         </p>
+        <p class="fadres">{b['juridisch']}<br>{b['straat']}, {b['postcode']} {b['plaats']}</p>
         <p class="fsocial">
           <a href="{b['reviews_url']}" target="_blank" rel="noopener">&#9733; <span data-rv="score">{b['reviews_score']}</span> uit <span data-rv="aantal">{b['reviews_aantal']}</span> Google-reviews</a><br>
           <a href="{b['instagram']}" target="_blank" rel="noopener">iWrap op Instagram</a>
@@ -582,7 +583,7 @@ def render_footer():
       </div>
 {kolommen}  </div>
   <div class="wrap fbottom">
-    <p>&copy; 2026 {b['juridisch']}, {b['plaats']}{zakelijk}</p>
+    <p>&copy; {time.localtime().tm_year} {b['juridisch']}, {b['plaats']}{zakelijk}</p>
     <p class="fzus">Meer weten? <a href="https://kozijnwrap.nl" rel="noopener">kozijnwrap.nl</a>
     legt uit wanneer herstel zin heeft, <a href="https://houtnerffolie.nl" rel="noopener">houtnerffolie.nl</a>
     gaat over de folie zelf{zusterhorren}.</p>
@@ -627,28 +628,14 @@ def localbusiness(met_reviews=True):
         "description": (
             "iWrap is specialist in kozijnfolie en herstelt kunststof kozijnen met "
             "Renolit folie: de aangetaste toplaag eraf, een nieuwe folie erop. Volledig "
-            "gecertificeerde monteurs, geen zzp'ers, tien jaar fabrieksgarantie op de "
-            "folie en vijf jaar op de montage."
+            "gecertificeerde monteurs, geen zzp'ers, tien jaar Renolit-garantie op de "
+            "folie en vijf jaar op de uitvoering."
         ),
-        "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": b["reviews_score_getal"],
-            "reviewCount": b["reviews_aantal"],
-            "bestRating": "5",
-        },
     }
-    if met_reviews:
-        gegevens["review"] = [
-            {
-                "@type": "Review",
-                "author": {"@type": "Person", "name": r["naam"]},
-                "reviewRating": {"@type": "Rating", "ratingValue": str(r.get("sterren", 5)),
-                                 "bestRating": "5"},
-                "reviewBody": r["tekst"],
-                **({"datePublished": r["datum"]} if r.get("datum") else {}),
-            }
-            for r in REVIEWS["reviews"]
-        ]
+    # Geen cijfer en geen losse reviews in de gegevens voor Google: dat zijn reviews van
+    # Google zelf (een andere site), en die mogen volgens Google's eigen richtlijnen niet als
+    # structured data op je eigen site staan. Op de pagina zelf blijven ze gewoon staan.
+    # (Audit 17 november 2026, V2.)
     return gegevens
 
 

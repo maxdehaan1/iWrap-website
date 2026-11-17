@@ -890,7 +890,7 @@ Deze staan óók op kozijnwrap.nl en houtnerffolie.nl. Verander je ze hier, vera
 daar dan mee — drie sites die verschillende garantietermijnen noemen is voor een klant
 alleen maar verwarrend. Ze staan hier op één plek, in `FEITEN` in `build.py`:
 
-- Tien jaar fabrieksgarantie op de folie, vijf jaar op de montage
+- Tien jaar Renolit-garantie op de folie, vijf jaar garantie op de uitvoering (zoals de voorwaarden, artikel 13; Max, 17 november 2026)
 - Kunststof profiel gaat 50 tot 75 jaar mee
 - De folie houdt het vijftien tot vijfentwintig jaar (`feit.levensduur_folie`). Schrijf
   "versleten" of "aan vervanging toe", niet "de folie is op"

@@ -79,7 +79,7 @@
       veld("garantie-folie", jf + " jaar, tot " + datum(jarenLater(o.datum, jf)));
       veld("garantie-montage", jm + " jaar, tot " + datum(jarenLater(o.datum, jm)));
     } else {
-      veld("garantie-folie", jf + " jaar fabrieksgarantie");
+      veld("garantie-folie", jf + " jaar Renolit-garantie");
       veld("garantie-montage", jm + " jaar");
     }
 

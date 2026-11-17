@@ -9,15 +9,15 @@
  },
  "contact": {
   "datum": "2026-11-17",
-  "hash": "81dc27aa67c7"
+  "hash": "7a9c77d89453"
  },
  "dakkapel-kozijnen": {
   "datum": "2026-11-17",
-  "hash": "7555a641d503"
+  "hash": "a2a00f53c2b2"
  },
  "index": {
   "datum": "2026-11-17",
-  "hash": "8944aa7c43a8"
+  "hash": "8890ffa580ae"
  },
  "kosten": {
   "datum": "2026-11-17",
@@ -65,7 +65,7 @@
  },
  "kunststof-kozijn-herstellen": {
   "datum": "2026-11-17",
-  "hash": "29495627a49e"
+  "hash": "84afa7d989d9"
  },
  "max": {
   "datum": "2026-10-24",
@@ -77,15 +77,15 @@
  },
  "over-iwrap": {
   "datum": "2026-11-17",
-  "hash": "f370dd9df3a9"
+  "hash": "bc8f8cd81456"
  },
  "privacy": {
-  "datum": "2026-10-25",
-  "hash": "cc5ab801abcb"
+  "datum": "2026-11-17",
+  "hash": "ff83a02d0c0d"
  },
  "rapport": {
-  "datum": "2026-11-15",
-  "hash": "310e575a6965"
+  "datum": "2026-11-17",
+  "hash": "9cf972a7b78e"
  },
  "tekenblad": {
   "datum": "2026-11-15",
@@ -93,7 +93,7 @@
  },
  "veelgestelde-vragen": {
   "datum": "2026-11-17",
-  "hash": "6fc7d3628550"
+  "hash": "330ca0e96d7f"
  },
  "voor-kozijnbedrijven": {
   "datum": "2026-11-17",
@@ -105,7 +105,7 @@
  },
  "vve-en-woningcorporaties": {
   "datum": "2026-11-17",
-  "hash": "02992ab7ac9b"
+  "hash": "4c47a085cc02"
  },
  "werkgebied": {
   "datum": "2026-11-17",
