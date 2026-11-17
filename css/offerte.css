@@ -646,3 +646,13 @@ html.streep-open,html.streep-open body{overflow:hidden;}
 .mailroute .knoprij{margin-bottom:14px;}
 .mailroute-adres{font-size:1rem!important;margin:0!important;}
 .kopieer-adres{margin-left:6px;background:none;border:0;padding:0;cursor:pointer;font:inherit;color:var(--mint-ink);text-decoration:underline;text-underline-offset:3px;}
+
+/* De korte vragen bij Kleur en Gegevens (sinds 17 november 2026): een kleinere kop per
+   vraag, de antwoorden als chips. */
+.stap-paneel > .sub-vraag{font-size:clamp(1.12rem,1.04rem + .4vw,1.3rem);margin:34px 0 .35em;}
+.stap-paneel > .sub-vraag .hint{font-weight:400;font-size:.92rem;color:var(--sub);margin-left:4px;}
+.stap-paneel > .sub-vraag + .chips,.stap-paneel > .toelichting + .chips-ruim{margin-top:12px;}
+.stap-paneel > .toelichting + .chips-ruim{margin-top:-10px;}
+.chips-ruim{margin-bottom:6px;}
+.chips + .vraag-hint{margin-top:16px;}
+.stap-paneel > .veld.vervolgveld{margin-top:14px;}

@@ -33,7 +33,7 @@ os.environ["MAX_WACHTWOORD"] = "test"
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from backend.app import app  # noqa: E402
-from backend import bestellingen, horren, reviews  # noqa: E402
+from backend import aanvragen, bestellingen, horren, reviews  # noqa: E402
 from backend import instellingen as cfg  # noqa: E402
 
 GOED = 0
@@ -97,6 +97,14 @@ def aanvragen_testen():
     instellingen.OP_VERCEL = False
     klopt(r["status"] == 503 and "staat nog uit" in r["json"]["fout"],
           "op Vercel zonder mailkoppeling zegt het formulier eerlijk dat versturen nog uitstaat")
+    r = verzoek("POST", "/api/aanvragen", {"manier": "maten", "kleur_nu": "paars", "klant": "onzin",
+                                           "kozijnen": [{"waar": "hoog", "kant": "boven", "heel": True,
+                                                         "breedte": "120", "hoogte": "140"}],
+                                           "gegevens": GEGEVENS})
+    klopt(r["status"] == 201, "2e verdieping of hoger is een geldige plek; onbekende keuzes worden genegeerd")
+    a = aanvragen.haal(r["json"]["id"])
+    klopt(a["kleur_nu"] == "" and a["klant"] == "particulier" and a["kozijnen"][0]["kant"] == "",
+          "een onbekende kleur, klant of kant valt terug op leeg of particulier")
     r = verzoek("POST", "/api/aanvragen", {"manier": "streep", "kozijnen": [{"waar": "verdieping"}],
                                            "gegevens": GEGEVENS})
     klopt(r["status"] == 422 and "streep" in r["json"]["fout"], "aanstrepen zonder aanstreping wordt geweigerd")
@@ -110,8 +118,10 @@ def aanvragen_testen():
     # Foto en maten: 1,60 en 130 zijn allebei goed, en een kozijn dat twee keer voorkomt telt dubbel.
     r = verzoek("POST", "/api/aanvragen", {
         "manier": "maten", "kleur": "zelfde", "via": "folie laat los", "gegevens": GEGEVENS,
+        "kleur_nu": "creme", "zijde": "beide", "rolluik": "ja", "klant": "vve", "wanneer": "voorjaar",
+        "bron": "dealer", "dealer": "Weru Teststad",
         "kozijnen": [
-            {"waar": "begane-grond", "plek": "voorkant", "aantal": 2, "dichtbij": True,
+            {"waar": "begane-grond", "kant": "achter", "plek": "keuken", "aantal": 2, "dichtbij": True,
              "regels": [{"deel": "Onderdorpel", "lengte": "1,60", "aantal": 1},
                         {"deel": "Stijl", "lengte": "130", "aantal": 2}]},
             {"waar": "dakkapel", "heel": True, "breedte": "2,40", "hoogte": "1,20"},
@@ -152,6 +162,13 @@ def aanvragen_testen():
           "alle foto's als bijlage, plus aanvraag.json")
     data = json.load(open(os.path.join(uitbak, [m for m in mails if m.endswith("-aanvraag-bijlagen")][0], "aanvraag.json")))
     klopt(data["totalen"]["opgegeven_cm"] == 840 and "token" not in data, "aanvraag.json klopt en bevat geen token")
+    klopt(data["kleur_nu"] == "creme" and data["zijde"] == "beide" and data["rolluik"] is True
+          and data["klant"] == "vve" and data["bron"] == "dealer" and data["dealer"] == "Weru Teststad"
+          and data["kozijnen"][0]["kant"] == "achter",
+          "de korte vragen (kleur nu, binnen/buiten, rolluikkasten, voor wie, hoe ken je ons, kant) in aanvraag.json")
+    klopt("Kleur nu" in html and "crème" in html and "binnen en buiten" in html and "Rolluikkasten" in html
+          and "een kozijndealer: Weru Teststad" in html and "achterkant" in html,
+          "en in de mail aan Max")
     bevestiging = open(os.path.join(uitbak, [m for m in mails if m.endswith("-aanvraag-bevestiging.html")][0]),
                        encoding="utf-8").read()
     klopt("We hebben je aanvraag ontvangen" in bevestiging and "werkdag" not in bevestiging,

@@ -666,6 +666,7 @@
           h("dt", null, "E-mail"), h("dd", null, h("a", { href: "mailto:" + g.email }, g.email)),
           h("dt", null, "Adres"), h("dd", null, a.adres, " · ", h("a", { href: kaart, target: "_blank", rel: "noopener" }, "kaart")),
           h("dt", null, "Kleur"), h("dd", null, a.kleur),
+          (a.details || []).map(function (d) { return [h("dt", null, d[0]), h("dd", null, d[1])]; }),
           a.via ? [h("dt", null, "Herkomst"), h("dd", null, a.via)] : null,
           a.toelichting ? [h("dt", null, "Opmerking"), h("dd", null, a.toelichting)] : null),
         klusKnop,

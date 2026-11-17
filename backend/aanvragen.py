@@ -45,7 +45,22 @@ from .auth import nieuwe_id
 from .opslag import opslag
 
 MANIEREN = {"streep": "Foto en aanstrepen", "maten": "Foto en maten", "papier": "Op papier"}
-WAAR = {"begane-grond": "begane grond", "verdieping": "verdieping", "dakkapel": "dakkapel"}
+WAAR = {"begane-grond": "begane grond", "verdieping": "1e verdieping", "hoog": "2e verdieping of hoger",
+        "dakkapel": "dakkapel"}
+KANT = {"voor": "voorkant", "achter": "achterkant", "zij": "zijkant"}
+
+# De korte vragen bij Kleur en Gegevens (sinds de audit van 17 november 2026). Alles is
+# een vaste keuze; wat er niet in staat, telt niet. Ze zijn bij de server niet verplicht,
+# zodat een half ingevulde aanvraag van voor die tijd gewoon verstuurd kan worden.
+KLEUR_NU = {"wit": "wit", "creme": "crème", "antraciet": "antraciet", "groen": "donkergroen",
+            "blauw": "staalblauw", "houtnerf": "houtnerf", "anders": "een andere kleur",
+            "onbekend": "weet ik niet"}
+ZIJDE = {"buiten": "alleen de buitenkant", "binnen": "alleen de binnenkant", "beide": "binnen en buiten"}
+KLANT = {"particulier": "particulier", "vve": "VvE", "corporatie": "woningcorporatie", "bedrijf": "bedrijf"}
+WANNEER = {"zsm": "zo snel mogelijk", "voorjaar": "voorjaar", "zomer": "zomer", "najaar": "najaar",
+           "maakt-niet-uit": "maakt niet uit"}
+BRON = {"google": "Google", "dealer": "een kozijndealer", "aanbevolen": "aanbevolen door iemand",
+        "site": "kozijnwrap.nl of houtnerffolie.nl", "anders": "anders"}
 
 MAX_KOZIJNEN = 20
 MAX_REGELS = 15          # maatregels per kozijn
@@ -113,6 +128,7 @@ def _kozijn(k, nr, manier, fouten):
         k = {}
     uit = {
         "waar": k.get("waar") if k.get("waar") in WAAR else "",
+        "kant": k.get("kant") if k.get("kant") in KANT else "",
         "plek": _tekst(k.get("plek"), 60),
         "aantal": _geheel(k.get("aantal"), 1, 20, 1),
         "heel": bool(k.get("heel")),
@@ -163,6 +179,7 @@ def schoon(invoer):
             "tekeningen": _geheel(p.get("tekeningen"), 0, MAX_TEKENINGEN, 0),
             "fotos": _geheel(p.get("fotos"), 0, MAX_PAPIERFOTOS, 0),
             "waar": [w for w in WAAR if w in (p.get("waar") or [])],
+            "kant": [w for w in KANT if w in (p.get("kant") or [])],
         }
         if not a["papier"]["tekeningen"]:
             fouten.append("Voeg een foto van je tekening toe.")
@@ -178,6 +195,17 @@ def schoon(invoer):
             fouten.append("Meer dan %d kozijnen past niet in dit formulier. Bel of mail ons: "
                           "dan komen we liever even kijken." % MAX_KOZIJNEN)
         a["kozijnen"] = [_kozijn(k, i + 1, manier, fouten) for i, k in enumerate(kozijnen[:MAX_KOZIJNEN])]
+
+    def keuze(sleutel, opties, standaard=""):
+        return invoer.get(sleutel) if invoer.get(sleutel) in opties else standaard
+
+    a["kleur_nu"] = keuze("kleur_nu", KLEUR_NU)
+    a["zijde"] = keuze("zijde", ZIJDE, "buiten")
+    a["rolluik"] = invoer.get("rolluik") == "ja"
+    a["klant"] = keuze("klant", KLANT, "particulier")
+    a["wanneer"] = keuze("wanneer", WANNEER)
+    a["bron"] = keuze("bron", BRON)
+    a["dealer"] = _tekst(invoer.get("dealer"), 80) if a["bron"] == "dealer" else ""
 
     a["kleur"] = "anders" if invoer.get("kleur") == "anders" else "zelfde"
     a["kleur_anders"] = _tekst(invoer.get("kleur_anders"), 200) if a["kleur"] == "anders" else ""
@@ -292,16 +320,40 @@ def totalen(a):
     return {"kozijnen": len(a["kozijnen"]), "stuks": stuks, "opgegeven_cm": opgegeven, "per_hoogte": hoogte}
 
 
+def details(a):
+    """De korte vragen bij Kleur en Gegevens als (label, antwoord), voor de mail aan Max
+    en de Max-modus. Een aanvraag van voor 17 november 2026 heeft ze niet."""
+    uit = []
+    if a.get("kleur_nu"):
+        uit.append(("Kleur nu", KLEUR_NU[a["kleur_nu"]]))
+    if a.get("zijde"):
+        uit.append(("Binnen of buiten", ZIJDE[a["zijde"]]))
+    if "rolluik" in a:
+        uit.append(("Rolluikkasten", "ja, die moeten ook" if a["rolluik"] else "nee"))
+    if a.get("klant"):
+        uit.append(("Voor wie", KLANT[a["klant"]]))
+    if a.get("wanneer"):
+        uit.append(("Wanneer", WANNEER[a["wanneer"]]))
+    if a.get("bron"):
+        uit.append(("Kent iWrap via", BRON[a["bron"]] + (": " + a["dealer"] if a.get("dealer") else "")))
+    return uit
+
+
 def voor_claude(a):
     """De aanvraag als gegevens, voor aanvraag.json in de mail. Zonder token."""
     d = {k: a[k] for k in ("id", "manier", "kozijnen", "papier", "kleur", "kleur_anders",
                            "gegevens", "toelichting", "via", "gemaakt")}
+    for k in ("kleur_nu", "zijde", "rolluik", "klant", "wanneer", "bron", "dealer"):
+        d[k] = a.get(k)
     d["manier_naam"] = MANIEREN[a["manier"]]
     d["totalen"] = totalen(a) if a["manier"] != "papier" else None
     d["fotos"] = fotolijst(a)
     d["_uitleg"] = ("Lengtes in centimeters. regels = wat de klant zelf gemeten heeft "
                     "(deel, lengte per stuk, aantal). aantal bij een kozijn = hoe vaak dat kozijn "
-                    "met hetzelfde werk voorkomt. heel = het hele kozijn moet. Bij manier 'streep' "
+                    "met hetzelfde werk voorkomt. heel = het hele kozijn moet. waar = begane-grond, verdieping (1e), "
+                    "hoog (2e verdieping of hoger) of dakkapel; kant = voor, achter of zij. kleur_nu = de kleur die "
+                    "de kozijnen nu hebben; zijde = buiten, binnen of beide; rolluik = ook rolluikkasten; klant = "
+                    "particulier, vve, corporatie of bedrijf; bron (+ dealer) = hoe de klant iWrap kent. Bij manier 'streep' "
                     "staat in kozijn-N-aangestreept.jpg wat er moet gebeuren: geel = het kozijn (vaste "
                     "delen), rood = een draairaam of deur. aanstreping zegt welke kleuren gebruikt zijn.")
     return d
@@ -357,7 +409,8 @@ def overzicht(a):
         p = a["papier"]
         return [{
             "titel": "Getekend op papier",
-            "regels": ["Waar: " + ", ".join(WAAR[w] for w in p["waar"])],
+            "regels": ["Waar: " + ", ".join(WAAR[w] for w in p["waar"])
+                       + (" (" + ", ".join(KANT[w] for w in p.get("kant", [])) + ")" if p.get("kant") else "")],
             "fotos": [f["naam"] for f in fotolijst(a)],
         }]
     uit = []
@@ -385,6 +438,7 @@ def voor_max(a):
         "kleur": "Dezelfde kleur houden" if a["kleur"] == "zelfde" else "Andere kleur: " + a["kleur_anders"],
         "toelichting": a["toelichting"],
         "via": a["via"],
+        "details": [list(x) for x in details(a)],
         "overzicht": overzicht(a),
         "fotos": [f["naam"] for f in fotolijst(a)],
     })

@@ -286,8 +286,18 @@ erbij heb je meer aan wat ze zelf typen.
    Onderaan: "Komt dit kozijn vaker voor, met hetzelfde werk?" Drie gelijke
    slaapkamerramen zijn dus één kaart met één foto. Bij "Op papier" in plaats van
    kaarten: foto's van de tekening, foto's van de kozijnen (genummerd) en waar ze zitten.
-3. **Kleur**: dezelfde houden of een andere.
-4. **Gegevens**: naam, mail, telefoon, adres, opmerking.
+3. **Kleur**: welke kleur de kozijnen nu hebben (verplicht, met "Weet ik niet"), dezelfde
+   houden of een andere, buitenkant/binnenkant/allebei, en of er rolluikkasten mee moeten.
+4. **Gegevens**: naam, mail, telefoon, adres, voor wie (particulier, VvE, corporatie,
+   bedrijf), wanneer (mag leeg), hoe ze iWrap kennen (mag leeg; bij "via mijn kozijndealer"
+   ook welke dealer), opmerking.
+
+Bij "Waar zit dit kozijn?" kiest de klant sinds 17 november 2026 uit begane grond,
+1e verdieping, 2e verdieping of hoger en dakkapel, en (mag leeg) voorkant, achterkant of
+zijkant: zo zie je meteen of iets hoog aan de achterkant zit. In `aanvraag.json` heten die
+`waar` (`verdieping` = 1e, `hoog` = 2e of hoger) en `kant`; de korte vragen heten
+`kleur_nu`, `zijde`, `rolluik`, `klant`, `wanneer`, `bron` en `dealer` (`details()` in
+`backend/aanvragen.py` zet ze in de mail en de Max-modus).
 5. **Versturen**: een overzicht met per kozijn een fotootje en wat er moet gebeuren, met
    bij elk blok een "Wijzig"-knop. Dan pas "Aanvraag versturen".
 

@@ -40,7 +40,18 @@
   // De vorige versie van het formulier bewaarde iets anders; dat ruimen we op.
   try { localStorage.removeItem("iwrap-offerte-concept"); } catch (e) { /* privémodus */ }
 
-  var WAAR = { "begane-grond": "Begane grond", verdieping: "Verdieping", dakkapel: "Dakkapel" };
+  var WAAR = { "begane-grond": "Begane grond", verdieping: "1e verdieping", hoog: "2e verdieping of hoger",
+               dakkapel: "Dakkapel" };
+  var KANT = { voor: "voorkant", achter: "achterkant", zij: "zijkant" };
+  // De korte vragen bij Kleur en Gegevens (dezelfde sleutels als in backend/aanvragen.py).
+  var KLEUR_NU = { wit: "wit", creme: "crème", antraciet: "antraciet", groen: "donkergroen", blauw: "staalblauw",
+                   houtnerf: "houtnerf", anders: "een andere kleur", onbekend: "weet ik niet" };
+  var ZIJDE = { buiten: "Alleen de buitenkant", binnen: "Alleen de binnenkant", beide: "Binnen en buiten" };
+  var KLANT = { particulier: "Particulier", vve: "VvE", corporatie: "Woningcorporatie", bedrijf: "Bedrijf" };
+  var WANNEER = { zsm: "zo snel mogelijk", voorjaar: "in het voorjaar", zomer: "in de zomer", najaar: "in het najaar",
+                  "maakt-niet-uit": "maakt niet uit" };
+  var BRON = { google: "via Google", dealer: "via mijn kozijndealer", aanbevolen: "aanbevolen door iemand",
+               site: "via kozijnwrap.nl of houtnerffolie.nl", anders: "anders" };
   var SNELKNOPPEN = ["Onderdorpel", "Stijl", "Bovendorpel", "Tussenstijl", "Tussendorpel",
                      "Onderdorpel draairaam", "Iets anders"];
 
@@ -72,7 +83,7 @@
 
   function nieuwKozijn() {
     return { id: sleutel("k"), foto: "", dichtbij: "", strepen: [], werk: "delen", regels: [],
-             breedte: "", hoogte: "", waar: "", plek: "", aantal: 1 };
+             breedte: "", hoogte: "", waar: "", kant: "", plek: "", aantal: 1 };
   }
 
   /* Lengtes ----------------------------------------------------------------
@@ -703,6 +714,13 @@
       return false;
     }
     if (stap === "kozijnen") return kozijnenGeldig(stil);
+    if (paneel.querySelector('[name="kleur_nu"]') && !waarde("kleur_nu")) {
+      if (!stil) {
+        zeg("Kies welke kleur je kozijnen nu hebben. Weet je het niet, kies dan 'Weet ik niet'.");
+        paneel.querySelector('[name="kleur_nu"]').focus();
+      }
+      return false;
+    }
     if (paneel.querySelector('[name="kleur"]') && waarde("kleur") === "anders" && !waarde("kleur_anders")) {
       if (!stil) { zeg("Zet er even bij welke kleur je in gedachten hebt."); form.querySelector("#kleur_anders").focus(); }
       return false;
@@ -773,6 +791,8 @@
   form.addEventListener("change", function (e) {
     if (!e.target.name) return;
     tekenVervolgvelden();
+    // Klopt de stap nu wel, dan hoort de melding van daarnet er niet meer te staan.
+    if (nu !== 1 && geldig(nu, true)) zeg("");
     if (nu === panelen.length - 1) tekenOverzicht();
     bewaar();
   });
@@ -790,6 +810,7 @@
   function kozijnKop(k, nr) {
     var delen = ["Kozijn " + nr];
     if (k.waar) delen.push(WAAR[k.waar]);
+    if (k.kant) delen.push(KANT[k.kant]);
     if (k.plek.trim()) delen.push(k.plek.trim());
     if (k.aantal > 1) delen.push(k.aantal + "× hetzelfde");
     return delen.join(" · ");
@@ -847,7 +868,8 @@
       werk.appendChild(rij);
       werk.appendChild(maak("p", "", staat.papier.tekening.length + " foto van je tekening, " +
         staat.papier.kozijnfoto.length + " foto" + (staat.papier.kozijnfoto.length === 1 ? "" : "'s") +
-        " van je kozijnen. Waar: " + waarden("papier_waar").map(function (w) { return WAAR[w].toLowerCase(); }).join(", ") + "."));
+        " van je kozijnen. Waar: " + waarden("papier_waar").map(function (w) { return WAAR[w].toLowerCase(); }).join(", ") +
+        (waarden("papier_kant").length ? " (" + waarden("papier_kant").map(function (w) { return KANT[w]; }).join(", ") + ")" : "") + "."));
     } else {
       staat.kozijnen.forEach(function (k, i) {
         var regel = maak("div", "ov-kozijn");
@@ -865,13 +887,20 @@
     vak.appendChild(werk);
 
     var kleur = overzichtBlok("Kleur", 2);
+    if (waarde("kleur_nu")) kleur.appendChild(maak("p", "", "Nu: " + KLEUR_NU[waarde("kleur_nu")]));
     kleur.appendChild(maak("p", "", waarde("kleur") === "anders"
       ? "Een andere kleur: " + waarde("kleur_anders") : "Dezelfde kleur houden"));
+    if (waarde("zijde")) kleur.appendChild(maak("p", "", ZIJDE[waarde("zijde")]));
+    if (waarde("rolluik") === "ja") kleur.appendChild(maak("p", "", "Ook de rolluikkasten"));
     vak.appendChild(kleur);
 
     var wie = overzichtBlok("Je gegevens", 3);
     [waarde("naam"), waarde("straat") + " " + waarde("huisnummer") + ", " + netjesPostcode(waarde("postcode")) + " " + waarde("plaats"),
      waarde("telefoon"), waarde("email")].forEach(function (t) { wie.appendChild(maak("p", "", t)); });
+    var extra = [KLANT[waarde("klant")] || ""];
+    if (waarde("wanneer")) extra.push("Wanneer: " + WANNEER[waarde("wanneer")]);
+    if (waarde("bron")) extra.push("Kent iWrap " + BRON[waarde("bron")] + (waarde("bron") === "dealer" && waarde("dealer") ? " (" + waarde("dealer") + ")" : ""));
+    extra.filter(Boolean).forEach(function (t) { wie.appendChild(maak("p", "", t)); });
     if (waarde("toelichting")) wie.appendChild(maak("p", "ov-opmerking", waarde("toelichting")));
     vak.appendChild(wie);
   }
@@ -915,7 +944,13 @@
         regels.push(kozijnKop(k, i + 1) + ": " + werkRegels(k).join("; "));
       });
     }
-    regels.push("", "Kleur: " + (waarde("kleur") === "anders" ? waarde("kleur_anders") : "dezelfde houden"));
+    regels.push("", "Kleur: " + (waarde("kleur") === "anders" ? waarde("kleur_anders") : "dezelfde houden") +
+                (waarde("kleur_nu") ? " (nu " + KLEUR_NU[waarde("kleur_nu")] + ")" : ""));
+    if (waarde("zijde")) regels.push(ZIJDE[waarde("zijde")]);
+    if (waarde("rolluik") === "ja") regels.push("Ook de rolluikkasten");
+    regels.push("Voor wie: " + (KLANT[waarde("klant")] || ""));
+    if (waarde("wanneer")) regels.push("Wanneer: " + WANNEER[waarde("wanneer")]);
+    if (waarde("bron")) regels.push("Kent iWrap " + BRON[waarde("bron")] + (waarde("dealer") ? " (" + waarde("dealer") + ")" : ""));
     if (waarde("toelichting")) regels.push("Opmerking: " + waarde("toelichting"));
     return regels.join("\n");
   }
@@ -925,6 +960,13 @@
       manier: staat.manier,
       kleur: waarde("kleur"),
       kleur_anders: waarde("kleur_anders"),
+      kleur_nu: waarde("kleur_nu"),
+      zijde: waarde("zijde"),
+      rolluik: waarde("rolluik"),
+      klant: waarde("klant"),
+      wanneer: waarde("wanneer"),
+      bron: waarde("bron"),
+      dealer: waarde("bron") === "dealer" ? waarde("dealer") : "",
       via: vanaf,
       website: waarde("website"),
       gegevens: {
@@ -935,12 +977,12 @@
     };
     if (staat.manier === "papier") {
       p.papier = { tekeningen: staat.papier.tekening.length, fotos: staat.papier.kozijnfoto.length,
-                   waar: waarden("papier_waar") };
+                   waar: waarden("papier_waar"), kant: waarden("papier_kant") };
     } else {
       p.kozijnen = staat.kozijnen.map(function (k) {
         var heel = k.werk === "heel";
         return {
-          waar: k.waar, plek: k.plek.trim(), aantal: k.aantal, heel: heel, dichtbij: !!k.dichtbij,
+          waar: k.waar, kant: k.kant || "", plek: k.plek.trim(), aantal: k.aantal, heel: heel, dichtbij: !!k.dichtbij,
           aangestreept: staat.manier === "streep" && !heel && k.strepen.length > 0,
           aanstreping: staat.manier === "streep" && !heel ? Strepen.kleuren(k.strepen) : [],
           regels: (!heel || staat.manier === "streep") ? geldigeRegels(k).map(function (r) {

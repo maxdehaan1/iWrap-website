@@ -285,8 +285,8 @@ def _m(centimeters):
 
 
 def _kozijn_kop(k, nr):
-    from .aanvragen import WAAR
-    delen = ["Kozijn %d" % nr, WAAR.get(k["waar"], "")]
+    from .aanvragen import KANT, WAAR
+    delen = ["Kozijn %d" % nr, WAAR.get(k["waar"], ""), KANT.get(k.get("kant", ""), "")]
     if k["plek"]:
         delen.append(k["plek"])
     if k["aantal"] > 1:
@@ -339,7 +339,7 @@ def aanvraag_voor_max(a):
     moet gebeuren, en alle foto's als bijlage met het kozijnnummer in de naam."""
     from urllib.parse import quote
 
-    from .aanvragen import MANIEREN, WAAR, fotolijst, totalen
+    from .aanvragen import KANT, MANIEREN, WAAR, details, fotolijst, totalen
     g = a["gegevens"]
     adres = "%s %s, %s %s" % (g.get("straat", ""), g["huisnummer"], g["postcode"], g["plaats"])
     kaart = "https://www.google.com/maps/search/?api=1&query=" + quote(adres)
@@ -356,6 +356,7 @@ def aanvraag_voor_max(a):
         rij("Adres", '%s &nbsp;<a href="%s" style="color:%s">Google Maps</a>' % (escape(adres), escape(kaart, True), IWRAP_MINT)),
         rij("Manier", escape(MANIEREN[a["manier"]])),
         rij("Kleur", escape(kleur)),
+        "".join(rij(label, escape(antwoord)) for label, antwoord in details(a)),
         rij("Herkomst", escape(a["via"])) if a["via"] else "",
         rij("Opmerking", escape(a["toelichting"]).replace("\n", "<br>")) if a["toelichting"] else "",
     ])
@@ -366,6 +367,8 @@ def aanvraag_voor_max(a):
         tekeningen = ", ".join("tekening-%d.jpg" % n for n in range(1, p["tekeningen"] + 1))
         fotos = ", ".join("kozijn-%d-foto.jpg" % n for n in range(1, p["fotos"] + 1))
         waar = ", ".join(WAAR[w] for w in p["waar"])
+        if p.get("kant"):
+            waar += " (" + ", ".join(KANT[w] for w in p["kant"]) + ")"
         blokken.append(_werkblok("Getekend op papier", [
             "Wat er moet gebeuren staat op de tekening: %s" % tekeningen,
             "Foto's van de kozijnen: %s" % fotos,
@@ -420,7 +423,8 @@ def aanvraag_voor_max(a):
         "%s, %s" % (g["naam"], g["plaats"]),
         "Telefoon: %s" % g["telefoon"], "E-mail: %s" % g["email"], "Adres: %s" % adres,
         "Manier: %s" % MANIEREN[a["manier"]], "Kleur: %s" % kleur,
-    ] + (["Herkomst: %s" % a["via"]] if a["via"] else [])
+    ] + ["%s: %s" % x for x in details(a)]
+      + (["Herkomst: %s" % a["via"]] if a["via"] else [])
       + (["Opmerking: %s" % a["toelichting"]] if a["toelichting"] else [])
       + ["", "WAT ER MOET GEBEUREN"] + tekstblokken
       + (["", "Samen: " + samen] if samen else [])
