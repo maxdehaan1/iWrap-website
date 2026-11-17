@@ -264,6 +264,11 @@ header.site{
 @media (max-width:360px){.actiebalk a{font-size:.9rem;gap:4px;}.actiebalk svg{display:none;}}
 @media print{.actiebalk{display:none!important;}}
 
+/* Wintermelding (data-winter): het script bovenin de pagina zet "winter" op <html>
+   van half november tot en met februari, nog voor er iets getekend wordt. Zo schuift
+   er niets op als de melding verschijnt. main.js haalt "hidden" daarna ook nog weg. */
+html.winter [data-winter][hidden]{display:block;}
+
 /* Knoppen ----------------------------------------------------------------- */
 
 .knop{

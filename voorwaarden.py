@@ -59,7 +59,7 @@ ARTIKELEN = [
   ("6.3", "Verzetten om zulke redenen geeft geen recht op schadevergoeding. Dat is anders als de vertraging zo lang wordt dat de opdrachtgever redelijkerwijs niet langer hoeft te wachten. Dan mag hij de overeenkomst ontbinden voor het deel dat nog niet is uitgevoerd."),
   ("6.4", "iWrap kan in principe het hele jaar door werken. Ook bij lage temperaturen hecht de folie goed, omdat iWrap de folie en het kozijn met warmte voorbehandelt."),
   ("6.5", "Bij regen werkt iWrap niet buiten. Het kozijn moet droog en schoon zijn om de folie goed te laten hechten. iWrap beslist op de dag zelf of het werk door kan gaan, en mag het werk onderbreken als het weer omslaat. Het resterende werk volgt dan op een nieuwe datum."),
-  ("6.6", "Van december tot en met februari plant iWrap standaard geen werk in, omdat het weer dan te onvoorspelbaar is. Werk in die periode is alleen mogelijk in overleg en altijd onder voorbehoud van het weer."),
+  ("6.6", "Van december tot en met februari plant iWrap standaard geen werk in, omdat het weer dan te onvoorspelbaar is. Bij uitzondering kan iWrap op een droge dag in die periode wel werken. Zo'n afspraak maakt iWrap alleen in overleg en altijd onder voorbehoud van het weer: bij vorst, regen of vocht kan iWrap de afspraak tot op de dag zelf verzetten."),
  ]),
  ("Verplichtingen van de opdrachtgever", [
   ("7.1", "De opdrachtgever zorgt dat de kozijnen op de afgesproken dag goed bereikbaar zijn, binnen en buiten. Planten, meubels, decoratie en gordijnen bij de kozijnen zijn dan weggehaald of opzij gezet."),

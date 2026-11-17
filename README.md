@@ -877,10 +877,13 @@ alleen maar verwarrend. Ze staan hier op één plek, in `FEITEN` in `build.py`:
 - De folie houdt het vijftien tot vijfentwintig jaar (`feit.levensduur_folie`). Schrijf
   "versleten" of "aan vervanging toe", niet "de folie is op"
 - Doorlooptijd: een tot twee dagen
-- Seizoen: het meeste werk van maart tot november; in de winter alleen kleinere klussen,
-  geen grote projecten (`feit.seizoen`, de FAQ, de VvE-pagina, en op houtnerffolie.nl
-  het buitenseizoen en de FAQ). Van half november tot en met februari toont de
-  offertepagina vanzelf een wintermelding (`data-winter` in `main.js`).
+- Seizoen: het meeste werk van maart tot november. Van december tot en met februari
+  plannen we in principe geen klussen; bij uitzondering wel op een droge dag, onder
+  voorbehoud in de agenda, en dan verwarmen we de folie met de föhn (Max, 17 november
+  2026; ook in de voorwaarden, artikel 6.6). Grote projecten nooit in de winter
+  (`feit.seizoen`, de FAQ, de VvE-pagina, en op houtnerffolie.nl het buitenseizoen en de
+  FAQ). Van half november tot en met februari toont de offertepagina vanzelf een
+  wintermelding (`data-winter`; het script bovenin de pagina zet `winter` op `<html>`).
 
 ## Wat er níet op de site mag
 
