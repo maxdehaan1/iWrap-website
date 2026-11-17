@@ -169,6 +169,7 @@
 /* Voor wie ---------------------------------------------------------------- */
 
 .doelgroepen{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:22px;}
+.doelgroepen.vier{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));}
 .doelgroep{
   display:flex;flex-direction:column;background:var(--white);border:1px solid var(--rand-zacht);
   border-radius:var(--radius);padding:30px;text-decoration:none;color:inherit;

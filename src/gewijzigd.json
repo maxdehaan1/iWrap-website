@@ -8,16 +8,16 @@
   "hash": "93f204c0d48c"
  },
  "contact": {
-  "datum": "2026-11-15",
-  "hash": "26b0758eec7f"
+  "datum": "2026-11-17",
+  "hash": "ae359f62a9d9"
  },
  "dakkapel-kozijnen": {
-  "datum": "2026-11-15",
-  "hash": "38afe1155519"
+  "datum": "2026-11-17",
+  "hash": "12383bfda2e8"
  },
  "index": {
-  "datum": "2026-11-16",
-  "hash": "bfe509176f82"
+  "datum": "2026-11-17",
+  "hash": "e90d949aa596"
  },
  "kosten": {
   "datum": "2026-11-15",
@@ -28,56 +28,56 @@
   "hash": "9782f67c0dd7"
  },
  "kozijnmerken/finstral": {
-  "datum": "2026-11-10",
-  "hash": "6bdb7c2f91bf"
+  "datum": "2026-11-17",
+  "hash": "5a022520e3db"
  },
  "kozijnmerken/gealan": {
-  "datum": "2026-11-10",
-  "hash": "d9d90a89be05"
+  "datum": "2026-11-17",
+  "hash": "f778c94115f9"
  },
  "kozijnmerken/index": {
   "datum": "2026-11-15",
   "hash": "a30d88daa1c9"
  },
  "kozijnmerken/knipping": {
-  "datum": "2026-11-10",
-  "hash": "e8d054204a7c"
+  "datum": "2026-11-17",
+  "hash": "fb816a212399"
  },
  "kozijnmerken/kommerling": {
-  "datum": "2026-11-10",
-  "hash": "6cfcd64b4ca7"
+  "datum": "2026-11-17",
+  "hash": "eae70520f452"
  },
  "kozijnmerken/kvision": {
-  "datum": "2026-11-10",
-  "hash": "fccd997f9855"
+  "datum": "2026-11-17",
+  "hash": "0782547f0375"
  },
  "kozijnmerken/schuco": {
-  "datum": "2026-11-10",
-  "hash": "907a4b066f07"
+  "datum": "2026-11-17",
+  "hash": "fd429be00e1c"
  },
  "kozijnmerken/veka": {
-  "datum": "2026-11-10",
-  "hash": "6e990080d608"
+  "datum": "2026-11-17",
+  "hash": "c63ba973aa50"
  },
  "kozijnmerken/weru": {
-  "datum": "2026-11-10",
-  "hash": "d71e0cf0482e"
+  "datum": "2026-11-17",
+  "hash": "26e05b36a99a"
  },
  "kunststof-kozijn-herstellen": {
-  "datum": "2026-11-15",
-  "hash": "8a33327cde0c"
+  "datum": "2026-11-17",
+  "hash": "0c0c28683665"
  },
  "max": {
   "datum": "2026-10-24",
   "hash": "3d021ba59a5b"
  },
  "offerte": {
-  "datum": "2026-11-15",
-  "hash": "a771a20e4688"
+  "datum": "2026-11-17",
+  "hash": "f0e1a52df934"
  },
  "over-iwrap": {
-  "datum": "2026-11-16",
-  "hash": "f2de0ec12799"
+  "datum": "2026-11-17",
+  "hash": "f370dd9df3a9"
  },
  "privacy": {
   "datum": "2026-10-25",
@@ -96,20 +96,20 @@
   "hash": "94dcdbdd299e"
  },
  "voor-kozijnbedrijven": {
-  "datum": "2026-11-15",
-  "hash": "5fc950d9befa"
+  "datum": "2026-11-17",
+  "hash": "33e68d6847a0"
  },
  "voorbeelden": {
   "datum": "2026-11-15",
   "hash": "eec697888c72"
  },
  "vve-en-woningcorporaties": {
-  "datum": "2026-11-15",
-  "hash": "9d94498768c3"
+  "datum": "2026-11-17",
+  "hash": "ee8928e530f6"
  },
  "werkgebied": {
-  "datum": "2026-11-15",
-  "hash": "29e86661db7c"
+  "datum": "2026-11-17",
+  "hash": "e7efdb3d366a"
  },
  "werkwijze": {
   "datum": "2026-11-16",

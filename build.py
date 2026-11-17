@@ -76,6 +76,7 @@ BEDRIJF = {
     "telefoon": "06 1441 5877",
     "telefoon_tel": "+31614415877",
     "whatsapp": "31614415877",
+    "whatsapp_url": "https://wa.me/31614415877",
     "instagram": "https://www.instagram.com/iwrap.nl/",
     # Beide links komen uit de Place ID in reviews.json, zie reviews_afleiden().
     "reviews_url": "",
@@ -516,6 +517,20 @@ def render_nav(slug):
 </header>"""
 
 
+def render_actiebalk():
+    """Op een telefoon onderin altijd binnen bereik: offerte, bellen en WhatsApp. Niet op
+    /offerte (dat heeft een eigen balk met Vorige en Volgende) en niet op de kale pagina's
+    (rapport, Max-modus). De offerteknop in de kop verdwijnt op een telefoon, want die
+    staat hier al (css: "De actiebalk")."""
+    b = BEDRIJF
+    return f"""<nav class="actiebalk" aria-label="Snel contact">
+  <a class="ab-offerte" href="/offerte" aria-label="Offerte aanvragen">Offerte</a>
+  <a href="tel:{b['telefoon_tel']}"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M6.6 3.5 9 3l1.6 4-2 1.3a12 12 0 0 0 5.1 5.1l1.3-2 4 1.6-.5 2.4a2 2 0 0 1-2 1.6A15.5 15.5 0 0 1 5 5.5a2 2 0 0 1 1.6-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Bellen</a>
+  <a href="{b['whatsapp_url']}"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M4.5 19.5l1.2-3.6A8 8 0 1 1 8.4 18.6l-3.9.9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>WhatsApp</a>
+</nav>
+"""
+
+
 def render_kale_kop(label):
     """Voor het rapport en de Max-modus: alleen het logo en een label, geen
     menu. Een klant die zijn rapport opent hoeft niet door de site te navigeren,
@@ -557,6 +572,7 @@ def render_footer():
         Nederland. Volledig gecertificeerde monteurs, geen zzp'ers, uitsluitend Renolit folie.</p>
         <p class="fcontact">
           <a href="tel:{b['telefoon_tel']}">{b['telefoon']}</a><br>
+          <a href="{b['whatsapp_url']}">WhatsApp</a><br>
           <a href="mailto:{b['email']}">{b['email']}</a>
         </p>
         <p class="fsocial">
@@ -802,7 +818,7 @@ def render(slug, meta, inhoud, ver):
         bodyclass=meta.get("bodyclass", ""),
         nav=render_kale_kop(meta["kaal"]) if meta.get("kaal") else render_nav(slug),
         inhoud=inhoud,
-        footer="" if meta.get("kaal") else render_footer(),
+        footer="" if meta.get("kaal") else render_footer() + ("" if slug == "offerte" else render_actiebalk()),
         scripts=scripts + ("" if meta.get("noindex") else ANALYTICS),
     )
 

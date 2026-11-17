@@ -237,6 +237,33 @@ header.site{
 }
 @media (max-width:330px){.nav-snel{display:none;}}
 
+/* De actiebalk ------------------------------------------------------------
+   Op een telefoon onderin altijd binnen bereik: offerte, bellen, WhatsApp
+   (render_actiebalk in build.py). De offerteknop in de kop staat er dan al in,
+   dus die verdwijnt op een telefoon. */
+.actiebalk{display:none;}
+@media (max-width:760px){
+  .nav-snel{display:none;}
+  .actiebalk{
+    position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:90;
+    display:grid;grid-template-columns:1.15fr 1fr 1.15fr;gap:6px;padding:6px;
+    background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:999px;
+    box-shadow:0 14px 34px -14px rgba(34,38,42,.4);
+  }
+  .actiebalk a{
+    min-height:48px;display:flex;align-items:center;justify-content:center;gap:6px;
+    border-radius:999px;font-family:var(--kop);font-size:.98rem;font-weight:600;
+    color:var(--ink);text-decoration:none;white-space:nowrap;
+  }
+  .actiebalk a:active{background:var(--mint-wash);}
+  .actiebalk .ab-offerte{background:var(--mint-deep);color:#fff;}
+  .actiebalk .ab-offerte:active{background:#244840;}
+  .actiebalk svg{flex:none;color:var(--mint-ink);}
+  body:has(.actiebalk){padding-bottom:calc(76px + env(safe-area-inset-bottom));}
+}
+@media (max-width:360px){.actiebalk a{font-size:.9rem;gap:4px;}.actiebalk svg{display:none;}}
+@media print{.actiebalk{display:none!important;}}
+
 /* Knoppen ----------------------------------------------------------------- */
 
 .knop{

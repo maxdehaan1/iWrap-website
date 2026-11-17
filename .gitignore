@@ -14,3 +14,6 @@ beweging/artifact/
 beweging/tools/encode
 beweging/3d kozijn/video/
 beweging/frames/
+
+# Auditrapport: bevat beveiligingsdetails, niet in git en niet online.
+/audit-rapport.md
