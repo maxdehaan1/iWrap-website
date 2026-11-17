@@ -668,3 +668,8 @@ html.streep-open,html.streep-open body{overflow:hidden;}
 .manier-tekst{display:contents;}
 @media (min-width:821px){ .manier-breed .manier-tekst{display:flex;} }
 .complex .veld{margin-bottom:18px;}
+
+/* Op een telefoon staat het formulier zo hoger in beeld: de animatie boven het formulier
+   (foto, strepen, versturen, vaste prijs) zegt hetzelfde als de vier kaarten in stap 1.
+   Op een groter scherm blijft hij staan. (Audit 17 november, F4.) */
+@media (max-width:820px){ .iw-scene[data-iwrap="aanvraag"]{display:none;} }

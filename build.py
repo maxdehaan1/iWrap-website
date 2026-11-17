@@ -128,12 +128,22 @@ FEITEN = {
 # ---------------------------------------------------------------------------
 NAV = [
     ("kunststof-kozijn-herstellen", "Kozijnherstel"),
-    ("dakkapel-kozijnen", "Dakkapellen"),
     ("werkwijze", "Werkwijze"),
     ("voorbeelden", "Voorbeelden"),
     ("kosten", "Kosten"),
+    ("vve-en-woningcorporaties", "Zakelijk"),
     ("over-iwrap", "Over iWrap"),
+    ("contact", "Contact"),
 ]
+# Pagina's die niet zelf in het menu staan, lichten het menu-item op waar ze onder vallen
+# (audit 17 november: Contact en Zakelijk in het menu, Dakkapellen via Kozijnherstel).
+NAV_ONDER = {
+    "dakkapel-kozijnen": "kunststof-kozijn-herstellen",
+    "kozijnmerken": "kunststof-kozijn-herstellen",
+    "kozijncheck": "werkwijze",
+    "voor-kozijnbedrijven": "vve-en-woningcorporaties",
+    "veelgestelde-vragen": "contact",
+}
 
 FOOTER_KOLOMMEN = [
     ("Kozijnherstel", [
@@ -492,6 +502,7 @@ def css_version():
 
 def render_nav(slug):
     top = slug.split("/")[0]
+    top = NAV_ONDER.get(top, top)
     links = "\n".join(
         '      <a %shref="%s">%s</a>'
         % ('class="current" ' if s.split("/")[0] == top else "", url_for(s), label)

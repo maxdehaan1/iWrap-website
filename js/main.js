@@ -331,3 +331,17 @@
     kijker.observe(el);
   });
 })();
+
+/* Meten ------------------------------------------------------------------
+   Vercel Web Analytics (zonder cookies) telt hoe vaak er op bellen, WhatsApp of mailen
+   wordt gedrukt; js/offerte.js meldt een verstuurde aanvraag. Er gaat niets mee over wie
+   het is, alleen de pagina. De rij (window.va) staat hier, zodat klikken van voor het
+   laden van het telscript ook tellen. Eigen gebeurtenissen telt Vercel op het
+   Pro-abonnement; zonder Analytics doet dit niets. (Audit 17 november, M15.) */
+window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+document.addEventListener("click", function (e) {
+  var a = e.target.closest && e.target.closest('a[href^="tel:"], a[href*="wa.me/"], a[href^="mailto:"]');
+  if (!a) return;
+  var soort = a.href.indexOf("tel:") === 0 ? "Bellen" : a.href.indexOf("wa.me/") > -1 ? "WhatsApp" : "Mailen";
+  window.va("event", { name: soort, data: { pagina: location.pathname } });
+});

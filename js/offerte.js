@@ -1141,6 +1141,7 @@
   });
 
   function bedankt(d) {
+    if (window.va) window.va("event", { name: "Aanvraag verstuurd", data: { manier: staat.manier } });
     wisAlles();
     var kaart = form.closest(".offerte-kaart");
     var naam = waarde("naam").split(" ")[0];
