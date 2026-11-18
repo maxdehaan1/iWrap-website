@@ -118,6 +118,9 @@ FEITEN = {
     "levensduur_profiel": "50 tot 75 jaar",
     # Hoe lang de folie het houdt voor hij aan vervanging toe is. Niet "op" schrijven.
     "levensduur_folie": "vijftien tot vijfentwintig jaar",
+    # Dezelfde levensduren als getal, voor de grote cijfers op /levensduur-kozijnfolie.
+    "levensduur_folie_getal": "15–25",
+    "levensduur_profiel_getal": "50–75",
     "doorlooptijd": "een tot twee dagen",
     # Het seizoen: in de winter plannen we veel minder, grote projecten niet.
     "seizoen": "maart tot november",
@@ -140,6 +143,8 @@ NAV = [
 # (audit 17 november: Contact en Zakelijk in het menu, Dakkapellen via Kozijnherstel).
 NAV_ONDER = {
     "dakkapel-kozijnen": "kunststof-kozijn-herstellen",
+    "rolluikkast-herstellen": "kunststof-kozijn-herstellen",
+    "levensduur-kozijnfolie": "kunststof-kozijn-herstellen",
     "kozijnmerken": "kunststof-kozijn-herstellen",
     "kozijncheck": "werkwijze",
     "voor-kozijnbedrijven": "vve-en-woningcorporaties",
@@ -150,9 +155,11 @@ FOOTER_KOLOMMEN = [
     ("Kozijnherstel", [
         ("kunststof-kozijn-herstellen", "Kunststof kozijn herstellen"),
         ("dakkapel-kozijnen", "Dakkapel kozijnen"),
+        ("rolluikkast-herstellen", "Rolluikkasten"),
         ("werkwijze", "Onze werkwijze"),
         ("kozijncheck", "Gratis kozijncheck"),
         ("kosten", "Wat kost het"),
+        ("levensduur-kozijnfolie", "Hoe lang folie meegaat"),
         ("voorbeelden", "Voorbeelden"),
         ("kozijnmerken/index", "Per kozijnmerk"),
     ]),

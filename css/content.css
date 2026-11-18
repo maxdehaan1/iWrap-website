@@ -157,6 +157,9 @@ html:not(.js) .video-zin{display:none;}
   display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;vertical-align:1px;
   background:var(--ink);color:#fff;font-family:var(--kop);font-size:.94rem;margin-right:3px;
 }
+/* Wel en niet in één tekening (rolluikkast): dezelfde kleuren als de wel/niet-kaarten */
+.illustratie figcaption b.wel{background:var(--mint);color:var(--ink);}
+.illustratie figcaption b.niet{background:#e8e5df;color:#646b73;}
 
 /* Projecten op /voorbeelden ------------------------------------------------ */
 .project-groot{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:clamp(24px,3.4vw,52px);align-items:center;margin-bottom:clamp(44px,5vw,72px);scroll-margin-top:90px;}

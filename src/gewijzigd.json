@@ -17,7 +17,7 @@
  },
  "index": {
   "datum": "2026-11-18",
-  "hash": "42f7bd2f4a3c"
+  "hash": "c3cd5d97ad65"
  },
  "kosten": {
   "datum": "2026-11-18",
@@ -65,7 +65,11 @@
  },
  "kunststof-kozijn-herstellen": {
   "datum": "2026-11-18",
-  "hash": "de744be7840d"
+  "hash": "9b01ccd1948b"
+ },
+ "levensduur-kozijnfolie": {
+  "datum": "2026-11-18",
+  "hash": "74bbfb9385be"
  },
  "max": {
   "datum": "2026-10-24",
@@ -73,7 +77,7 @@
  },
  "offerte": {
   "datum": "2026-11-18",
-  "hash": "d586fa62b7bc"
+  "hash": "1c6ed5b13f9a"
  },
  "over-iwrap": {
   "datum": "2026-11-18",
@@ -87,13 +91,17 @@
   "datum": "2026-11-18",
   "hash": "1d12d5c00f5f"
  },
+ "rolluikkast-herstellen": {
+  "datum": "2026-11-18",
+  "hash": "3b64e8696faf"
+ },
  "tekenblad": {
   "datum": "2026-11-18",
   "hash": "aef46493d95c"
  },
  "veelgestelde-vragen": {
   "datum": "2026-11-18",
-  "hash": "3a2a61738fcc"
+  "hash": "d87c6ebd1d57"
  },
  "voor-kozijnbedrijven": {
   "datum": "2026-11-18",
