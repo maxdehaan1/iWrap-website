@@ -486,7 +486,8 @@ def aanvraag_bevestiging(a):
         _p("Wordt het een klus, dan kijken we bij de oplevering ook naar je rubbers, kit, glas en beslag: "
            '<a href="%s/kozijncheck" style="color:%s">de gratis kozijncheck</a>. Die krijg je als rapport, '
            "met je garantie erin." % (escape(cfg.IWRAP_URL, True), IWRAP_MINT)),
-        _p("Groet, Max"),
+        # Ondertekend met de bedrijfsnaam (Max, 18 november 2026: "Groet, iWrap").
+        _p("Groet, iWrap"),
     ]
     html = _opmaak("We hebben je aanvraag ontvangen", "".join(delen), "iWrap", IWRAP_MINT)
     vervolg = ("We nemen contact met je op om een opname op locatie in te plannen. Uit die opname komt één "
@@ -494,5 +495,5 @@ def aanvraag_bevestiging(a):
                "We bekijken je foto's en sturen je een offerte met een vaste totaalprijs. Offertes maken we op "
                "maandag, onze kantoordag. Kunnen we iets niet goed zien, dan bellen of mailen we je even.")
     tekst = "%s\n\nBedankt voor je aanvraag. Dit is wat je ons hebt gestuurd:\n- %s\n\n%s" \
-            "\n\nGroet, Max\niWrap" % (_aanhef(g["naam"]), "\n- ".join(regels), vervolg)
+            "\n\nGroet, iWrap" % (_aanhef(g["naam"]), "\n- ".join(regels), vervolg)
     return "We hebben je aanvraag ontvangen", html, tekst

@@ -7,8 +7,8 @@
   "js": ["iwrap-animaties", "main", "fotos", "aanstrepen", "offerte", "iwrap-site"],
   "prioriteit": "0.9",
   "kruimels": [["Offerte aanvragen", "/offerte"]],
-  "ogimage": "/images/werk-renolit-folie-aanbrengen-1600.webp",
-  "ogalt": "Nieuwe Renolit folie wordt op een kunststof onderdorpel aangebracht"
+  "ogimage": "/images/og/iwrap-voor-na-v1.jpg",
+  "ogalt": "Onderdorpel van een kunststof kozijn voor en na het herstel met Renolit folie, met het logo van iWrap"
 } -->
 
 <section class="offerte-hero">
@@ -310,8 +310,8 @@
                  placeholder="Bijvoorbeeld antracietgrijs, of een houtnerf">
           <span class="hint">Weet je het nog niet precies? Zet dan wat je ongeveer zoekt,
           dan nemen we stalen mee.</span>
-          <span class="hint">Je horren hebben daarna nog de oude kleur. Horren in de nieuwe
-          kleur bestel je later op {{kozijnhorren_nieuw_venster}}.</span>
+<!-- als kozijnhorren --><span class="hint">Je horren hebben daarna nog de oude kleur. Horren in de nieuwe
+          kleur bestel je later op {{kozijnhorren_nieuw_venster}}.</span><!-- /als kozijnhorren -->
         </div>
         <h2 class="sub-vraag" id="v-zijde">Gaat het om de buitenkant, de binnenkant of allebei?</h2>
         <div class="chips chips-ruim" role="radiogroup" aria-labelledby="v-zijde">
@@ -343,14 +343,14 @@
             <input id="naam" name="naam" type="text" autocomplete="name" required>
           </div>
           <div class="veld">
-            <label for="telefoon">Telefoonnummer <span class="hint">handig als we iets willen navragen</span></label>
+            <label for="telefoon">Telefoonnummer <span class="hint">zodat we je kunnen bellen als iets niet duidelijk is</span></label>
             <input id="telefoon" name="telefoon" type="tel" autocomplete="tel" required>
           </div>
         </div>
         <div class="veldrij">
           <div class="veld">
             <label for="email">E-mailadres <span class="hint">hier sturen we de offerte heen</span></label>
-            <input id="email" name="email" type="email" autocomplete="email" required>
+            <input id="email" name="email" type="email" autocomplete="email" required pattern="[^@\s]+@[^@\s]+\.[A-Za-z]{2,}">
           </div>
         </div>
         <div class="veldrij">
@@ -558,9 +558,9 @@
       <div class="hele-maten" hidden>
         <p class="vraag-hint">Meet het kozijn aan de buitenkant, van hoek tot hoek.</p>
         <div class="hele-maten-rij">
-          <label>Breedte <input data-veld="breedte" inputmode="decimal" placeholder="bijv. 1,80"><span class="maat-uit"></span></label>
+          <label>Breedte <input type="text" data-veld="breedte" inputmode="decimal" placeholder="bijv. 1,80"><span class="maat-uit"></span></label>
           <span aria-hidden="true">&times;</span>
-          <label>Hoogte <input data-veld="hoogte" inputmode="decimal" placeholder="bijv. 1,40"><span class="maat-uit"></span></label>
+          <label>Hoogte <input type="text" data-veld="hoogte" inputmode="decimal" placeholder="bijv. 1,40"><span class="maat-uit"></span></label>
         </div>
       </div>
     </div>

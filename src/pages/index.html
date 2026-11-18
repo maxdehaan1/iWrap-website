@@ -6,11 +6,13 @@
   "css": ["home", "film", "doorsnede", "iwrap-site"],
   "js": ["main", "kozijn-3d", "film", "iwrap-site"],
   "prioriteit": "1.0",
+  "ogimage": "/images/og/iwrap-voor-na-v1.jpg",
+  "ogalt": "Onderdorpel van een kunststof kozijn voor en na het herstel met Renolit folie, met het logo van iWrap",
   "changefreq": "weekly",
   "preload": {
     "src": "/images/voor-gebarsten-dorpel-1000.webp",
     "srcset": "/images/voor-gebarsten-dorpel-640.webp 640w, /images/voor-gebarsten-dorpel-1000.webp 1000w",
-    "sizes": "(max-width:900px) 100vw, 560px"
+    "sizes": "(max-width:900px) calc(100vw - 48px), 620px"
   },
   "schema": [
     {
@@ -27,7 +29,7 @@
     {"v": "Kan elk kunststof kozijn hersteld worden met folie?",
      "a": "In verreweg de meeste gevallen wel. Voorwaarde is dat het profiel zelf nog goed is: geen kromtrekking, geen kapot beslag, geen lekkage. Zit er een aluminium schil om het kozijn, dan is folie niet de oplossing. Dat zien we aan je foto's en zeggen we eerlijk."},
     {"v": "Hoe lang gaat de nieuwe folie mee?",
-     "a": "Je krijgt tien jaar Renolit-garantie op de folie en vijf jaar op de uitvoering. Het kunststof profiel eronder gaat 50 tot 75 jaar mee — dat is precies waarom vervangen zelden nodig is."},
+     "a": "Je krijgt {{feit.garantie_folie}} en {{feit.garantie_montage}}. De folie die we aanbrengen is een veel sterkere variant dan de folie die er nu op zit. Die oude folie is vaak na {{feit.levensduur_folie}} versleten; de nieuwe gaat naar verwachting veel langer mee. Het kunststof profiel eronder gaat {{feit.levensduur_profiel}} mee — dat is precies waarom vervangen zelden nodig is."},
     {"v": "Wat kost het herstellen van kunststof kozijnen?",
      "a": "Dat hangt af van de afmetingen, het aantal en hoeveel er per kozijn moet gebeuren — te veel om er vooraf een bedrag aan te hangen dat ergens op slaat. Stuur een paar foto's mee met je aanvraag, dan krijg je een vaste totaalprijs. Wel goedkoper dan vervangen, en fors: bij vervangen komen stucwerk, schilderwerk en vensterbanken er nog bij."},
     {"v": "Moeten jullie binnen zijn?",
@@ -68,9 +70,9 @@
          "Waarom herstellen werkt". -->
     <figure class="hero-fig vergelijk-los">
       <div class="vergelijk" style="--pos:50%">
-        <x-beeld src="voor-gebarsten-dorpel" eager sizes="(max-width:900px) 100vw, 620px" alt="Onderdorpel van een kunststof kozijn waarvan de folie is gebarsten en opgekruld">
+        <x-beeld src="voor-gebarsten-dorpel" eager sizes="(max-width:900px) calc(100vw - 48px), 620px" alt="Onderdorpel van een kunststof kozijn waarvan de folie is gebarsten en opgekruld">
         <div class="na">
-          <x-beeld src="na-gebarsten-dorpel-hersteld" sizes="(max-width:900px) 100vw, 620px" alt="Dezelfde onderdorpel na het aanbrengen van nieuwe Renolit folie: strak en egaal">
+          <x-beeld src="na-gebarsten-dorpel-hersteld" sizes="(max-width:900px) calc(100vw - 48px), 620px" alt="Dezelfde onderdorpel na het aanbrengen van nieuwe Renolit folie: strak en egaal">
         </div>
         <span class="label label-voor">Voor</span>
         <span class="label label-na">Na</span>
@@ -132,7 +134,7 @@
 
     <div class="klachten verschijn">
       <a class="klacht" href="/offerte?klacht=verweerd">
-        <div class="beeld"><x-beeld src="voor-gebarsten-dorpel" sizes="(max-width:700px) 100vw, 320px" alt="Onderdorpel waarvan de folie is verweerd en opengebarsten"></div>
+        <div class="beeld"><x-beeld src="voor-gebarsten-dorpel" sizes="(max-width:700px) calc(100vw - 48px), 320px" alt="Onderdorpel waarvan de folie is verweerd en opengebarsten"></div>
         <div class="tekst">
           <h3>Verweerd of gebarsten</h3>
           <p>Het oppervlak is ruw geworden en begint open te barsten, meestal aan de zonkant.</p>
@@ -140,7 +142,7 @@
         </div>
       </a>
       <a class="klacht" href="/offerte?klacht=laat-los">
-        <div class="beeld"><x-beeld src="klacht-folie-los" sizes="(max-width:700px) 100vw, 320px" alt="Folie die loslaat van een kunststof onderdorpel, met een opgekrulde flap"></div>
+        <div class="beeld"><x-beeld src="klacht-folie-los" sizes="(max-width:700px) calc(100vw - 48px), 320px" alt="Folie die loslaat van een kunststof onderdorpel, met een opgekrulde flap"></div>
         <div class="tekst">
           <h3>Folie laat los of bladdert</h3>
           <p>De laag komt omhoog en krult op, vaak eerst bij een naad of een hoek.</p>
@@ -148,7 +150,7 @@
         </div>
       </a>
       <a class="klacht" href="/offerte?klacht=blaasjes">
-        <div class="beeld"><x-beeld src="klacht-blaasjes" sizes="(max-width:700px) 100vw, 320px" alt="Blaasjes en scheuren in de folie van een kunststof kozijn"></div>
+        <div class="beeld"><x-beeld src="klacht-blaasjes" sizes="(max-width:700px) calc(100vw - 48px), 320px" alt="Blaasjes en scheuren in de folie van een kunststof kozijn"></div>
         <div class="tekst">
           <h3>Blaasjes of scheuren</h3>
           <p>Bobbels onder de folie die later openscheuren.</p>
@@ -156,7 +158,7 @@
         </div>
       </a>
       <a class="klacht" href="/offerte?klacht=lijmlaag">
-        <div class="beeld"><x-beeld src="klacht-lijmlaag" sizes="(max-width:700px) 100vw, 320px" alt="Losgescheurde witte folie met de gele lijmlaag eronder zichtbaar"></div>
+        <div class="beeld"><x-beeld src="klacht-lijmlaag" sizes="(max-width:700px) calc(100vw - 48px), 320px" alt="Losgescheurde witte folie met de gele lijmlaag eronder zichtbaar"></div>
         <div class="tekst">
           <h3>Je ziet er iets geels onder</h3>
           <p>Dat is de lijmlaag, zichtbaar geworden waar de folie is losgescheurd.</p>
@@ -164,7 +166,7 @@
         </div>
       </a>
       <a class="klacht" href="/offerte?klacht=spanningsplooien">
-        <div class="beeld"><x-beeld src="klacht-spanningsplooien" sizes="(max-width:700px) 100vw, 320px" alt="Spanningsplooien in de folie van een kunststof kozijn"></div>
+        <div class="beeld"><x-beeld src="klacht-spanningsplooien" sizes="(max-width:700px) calc(100vw - 48px), 320px" alt="Spanningsplooien in de folie van een kunststof kozijn"></div>
         <div class="tekst">
           <h3>Plooien of kreukels</h3>
           <p>Spanningsplooien in de folie, meestal rond scharnieren en deurklinken.</p>
@@ -172,7 +174,7 @@
         </div>
       </a>
       <a class="klacht" href="/offerte?klacht=scheuren">
-        <div class="beeld"><x-beeld src="klacht-scheuren" sizes="(max-width:700px) 100vw, 320px" alt="Beschadiging in de folie van een kunststof kozijn"></div>
+        <div class="beeld"><x-beeld src="klacht-scheuren" sizes="(max-width:700px) calc(100vw - 48px), 320px" alt="Beschadiging in de folie van een kunststof kozijn"></div>
         <div class="tekst">
           <h3>Krassen of stootschade</h3>
           <p>Een kras van een ladder, een barst, een hoek die eruit ligt.</p>
@@ -206,7 +208,7 @@
     </div>
     <!-- Een echte monteur van iWrap aan het werk, in het iWrap-shirt (dezelfde foto als op Over iWrap). -->
     <figure class="waarom-foto">
-      <x-beeld src="werk-monteur-aan-het-werk" sizes="(max-width:900px) 100vw, 400px" alt="Monteur van iWrap werkt aan een kunststof kozijn aan de buitenzijde van een woning">
+      <x-beeld src="werk-monteur-aan-het-werk" sizes="(max-width:900px) calc(100vw - 48px), 400px" alt="Monteur van iWrap werkt aan een kunststof kozijn aan de buitenzijde van een woning">
     </figure>
     </div>
     <div class="cijfers verschijn">
@@ -278,7 +280,7 @@
     </div>
     <div class="callout">
       <h3>Twijfel je of het bij jou kan?</h3>
-      <p>Stuur een paar foto's mee in de <a href="/offerte">offerte-aanvraag</a>. Daar
+      <p>Stuur een paar foto's mee in de <a href="/offerte">offerteaanvraag</a>. Daar
       zien we het aan. Kan het niet, dan zeggen we dat — en leggen we uit waarom.</p>
     </div>
   </div>
@@ -298,7 +300,7 @@
          op het herstelde kozijn. De poster is het beginbeeld, tot het script tekent. -->
     <figure class="kozijn-3d k3d-zon zon-midden" data-kozijn-zon>
       <div class="k3d-beeld">
-        <x-beeld src="kozijn-zon-creme" class="kz-poster" sizes="(max-width:900px) 100vw, 560px" alt="Getekend crème kunststof kozijn met nieuwe houtnerffolie in de zon">
+        <x-beeld src="kozijn-zon-creme" class="kz-poster" sizes="(max-width:900px) calc(100vw - 48px), 560px" alt="Getekend crème kunststof kozijn met nieuwe houtnerffolie in de zon">
         <canvas aria-hidden="true"></canvas>
         <p class="kz-teller" aria-hidden="true"><span class="kz-jaar">0</span><span class="kz-eenheid">jaar zon</span></p>
         <p class="k3d-zin is-leeg" aria-live="polite"></p>
@@ -393,10 +395,7 @@
       </details>
       <details>
         <summary>Hoe lang gaat de nieuwe folie mee?</summary>
-        <div class="antwoord"><p>Je krijgt {{feit.garantie_folie}} en
-        {{feit.garantie_montage}}. Het kunststof profiel eronder gaat
-        {{feit.levensduur_profiel}} mee — dat is precies waarom vervangen zelden nodig
-        is.</p></div>
+        <div class="antwoord"><p>Je krijgt {{feit.garantie_folie}} en {{feit.garantie_montage}}. De folie die we aanbrengen is een veel sterkere variant dan de folie die er nu op zit. Die oude folie is vaak na {{feit.levensduur_folie}} versleten; de nieuwe gaat naar verwachting veel langer mee. Het kunststof profiel eronder gaat {{feit.levensduur_profiel}} mee — dat is precies waarom vervangen zelden nodig is.</p></div>
       </details>
       <details>
         <summary>Moeten jullie binnen zijn?</summary>
@@ -439,7 +438,7 @@
         </div>
       </div>
       <div class="slot-beeld">
-        <x-beeld src="werk-renolit-folie-aanbrengen" sizes="(max-width:820px) 100vw, 480px" alt="Nieuwe Renolit folie wordt met een rakel op een onderdorpel aangebracht">
+        <x-beeld src="werk-renolit-folie-aanbrengen" sizes="(max-width:820px) calc(100vw - 48px), 480px" alt="Nieuwe Renolit folie wordt met een rakel op een onderdorpel aangebracht">
         <a class="slot-score" href="{{bedrijf.reviews_url}}" target="_blank" rel="noopener"><span aria-hidden="true">★</span> <span>{{rv.score}} uit {{rv.aantal}} Google-reviews</span></a>
       </div>
     </div>

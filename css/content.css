@@ -144,7 +144,7 @@ html:not(.js) .video-zin{display:none;}
 }
 .merkkaart:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--mint);color:inherit;}
 .merkkaart h3{margin:0 0 4px;font-size:1.2rem;}
-.merkkaart .land{font-size:.92rem;color:var(--sub);margin:0 0 12px;}
+.merkkaart .land{font-size:.94rem;color:var(--sub);margin:0 0 12px;}
 .merkkaart p{font-size:1rem;color:var(--ink-soft);margin:0;}
 
 
@@ -154,8 +154,8 @@ html:not(.js) .video-zin{display:none;}
 .illustratie svg{display:block;width:100%;height:auto;border-radius:var(--radius);border:1px solid var(--rand-zacht);}
 .illustratie figcaption{margin-top:12px;font-size:.97rem;color:var(--sub);}
 .illustratie figcaption b{
-  display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;
-  background:var(--ink);color:#fff;font-family:var(--kop);font-size:.7rem;margin-right:3px;
+  display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;vertical-align:1px;
+  background:var(--ink);color:#fff;font-family:var(--kop);font-size:.94rem;margin-right:3px;
 }
 
 /* Projecten op /voorbeelden ------------------------------------------------ */
@@ -180,7 +180,7 @@ html:not(.js) .video-zin{display:none;}
 .project .vergelijk{border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:20px;}
 .project-groot .vergelijk{border-radius:var(--radius);box-shadow:var(--shadow);}
 .project .vergelijk .greep::after,.project-groot .vergelijk .greep::after{width:42px;height:42px;}
-.etiket{position:absolute;left:8px;top:8px;font-family:var(--kop);font-size:.8rem;font-weight:700;letter-spacing:.01em;padding:4px 10px;border-radius:999px;}
+.etiket{position:absolute;left:8px;top:8px;font-family:var(--kop);font-size:.94rem;font-weight:700;letter-spacing:.01em;padding:4px 10px;border-radius:999px;}
 .etiket.voor{background:var(--rust);color:#fff;}
 .etiket.na{background:var(--mint);color:var(--ink);}
 /* Bij "omgekeerd" staat de tekst links en de foto rechts, maar alleen op een

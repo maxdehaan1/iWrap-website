@@ -86,7 +86,7 @@
    {"v": "Hoe zie ik of mijn Schüco-kozijn van kunststof of van aluminium is?",
     "a": "Kijk naar de kanten aan de buitenkant. Kunststof is licht afgerond; aluminium is strak, metaalachtig en heeft scherpe kanten. Zie je het niet, stuur dan een foto van dichtbij mee. Wij zien het meestal direct."},
    {"v": "Ons hele complex heeft Schüco-kozijnen. Kunnen jullie het hele gebouw doen?",
-    "a": "Ja. Voor VvE's en woningcorporaties werken we per gevel of per blok. Hoe zo'n project loopt, staat op <a href='/vve-en-woningcorporaties'>de pagina voor VvE's en woningcorporaties</a>."},
+    "a": "Ja. Voor VvE's en woningcorporaties werken we per gevel of per blok. Hoe zo'n project loopt, staat op <a href=\"/vve-en-woningcorporaties\">de pagina voor VvE's en woningcorporaties</a>."},
    {"v": "Kan de kleur anders worden dan hij nu is?",
     "a": "Ja. De meeste mensen houden dezelfde kleur, maar je kunt ook een andere houtnerffolie kiezen. Geef het aan in je aanvraag, dan nemen we het mee in de offerte."}
   ]
@@ -169,7 +169,7 @@
   "lede": "Knipping-kozijnen komen uit West-Friesland en zitten in veel Nederlandse woningen. Is de folie verkleurd, dof geworden of laat hij los, dan vervangen wij alleen die laag.",
   "over": [
    "Knipping is een Nederlands familiebedrijf met een eigen fabriek in Zwaagdijk, in West-Friesland. Het maakt kozijnen, deuren, schuifpuien en dakkapellen en verkoopt ze via eigen showrooms door het hele land.",
-   "Knipping zit veel in de woningbouw en renovatie. Je vindt de kozijnen vaak in seriematige woningbouw uit de jaren negentig en later. Omdat Knipping ook dakkapellen maakt: hoe we de kozijnen daarvan herstellen, lees je op <a href='/dakkapel-kozijnen'>de pagina over dakkapelkozijnen</a>."
+   "Knipping zit veel in de woningbouw en renovatie. Je vindt de kozijnen vaak in seriematige woningbouw uit de jaren negentig en later. Omdat Knipping ook dakkapellen maakt: hoe we de kozijnen daarvan herstellen, lees je op <a href=\"/dakkapel-kozijnen\">de pagina over dakkapelkozijnen</a>."
   ],
   "herkennen": [
    "Je hebt het kozijn bij een Knipping-showroom gekocht: de naam staat op je offerte of factuur.",
@@ -185,7 +185,7 @@
   },
   "faq": [
    {"v": "Ik heb een dakkapel van Knipping. Kunnen jullie de kozijnen daarvan herstellen?",
-    "a": "Ja, als het kunststof kozijnen met een folie zijn. Hoe we bij een dakkapel werken, staat op <a href='/dakkapel-kozijnen'>de pagina over dakkapelkozijnen</a>."},
+    "a": "Ja, als het kunststof kozijnen met een folie zijn. Hoe we bij een dakkapel werken, staat op <a href=\"/dakkapel-kozijnen\">de pagina over dakkapelkozijnen</a>."},
    {"v": "Hoe weet ik of mijn Knipping-kozijn een aluminium buitenkant heeft?",
     "a": "Aluminium is strak en metaalachtig, met scherpe kanten. Kunststof met folie heeft licht afgeronde kanten en meestal een houtnerf. Stuur bij twijfel een foto van dichtbij mee."},
    {"v": "Mijn kozijnen zijn uit de jaren negentig. Is herstellen dan nog zinvol?",
@@ -202,7 +202,7 @@
   "lede": "Kömmerling-profielen zitten in veel Nederlandse kozijnen, in nieuwbouw en in renovatie. Is de folie verkleurd of laat hij los, dan vervangen wij alleen die laag.",
   "over": [
    "Kömmerling is een Duits profielmerk uit Pirmasens en hoort bij de profine-groep, net als KBE en Trocal. Kozijnbouwers maken van die profielen ramen en deuren.",
-   "Je komt Kömmerling zowel in nieuwbouw als in renovatieprojecten tegen. De gangbare systemen zijn 76 en 88 millimeter diep. Speciaal voor Nederland maakt Kömmerling het profiel K-Vision; daarvoor hebben we <a href='/kozijnmerken/kvision'>een eigen pagina</a>."
+   "Je komt Kömmerling zowel in nieuwbouw als in renovatieprojecten tegen. De gangbare systemen zijn 76 en 88 millimeter diep. Speciaal voor Nederland maakt Kömmerling het profiel K-Vision; daarvoor hebben we <a href=\"/kozijnmerken/kvision\">een eigen pagina</a>."
   ],
   "herkennen": [
    "Aan de brede aanslag van het profiel en het Kömmerling-logo in de sponning.",
@@ -252,9 +252,9 @@
    {"v": "Is K-Vision hetzelfde als Kömmerling?",
     "a": "K-Vision is een profiel van Kömmerling, speciaal voor Nederland. Het kozijn zelf is gemaakt door een Nederlandse kozijnbouwer; diens naam staat op je papieren."},
    {"v": "Mijn K-Vision-kozijn is crèmewit. Kan dat ook hersteld worden?",
-    "a": "Ja. Bij <a href='/voorbeelden#cremewitte-kozijnen'>de voorbeelden</a> staat een project met crèmewitte kozijnen."},
+    "a": "Ja. Bij <a href=\"/voorbeelden#cremewitte-kozijnen\">de voorbeelden</a> staat een project met crèmewitte kozijnen."},
    {"v": "Hoe lang gaat de nieuwe folie mee?",
-    "a": "De folie gaat {{feit.levensduur_folie}} mee. Je krijgt {{feit.garantie_folie}} en {{feit.garantie_montage}}."}
+    "a": "Je krijgt {{feit.garantie_folie}} en {{feit.garantie_montage}}. De folie die we aanbrengen is een veel sterkere variant dan de folie die er nu op zit. Die oude folie is vaak na {{feit.levensduur_folie}} versleten; de nieuwe gaat naar verwachting veel langer mee."}
   ]
  }
 ]

@@ -155,6 +155,10 @@ python3 -c "import secrets; print(secrets.token_urlsafe(48))"
 - [ ] **[Max] Mail:** app-registratie in Microsoft Entra en de drie `MS_`-waarden (tien
       minuten, stappen in de README). **Zet in je agenda wanneer het client secret
       verloopt** (na 24 maanden), anders stopt de mail van de site op die dag.
+- [ ] **[Max + Claude] De mailkoppeling alleen voor info@iwrap.nl** (audit S5): de app mag
+      standaard namens elke mailbox mailen, en max@iwrap.nl bestaat ook. Beperk hem met een
+      *application access policy* tot info@iwrap.nl (README "Mail via Microsoft 365", tien
+      minuten in PowerShell; Claude zet de opdrachten klaar).
 - [ ] **[Max] Reviews:** de Google-sleutel, met een limiet van 50 aanvragen per dag.
 - [ ] **[Max] Wachtwoord, `GEHEIM`, `CRON_SECRET`** en de tijdelijke `IWRAP_URL`.
 - [ ] **[Max] Redeploy.**
@@ -213,7 +217,9 @@ langer).
       - Geen `noindex`-kop op iwrap.nl, de sitemap werkt, en `/api/gezond` en `/api/reviews` antwoorden.
       - De beveiligingskoppen staan er (Content-Security-Policy), de console van de browser
         blijft leeg op de homepage, `/offerte` en `/max`, en `/LIVEGANG.md`, `/build.py` en
-        `/backend/app.py` geven een 404.
+        `/backend/app.py` geven een 404, en `/voorwaarden.py` en `/deelafbeelding.py` ook.
+      - `curl -I https://iwrap.nl` geeft een `strict-transport-security`-kop (HTTPS afgedwongen,
+        audit 6.6). Ontbreekt hij, dan zet Claude hem in `vercel.json`.
 - [ ] **[Max] Mail testen:** stuur vanaf een ander adres (je telefoon) een mail naar
       info@iwrap.nl. Die moet gewoon binnenkomen. Doe daarna één echte testaanvraag op
       iwrap.nl/offerte. Let daarbij op de lader naast de voortgangsbalk tijdens het versturen
@@ -255,7 +261,8 @@ eerder Google hem leert kennen.
 ## 6. kozijnhorren.nl (alleen als de winkel tegelijk live gaat)
 
 Dit hangt af van een leverancier en echte prijzen. Gaat de winkel later, sla dit dan over.
-iwrap.nl noemt de naam kozijnhorren.nl wel al, maar linkt pas naar de winkel als hij er is.
+iwrap.nl noemt kozijnhorren.nl pas als `KOZIJNHORREN_LIVE` in `build.py` op `True` staat (sinds 18 november
+nergens, want het domein is nog vrij). Zet die schakelaar om zodra de winkel werkt, en bouw opnieuw.
 
 - [ ] **[Max]** Leverancier kiezen. Daarna `LEVERANCIER_NAAM` en `LEVERANCIER_EMAIL` in
       Vercel (iwrap-website), met `LEVERANCIER_AUTOMATISCH` op `nee`.

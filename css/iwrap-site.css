@@ -48,9 +48,9 @@ figure[data-dakkapel] + .vinklijst li.dk-nu{background:var(--mint-wash);box-shad
   opacity:0;transform:translate(-50%,14px);transition:opacity .35s var(--beweeg),transform .45s var(--beweeg);}
 .klusfilm-vervolg.aan{opacity:1;transform:translate(-50%,0);}
 .klusfilm-vervolg p{margin:0;font-family:var(--kop);font-weight:600;font-size:.95rem;line-height:1.3;color:var(--ink);white-space:nowrap;}
-.klusfilm-vervolg p span{display:block;font-family:var(--tekst);font-weight:400;font-size:0.9rem;color:var(--sub);}
+.klusfilm-vervolg p span{display:block;font-family:var(--tekst);font-weight:400;font-size:.94rem;color:var(--sub);}
 .klusfilm-vervolg .knop{padding:12px 22px;white-space:nowrap;}
-@media (max-width:600px){.klusfilm-vervolg{bottom:3%;padding:4px;}.klusfilm-vervolg p{display:none;}.klusfilm-vervolg .knop{padding:8px 16px;font-size:0.9rem;}}
+@media (max-width:600px){.klusfilm-vervolg{bottom:3%;padding:4px;}.klusfilm-vervolg p{display:none;}.klusfilm-vervolg .knop{padding:8px 16px;font-size:.94rem;}}
 
 /* 8. Tekenblad: geen opmaak nodig; het script tekent in de tekening zelf */
 
@@ -62,7 +62,7 @@ tr.vandaag td:first-child::before{content:"";position:absolute;left:0;top:10px;b
 tr.vandaag.vandaag-aan td:first-child::before{transform:scaleY(1);}
 /* het label heeft de stijl van het "Na"-label op de site: mint met donkere tekst */
 .vandaag-chip{display:inline-block;margin-left:10px;padding:3px 10px;border-radius:999px;background:var(--mint);color:var(--ink);
-  font-family:var(--kop);font-weight:600;font-size:0.8rem;letter-spacing:.04em;vertical-align:2px;
+  font-family:var(--kop);font-weight:600;font-size:.94rem;letter-spacing:.04em;vertical-align:2px;
   opacity:0;transform:scale(.7);transition:opacity var(--middel) var(--beweeg),transform .4s cubic-bezier(.2,1.1,.4,1);}
 tr.vandaag-aan .vandaag-chip{opacity:1;transform:scale(1);}
 .vandaag-weekend{margin-top:-.4em;font-size:0.98rem;color:var(--mint-ink);}
@@ -76,7 +76,7 @@ tr.vandaag-aan .vandaag-chip{opacity:1;transform:scale(1);}
 @media (max-width:620px){.profiel-raster{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:18px;}}
 .profiel-cel{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0;}
 .profiel-cel svg{display:block;width:100%;height:auto;}
-.profiel-oordeel{display:flex;align-items:center;gap:8px;margin:0;font-family:var(--kop);font-weight:600;font-size:0.92rem;line-height:1.2;color:var(--ink);text-align:left;}
+.profiel-oordeel{display:flex;align-items:center;gap:8px;margin:0;font-family:var(--kop);font-weight:600;font-size:.94rem;line-height:1.2;color:var(--ink);text-align:left;}
 .profiel-cel.alu .profiel-oordeel{color:var(--rust);}
 .profiel-oordeel i{flex:none;width:19px;height:19px;border-radius:50%;opacity:0;transform:scale(.6);
   transition:opacity var(--kort) var(--beweeg),transform .4s cubic-bezier(.2,1.1,.4,1);}
@@ -110,7 +110,7 @@ tr.vandaag-aan .vandaag-chip{opacity:1;transform:scale(1);}
   width:max-content;max-width:calc(100% - 28px);display:flex;align-items:center;gap:9px;
   padding:8px 16px 8px 12px;border-radius:999px;background:rgba(255,255,255,.95);
   box-shadow:0 6px 18px -10px rgba(34,38,42,.45);
-  font-family:var(--kop);font-weight:600;font-size:0.92rem;line-height:1.3;color:var(--ink);
+  font-family:var(--kop);font-weight:600;font-size:.94rem;line-height:1.3;color:var(--ink);
   transition:opacity var(--middel) var(--beweeg),transform var(--middel) var(--beweeg);
 }
 .k3d-zin::before{content:"";flex-shrink:0;width:9px;height:9px;border-radius:50%;background:var(--mint);}
@@ -119,7 +119,7 @@ tr.vandaag-aan .vandaag-chip{opacity:1;transform:scale(1);}
   position:absolute;right:12px;top:12px;display:inline-flex;align-items:center;gap:7px;
   padding:7px 13px 7px 10px;border:0;border-radius:999px;cursor:pointer;
   background:rgba(255,255,255,.95);box-shadow:0 6px 18px -10px rgba(34,38,42,.45);
-  font-family:var(--kop);font-weight:600;font-size:0.88rem;color:var(--mint-ink);
+  font-family:var(--kop);font-weight:600;font-size:.94rem;color:var(--mint-ink);
 }
 .k3d-opnieuw::before{
   content:"";width:15px;height:15px;
@@ -131,13 +131,13 @@ tr.vandaag-aan .vandaag-chip{opacity:1;transform:scale(1);}
 .k3d-stappen button{
   width:100%;height:100%;display:flex;align-items:center;gap:9px;cursor:pointer;text-align:left;
   padding:8px 12px 8px 8px;border:1px solid var(--line);border-radius:999px;background:var(--white);
-  font-family:var(--kop);font-weight:600;font-size:0.88rem;line-height:1.25;color:var(--ink-soft);
+  font-family:var(--kop);font-weight:600;font-size:.94rem;line-height:1.25;color:var(--ink-soft);
   transition:background var(--middel) var(--beweeg),border-color var(--middel) var(--beweeg),color var(--middel) var(--beweeg);
 }
 .k3d-stappen button:hover{border-color:var(--mint);}
 .k3d-nr{
   flex-shrink:0;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
-  background:var(--mint-soft);color:var(--mint-deep);font-family:var(--kop);font-weight:700;font-size:0.84rem;
+  background:var(--mint-soft);color:var(--mint-deep);font-family:var(--kop);font-weight:700;font-size:.94rem;
   transition:background var(--middel) var(--beweeg),color var(--middel) var(--beweeg);
 }
 .k3d-stappen .is-nu{background:var(--mint-deep);border-color:var(--mint-deep);color:#fff;}
@@ -145,12 +145,12 @@ tr.vandaag-aan .vandaag-chip{opacity:1;transform:scale(1);}
 .k3d-stappen .is-klaar .k3d-nr{
   color:transparent;background:var(--mint-deep) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.6 6.3l2.2 2.2 4.6-5' fill='none' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/13px no-repeat;
 }
-.kozijn-3d figcaption{margin-top:12px;font-size:0.93rem;color:var(--sub);}
+.kozijn-3d figcaption{margin-top:12px;font-size:.94rem;color:var(--sub);}
 html:not(.js) .k3d-opnieuw,html:not(.js) .k3d-zin{display:none;}
 @media (max-width:560px){
-  .k3d-zin{font-size:0.84rem;bottom:10px;padding:7px 13px 7px 10px;}
+  .k3d-zin{font-size:.94rem;bottom:10px;padding:7px 13px 7px 10px;}
   .k3d-stappen{gap:6px;}
-  .k3d-stappen button{flex-direction:column;align-items:center;text-align:center;border-radius:14px;padding:8px 6px;font-size:0.8rem;}
+  .k3d-stappen button{flex-direction:column;align-items:center;text-align:center;border-radius:14px;padding:8px 6px;font-size:.94rem;}
 }
 /* Op de homepage, in "Waarom herstellen werkt": in een kaart zoals de doorsnede, met de
    stappen en hun uitleg ernaast (op een smal scherm eronder). De stap die speelt, licht
@@ -162,7 +162,7 @@ html:not(.js) .k3d-opnieuw,html:not(.js) .k3d-zin{display:none;}
 .k3d-kaart .k3d-beeld{box-shadow:none;}
 .k3d-kaart .k3d-stappen{margin:0;grid-template-columns:1fr;gap:10px;}
 .k3d-kaart .k3d-stappen button{flex-direction:row;align-items:flex-start;gap:14px;text-align:left;padding:14px 16px;
-  border-radius:var(--radius);font-family:var(--tekst);font-weight:400;font-size:0.98rem;line-height:1.5;color:var(--sub);}
+  border-radius:var(--radius);font-family:var(--tekst);font-weight:400;font-size:.94rem;line-height:1.5;color:var(--sub);}
 .k3d-kaart .k3d-stappen button:hover{background:var(--paper);}
 .k3d-kaart .k3d-stappen b{display:block;margin-bottom:2px;font-family:var(--kop);font-weight:600;font-size:1rem;color:var(--ink);}
 .k3d-kaart .k3d-nr{margin-top:1px;}

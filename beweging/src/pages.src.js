@@ -45,7 +45,9 @@
   }
   function pageScene(ps, rest, render, o) {
     var btn = null;
-    if (o.ui !== false) { btn = ReplayBtn(ps.root); place(btn, 1150, 852); }
+    // Met een knop erin is de scène geen plaatje meer maar een groep: een knop binnen role="img"
+    // is voor een schermlezer onbereikbaar (axe: nested-interactive).
+    if (o.ui !== false) { btn = ReplayBtn(ps.root); place(btn, 1150, 852); ps.st.svg.setAttribute('role', 'group'); }
     return {
       svg: ps.st.svg, duration: rest + (o.hold != null ? o.hold : 2.5), rest: rest, posterT: rest, replayBtn: btn,
       render: function (t) { render(t); if (btn) op(btn, seg(t, rest - 0.1, 0.4)); }

@@ -1061,9 +1061,11 @@
     Rc(card, 0, 0, 372, 118, 26, '#FFFFFF');
     Rc(card, 18, 18, 82, 82, 16, K.mintSoft);
     Rc(card, 36, 34, 46, 50, 5, K.creamOld); Rc(card, 43, 41, 32, 36, 2, K.glass1);
-    Li(card, 34, 88, 84, 78, K.rust, 5);
+    // zoals op het aanvraagformulier: een foto van het hele kozijn, met geel aangestreept wat er moet
+    // gebeuren (hier de onderdorpel en de linkerstijl). Max, 16 november 2026: "dit moet niet verwarrend zijn".
+    Li(card, 38, 81, 80, 81, '#F7CE28', 6); Li(card, 39.5, 81, 39.5, 37, '#F7CE28', 5);
     Tx(card, 'Nieuwe aanvraag', 118, 52, 27, 700, K.ink);
-    Tx(card, 'foto + maten', 118, 86, 21, 500, K.sub);
+    Tx(card, 'foto, aangestreept', 118, 86, 21, 500, K.sub);
     var chips = ['Vaste prijs', 'Afspraak gepland'].map(function (s, i) {
       var cg = G(ui), w = i ? 292 : 220;
       Rc(cg, 0, 0, w, 58, 29, K.mintDeep);
@@ -1200,7 +1202,9 @@
       { t0: T.route + 0.5, t1: T.iris - 0.35, text: 'Wij komen naar je toe.' }
     ];
     if (extra) capList = capList.concat(extra.captions);
-    var caps = vert ? new CaptionsV(vui.g, capList, vui.by + vui.bh + 170) : new Captions(root, capList);
+    // Op de site staan de ondertitels als tekst bij de video (leesbaar op een telefoon): dan rendert de film
+    // zonder (opts.ondertitels = false). De lijst gaat mee terug als captions.
+    var caps = o.ondertitels === false ? null : vert ? new CaptionsV(vui.g, capList, vui.by + vui.bh + 170) : new Captions(root, capList);
     if (vert) {
       var L0 = GEO.lockups.horizontal, ls0 = 500 / L0.w, thL = theme({ theme: 'light' }), thM = theme({ theme: 'mint' });
       vui.logo = uitrolInto(st, G(vui.g, { transform: 'translate(' + f(540 - L0.w * ls0 / 2) + ' ' + f(vui.by - 250) + ') scale(' + f(ls0) + ')' }), L0, 'horizontal', thL, { outro: false, hold: 0, shift: false, sheen: false });
@@ -1228,7 +1232,7 @@
       show(iris, irisOn);
       if (irisOn) { sa(iris, 'cx', f(ds[0])); sa(iris, 'cy', f(ds[1])); sa(iris, 'r', f(ip * 2300)); }
       if (extra) extra.render(t, rakel);
-      caps.render(t);
+      if (caps) caps.render(t);
       if (vert) {
         vui.logo.render(t - 0.2);
         op(vui.url, seg(t, 1.2, 0.5));
@@ -1237,7 +1241,7 @@
         if (eo > 0) { vui.pat.render(te); vui.endLogo.render(te - 0.35); op(vui.endUrl, seg(te, 0.35 + vui.endLogo.rest - 0.9, 0.5)); }
       }
     }
-    return { svg: st.svg, duration: duration, rest: duration, render: render, T: T };
+    return { svg: st.svg, duration: duration, rest: duration, render: render, T: T, captions: capList };
   };
 
 
@@ -1844,7 +1848,9 @@
   }
   function pageScene(ps, rest, render, o) {
     var btn = null;
-    if (o.ui !== false) { btn = ReplayBtn(ps.root); place(btn, 1150, 852); }
+    // Met een knop erin is de scène geen plaatje meer maar een groep: een knop binnen role="img"
+    // is voor een schermlezer onbereikbaar (axe: nested-interactive).
+    if (o.ui !== false) { btn = ReplayBtn(ps.root); place(btn, 1150, 852); ps.st.svg.setAttribute('role', 'group'); }
     return {
       svg: ps.st.svg, duration: rest + (o.hold != null ? o.hold : 2.5), rest: rest, posterT: rest, replayBtn: btn,
       render: function (t) { render(t); if (btn) op(btn, seg(t, rest - 0.1, 0.4)); }

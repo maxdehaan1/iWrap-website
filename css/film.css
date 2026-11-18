@@ -58,6 +58,12 @@ html:not(.js) .film,html:not(.js) .film-sectie{display:none;}
 .film .film-score{font-size:1.35cqw;color:var(--sub);margin:0 0 2.2cqw;}
 .film-score span{color:var(--ster);}
 .film-cta{font-size:1.2cqw;padding:1.05em 2em;justify-self:start;}
+/* Op de site nooit kleiner dan 15px (audit D8: op een tablet stond "Voor" op 9px). In de opname
+   (.film.opname) blijven de cqw-maten precies gelijk, zodat de MP4 er hetzelfde uitziet. */
+.film:not(.opname) .film-stap{font-size:max(.94rem,1.4cqw);}
+.film:not(.opname) .film-label{font-size:max(.94rem,1.25cqw);}
+.film:not(.opname) .film-score{font-size:max(.94rem,1.35cqw);}
+.film:not(.opname) .film-cta{font-size:max(.94rem,1.2cqw);}
 .film-slot{display:grid;justify-items:start;}
 .film .film-adres{
   display:none;margin:0;font-family:var(--kop);font-weight:700;font-size:1.8cqw;color:var(--mint-ink);

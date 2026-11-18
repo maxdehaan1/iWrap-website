@@ -86,7 +86,7 @@
   .klacht .tekst{padding:12px 12px 14px;}
   .klacht h3{font-size:1rem;line-height:1.3;}
   .klacht p{display:none;}
-  .klacht .pijl{font-size:.9rem;}
+  .klacht .pijl{font-size:.94rem;}
 }
 .klacht{
   background:var(--white);border:1px solid var(--rand-zacht);border-radius:var(--radius);
@@ -101,7 +101,7 @@
 .klacht h3{margin:0 0 6px;font-size:1.18rem;}
 .klacht p{font-size:1rem;color:var(--sub);margin:0 0 16px;}
 .klacht .pijl{
-  margin-top:auto;font-family:var(--kop);font-size:.98rem;font-weight:600;color:var(--mint-ink);
+  margin-top:auto;font-family:var(--kop);font-size:.94rem;font-weight:600;color:var(--mint-ink);
   display:inline-flex;align-items:center;gap:7px;
 }
 .klacht .pijl::after{content:"\2192";transition:transform var(--middel) var(--beweeg);}
@@ -163,7 +163,7 @@
 .partnerlogo-vierkant img{height:48px;}
 .partnerlogo-breed img{height:24px;}
 @media (max-width:600px){.partnerlogos .partnerlogo{flex:1 1 calc(50% - 6px);min-width:0;padding:12px 10px 10px;}}
-.partnerlogo span{font-family:var(--kop);font-size:.84rem;font-weight:600;line-height:1.25;color:#3a4047;text-align:center;}
+.partnerlogo span{font-family:var(--kop);font-size:.94rem;font-weight:600;line-height:1.25;color:#3a4047;text-align:center;}
 .onderscheid-voet{margin:26px 0 0;max-width:70ch;font-size:1.04rem;color:#cfd5da;}
 .onderscheid-voet a{margin-left:6px;font-weight:600;white-space:nowrap;}
 .onderscheid-voet a::after{content:" \2197";}
@@ -226,7 +226,7 @@
 .pijl{white-space:nowrap;}
 @media (max-width:420px){
   .klacht h3{font-size:1.02rem;}
-  .klacht .pijl{font-size:.84rem;}
+  .klacht .pijl{font-size:.94rem;}
 }
 
 /* Waarom iWrap op een telefoon: de acht redenen als rustige lijst in plaats van acht

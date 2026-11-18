@@ -66,6 +66,9 @@
    gezet. */
 
 .stapbalk{padding:22px 26px 20px;border-bottom:1px solid var(--line);background:var(--paper);}
+/* offerte.js vult de balk pas na het laden; houd de ruimte vrij, anders schuift het formulier
+   een stukje omlaag als hij verschijnt (CLS, op een trage verbinding). */
+.stapbalk:empty{min-height:100px;}
 .stapbalk ol{
   list-style:none;margin:0;padding:0;
   display:grid;grid-auto-flow:column;grid-auto-columns:1fr;
@@ -88,7 +91,7 @@
   position:relative;z-index:1;
   display:flex;flex-direction:column;align-items:center;gap:7px;
   width:100%;padding:0 4px;background:none;border:0;cursor:pointer;
-  font-family:var(--kop);font-size:0.88rem;font-weight:600;color:var(--sub);
+  font-family:var(--kop);font-size:.94rem;font-weight:600;color:var(--sub);
   transition:color var(--kort) var(--beweeg);
 }
 .stapknop .nr{
@@ -129,6 +132,7 @@
 
 @media (max-width:560px){
   .stapbalk{padding:18px 16px 16px;}
+  .stapbalk:empty{min-height:67px;}
   .stapknop .lab{display:none;}
   .stapbalk ol::before,.stapbalk ol::after{top:15px;}
 }
@@ -195,7 +199,7 @@
 .veldrij{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:16px;}
 .veld{display:flex;flex-direction:column;gap:6px;}
 .veld label{font-family:var(--kop);font-weight:600;font-size:0.96rem;}
-.veld .hint{font-size:0.9rem;color:var(--sub);font-weight:400;}
+.veld .hint{font-size:.94rem;color:var(--sub);font-weight:400;}
 .veld input,.veld textarea,.veld select{
   font-family:var(--tekst);font-size:1rem;color:var(--ink);
   border:1.5px solid var(--line-strong);border-radius:12px;padding:13px 15px;background:var(--white);
@@ -206,7 +210,7 @@
   outline:none;border-color:var(--mint-ink);box-shadow:0 0 0 3px var(--mint-soft);
 }
 .veld input:user-invalid,.veld textarea:user-invalid{border-color:var(--rust);}
-.veld .fout{font-size:0.93rem;color:var(--rust);font-weight:500;}
+.veld .fout{font-size:.94rem;color:var(--rust);font-weight:500;}
 
 /* Vervolgveld: verschijnt pas als de bijbehorende keuze gemaakt is */
 .vervolgveld{
@@ -237,7 +241,7 @@
 
 .stap-teller{
   grid-column:2;
-  font-family:var(--kop);font-size:0.92rem;font-weight:600;color:var(--sub);
+  font-family:var(--kop);font-size:.94rem;font-weight:600;color:var(--sub);
   white-space:nowrap;font-variant-numeric:tabular-nums;
 }
 
@@ -307,7 +311,7 @@
 .manier input:checked + .manier-vlak{border-color:var(--mint-ink);background:var(--mint-wash);box-shadow:inset 0 0 0 1px var(--mint-ink);}
 .manier-beeld{width:100%;height:auto;border-radius:10px;margin-bottom:8px;}
 .manier-label{
-  align-self:flex-start;font-family:var(--kop);font-size:0.82rem;font-weight:700;letter-spacing:0;
+  align-self:flex-start;font-family:var(--kop);font-size:.94rem;font-weight:700;letter-spacing:0;
   color:var(--mint-deep);background:var(--mint-soft);border-radius:999px;padding:4px 11px;
 }
 .manier-titel{font-family:var(--kop);font-weight:600;font-size:1.08rem;color:var(--ink);}
@@ -337,6 +341,12 @@
   .manier-beeld{align-self:start;margin-top:4px;}
   .manier-label{margin-right:34px;justify-self:start;}
 }
+@media (max-width:400px){
+  /* Het label op een eigen regel boven plaatje en titel: naast het plaatje paste "Met pen en
+     papier" niet meer op één regel (sinds alle kleine tekst minstens 15px is). */
+  .manier-vlak{grid-template-areas:"label label" "beeld titel" "beeld uitleg";}
+  .manier-label{margin-bottom:6px;}
+}
 
 .altijd-foto{
   display:flex;gap:12px;align-items:flex-start;margin:20px 0 0;padding:14px 18px;
@@ -356,7 +366,7 @@
   background:var(--paper);border-bottom:1px solid var(--line);border-radius:16px 16px 0 0;
 }
 .kozijn-titel{margin:0;font-size:1.15rem;}
-.kozijn-status{font-family:var(--kop);font-size:0.9rem;font-weight:600;color:var(--mint-deep);display:inline-flex;align-items:center;gap:6px;}
+.kozijn-status{font-family:var(--kop);font-size:.94rem;font-weight:600;color:var(--mint-deep);display:inline-flex;align-items:center;gap:6px;}
 .kozijn-status.compleet::before{
   content:"";width:18px;height:18px;border-radius:50%;background:var(--mint-ink)
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/10px no-repeat;
@@ -377,7 +387,7 @@
 .vraag-kop{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-family:var(--kop);font-weight:600;font-size:1.02rem;color:var(--ink);}
 .vraag-nr{
   width:28px;height:28px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;
-  background:var(--ink);color:#fff;font-size:0.92rem;font-weight:700;
+  background:var(--ink);color:#fff;font-size:.94rem;font-weight:700;
 }
 .vraag-hint{margin:-4px 0 12px;font-size:1rem;color:var(--sub);}
 
@@ -407,7 +417,7 @@
 .foto-raam.heel img{opacity:.92;}
 .foto-heel{
   position:absolute;left:14px;top:14px;line-height:1;
-  background:var(--mint-ink);color:#fff;font-family:var(--kop);font-weight:700;font-size:0.9rem;
+  background:var(--mint-ink);color:#fff;font-family:var(--kop);font-weight:700;font-size:.94rem;
   padding:8px 13px;border-radius:999px;box-shadow:0 4px 12px rgba(0,0,0,.25);
 }
 .foto-acties{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;}
@@ -489,15 +499,19 @@
 }
 
 .hele-maten{margin-top:14px;}
-.hele-maten-rij{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 14px;}
-.hele-maten-rij label{display:flex;flex-direction:column;gap:5px;font-family:var(--kop);font-weight:600;font-size:0.98rem;position:relative;}
+/* Breedte en hoogte altijd naast elkaar, met het maal-teken ertussen op de hoogte van de vakken,
+   ook op een smalle telefoon (audit D9: het teken hing los naast het eerste vak). */
+.hele-maten-rij{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:start;gap:10px 12px;max-width:360px;}
+.hele-maten-rij label{display:flex;flex-direction:column;gap:5px;font-family:var(--kop);font-weight:600;font-size:0.98rem;line-height:1.25;position:relative;}
 .hele-maten-rij input{
-  width:150px;min-height:48px;font:inherit;font-family:var(--tekst);font-weight:400;font-size:1rem;
+  width:100%;min-height:48px;font:inherit;font-family:var(--tekst);font-weight:400;font-size:1rem;
   border:1.5px solid var(--line-strong);border-radius:12px;padding:10px 13px;
 }
 .hele-maten-rij input:focus{outline:none;border-color:var(--mint-ink);box-shadow:0 0 0 3px var(--mint-soft);}
-.hele-maten-rij > span{padding-bottom:13px;color:var(--sub);font-weight:600;}
-.maat-uit{font-size:0.92rem;color:var(--mint-deep);min-height:1.2em;}
+.hele-maten-rij > span{color:var(--sub);font-weight:600;line-height:48px;margin-top:calc(0.98rem * 1.25 + 5px);}
+/* Op de smalste telefoons (320 px) passen twee vakken niet naast elkaar: dan onder elkaar, zonder teken. */
+@media (max-width:360px){ .hele-maten-rij{grid-template-columns:minmax(0,1fr);max-width:none;} .hele-maten-rij > span{display:none;} }
+.maat-uit{font-size:.94rem;color:var(--mint-deep);min-height:1.2em;}
 
 .kozijn-extra{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:flex-end;margin-top:16px;}
 .klein-veld{display:flex;flex-direction:column;gap:6px;font-family:var(--kop);font-weight:600;font-size:0.98rem;flex:1 1 240px;}
@@ -534,7 +548,7 @@
 .papier-print{grid-column:2;justify-self:start;}
 .papier-stappen li::before{
   content:counter(pap);width:28px;height:28px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;
-  background:var(--mint-soft);color:var(--mint-deep);font-family:var(--kop);font-weight:700;font-size:0.92rem;
+  background:var(--mint-soft);color:var(--mint-deep);font-family:var(--kop);font-weight:700;font-size:.94rem;
 }
 .papier-stappen b{color:var(--ink);}
 .papier-print{padding:9px 16px;font-size:0.96rem;margin-top:2px;}
@@ -650,7 +664,7 @@ html.streep-open,html.streep-open body{overflow:hidden;}
 /* De korte vragen bij Kleur en Gegevens (sinds 17 november 2026): een kleinere kop per
    vraag, de antwoorden als chips. */
 .stap-paneel > .sub-vraag{font-size:clamp(1.12rem,1.04rem + .4vw,1.3rem);margin:34px 0 .35em;}
-.stap-paneel > .sub-vraag .hint{font-weight:400;font-size:.92rem;color:var(--sub);margin-left:4px;}
+.stap-paneel > .sub-vraag .hint{font-weight:400;font-size:.94rem;color:var(--sub);margin-left:4px;}
 .stap-paneel > .sub-vraag + .chips,.stap-paneel > .toelichting + .chips-ruim{margin-top:12px;}
 .stap-paneel > .toelichting + .chips-ruim{margin-top:-10px;}
 .chips-ruim{margin-bottom:6px;}

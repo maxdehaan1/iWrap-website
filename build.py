@@ -95,9 +95,10 @@ BEDRIJF = {
 # exact dezelfde formulering aan; drie sites die verschillende bedragen of
 # garantietermijnen noemen is voor een klant alleen maar verwarrend.
 # ---------------------------------------------------------------------------
-# kozijnhorren.nl staat nog niet online. Zolang dit False is, staat de naam wel
-# op de site maar zonder link (een link naar een site die er niet is, is erger
-# dan geen link). Zet op True zodra kozijnhorren.nl werkt en bouw opnieuw.
+# kozijnhorren.nl staat nog niet online, en het domein is nog vrij. Zolang dit False is,
+# noemt de site kozijnhorren.nl nergens: de stukken tussen <!-- als kozijnhorren --> en
+# <!-- /als kozijnhorren --> vallen weg (audit M16, akkoord Max 18 november 2026). Zet op
+# True zodra kozijnhorren.nl werkt en bouw opnieuw: dan staan naam, link en horrentips er weer.
 KOZIJNHORREN_LIVE = False
 
 
@@ -516,7 +517,7 @@ def render_nav(slug):
     return f"""<header class="site">
   <div class="nav">
     <a class="brand" href="/" aria-label="iWrap, naar de homepage">{LOGO}</a>
-{snel}    <button class="nav-toggle" aria-expanded="false" aria-controls="hoofdmenu">
+{snel}    <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="hoofdmenu">
       <span class="bars" aria-hidden="true"></span>
       <span class="sr-only">Menu</span>
     </button>
@@ -582,7 +583,7 @@ def render_footer():
         <p>Specialist in kozijnfolie: al {b['ervaring_jaren']} jaar alleen dit vak, door heel
         Nederland. Volledig gecertificeerde monteurs, geen zzp'ers, uitsluitend Renolit folie.</p>
         <p class="fcontact">
-          <a href="tel:{b['telefoon_tel']}">{b['telefoon']}</a><br>
+          <a href="tel:{b['telefoon_tel']}">{b['telefoon'].replace(" ", "&nbsp;")}</a><br>
           <a href="{b['whatsapp_url']}">WhatsApp</a><br>
           <a href="mailto:{b['email']}">{b['email']}</a>
         </p>
@@ -691,8 +692,7 @@ HEAD = """<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
 <meta name="description" content="{description}">
-<link rel="canonical" href="{canonical}">
-{robots}<meta property="og:type" content="{ogtype}">
+{canonical_link}{robots}<meta property="og:type" content="{ogtype}">
 <meta property="og:site_name" content="iWrap">
 <meta property="og:locale" content="nl_NL">
 <meta property="og:title" content="{ogtitle}">
@@ -790,7 +790,9 @@ def render(slug, meta, inhoud, ver):
     # og:image: altijd de jpg-variant (webp wordt niet door elke scraper van
     # linkvoorbeelden gelezen) en de echte afmetingen erbij.
     ogpad = meta.get("ogimage", "/images/na-herstelde-onderdorpel-1600.webp")
-    ogpad = re.sub(r"-\d+\.(webp|jpg)$", "", ogpad) + "-1000.jpg"
+    # Een eigen deelafbeelding (images/og/, 1200x630, gemaakt met deelafbeelding.py) gaat zoals hij is.
+    if not ogpad.startswith("/images/og/"):
+        ogpad = re.sub(r"-\d+\.(webp|jpg)$", "", ogpad) + "-1000.jpg"
     with Image.open(ROOT / ogpad.lstrip("/")) as og:
         ogbreedte, oghoogte = og.size
 
@@ -803,6 +805,9 @@ def render(slug, meta, inhoud, ver):
         title=meta["title"],
         description=meta["description"],
         canonical=canonical,
+        # Geen canonical op pagina's die niet in Google horen: de 404 (die op elk onbekend adres
+        # verschijnt) zei anders dat hij een echte pagina op /404 is (audit V7).
+        canonical_link="" if meta.get("noindex") else '<link rel="canonical" href="%s">\n' % canonical,
         robots='<meta name="robots" content="noindex,follow">\n' if meta.get("noindex") else "",
         ogtype=meta.get("ogtype", "website"),
         ogtitle=meta.get("ogtitle", meta["title"]),
@@ -818,7 +823,8 @@ def render(slug, meta, inhoud, ver):
         nav=render_kale_kop(meta["kaal"]) if meta.get("kaal") else render_nav(slug),
         inhoud=inhoud,
         footer="" if meta.get("kaal") else render_footer() + ("" if slug == "offerte" else render_actiebalk()),
-        scripts=scripts + ("" if meta.get("noindex") else ANALYTICS),
+        # Telscript niet op privé-pagina's (rapport, Max-modus); wel op het tekenblad ("tellen").
+        scripts=scripts + ("" if meta.get("noindex") and not meta.get("tellen") else ANALYTICS),
     )
 
 
@@ -830,6 +836,9 @@ def substitueer(tekst):
     def rep(m):
         groep, sleutel = m.group(1), m.group(2)
         bron = {"bedrijf": BEDRIJF, "feit": FEITEN}[groep]
+        if groep == "bedrijf" and sleutel == "telefoon":
+            # Vaste spaties: het nummer breekt nooit over twee regels (06 1441 / 5877).
+            return bron[sleutel].replace(" ", "\u00a0")
         return bron[sleutel]
     # Eerst de vaste blokken uit src/ (film, doorsnede, vergelijking): die bevatten
     # zelf ook plekhouders, zoals het reviewcijfer.
@@ -846,6 +855,10 @@ def substitueer(tekst):
     tekst = tekst.replace("{{rv.score}}", '<span data-rv="score">%s</span>' % BEDRIJF["reviews_score"])
     tekst = tekst.replace("{{rv.aantal}}", '<span data-rv="aantal">%s</span>' % BEDRIJF["reviews_aantal"])
     tekst = re.sub(r"\{\{(bedrijf|feit)\.([a-z_]+)\}\}", rep, tekst)
+    # Stukken die alleen kloppen als de horrenwinkel er is: zolang KOZIJNHORREN_LIVE False is,
+    # verdwijnen ze helemaal (audit M16: het domein is nog vrij, dus de naam ook nog niet noemen).
+    tekst = re.sub(r"<!-- als kozijnhorren -->(.*?)<!-- /als kozijnhorren -->",
+                   (lambda m: m.group(1)) if KOZIJNHORREN_LIVE else "", tekst, flags=re.S)
     tekst = tekst.replace("{{kozijnhorren}}", kozijnhorren_link())
     tekst = tekst.replace("{{kozijnhorren_nieuw_venster}}", kozijnhorren_link(nieuw_venster=True))
     tekst = tekst.replace("{{kozijncheck_tabel}}", render_kozijncheck_tabel())

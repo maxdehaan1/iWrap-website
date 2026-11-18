@@ -276,6 +276,16 @@
       "permanent": true
     },
     {
+      "source": "/portfolio-sitemap.xml",
+      "destination": "/sitemap.xml",
+      "permanent": true
+    },
+    {
+      "source": "/portfolio_category-sitemap.xml",
+      "destination": "/sitemap.xml",
+      "permanent": true
+    },
+    {
       "source": "/resultaten",
       "destination": "/voorbeelden",
       "permanent": true
@@ -285,6 +295,10 @@
     {
       "source": "/r/:id",
       "destination": "/rapport"
+    },
+    {
+      "source": "/offerte/bedankt",
+      "destination": "/offerte"
     },
     {
       "source": "/api/:pad*",

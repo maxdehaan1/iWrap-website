@@ -31,7 +31,10 @@
     laag.className = 'menu-laag';
     document.body.appendChild(laag);
     new MutationObserver(function () {
-      laag.classList.toggle('open', menu.classList.contains('open'));
+      var open = menu.classList.contains('open');
+      laag.classList.toggle('open', open);
+      // Met het menu open scrolt de pagina eronder niet mee (audit W6).
+      document.documentElement.classList.toggle('menu-open', open);
     }).observe(menu, { attributes: true, attributeFilter: ['class'] });
     function sluitMenu() {
       knop.setAttribute('aria-expanded', 'false');
@@ -39,7 +42,47 @@
     }
     laag.addEventListener('click', sluitMenu);
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && menu.classList.contains('open')) { sluitMenu(); knop.focus(); }
+      if (!menu.classList.contains('open')) return;
+      if (e.key === 'Escape') { sluitMenu(); knop.focus(); return; }
+      // Tab blijft in het open menu: van de laatste link terug naar de menuknop, en andersom.
+      if (e.key !== 'Tab') return;
+      var doelen = [knop].concat(Array.prototype.slice.call(menu.querySelectorAll('a[href], button:not([disabled])'))
+        .filter(function (el) { return el.getClientRects().length > 0; }));
+      var eerste = doelen[0], laatste = doelen[doelen.length - 1], nu = doelen.indexOf(document.activeElement);
+      if (nu === -1) { e.preventDefault(); (e.shiftKey ? laatste : eerste).focus(); }
+      else if (e.shiftKey && nu === 0) { e.preventDefault(); laatste.focus(); }
+      else if (!e.shiftKey && nu === doelen.length - 1) { e.preventDefault(); eerste.focus(); }
+    });
+  }
+
+  /* Tabellen die zijwaarts scrollen -------------------------------------- */
+  // Op een smal scherm scrolt een brede tabel opzij. Dan moet dat ook met het toetsenbord kunnen:
+  // de tabel krijgt een tabstop en als naam de kop erboven (audit T3). Past hij, dan niet.
+  var tabellen = document.querySelectorAll('.tabel-wrap');
+  if (tabellen.length) {
+    var koppen = Array.prototype.slice.call(document.querySelectorAll('main h2, main h3'));
+    var kopVoor = function (el) {
+      var k = null;
+      for (var i = 0; i < koppen.length && (koppen[i].compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING); i++) k = koppen[i];
+      return k;
+    };
+    var bekijkTabellen = function () {
+      tabellen.forEach(function (w) {
+        if (w.scrollWidth > w.clientWidth + 1) {
+          if (w.getAttribute('role') === 'region') return;
+          var cap = w.querySelector('caption'), kop = kopVoor(w);
+          w.setAttribute('tabindex', '0');
+          w.setAttribute('role', 'region');
+          w.setAttribute('aria-label', ((cap && cap.textContent) || (kop && kop.textContent) || 'Tabel').trim().replace(/\s+/g, ' '));
+        } else if (w.getAttribute('role') === 'region') {
+          w.removeAttribute('tabindex'); w.removeAttribute('role'); w.removeAttribute('aria-label');
+        }
+      });
+    };
+    bekijkTabellen();
+    var tabelRaf = 0;
+    window.addEventListener('resize', function () {
+      cancelAnimationFrame(tabelRaf); tabelRaf = requestAnimationFrame(bekijkTabellen);
     });
   }
 

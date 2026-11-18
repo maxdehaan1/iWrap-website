@@ -655,7 +655,8 @@
       knop.type = "button";
       knop.className = "stapknop";
       knop.innerHTML = '<span class="nr" aria-hidden="true">' + (i + 1) + "</span>" +
-                       '<span class="lab">' + paneel.dataset.titel + "</span>";
+                       '<span class="lab">' + paneel.dataset.titel + "</span>" +
+                       '<span class="sr-only stap-extra"></span>';
       knop.addEventListener("click", function () { spring(i); });
       li.appendChild(knop);
       lijst.appendChild(li);
@@ -669,8 +670,10 @@
       var stand = i === nu ? "nu" : (i <= bereikt && geldig(i, true)) ? "klaar" : "open";
       knop.dataset.staat = stand;
       if (i === nu) knop.setAttribute("aria-current", "step"); else knop.removeAttribute("aria-current");
-      knop.setAttribute("aria-label", "Stap " + (i + 1) + " van " + panelen.length + ": " +
-        panelen[i].dataset.titel + (stand === "nu" ? ", hier ben je nu" : stand === "klaar" ? ", ingevuld" : ""));
+      // De naam komt uit de knop zelf: de titel die je ziet, met de stap en de stand als onzichtbare
+      // tekst erachter ("Kozijnen, stap 2 van 5, ingevuld"). Zo werkt ook spraakbediening (audit T5).
+      knop.querySelector(".stap-extra").textContent = ", stap " + (i + 1) + " van " + panelen.length +
+        (stand === "nu" ? ", hier ben je nu" : stand === "klaar" ? ", ingevuld" : "");
     });
     stapbalk.style.setProperty("--stappen", String(panelen.length));
     stapbalk.style.setProperty("--vordering-f", String(nu / (panelen.length - 1)));
@@ -748,12 +751,14 @@
   function kozijnenGeldig(stil) {
     if (!staat.manier) return false;
     if (staat.manier === "complex") {
-      var ontbreekt = !waarde("complex_org") ? ["complex_org", "Vul de naam van de VvE of de organisatie in."]
+      // Eigen naam: "var ontbreekt" zou hier de functie ontbreekt() verstoppen voor de hele functie
+      // (var geldt voor de hele functie), en dan liep stap 2 vast bij foto en aanstrepen of maten.
+      var mistComplex = !waarde("complex_org") ? ["complex_org", "Vul de naam van de VvE of de organisatie in."]
                     : !(parseInt(waarde("complex_woningen"), 10) > 0) ? ["complex_woningen", "Vul in om hoeveel woningen het gaat."]
                     : !waarde("complex_adres") ? ["complex_adres", "Vul in waar het complex staat."]
                     : null;
-      if (ontbreekt && !stil) { zeg(ontbreekt[1]); form.querySelector("#" + ontbreekt[0]).focus(); }
-      return !ontbreekt;
+      if (mistComplex && !stil) { zeg(mistComplex[1]); form.querySelector("#" + mistComplex[0]).focus(); }
+      return !mistComplex;
     }
     if (staat.manier === "papier") {
       var mist = !staat.papier.tekening.length ? "Voeg een foto van je tekening toe."
@@ -1159,6 +1164,7 @@
       "</div>";
     var mail = kaart.querySelector(".bedankt-mail b");
     if (mail) mail.textContent = email;
+    try { history.replaceState(null, "", "/offerte/bedankt"); } catch (e) {}
     kaart.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
@@ -1255,6 +1261,24 @@
     herkomst.push(BRONNEN[zoek.get("utm_source")] + (zoek.get("utm_medium") === "keuzehulp" ? " (keuzehulp)" : ""));
   }
   var vanaf = herkomst.join(" \u00b7 ");
+
+  // Mailadres: dezelfde controle als op de server, met een melding die zegt wat er mist (audit F6).
+  // "naam@voorbeeld" zonder punt ging eerst door tot het versturen.
+  var mailveld = form.querySelector("#email");
+  if (mailveld) {
+    var mailcheck = function () {
+      mailveld.setCustomValidity(mailveld.validity.patternMismatch || mailveld.validity.typeMismatch
+        ? "Vul je volledige e-mailadres in, bijvoorbeeld naam@voorbeeld.nl." : "");
+    };
+    mailveld.addEventListener("input", mailcheck);
+    mailcheck();
+  }
+
+  // Het bedankscherm heeft een eigen adres (/offerte/bedankt, audit F7). Wie dat adres opnieuw
+  // laadt, krijgt gewoon het formulier, onder het gewone adres.
+  if (location.pathname.replace(/\/$/, "") === "/offerte/bedankt") {
+    try { history.replaceState(null, "", "/offerte" + location.search); } catch (e) {}
+  }
 
   bouwStapbalk();
   toon(0, false);

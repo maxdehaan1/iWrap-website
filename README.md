@@ -54,10 +54,12 @@ Verder verwijzen de sites naar elkaar waar het de klant helpt:
   kozijncheck** bij de oplevering.
 - De **footer van iwrap.nl** noemt de zustersites: kozijnwrap.nl (wanneer herstel zin
   heeft), houtnerffolie.nl (de folie) en kozijnhorren.nl (horren in de kleur).
-- **kozijnhorren.nl staat nog niet online.** Daarom staat `KOZIJNHORREN_LIVE = False`
-  bovenin `build.py`: de naam staat dan wel op de site (kozijncheck, formulier), maar
-  zonder link, en de footer noemt de winkel nog niet. Zet hem op `True` zodra
-  kozijnhorren.nl werkt en bouw opnieuw. In de bron: `{{kozijnhorren}}`.
+- **kozijnhorren.nl staat nog niet online** (en het domein is nog vrij). Daarom staat
+  `KOZIJNHORREN_LIVE = False` bovenin `build.py`: dan noemt de site kozijnhorren.nl nergens.
+  Alles tussen `<!-- als kozijnhorren -->` en `<!-- /als kozijnhorren -->` in de bron valt
+  weg (de horrentip in het formulier, het horrenblok op /kozijncheck), en de footer noemt de
+  winkel niet (audit M16, 18 november 2026). Zet hem op `True` zodra kozijnhorren.nl werkt
+  en bouw opnieuw: dan komen naam, link (`{{kozijnhorren}}`) en tips terug.
 - **Knoppen van de zustersites.** kozijnwrap.nl (keuzehulp en de knop op de
   herstelpagina) en houtnerffolie.nl (de knop "Offerte aanvragen bij iWrap") linken naar
   `iwrap.nl/contact/` met utm-codes. Zolang iwrap.nl op WordPress draait is dat de
@@ -246,7 +248,19 @@ video/                    Neemt de film op als MP4 (niet op de site, niet in git
 - **Voor oudere bezoekers.** Lopende tekst 18px, kleine teksten minstens 15px, grijze tekst
   (`--sub`) donker genoeg voor 7:1, knoppen minstens 54px hoog, geen piepkleine hoofdletters
   met spaties ertussen (de kopjes boven een titel zijn gewone letters in het mint), en het
-  offerteformulier een maat groter. Zet er geen lichtgrijze of kleine tekst bij.
+  offerteformulier een maat groter. Zet er geen lichtgrijze of kleine tekst bij: sinds de
+  audit (18 november 2026) is alle zichtbare tekst op de openbare pagina's minstens `.94rem`
+  (15px). Teksten in de film schalen mee met de film (`cqw`), maar op de site nooit kleiner
+  dan 15px (`max(.94rem, …)`); de opname (`.film.opname`) houdt de exacte maten. Alleen de
+  letters in getekende illustraties (SVG) schalen mee met de tekening.
+- **Uitlijning.** Op een breed scherm staan sectiekoppen gecentreerd boven een rij kaarten
+  en links als er iets naast staat (een foto, of de pijltjes bij de reviews). Op een
+  telefoon (tot 700px) staat alles links: gecentreerde alinea's lezen slecht.
+- **Deelafbeelding.** De homepage en /offerte delen `images/og/iwrap-voor-na-v1.jpg`
+  (1200x630: logo, de kop van de homepage, de onderdorpel voor en na). Opnieuw maken met
+  `python3 deelafbeelding.py`; geef een nieuwe versie een nieuw nummer (`/images/` staat een
+  jaar in de cache). Andere pagina's tonen hun eigen foto (`ogimage`, de jpg-variant van
+  1000px).
 - **Logo.** Als SVG in `images/logo/` (`iwrap-logo-liggend.svg`, `-licht` voor donker,
   `-wit` voor op mint), gemaakt uit de officiële logobestanden. Het logo in de kop staat
   in de pagina zelf (`logo_kop()` in `build.py`), zodat het kan uitrollen. Alle andere
@@ -404,6 +418,20 @@ loopt alle drie de manieren door, inclusief een ontbrekende foto en dubbel verst
 Nederlandse teksten met een apostrof (`foto's`) in JavaScript altijd tussen dubbele
 aanhalingstekens. `build.py` controleert dat, want die fout heeft het formulier een keer
 stilgelegd. **Na elke wijziging in `js/`: open `/offerte` en kijk in de console.**
+
+Tweede valkuil, ook een keer gebeurd (november 2026): een `var` met dezelfde naam als een
+functie (`var ontbreekt` in `kozijnenGeldig`). `var` geldt voor de hele functie, dus de
+functie `ontbreekt()` was daar onbereikbaar en stap 2 liep vast bij foto en aanstrepen.
+Geef zo'n variabele een eigen naam, en loop na een wijziging alle routes helemaal door
+(aanstrepen, maten, papier, complex), niet alleen de route die je aanpaste.
+
+### Bedankt en het mailadres
+
+Na het versturen staat het adres op `/offerte/bedankt` (eigen adres voor metingen, audit
+F7); wie dat adres herlaadt, krijgt het gewone formulier (`vercel.json` en `serve.py`
+sturen het naar `/offerte`). Het mailadres wordt in de browser net zo gecontroleerd als op
+de server (`pattern` op `#email`), met de melding "Vul je volledige e-mailadres in,
+bijvoorbeeld naam@voorbeeld.nl."
 
 ## Kozijncheck, Max-modus en het opleverrapport
 

@@ -34,6 +34,7 @@ from backend import instellingen  # noqa: E402
 # Dezelfde rewrites als in vercel.json.
 HERSCHRIJVEN = [
     (re.compile(r"^/r/[a-z0-9]+/?$"), "/rapport"),
+    (re.compile(r"^/offerte/bedankt/?$"), "/offerte"),
 ]
 
 
