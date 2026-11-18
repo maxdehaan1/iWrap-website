@@ -131,7 +131,9 @@ header.site{
   border-bottom:1px solid rgba(34,38,42,.07);
 }
 @supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){header.site{background:rgba(255,255,255,.97);}}
-.nav{display:flex;align-items:center;gap:18px;max-width:1240px;margin:0 auto;padding:12px 24px;}
+/* Even breed als de inhoud (.wrap): het logo staat recht boven de koppen en de offerteknop
+   eindigt waar de inhoud eindigt (audit uitlijning, 18 november). */
+.nav{display:flex;align-items:center;gap:18px;max-width:1140px;margin:0 auto;padding:12px 24px;}
 .brand{margin-right:auto;display:inline-flex;align-items:center;text-decoration:none;}
 .logo-img{display:block;height:34px;width:auto;aspect-ratio:839.965/175.631;overflow:visible;}
 
@@ -192,7 +194,7 @@ html.menu-open{overflow:hidden;}
 @media (max-width:1080px){
   /* flex-wrap is hier essentieel: de navigatie krijgt flex-basis:100% en
      moet op een eigen regel onder het logo komen, niet ernaast. */
-  .nav{padding:10px 18px;gap:12px;flex-wrap:wrap;}
+  .nav{padding:10px 24px;gap:12px;flex-wrap:wrap;}
   .nav-toggle{
     display:inline-flex;align-items:center;justify-content:center;
     width:44px;height:44px;border:1px solid var(--line-strong);background:var(--white);
@@ -217,7 +219,7 @@ html.menu-open{overflow:hidden;}
   .navlinks{
     position:absolute;left:0;right:0;top:100%;
     flex-direction:column;align-items:stretch;gap:0;
-    padding:4px 18px 4px;background:var(--white);border-bottom:1px solid var(--line);
+    padding:4px 24px 4px;background:var(--white);border-bottom:1px solid var(--line);
     max-height:calc(100vh - 64px);max-height:calc(100dvh - 64px);overflow-y:auto;overscroll-behavior:contain;
     box-shadow:0 18px 30px -18px rgba(34,38,42,.4);
     clip-path:inset(0 0 100% 0);visibility:hidden;
@@ -230,7 +232,7 @@ html.menu-open{overflow:hidden;}
     transition:opacity var(--middel) var(--beweeg),visibility 0s linear var(--middel);
   }
   .menu-laag.open{opacity:1;visibility:visible;transition-delay:0s;}
-  .navlinks a{padding:15px 4px;border-bottom:1px solid var(--line);font-size:1.06rem;}
+  .navlinks a{padding:15px 0;border-bottom:1px solid var(--line);font-size:1.06rem;}
   .navlinks a::after{display:none;}
   .nav-cta{margin:14px 0 16px;text-align:center;padding:14px 20px!important;}
   /* De offerteknop naast het menu: blijft in beeld terwijl je scrolt. */
@@ -301,6 +303,9 @@ html.winter [data-winter][hidden]{display:block!important;}
 .knop svg{flex-shrink:0;}
 
 .knoprij{display:flex;flex-wrap:wrap;gap:14px;align-items:center;}
+/* Op een telefoon vullen de knoppen de regel: passen er twee naast elkaar, dan delen ze hem,
+   anders staat elke knop even breed onder de vorige (geen rafelige rechterrand). */
+@media (max-width:560px){ .knoprij > .knop{flex:1 1 auto;} }
 
 /* Ronde afspeelknop op de film en op video's. data-stand (speel, pauze,
    opnieuw) bepaalt welk van de drie iconen erin te zien is. */
@@ -319,6 +324,17 @@ html.winter [data-winter][hidden]{display:block!important;}
 /* Secties ----------------------------------------------------------------- */
 
 section{padding:clamp(64px,8.5vw,116px) 0;}
+/* Tussen twee secties op dezelfde achtergrond één keer die ruimte, niet twee keer; direct onder
+   de paginakop samen ook één keer (build.py, markeer_vlakken). Zo is de afstand tussen twee
+   blokken overal even groot, of er nu een kleurrand tussen zit of niet. */
+section.zelfde-vlak{padding-top:0;}
+/* Wat als eerste of laatste in een sectie staat, voegt geen eigen marge toe aan die ruimte
+   (een kader onderaan gaf er anders 32px bij). */
+section > .wrap > :last-child,section > .wrap-smal > :last-child,.tekst > :last-child,
+.tekst-kolom > :last-child,.project > :last-child,.resultaat-tekst > :last-child,.sectie-voet > :last-child{margin-bottom:0;}
+section > .wrap > :first-child,section > .wrap-smal > :first-child,.tekst > :first-child{margin-top:0;}
+section.na-hero{padding-top:clamp(24px,3.5vw,52px);}
+.hero + section.na-hero{padding-top:clamp(12px,2vw,30px);}
 .sectie-kop{max-width:720px;margin:0 0 clamp(36px,4.5vw,54px);}
 .sectie-kop.midden{margin-left:auto;margin-right:auto;text-align:center;}
 .sectie-kop p{color:var(--sub);font-size:clamp(1.1rem,1.04rem + .3vw,1.24rem);line-height:1.55;margin-bottom:0;}
@@ -327,12 +343,28 @@ section{padding:clamp(64px,8.5vw,116px) 0;}
    staat het gelijk met de andere pagina's (audit D7). Op een breed scherm: gecentreerd boven een
    rij kaarten, links als er iets naast staat (een foto, of de pijltjes bij de reviews). */
 @media (max-width:700px){ .sectie-kop.midden,.sectie-kop.midden p{text-align:left;margin-left:0;margin-right:0;} }
+/* Het slot van een sectie: een korte zin en/of knoppen onder de inhoud, overal op dezelfde
+   afstand. Staat de kop in het midden, dan dit ook; op een telefoon alles links (D7). */
+.sectie-voet{margin-top:clamp(28px,3.5vw,40px);}
+.sectie-voet > p{max-width:62ch;margin:0 0 20px;}
+.sectie-kop.midden ~ .sectie-voet{text-align:center;}
+.sectie-kop.midden ~ .sectie-voet > p{margin-left:auto;margin-right:auto;}
+.sectie-kop.midden ~ .sectie-voet.knoprij,.sectie-kop.midden ~ .sectie-voet > .knoprij{justify-content:center;}
+@media (max-width:700px){
+  .sectie-kop.midden ~ .sectie-voet{text-align:left;}
+  .sectie-kop.midden ~ .sectie-voet > p{margin-left:0;}
+  .sectie-kop.midden ~ .sectie-voet.knoprij,.sectie-kop.midden ~ .sectie-voet > .knoprij{justify-content:flex-start;}
+}
 /* Het kopje boven een titel: gewone letters in het mint, geen kleine hoofdletters
    met spaties ertussen (die lezen oudere bezoekers slecht). */
 .opschrift,.sectie-kop p.opschrift{
   font-family:var(--kop);font-size:1.02rem;font-weight:600;letter-spacing:-.01em;line-height:1.4;
   color:var(--mint-ink);display:block;margin:0 0 10px;
 }
+
+/* Een kop direct onder zijn opschrift hoort erbij: geen eigen ruimte erboven (in een tekstkolom
+   gaf .tekst h2 er anders 2em bij, zie /kozijncheck). */
+.opschrift + h1,.opschrift + h2,.opschrift + h3{margin-top:0;}
 
 .vlak-wit{background:var(--white);}
 .vlak-mint{background:var(--mint-wash);}
@@ -504,14 +536,16 @@ td strong{color:var(--ink);}
 /* Een rij om doorheen te schuiven: drie naast elkaar op een groot scherm, en
    op een telefoon steekt de volgende kaart net uit, zodat je ziet dat er meer is. */
 .rv-rij{
-  display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 2 * 20px) / 3);gap:20px;
+  /* De ruimte tussen de kaarten is iets groter dan de marge rechts (24px): zo valt de vierde
+     kaart helemaal buiten beeld, in plaats van dat er een streepje van uitsteekt. */
+  display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 2 * 26px) / 3);gap:26px;
   overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;
   margin:-12px -24px 0;padding:12px 24px 22px;scroll-padding:0 24px;
   scrollbar-width:none;
 }
 .rv-rij::-webkit-scrollbar{display:none;}
 .rv-rij:focus-visible{outline:2px solid var(--mint-ink);outline-offset:-2px;border-radius:var(--radius);}
-@media (max-width:900px){.rv-rij{grid-auto-columns:calc((100% - 20px) / 2.15);}}
+@media (max-width:900px){.rv-rij{grid-auto-columns:calc((100% - 20px) / 2.15);gap:20px;}}
 @media (max-width:600px){.rv-rij{grid-auto-columns:84%;gap:14px;}}
 
 .review{
@@ -610,8 +644,10 @@ td strong{color:var(--ink);}
 .fbrand img{height:32px;width:auto;margin-bottom:18px;}
 .fbrand p{max-width:34ch;color:var(--sub);}
 .fcontact a{font-weight:600;color:var(--ink);}
-.fbottom{border-top:1px solid var(--line-strong);margin-top:48px;padding-top:22px;display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-between;font-size:.94rem;color:var(--sub);}
+.fbottom{position:relative;margin-top:48px;padding-top:22px;display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-between;font-size:.94rem;color:var(--sub);}
 .fbottom p{margin:0;}
+/* De lijn erboven loopt van de linker- tot de rechterrand van de inhoud, niet door de marge heen. */
+.fbottom::before{content:"";position:absolute;top:0;left:24px;right:24px;height:1px;background:var(--line-strong);}
 .fzus{max-width:56ch;}
 /* Links in lopende tekst herken je niet alleen aan hun kleur (audit T2). */
 .fzus a{text-decoration:underline;text-decoration-color:rgba(34,38,42,.4);text-decoration-thickness:1px;text-underline-offset:3px;}

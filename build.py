@@ -758,7 +758,51 @@ def fonts_koppen(ver):
     return '<link rel="stylesheet" href="/css/fonts.css?v=%s">\n' % ver
 
 
+SECTIE_RE = re.compile(r"<section\b([^>]*)>")
+HERO_KLASSEN = {"hero", "pagina-hero", "offerte-hero"}
+
+
+def markeer_vlakken(inhoud):
+    """Witruimte tussen secties: één keer, niet twee keer.
+
+    Elke sectie heeft boven en onder dezelfde ruimte. Wisselt de achtergrond, dan klopt dat:
+    de kleurrand scheidt de twee. Maar twee secties op hetzelfde papier na elkaar gaven een gat
+    van twee keer die ruimte (tot 290px), en onder de paginakop op elke pagina 272px. Daarom
+    krijgt een sectie met dezelfde achtergrond als die ervoor "zelfde-vlak" (geen ruimte
+    erboven), en de sectie direct onder de paginakop "na-hero" (samen precies één keer de
+    ruimte). De opmaak staat in style.css bij "Secties"."""
+    def vlak(klassen):
+        if "vlak-donker" in klassen:
+            return "donker"
+        if "vlak-mint" in klassen:
+            return "mint"
+        if klassen & {"vlak-wit", "vlak-gloed", "werkwijze-blok"}:
+            return "wit"
+        return "papier"
+
+    vorige = None
+    def rep(m):
+        nonlocal vorige
+        attrs = m.group(1)
+        km = re.search(r'class="([^"]*)"', attrs)
+        klassen = set(km.group(1).split()) if km else set()
+        soort = vlak(klassen)
+        extra = None
+        if vorige and vorige[0] == soort:
+            extra = "na-hero" if vorige[1] else "zelfde-vlak"
+        vorige = (soort, bool(klassen & HERO_KLASSEN))
+        if not extra:
+            return m.group(0)
+        if km:
+            attrs = attrs.replace(km.group(0), 'class="%s %s"' % (km.group(1), extra), 1)
+        else:
+            attrs = ' class="%s"' % extra + attrs
+        return "<section%s>" % attrs
+    return SECTIE_RE.sub(rep, inhoud)
+
+
 def render(slug, meta, inhoud, ver):
+    inhoud = markeer_vlakken(inhoud)
     canonical = SITE + url_for(slug)
     stylesheets = "".join(
         '<link rel="stylesheet" href="/css/%s.css?v=%s">\n' % (s, ver)

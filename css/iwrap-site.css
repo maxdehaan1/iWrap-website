@@ -89,8 +89,8 @@ tr.vandaag-aan .vandaag-chip{opacity:1;transform:scale(1);}
    afgerond en met schaduw, zoals de andere tekeningen op de site */
 .iw-scene{max-width:760px;margin:0 0 clamp(24px,3vw,36px);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
 .iw-scene-smal{max-width:640px;margin-left:auto;margin-right:auto;}
-.iw-scene-sectie{padding-block:clamp(28px,4vw,48px) 0;}
-.iw-scene-sectie .iw-scene{margin:0 auto;}
+/* Op /werkgebied direct onder de paginakop: op de linkerrand, net als de kop en de tekst eronder. */
+.iw-scene-sectie .iw-scene{margin:0;}
 
 @media (prefers-reduced-motion:reduce){
   .klusfilm-vervolg,.vandaag-chip,tr.vandaag td,tr.vandaag td:first-child::before,.profiel-oordeel i{transition:none;}

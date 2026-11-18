@@ -16,8 +16,7 @@
 }
 /* Op het donkere vlak van de homepage een diepere schaduw en geen rand. */
 .vlak-donker .film{border-color:transparent;box-shadow:0 30px 70px -34px rgba(0,0,0,.7);}
-/* Op /werkwijze staat hij los onder de paginakop. */
-.film-sectie{padding-bottom:0;}
+/* Op /werkwijze staat hij los onder de paginakop (de ruimte eromheen: section.na-hero in style.css). */
 .film-sectie .film{margin-bottom:0;}
 /* Zonder JavaScript is er geen film; de stappen eronder vertellen hetzelfde. */
 html:not(.js) .film,html:not(.js) .film-sectie{display:none;}

@@ -255,7 +255,33 @@ video/                    Neemt de film op als MP4 (niet op de site, niet in git
   letters in getekende illustraties (SVG) schalen mee met de tekening.
 - **Uitlijning.** Op een breed scherm staan sectiekoppen gecentreerd boven een rij kaarten
   en links als er iets naast staat (een foto, of de pijltjes bij de reviews). Op een
-  telefoon (tot 700px) staat alles links: gecentreerde alinea's lezen slecht.
+  telefoon (tot 700px) staat alles links: gecentreerde alinea's lezen slecht. Sinds de
+  uitlijnronde van 18 november 2026:
+  - **Eén rand.** De kopbalk is even breed als de inhoud (`.nav` en `.wrap` allebei 1140px met
+    24px marge): het logo staat recht boven de koppen, de offerteknop eindigt waar de inhoud
+    eindigt, en op een telefoon staan logo, menu en tekst allemaal op 24px. Ook de lijn boven
+    de onderste footerregel loopt van rand tot rand van de inhoud.
+  - **Wat onder een gecentreerde kop staat, staat ook in het midden.** Zet het slot van een
+    sectie (een korte zin en/of knoppen) in `<div class="sectie-voet">` of geef de knoprij de
+    klasse `sectie-voet`: dan staat het op een vaste afstand onder de inhoud, in het midden
+    onder een gecentreerde kop en links onder een linkse kop. Geen losse `style="margin-top"`
+    meer. Een losse figuur direct onder de paginakop (/voorbeelden, /werkgebied) staat op de
+    linkerrand, net als de kop.
+  - **Witruimte tussen secties: één keer.** Elke sectie heeft boven en onder dezelfde ruimte.
+    `markeer_vlakken()` in `build.py` geeft een sectie met dezelfde achtergrond als die ervoor
+    de klasse `zelfde-vlak` (geen ruimte erboven) en de sectie direct onder de paginakop
+    `na-hero` (samen één keer). Zo is de afstand tussen twee blokken overal even groot:
+    116px op een breed scherm, 64px op een telefoon, en twee keer zoveel waar de achtergrond
+    wisselt (aan elke kant van de kleurrand één keer). Wat als eerste of laatste in een sectie
+    staat, voegt geen eigen marge toe.
+  - **Lijstjes.** Gewone lijstjes in lopende tekst springen in; lijsten met een eigen opmaak
+    (vinkjes, kruisjes, genummerde stappen, de artikelen van de voorwaarden) staan op de
+    tekstrand. Op een telefoon vullen knoppen in een knoprij de regel, zodat gestapelde knoppen
+    even breed zijn.
+  - **Controleren.** Na een wijziging in de opmaak: de afstanden tussen secties meten op 390,
+    768 en 1440px (alleen 64/128, 65/131 en 116/232 zijn goed), en de pagina's bekijken met
+    een schermafdruk die scherm voor scherm wordt gemaakt. Een schermafdruk van de hele pagina
+    in één keer (`fullPage`) geeft in Chrome afwijkingen en is niet te vertrouwen.
 - **Deelafbeelding.** De homepage en /offerte delen `images/og/iwrap-voor-na-v1.jpg`
   (1200x630: logo, de kop van de homepage, de onderdorpel voor en na). Opnieuw maken met
   `python3 deelafbeelding.py`; geef een nieuwe versie een nieuw nummer (`/images/` staat een
