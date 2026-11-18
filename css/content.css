@@ -26,19 +26,31 @@
 
 .tekst{max-width:none;min-width:0;}
 .tekst-kolom{max-width:68ch;}
+/* De grote voor/na-foto bovenaan /voorbeelden en de alinea eronder staan op dezelfde linkerrand als
+   de paginakop, in plaats van gecentreerd met elk een eigen rand (audit uitlijning, 18 november). */
+.uitgelicht{max-width:820px;margin:0;}
+.uitgelicht-tekst{margin-top:clamp(28px,3.5vw,44px);}
 .tekst h2{margin-top:2em;}
 .tekst h2:first-child{margin-top:0;}
 .tekst h3{margin-top:1.7em;}
+/* Een kopje bovenaan een kader (callout, kaart) begint direct onder de rand. */
+.tekst h3:first-child{margin-top:0;}
+/* Een kop direct onder zijn opschrift hoort erbij (style.css doet dit ook, maar verliest het hier van .tekst h2). */
+.tekst .opschrift + :is(h2,h3){margin-top:0;}
 .tekst > p:first-child{margin-top:0;}
-.tekst ul,.tekst ol{padding-left:1.25em;margin:0 0 1.3em;}
-.tekst li{margin-bottom:.45em;}
+/* Gewone lijstjes in lopende tekst springen in. Lijsten met een eigen opmaak (vinkjes, kruisjes,
+   genummerde stappen, de artikelen van de voorwaarden) niet: die staan op de tekstrand, net als op
+   de homepage (audit uitlijning, 18 november). :where houdt deze regel licht, zodat de eigen
+   opmaak van zo'n lijst altijd wint. */
+.tekst :where(ul,ol){margin:0 0 1.3em;}
+.tekst :where(ul:not([class]),ol:not([class])){padding-left:1.25em;}
+.tekst :where(ul:not([class]),ol:not([class])) > li{margin-bottom:.45em;}
 .tekst figure{margin:34px 0;}
 .tekst figure img{border-radius:var(--radius);}
 .tekst figcaption{margin-top:11px;font-size:.97rem;color:var(--sub);}
 
 /* Video onder de paginakop (/over-iwrap). De knop en het afspelen zitten in
    style.css en main.js. */
-.video-sectie{padding-bottom:0;}
 .video{margin:0;}
 .video-beeld{position:relative;}
 .video video{

@@ -35,7 +35,6 @@
 .hero-fig::before{content:"";position:absolute;z-index:-1;left:-14%;right:-14%;top:-12%;bottom:-6%;
   background:radial-gradient(closest-side,rgba(163,205,194,.55),rgba(163,205,194,0));pointer-events:none;}
 /* Bij de voorbeelden: de echte voor/na-schuif groot links, vier klusfoto's twee bij twee rechts. */
-.vb-sectie{padding-top:clamp(8px,2vw,28px);}
 .vb-raster{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(16px,2.4vw,28px);align-items:start;}
 .vergelijk-los{margin:0;}
 .vergelijk-los figcaption{margin-top:12px;font-size:.97rem;color:var(--sub);}
@@ -66,10 +65,17 @@
   /* Onder de foto eerst in twee zinnen wat we doen, dan de knoppen en het reviewcijfer.
      De knoppen hoeven niet meer direct onder de foto: op een telefoon staat de
      offerteknop altijd in de actiebalk onderin. */
-  .hero-lede{order:4;margin-top:6px;}
-  .hero-tekst .knoprij{order:5;margin-top:4px;}
-  .hero-tekst .rv-badge{order:6;justify-self:start;margin-top:0;}
-  .hero-tekst .hero-bewijs{order:7;}
+  .hero-lede{order:4;margin:0 0 24px;}
+  .hero-tekst .knoprij{order:5;margin-top:0;}
+  .hero-tekst .rv-badge{order:6;justify-self:start;margin-top:22px;}
+  .hero-tekst .hero-bewijs{order:7;margin-top:28px;padding-top:24px;}
+  /* Geen vaste rij-afstand: elk onderdeel heeft hierboven zijn eigen ruimte, net als op een
+     breed scherm (opschrift dicht op de kop, foto en tekst met lucht ertussen). */
+  .hero-grid{row-gap:0;}
+  .hero h1{margin-bottom:24px;}
+  /* Zwaarder dan de regel "laatste in een sectie zonder marge" (style.css): in de html is de foto
+     het laatste onderdeel, op een telefoon staat hij midden in de hero. */
+  .hero-grid > .hero-fig.vergelijk-los{margin-bottom:26px;}
 }
 
 /* Klachtenraster ---------------------------------------------------------- */
@@ -156,16 +162,19 @@
 .onderscheid p{margin:0;padding-left:33px;font-size:1.02rem;line-height:1.55;color:#cfd5da;}
 /* Logo's van wie ons certificeerde, opleidde of inhuurt (Renolit, Avery Dennison, Appcademy):
    onveranderd op een wit kaartje, ook op donker, met eronder waarvoor. */
-.partnerlogos{display:flex;flex-wrap:wrap;align-items:stretch;gap:12px;margin-top:24px;}
-.partnerlogo{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
-  min-width:150px;padding:14px 20px 12px;background:#fff;border-radius:12px;}
+/* Vier gelijke kolommen met dezelfde tussenruimte als de redenen erboven: op een breed scherm
+   staan de kaartjes precies onder de vier kolommen. */
+.partnerlogos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:clamp(28px,3.5vw,40px);}
+.partnerlogo{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  padding:14px 16px 12px;background:#fff;border-radius:12px;}
 .partnerlogo img{display:block;height:30px;width:auto;}
 .partnerlogo-vierkant img{height:48px;}
 .partnerlogo-breed img{height:24px;}
-@media (max-width:600px){.partnerlogos .partnerlogo{flex:1 1 calc(50% - 6px);min-width:0;padding:12px 10px 10px;}}
+@media (max-width:760px){.partnerlogos{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}}
+@media (max-width:600px){.partnerlogos .partnerlogo{padding:12px 10px 10px;}}
 .partnerlogo span{font-family:var(--kop);font-size:.94rem;font-weight:600;line-height:1.25;color:#3a4047;text-align:center;}
-.onderscheid-voet{margin:26px 0 0;max-width:70ch;font-size:1.04rem;color:#cfd5da;}
-.onderscheid-voet a{margin-left:6px;font-weight:600;white-space:nowrap;}
+.onderscheid-voet{max-width:70ch;font-size:1.04rem;color:#cfd5da;}
+.onderscheid-voet a{font-weight:600;white-space:nowrap;}
 .onderscheid-voet a::after{content:" \2197";}
 
 /* Voor wie ---------------------------------------------------------------- */
@@ -208,7 +217,9 @@
 /* De werkwijze staat sinds november 2026 op een licht vlak met een mintgloed (was antraciet). */
 .werkwijze-blok{background:radial-gradient(60% 55% at 50% 38%, rgba(163,205,194,.32), rgba(163,205,194,0) 72%),var(--white);}
 .werkwijze-blok .film{border-color:var(--rand-zacht);}
-.merken{justify-content:center;}
+/* De merken volgen de kop: links onder een kop die links staat, in het midden onder een
+   gecentreerde kop (op /voor-kozijnbedrijven stonden ze gecentreerd onder een linkse kop). */
+.sectie-kop.midden ~ .merken{justify-content:center;}
 
 /* Voorbeelden op de homepage: vier klusfoto's met de kleur eronder (sinds 17 november;
    de voor/na-schuif staat nu in de hero). */
@@ -219,7 +230,7 @@
 @media (max-width:900px){ .strook-bijschrift{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;} }
 
 /* 25 jaar zon bij "Waarom herstellen werkt": in het midden, niet breder dan een foto. */
-.zon-midden{max-width:600px;margin:0 auto clamp(34px,4.5vw,56px);}
+.kozijn-3d.zon-midden{max-width:600px;margin:0 auto clamp(34px,4.5vw,56px);}
 
 /* De korte linktekst onder een kaart ("Dit herken ik ->") niet over twee regels: op een smalle
    telefoon iets kleiner, zodat hij in de kaart past. */
@@ -240,7 +251,12 @@
 /* Waarom iWrap: links de kop en de drie cijfers, rechts een echte monteur aan het werk;
    de acht redenen eronder als rustige lijst, zonder losse kaders (audit 17 november, D4/D5). */
 .waarom-kop{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.85fr);gap:clamp(28px,4.5vw,64px);align-items:center;}
-.waarom-kop + .cijfers{margin-top:clamp(30px,4vw,48px);}
+.waarom-tekst .sectie-kop{margin-bottom:clamp(28px,3.5vw,40px);}
+/* Naast de foto is de kolom smaller: elk cijfer op één regel ("Duizenden" breekt nooit af), de
+   kolommen zo breed als hun cijfer vraagt en de regel eronder loopt eronder door. */
+.waarom-tekst .cijfers{grid-template-columns:repeat(3,auto);gap:24px clamp(24px,3vw,40px);}
+.waarom-tekst .cijfer strong{font-size:clamp(1.75rem,.6rem + 2.2vw,2.4rem);white-space:nowrap;}
+@media (max-width:540px){ .waarom-tekst .cijfers{grid-template-columns:1fr;gap:20px;} }
 .waarom-foto{margin:0;border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.6);}
 .waarom-foto img{display:block;width:100%;height:auto;aspect-ratio:1/1;object-fit:cover;object-position:50% 45%;}
 @media (max-width:900px){
