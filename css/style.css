@@ -74,6 +74,9 @@ body{overflow-wrap:break-word;}
   h1,h2,h3,h4,summary,figcaption{-webkit-hyphens:auto;hyphens:auto;hyphenate-limit-chars:12 5 5;}
 }
 p,li,figcaption{text-wrap:pretty;}
+/* Een samengesteld woord met een streepje ("Weru-kozijn") breekt in een kop niet op dat streepje
+   af ("Weru- / kozijn"). Op een telefoon wel, anders past het langste woord niet. */
+@media (min-width:481px){ .heel{white-space:nowrap;} }
 
 /* [hidden] verliest het van elke regel die display zet -- en dat doen .knop
    (inline-flex) en de kaarten allemaal. Zonder deze regel blijft de
@@ -98,9 +101,12 @@ body{
 }
 
 h1,h2,h3,h4{font-family:var(--kop);font-weight:700;line-height:1.14;letter-spacing:-.016em;margin:0 0 .5em;color:var(--ink);}
-h1{font-size:clamp(2.15rem,1.35rem + 3.1vw,3.6rem);line-height:1.08;letter-spacing:-.028em;}
-h2{font-size:clamp(1.7rem,1.22rem + 1.9vw,2.6rem);line-height:1.12;letter-spacing:-.024em;}
-h3{font-size:clamp(1.18rem,1.08rem + .4vw,1.38rem);font-weight:650;line-height:1.25;}
+/* Eén reeks maten (compositieronde, 19 november): de koppen waren zo groot dat ze in hun kolom
+   op een los woord braken ("Kunststof / kozijnen / ..."). Op een breed scherm nu 50 / 37 / 20px
+   bij 18px tekst; op een telefoon vrijwel gelijk aan eerst. */
+h1{font-size:clamp(2.1rem,1.45rem + 2.3vw,3.1rem);line-height:1.08;letter-spacing:-.028em;}
+h2{font-size:clamp(1.65rem,1.25rem + 1.35vw,2.3rem);line-height:1.13;letter-spacing:-.022em;}
+h3{font-size:clamp(1.14rem,1.06rem + .3vw,1.28rem);font-weight:650;line-height:1.28;}
 h4{font-size:1.06rem;font-weight:650;letter-spacing:-.012em;}
 p{margin:0 0 1.1em;}
 img{max-width:100%;height:auto;display:block;}
@@ -319,7 +325,8 @@ html.winter [data-winter][hidden]{display:block!important;}
 .speelknop[data-stand="pauze"] .icoon-pauze,
 .speelknop[data-stand="speel"] .icoon-speel,
 .speelknop[data-stand="opnieuw"] .icoon-opnieuw{display:block;}
-.knoprij .bijschrift{font-size:.95rem;color:var(--sub);}
+/* De korte zin bij de knoppen staat altijd op een eigen regel eronder, niet soms ernaast. */
+.knoprij .bijschrift{flex-basis:100%;font-size:.95rem;color:var(--sub);}
 
 /* Secties ----------------------------------------------------------------- */
 
@@ -333,12 +340,15 @@ section.zelfde-vlak{padding-top:0;}
 section > .wrap > :last-child,section > .wrap-smal > :last-child,.tekst > :last-child,
 .tekst-kolom > :last-child,.project > :last-child,.resultaat-tekst > :last-child,.sectie-voet > :last-child{margin-bottom:0;}
 section > .wrap > :first-child,section > .wrap-smal > :first-child,.tekst > :first-child{margin-top:0;}
-section.na-hero{padding-top:clamp(24px,3.5vw,52px);}
-.hero + section.na-hero{padding-top:clamp(12px,2vw,30px);}
+/* Precies één eenheid tussen de paginakop en wat eronder staat: de sectie-eenheid min de ruimte
+   onder de paginakop (eerst kwam het op 114 in plaats van 116px uit). */
+section.na-hero{padding-top:calc(clamp(64px,8.5vw,116px) - clamp(40px,5vw,64px));}
+.hero + section.na-hero{padding-top:calc(clamp(64px,8.5vw,116px) - clamp(48px,5.5vw,80px));}
 .sectie-kop{max-width:720px;margin:0 0 clamp(36px,4.5vw,54px);}
 .sectie-kop.midden{margin-left:auto;margin-right:auto;text-align:center;}
-.sectie-kop p{color:var(--sub);font-size:clamp(1.1rem,1.04rem + .3vw,1.24rem);line-height:1.55;margin-bottom:0;}
-.sectie-kop.midden p{max-width:44em;margin-left:auto;margin-right:auto;}
+/* De inleiding onder een kop: niet breder dan zo'n 75 tekens, ook onder een gecentreerde kop. */
+.sectie-kop p{color:var(--sub);font-size:clamp(1.1rem,1.04rem + .25vw,1.22rem);line-height:1.55;margin-bottom:0;max-width:34em;}
+.sectie-kop.midden p{margin-left:auto;margin-right:auto;}
 /* Op een telefoon alles links: gecentreerde alinea's van drie of vier regels lezen slecht, en zo
    staat het gelijk met de andere pagina's (audit D7). Op een breed scherm: gecentreerd boven een
    rij kaarten, links als er iets naast staat (een foto, of de pijltjes bij de reviews). */
@@ -346,7 +356,7 @@ section.na-hero{padding-top:clamp(24px,3.5vw,52px);}
 /* Het slot van een sectie: een korte zin en/of knoppen onder de inhoud, overal op dezelfde
    afstand. Staat de kop in het midden, dan dit ook; op een telefoon alles links (D7). */
 .sectie-voet{margin-top:clamp(28px,3.5vw,40px);}
-.sectie-voet > p{max-width:62ch;margin:0 0 20px;}
+.sectie-voet > p{max-width:35em;margin:0 0 20px;}
 .sectie-kop.midden ~ .sectie-voet{text-align:center;}
 .sectie-kop.midden ~ .sectie-voet > p{margin-left:auto;margin-right:auto;}
 .sectie-kop.midden ~ .sectie-voet.knoprij,.sectie-kop.midden ~ .sectie-voet > .knoprij{justify-content:center;}
@@ -382,6 +392,13 @@ section.na-hero{padding-top:clamp(24px,3.5vw,52px);}
   background:var(--white);border:1px solid var(--rand-zacht);border-radius:var(--radius);
   padding:28px;
 }
+/* Eén maat voor de titel en de tekst in een kaart, overal op de site: de prijskaarten hadden
+   18px zwarte tekst, de kaarten ernaast 16px grijs. */
+.kaart h3{font-size:1.18rem;}
+.raster > .kaart > p{font-size:1.02rem;color:var(--sub);}
+/* Wat onderaan een kaart staat, houdt geen eigen marge: anders is de ruimte onder de tekst groter
+   dan erboven. */
+.kaart > :last-child{margin-bottom:0;}
 .raster{display:grid;gap:22px;}
 .raster-2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));}
 .raster-3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));}
@@ -438,6 +455,8 @@ section.na-hero{padding-top:clamp(24px,3.5vw,52px);}
 .callout h3,.callout h2{margin-top:0;}
 .callout h2{font-size:clamp(1.18rem,1.08rem + .4vw,1.38rem);font-weight:650;line-height:1.25;}
 .callout :last-child{margin-bottom:0;}
+/* Ook in een brede kanttekening (homepage) blijft de regel leesbaar. */
+.callout > p{max-width:36em;}
 .let-op{
   background:var(--rust-wash);border-left:4px solid var(--rust);
   border-radius:0 var(--radius) var(--radius) 0;padding:22px 26px;margin:32px 0;
@@ -562,7 +581,10 @@ td strong{color:var(--ink);}
   font-size:1.02rem;margin:0;color:var(--ink-soft);
   display:-webkit-box;-webkit-line-clamp:7;-webkit-box-orient:vertical;overflow:hidden;
 }
-.review.kort p{font-family:var(--kop);font-weight:650;font-size:1.28rem;line-height:1.4;letter-spacing:-.015em;color:var(--ink);}
+/* Een korte review wat groter, zodat de kaart niet half leeg staat; in dezelfde letter als de
+   andere reviews (eerst vet Montserrat, en dan stonden er twee soorten tekst naast elkaar). */
+.review.kort p{font-size:1.22rem;line-height:1.45;color:var(--ink);}
+@media (max-width:600px){ .review.kort p{font-size:1.1rem;} }
 .review .wie{display:flex;align-items:center;gap:11px;margin-top:auto;padding-top:8px;}
 .review .avatar{width:36px;height:36px;border-radius:50%;background:var(--mint);display:grid;place-items:center;font-family:var(--kop);font-weight:700;font-size:.88rem;color:var(--ink);flex-shrink:0;}
 .review .wie b{display:block;font-size:1rem;font-weight:600;line-height:1.3;}
@@ -630,6 +652,15 @@ td strong{color:var(--ink);}
 }
 .slot p{color:#1f2b28;max-width:52ch;font-size:1.1rem;}
 .slot .knoprij{position:relative;z-index:1;}
+/* Drie knoppen op één rij in het slotblok (eerst viel WhatsApp eraf naar een tweede rij). */
+@media (min-width:821px){ .slot .knop{padding-left:24px;padding-right:24px;} }
+/* Op een telefoon iets minder binnenruimte en geen smalle kop: anders brak de kop van het slotblok
+   in vier korte regels ("en meteen / weten hoe de"). */
+@media (max-width:600px){
+  .slot{padding:28px 24px;}
+  .slot.met-beeld{--slot-pad:24px;}
+  .slot h2{max-width:none;}
+}
 .slot .bijschrift{color:#2c3d38;}
 .slot a:not(.knop):not(.slot-score){color:var(--ink);}
 

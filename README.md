@@ -233,12 +233,15 @@ video/                    Neemt de film op als MP4 (niet op de site, niet in git
 - **Let op bij het mint.** `--mint` is voor vlakken, randen en iconen. Zodra er tekst op
   wit komt, gebruik je `--mint-ink` — `--mint` haalt met wit maar 1,7:1 en is dan
   onleesbaar.
-- **Letters.** Sinds 16 november 2026 het lettertype van het apparaat zelf, net als
-  houtnerffolie.nl: San Francisco op een Mac en iPhone, Segoe UI op Windows, Roboto op
-  Android (`--kop` en `--tekst` in `style.css`). Strak, goed leesbaar, en er hoeft niets
-  gedownload te worden. Koppen groot en strak (vet, iets in elkaar geschoven), lopende tekst
-  18px. Montserrat en Inter staan nog in `css/fonts.css` voor de getekende scènes die ze
-  gebruiken; een browser haalt ze alleen op waar die scènes staan.
+- **Letters.** Koppen, menu, knoppen, opschriften en FAQ-vragen in **Montserrat** (sinds 17
+  november 2026, zelf gehost in `css/fonts.css`, `--kop`); de lopende tekst in het lettertype van
+  het apparaat (`--tekst`: San Francisco op een Mac en iPhone, Segoe UI op Windows, Roboto op
+  Android), 18px. **Eén reeks maten** (compositieronde, 19 november 2026), op een breed scherm:
+  h1 50px, h2 37px, h3 20px, de inleiding onder een kop 19,5px, lopende tekst 18px; op een
+  telefoon 34 / 26 / 18px. In een kaart is de titel altijd `1.18rem` en de tekst `1.02rem` grijs.
+  Maak een kop niet groter dan zijn kolom aankan: een kop mag niet op een los woord breken
+  ("Kunststof / kozijnen / herstellen met"), en titels in een rij kaarten staan allemaal op één
+  regel.
 - **De stijl (november 2026, "iets meer Apple", zoals houtnerffolie.nl).** Licht en rustig:
   papier (`--paper`) met witte vlakken, een zachte **mintgloed** bovenaan elke pagina en
   achter de hero, een wit **doorschijnend menu** dat blijft staan, kaarten met een zachte
@@ -278,10 +281,23 @@ video/                    Neemt de film op als MP4 (niet op de site, niet in git
     (vinkjes, kruisjes, genummerde stappen, de artikelen van de voorwaarden) staan op de
     tekstrand. Op een telefoon vullen knoppen in een knoprij de regel, zodat gestapelde knoppen
     even breed zijn.
+  - **Regellengte.** Lopende tekst niet breder dan zo'n 85 tekens: de inleiding onder een kop en
+    op een paginakop `34em`, de slotzin van een sectie `35em`, de tekst in een kanttekening `36em`,
+    en de tekstkolom naast een zijkolom (`.zij-indeling`) maximaal 660px; de zijkolom staat op de
+    rechterrand. Let op: `ch` is in deze letter breder dan een gemiddeld teken (62ch is zo'n 94
+    tekens), reken dus in `em`.
+  - **Compositie.** Wat naast elkaar staat, is ongeveer even hoog. De homepage-hero heeft twee
+    even brede kolommen (tekst en knoppen links, de voor/na-foto rechts) en daaronder een strook
+    in dezelfde kolommen (`.hero-voet`: het reviewcijfer onder de tekst, de zes punten onder de
+    foto). Een losse foto of tekening krijgt zijn uitleg of kop ernaast (/voorbeelden,
+    /werkgebied) in plaats van een halflege rij. Lange rijen redenen staan in twee kolommen, niet
+    in vier smalle. De korte zin bij knoppen (`.bijschrift`) staat altijd op een eigen regel.
   - **Controleren.** Na een wijziging in de opmaak: de afstanden tussen secties meten op 390,
     768 en 1440px (alleen 64/128, 65/131 en 116/232 zijn goed), en de pagina's bekijken met
     een schermafdruk die scherm voor scherm wordt gemaakt. Een schermafdruk van de hele pagina
-    in één keer (`fullPage`) geeft in Chrome afwijkingen en is niet te vertrouwen.
+    in één keer (`fullPage`) geeft in Chrome afwijkingen en is niet te vertrouwen. Bekijk de
+    homepage ook op 1440x900 (een gewone laptop): de hele hero, met de strook eronder, past dan
+    op het eerste scherm.
 - **Deelafbeelding.** De homepage en /offerte delen `images/og/iwrap-voor-na-v1.jpg`
   (1200x630: logo, de kop van de homepage, de onderdorpel voor en na). Opnieuw maken met
   `python3 deelafbeelding.py`; geef een nieuwe versie een nieuw nummer (`/images/` staat een

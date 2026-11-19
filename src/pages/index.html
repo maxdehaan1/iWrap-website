@@ -54,15 +54,6 @@
         <a class="knop knop-tweede" href="/kosten">Wat kost het?</a>
         <span class="bijschrift">De offerte is gratis en vrijblijvend.</span>
       </div>
-      {{reviewbadge}}
-      <div class="hero-bewijs">
-        <span>Vaste prijs vooraf</span>
-        <span>10 jaar garantie op de folie, 5 op de uitvoering</span>
-        <span>Gecertificeerd, geen zzp'ers</span>
-        <span>Door heel Nederland</span>
-        <span>Kozijndealers verwijzen naar ons door</span>
-        <span>Afval gaat mee</span>
-      </div>
     </div>
 
     <!-- De echte voor/na-schuif: de belangrijkste verkoopfoto, een echte klus (Max, 16 november
@@ -82,6 +73,23 @@
       </div>
       <figcaption>Echte klus, dezelfde dorpel. Sleep de schuif om het verschil te zien.</figcaption>
     </figure>
+
+    <!-- Het bewijs onder de hero, in dezelfde twee kolommen: links het reviewcijfer onder de
+         tekst, rechts wat je van ons krijgt onder de foto. Stond eerst onder de knoppen, waardoor
+         de tekstkolom twee keer zo hoog was als de foto ernaast (compositieronde, 19 november). -->
+    <div class="hero-voet">
+      {{reviewbadge}}
+      <!-- Twee kolommen, en de twee langste punten naast elkaar op de middelste rij: zo is elke
+           rij in zichzelf even hoog. -->
+      <div class="hero-bewijs">
+        <span>Vaste prijs vooraf</span>
+        <span>Door heel Nederland</span>
+        <span>10 jaar garantie op de folie, 5 op de uitvoering</span>
+        <span>Kozijndealers verwijzen naar ons door</span>
+        <span>Gecertificeerd, geen zzp'ers</span>
+        <span>Afval gaat mee</span>
+      </div>
+    </div>
   </div>
 </section>
 

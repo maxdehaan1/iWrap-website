@@ -10,7 +10,7 @@
     var(--paper);
   padding:clamp(40px,5vw,70px) 0 clamp(40px,5vw,64px);
 }
-.pagina-hero .lede{font-size:clamp(1.14rem,1.08rem + .3vw,1.28rem);line-height:1.55;color:var(--ink-soft);max-width:60ch;margin-bottom:0;}
+.pagina-hero .lede{font-size:clamp(1.12rem,1.05rem + .3vw,1.25rem);line-height:1.55;color:var(--ink-soft);max-width:34em;margin-bottom:0;}
 .pagina-hero h1{max-width:20ch;}
 .pagina-hero .knoprij{margin-top:28px;}
 .pagina-hero.breed h1{max-width:26ch;}
@@ -25,11 +25,13 @@
 /* Lopende tekst ----------------------------------------------------------- */
 
 .tekst{max-width:none;min-width:0;}
-.tekst-kolom{max-width:68ch;}
-/* De grote voor/na-foto bovenaan /voorbeelden en de alinea eronder staan op dezelfde linkerrand als
-   de paginakop, in plaats van gecentreerd met elk een eigen rand (audit uitlijning, 18 november). */
-.uitgelicht{max-width:820px;margin:0;}
-.uitgelicht-tekst{margin-top:clamp(28px,3.5vw,44px);}
+.tekst-kolom{max-width:36em;}
+/* De grote voor/na-foto bovenaan /voorbeelden staat op de linkerrand van de paginakop, met de uitleg
+   ernaast: verticaal in het midden en iets groter (uitlijning 18 november, compositie 19 november). */
+.uitgelicht{margin:0;}
+.uitgelicht-raster{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:clamp(32px,5vw,72px);align-items:center;}
+.uitgelicht-tekst{font-size:clamp(1.06rem,1rem + .3vw,1.18rem);line-height:1.6;color:var(--ink-soft);}
+@media (max-width:900px){ .uitgelicht-raster{grid-template-columns:minmax(0,1fr);gap:clamp(24px,4vw,32px);} }
 .tekst h2{margin-top:2em;}
 .tekst h2:first-child{margin-top:0;}
 .tekst h3{margin-top:1.7em;}
@@ -75,7 +77,9 @@ html:not(.js) .video-zin{display:none;}
   .video .speelknop{right:10px;bottom:10px;width:40px;height:40px;}
 }
 
-.zij-indeling{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:clamp(30px,4vw,56px);align-items:start;}
+/* De tekstkolom niet breder dan 660px (zo'n 85 tekens per regel in plaats van 95); de
+   zijkolom staat op de rechterrand van de inhoud, de ruimte ertussen groeit mee. */
+.zij-indeling{display:grid;grid-template-columns:minmax(0,660px) 320px;justify-content:space-between;gap:clamp(30px,4vw,56px);align-items:start;}
 .zij{position:sticky;top:92px;display:grid;gap:18px;}
 @media (max-width:940px){
   /* minmax(0,1fr) en niet 1fr: een losse 1fr-track krijgt min-width:auto en
@@ -139,8 +143,10 @@ html:not(.js) .video-zin{display:none;}
 
 /* Werkgebied -------------------------------------------------------------- */
 
-.regios{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;}
-.regio h3{font-size:1.12rem;margin-bottom:.5em;padding-bottom:.5em;border-bottom:1px solid var(--line);}
+.regios{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px 20px;}
+/* Iets kleiner, zodat ook "Noord-Nederland en Limburg" op één regel past en de lijstjes eronder
+   in een rij gelijk beginnen. */
+.regio h3{font-size:1.04rem;margin-bottom:.5em;padding-bottom:.5em;border-bottom:1px solid var(--line);}
 .regio ul{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:6px 8px;}
 .regio li{font-size:.98rem;color:var(--sub);}
 .regio li::after{content:"\00b7";margin-left:8px;color:var(--line-strong);}

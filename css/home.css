@@ -3,22 +3,34 @@
    --------------------------------------------------------------------------- */
 
 .hero{
-  padding:clamp(44px,5.5vw,84px) 0 clamp(52px,6vw,92px);
+  padding:clamp(40px,5vw,72px) 0 clamp(48px,5.5vw,80px);
   /* De mintgloed: zacht van boven, en sterker achter de animatie rechts. */
   background:
     radial-gradient(50% 72% at 76% 48%, rgba(163,205,194,.62), rgba(163,205,194,0) 72%),
     radial-gradient(80% 62% at 28% -12%, rgba(163,205,194,.34), rgba(163,205,194,0) 70%),
     var(--paper);
 }
-.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.04fr);gap:clamp(30px,4.5vw,64px);align-items:center;}
-.hero h1{margin-bottom:.4em;font-size:clamp(2.2rem,1.35rem + 2.8vw,3.4rem);letter-spacing:-.028em;}
+/* Twee even brede kolommen: links de kop, de inleiding en de knoppen, rechts de voor/na-foto,
+   allebei ongeveer even hoog en dus netjes naast elkaar. Het reviewcijfer en de zes punten
+   staan eronder in een eigen strook over de volle breedte (compositieronde, 19 november). De
+   kop breekt in drie gelijke regels; hij is zo groot gekozen dat "Kunststof kozijnen" er op
+   elke breedte ruim op past. */
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:clamp(36px,5vw,72px);align-items:center;}
+.hero h1{margin-bottom:.42em;font-size:clamp(2.2rem,1.3rem + 2.4vw,3.1rem);letter-spacing:-.028em;}
 .hero h1 em{font-style:normal;color:var(--mint-ink);}
-.hero-lede{font-size:clamp(1.14rem,1.08rem + .3vw,1.28rem);line-height:1.55;color:var(--ink-soft);max-width:44ch;}
+.hero-lede{font-size:clamp(1.12rem,1.05rem + .3vw,1.25rem);line-height:1.55;color:var(--ink-soft);max-width:34em;}
 .hero .knoprij{margin-top:32px;}
 
+/* De strook eronder heeft dezelfde twee kolommen als de hero: het cijfer staat onder de tekst,
+   de zes punten staan onder de foto. */
+.hero-voet{
+  grid-column:1 / -1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;
+  column-gap:clamp(36px,5vw,72px);row-gap:20px;
+  margin-top:clamp(40px,4.5vw,60px);padding-top:clamp(26px,3vw,34px);border-top:1px solid var(--line);
+}
+.hero-voet .rv-badge{margin-top:0;justify-self:start;}
 .hero-bewijs{
-  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 24px;
-  margin-top:30px;padding-top:28px;border-top:1px solid var(--line);
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 24px;
   font-size:1rem;line-height:1.35;color:var(--ink-soft);
 }
 .hero-bewijs b{color:var(--ink);font-weight:600;}
@@ -67,8 +79,9 @@
      offerteknop altijd in de actiebalk onderin. */
   .hero-lede{order:4;margin:0 0 24px;}
   .hero-tekst .knoprij{order:5;margin-top:0;}
-  .hero-tekst .rv-badge{order:6;justify-self:start;margin-top:22px;}
-  .hero-tekst .hero-bewijs{order:7;margin-top:28px;padding-top:24px;}
+  /* Het reviewcijfer en de zes punten onder de knoppen, net als eerst. */
+  .hero-voet{order:6;display:block;margin-top:22px;padding-top:0;border-top:0;}
+  .hero-bewijs{margin-top:28px;padding-top:24px;border-top:1px solid var(--line);}
   /* Geen vaste rij-afstand: elk onderdeel heeft hierboven zijn eigen ruimte, net als op een
      breed scherm (opschrift dicht op de kop, foto en tekst met lucht ertussen). */
   .hero-grid{row-gap:0;}
@@ -154,7 +167,10 @@
 
 /* Waarom iWrap: wat ons onderscheidt (homepage, donker vlak) ------------- */
 
-.onderscheid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:clamp(30px,4vw,44px);}
+/* Acht redenen in twee kolommen: in vier smalle kolommen liep de tekst op 28 tekens per regel van
+   twee tot zeven regels uiteen. Nu is elke reden twee of drie regels (compositieronde, 19 nov). */
+.onderscheid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:30px clamp(28px,4vw,48px);margin-top:clamp(30px,4vw,44px);}
+@media (max-width:760px){ .onderscheid{grid-template-columns:minmax(0,1fr);} }
 .onderscheid > div{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:24px 24px 22px;}
 .onderscheid h3{display:flex;align-items:flex-start;gap:11px;margin:0 0 .45em;font-size:1.16rem;line-height:1.3;color:#fff;}
 .onderscheid h3::before{content:"";flex-shrink:0;width:22px;height:22px;margin-top:-1px;border-radius:50%;
@@ -164,7 +180,9 @@
    onveranderd op een wit kaartje, ook op donker, met eronder waarvoor. */
 /* Vier gelijke kolommen met dezelfde tussenruimte als de redenen erboven: op een breed scherm
    staan de kaartjes precies onder de vier kolommen. */
-.partnerlogos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:clamp(28px,3.5vw,40px);}
+/* Dezelfde tussenruimte als tussen de twee kolommen redenen: dan staan twee kaartjes precies
+   onder elke kolom. */
+.partnerlogos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(28px,4vw,48px);margin-top:clamp(36px,4vw,48px);}
 .partnerlogo{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
   padding:14px 16px 12px;background:#fff;border-radius:12px;}
 .partnerlogo img{display:block;height:30px;width:auto;}
@@ -173,7 +191,7 @@
 @media (max-width:760px){.partnerlogos{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}}
 @media (max-width:600px){.partnerlogos .partnerlogo{padding:12px 10px 10px;}}
 .partnerlogo span{font-family:var(--kop);font-size:.94rem;font-weight:600;line-height:1.25;color:#3a4047;text-align:center;}
-.onderscheid-voet{max-width:70ch;font-size:1.04rem;color:#cfd5da;}
+.onderscheid-voet{max-width:35em;font-size:1.04rem;color:#cfd5da;}
 .onderscheid-voet a{font-weight:600;white-space:nowrap;}
 .onderscheid-voet a::after{content:" \2197";}
 
@@ -187,7 +205,7 @@
   transition:transform var(--middel) var(--beweeg),box-shadow var(--middel) var(--beweeg),border-color var(--middel) var(--beweeg);
 }
 .doelgroep:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--mint);color:inherit;}
-.doelgroep h3{margin-bottom:.4em;}
+.doelgroep h3{margin-bottom:.4em;font-size:1.18rem;}
 .doelgroep p{font-size:1.02rem;color:var(--sub);}
 .doelgroep .pijl{margin-top:auto;font-family:var(--kop);font-size:.98rem;font-weight:600;color:var(--mint-ink);display:inline-flex;gap:7px;align-items:center;}
 .doelgroep .pijl::after{content:"\2192";transition:transform var(--middel) var(--beweeg);}
@@ -231,6 +249,8 @@
 
 /* 25 jaar zon bij "Waarom herstellen werkt": in het midden, niet breder dan een foto. */
 .kozijn-3d.zon-midden{max-width:600px;margin:0 auto clamp(34px,4.5vw,56px);}
+/* Het bijschrift staat in het midden, net als de kop en de animatie erboven. */
+.kozijn-3d.zon-midden figcaption{text-align:center;}
 
 /* De korte linktekst onder een kaart ("Dit herken ik ->") niet over twee regels: op een smalle
    telefoon iets kleiner, zodat hij in de kaart past. */

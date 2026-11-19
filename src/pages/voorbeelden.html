@@ -11,7 +11,7 @@
   "preload": {
     "src": "/images/voor-gebarsten-dorpel-1000.webp",
     "srcset": "/images/voor-gebarsten-dorpel-640.webp 640w, /images/voor-gebarsten-dorpel-1000.webp 1000w",
-    "sizes": "(max-width:880px) calc(100vw - 48px), 820px"
+    "sizes": "(max-width:900px) calc(100vw - 48px), 640px"
   }
 } -->
 
@@ -30,10 +30,13 @@
 
 <section>
   <div class="wrap">
+    <!-- De grote voor/na-foto met de uitleg ernaast: eerst stond de foto links met de rechterhelft
+         leeg, en de uitleg eronder (compositieronde, 19 november). -->
+    <div class="uitgelicht-raster">
     <figure class="hero-fig verschijn uitgelicht">
       <div class="vergelijk" style="--pos:48%">
-        <x-beeld src="voor-gebarsten-dorpel" eager sizes="(max-width:880px) calc(100vw - 48px), 820px" alt="Onderdorpel waarvan de folie is verweerd en opengebarsten">
-        <div class="na"><x-beeld src="na-gebarsten-dorpel-hersteld" eager sizes="(max-width:880px) calc(100vw - 48px), 820px" alt="Dezelfde onderdorpel met nieuwe Renolit houtnerffolie"></div>
+        <x-beeld src="voor-gebarsten-dorpel" eager sizes="(max-width:900px) calc(100vw - 48px), 640px" alt="Onderdorpel waarvan de folie is verweerd en opengebarsten">
+        <div class="na"><x-beeld src="na-gebarsten-dorpel-hersteld" eager sizes="(max-width:900px) calc(100vw - 48px), 640px" alt="Dezelfde onderdorpel met nieuwe Renolit houtnerffolie"></div>
         <span class="label label-voor">Voor</span><span class="label label-na">Na</span>
         <div class="greep" aria-hidden="true"></div>
         <label class="sr-only" for="r1">Schuif om voor en na te vergelijken</label>
@@ -47,6 +50,7 @@
       geworden, opengebarsten en niet meer schoon te krijgen. Het profiel eronder
       mankeerde niets — dat gaat {{feit.levensduur_profiel}} mee. Er hoefde dus geen
       kozijn uit; er moest een laag folie af en een nieuwe op.</p>
+    </div>
     </div>
   </div>
 </section>

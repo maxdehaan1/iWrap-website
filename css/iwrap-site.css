@@ -91,6 +91,15 @@ tr.vandaag-aan .vandaag-chip{opacity:1;transform:scale(1);}
 .iw-scene-smal{max-width:640px;margin-left:auto;margin-right:auto;}
 /* Op /werkgebied direct onder de paginakop: op de linkerrand, net als de kop en de tekst eronder. */
 .iw-scene-sectie .iw-scene{margin:0;}
+/* Een scène met de kop ernaast (/werkgebied): de scène links en zo breed mogelijk (de letters in de
+   tekening schalen mee), de kop verticaal in het midden. */
+.scene-naast{display:grid;grid-template-columns:minmax(0,1.85fr) minmax(0,1fr);gap:clamp(32px,4.5vw,64px);align-items:center;margin-bottom:clamp(44px,5vw,64px);}
+.scene-naast .iw-scene{max-width:none;}
+/* De ruimte voor de tekening staat al vast voordat het script hem tekent (1200 x 900), zodat de
+   kop ernaast of eronder niet verspringt. */
+.iw-scene[data-iwrap="werkgebied"]{aspect-ratio:4 / 3;}
+.scene-naast .sectie-kop{margin:0;}
+@media (max-width:900px){ .scene-naast{grid-template-columns:minmax(0,1fr);gap:clamp(28px,4vw,40px);} }
 
 @media (prefers-reduced-motion:reduce){
   .klusfilm-vervolg,.vandaag-chip,tr.vandaag td,tr.vandaag td:first-child::before,.profiel-oordeel i{transition:none;}
