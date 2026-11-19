@@ -30,8 +30,12 @@
     var laag = document.createElement('div');
     laag.className = 'menu-laag';
     document.body.appendChild(laag);
+    // Op de knop staat het woord Menu, en als het menu open is Sluiten: alleen drie streepjes
+    // herkent niet iedereen (19 november 2026, op alle drie de sites hetzelfde).
+    var woord = knop.querySelector('.nav-toggle-woord');
     new MutationObserver(function () {
       var open = menu.classList.contains('open');
+      if (woord) woord.textContent = open ? 'Sluiten' : 'Menu';
       laag.classList.toggle('open', open);
       // Met het menu open scrolt de pagina eronder niet mee (audit W6).
       document.documentElement.classList.toggle('menu-open', open);

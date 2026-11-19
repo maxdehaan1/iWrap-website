@@ -201,10 +201,13 @@ html.menu-open{overflow:hidden;}
   /* flex-wrap is hier essentieel: de navigatie krijgt flex-basis:100% en
      moet op een eigen regel onder het logo komen, niet ernaast. */
   .nav{padding:10px 24px;gap:12px;flex-wrap:wrap;}
+  /* Op de knop staat het woord Menu (open: Sluiten), want alleen drie streepjes herkent niet
+     iedereen. Zo ziet het menu er op alle drie de sites van iWrap uit (19 november 2026). */
   .nav-toggle{
-    display:inline-flex;align-items:center;justify-content:center;
-    width:44px;height:44px;border:1px solid var(--line-strong);background:var(--white);
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;
+    height:44px;padding:0 15px 0 13px;border:1px solid var(--line-strong);background:var(--white);
     border-radius:12px;cursor:pointer;order:3;
+    color:var(--ink);font-family:var(--kop);font-size:.94rem;font-weight:600;letter-spacing:-.005em;
   }
   /* Het icoon: eerst schuiven de streepjes naar het midden, dan draaien ze tot
      een kruis. Bij dichtgaan precies andersom. */
@@ -238,7 +241,9 @@ html.menu-open{overflow:hidden;}
     transition:opacity var(--middel) var(--beweeg),visibility 0s linear var(--middel);
   }
   .menu-laag.open{opacity:1;visibility:visible;transition-delay:0s;}
-  .navlinks a{padding:15px 0;border-bottom:1px solid var(--line);font-size:1.06rem;}
+  /* Grote regels, makkelijk aan te tikken: 19px tekst en zo'n 58px hoog. */
+  .navlinks a{padding:16px 0;border-bottom:1px solid var(--line);font-size:1.18rem;color:var(--ink);}
+  .navlinks a.current{color:var(--mint-deep);font-weight:700;}
   .navlinks a::after{display:none;}
   .nav-cta{margin:14px 0 16px;text-align:center;padding:14px 20px!important;}
   /* De offerteknop naast het menu: blijft in beeld terwijl je scrolt. */
@@ -679,15 +684,29 @@ td strong{color:var(--ink);}
 .fbottom p{margin:0;}
 /* De lijn erboven loopt van de linker- tot de rechterrand van de inhoud, niet door de marge heen. */
 .fbottom::before{content:"";position:absolute;top:0;left:24px;right:24px;height:1px;background:var(--line-strong);}
-.fzus{max-width:56ch;}
-/* Links in lopende tekst herken je niet alleen aan hun kleur (audit T2). */
-.fzus a{text-decoration:underline;text-decoration-color:rgba(34,38,42,.4);text-decoration-thickness:1px;text-underline-offset:3px;}
-.fzus a:hover{text-decoration-color:currentColor;}
+/* De familieregel: de drie sites van iWrap en wat elke site doet, onderaan alle drie de sites
+   hetzelfde (19 november 2026). Elke naam in zijn eigen woordmerk; de kleuren van de zustersites
+   staan hier als variabelen. */
+.familie{--fam-kw:#175a99;--fam-hn-goud:#876430;--fam-hn-navy:#13294b;margin-top:48px;}
+.familie-kop{margin:0 0 14px;padding-top:30px;border-top:1px solid var(--line-strong);font-family:var(--kop);font-size:1.02rem;font-weight:650;letter-spacing:-.01em;color:var(--ink);}
+.familie-lijst{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+.site-footer .familie-site{display:flex;flex-direction:column;gap:7px;height:100%;padding:16px 18px;border-radius:16px;background:var(--white);border:1px solid var(--rand-zacht);color:inherit;text-decoration:none;transition:border-color var(--kort) var(--beweeg);}
+.site-footer a.familie-site:hover{border-color:rgba(47,90,80,.45);text-decoration:none;color:inherit;}
+.familie-site.is-hier{background:transparent;border-style:dashed;border-color:var(--line-strong);}
+.fam-merk{display:flex;align-items:baseline;min-height:24px;font-family:var(--kop);font-size:1.16rem;line-height:1;letter-spacing:-.03em;}
+.site-footer .fam-merk img{height:21px;width:auto;margin:0;align-self:center;}
+.fam-merk .f1{font-weight:500;} .fam-merk .f2{font-weight:800;letter-spacing:-.035em;} .fam-merk .f3{font-size:.55em;font-weight:600;letter-spacing:0;margin-left:.06em;}
+.fam-kw .f1,.fam-kw .f3{color:var(--fam-kw);} .fam-kw .f2{color:var(--ink);}
+.fam-hn .f1,.fam-hn .f3{color:var(--fam-hn-goud);} .fam-hn .f2{color:var(--fam-hn-navy);}
+.fam-rol{font-size:.96rem;line-height:1.45;color:var(--sub);}
+.fam-hier{margin-top:auto;font-family:var(--kop);font-size:.94rem;font-weight:600;color:var(--mint-ink);}
+.familie-extra{margin:14px 0 0;font-size:.94rem;color:var(--sub);}
 
 @media (max-width:880px){
   .fgrid{grid-template-columns:1fr 1fr;}
   .fbrand{grid-column:1/-1;}
 }
+@media (max-width:760px){ .familie-lijst{grid-template-columns:minmax(0,1fr);} }
 @media (max-width:520px){
   .fgrid{grid-template-columns:1fr;gap:32px;}
   .fbottom{flex-direction:column;}

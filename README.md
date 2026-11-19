@@ -52,8 +52,15 @@ Verder verwijzen de sites naar elkaar waar het de klant helpt:
   nog de oude kleur hebben, met een link naar kozijnhorren.nl.
 - Het formulier, de bevestigingsmail, de werkwijze en de homepage noemen de **gratis
   kozijncheck** bij de oplevering.
-- De **footer van iwrap.nl** noemt de zustersites: kozijnwrap.nl (wanneer herstel zin
-  heeft), houtnerffolie.nl (de folie) en kozijnhorren.nl (horren in de kleur).
+- **De familieregel** (19 november 2026, Max): onderaan alle drie de sites staat "De sites van
+  iWrap", drie kaartjes met elk de naam in zijn eigen woordmerk en wat die site doet
+  (`render_familie` in `build.py`, opmaak `.familie` in `style.css`; dezelfde opbouw op de
+  zustersites). iwrap.nl linkt naar beide zustersites; **de zustersites linken alleen naar
+  iwrap.nl, niet naar elkaar** (Max: de bedoeling van alle sites is een aanvraag bij iWrap).
+  Zolang `KOZIJNHORREN_LIVE` uit staat, noemt hij kozijnhorren.nl niet.
+- **De knop naar iWrap** is op kozijnwrap.nl en houtnerffolie.nl dezelfde: de knopkleur van
+  iwrap.nl (`#2f5a50`) met het beeldmerk van iWrap ervoor (`.knop-iwrap`), "Offerte bij iWrap" in
+  de kopbalk en "Offerte aanvragen bij iWrap" in de blokken.
 - **kozijnhorren.nl staat nog niet online** (en het domein is nog vrij). Daarom staat
   `KOZIJNHORREN_LIVE = False` bovenin `build.py`: dan noemt de site kozijnhorren.nl nergens.
   Alles tussen `<!-- als kozijnhorren -->` en `<!-- /als kozijnhorren -->` in de bron valt
@@ -874,8 +881,11 @@ Alles beweegt op dezelfde manier: `--beweeg` (de uitloop), `--kort` en `--middel
   of flex, of `.faq`), dan komen de kaarten erin één voor één binnen; anders het blok zelf.
   Wat bij het laden al in beeld staat, wordt nooit verborgen. `main.js` regelt dit met
   `.wacht` en `.verschijnt`.
-- **Telefoonmenu:** klapt over de pagina heen open met een donkere laag erachter
-  (`.menu-laag`); een tik daarop of Escape sluit het.
+- **Telefoonmenu:** op de knop staat het woord "Menu" (open: "Sluiten"), want alleen drie
+  streepjes herkent niet iedereen. Het paneel klapt over de pagina heen open met grote regels
+  (19px, zo'n 60px hoog) en een donkere laag erachter (`.menu-laag`); een tik daarop of Escape
+  sluit het. Op alle drie de sites hetzelfde (19 november 2026; op de zustersites in
+  `js/menu.js`).
 - **Vragen (`.faq`):** klappen vloeiend open en dicht (`main.js`).
 - **Foto's met `loading=lazy`:** komen zacht binnen als ze geladen zijn (`.beeld-fade`).
 - **Offertestappen:** de nieuwe stap begint bovenaan en komt zacht binnen (`offerte.js`).
@@ -962,8 +972,11 @@ alleen maar verwarrend. Ze staan hier op één plek, in `FEITEN` in `build.py`:
 
 - Tien jaar Renolit-garantie op de folie, vijf jaar garantie op de uitvoering (zoals de voorwaarden, artikel 13; Max, 17 november 2026)
 - Kunststof profiel gaat 50 tot 75 jaar mee
-- De folie houdt het vijftien tot vijfentwintig jaar (`feit.levensduur_folie`). Schrijf
-  "versleten" of "aan vervanging toe", niet "de folie is op"
+- De folie die er nu op zit, hield het vijftien tot vijfentwintig jaar (`feit.levensduur_folie`):
+  dat gaat over de **oude** folie. De nieuwe folie is veel sterker en gaat naar verwachting veel
+  langer mee; daar hangen we **geen jaartal** aan (Max, 19 november 2026: "dat weten we simpelweg
+  niet"). Tien jaar is de **garantie**, niet de verwachte levensduur. Schrijf "versleten",
+  "aangetast" of "aan vervanging toe", niet "de folie is op"
 - Doorlooptijd: een tot twee dagen
 - Seizoen: het meeste werk van maart tot november. Van december tot en met februari
   plannen we in principe geen klussen; bij uitzondering wel op een droge dag, onder
@@ -997,6 +1010,10 @@ hierheen. Overleg met Max of die er daar ook af moeten.
 - **iwrap.nl** (deze) — hier wordt besloten en aangevraagd. Enige plek met een formulier.
 - **kozijnwrap.nl** — vangt wie nog niet weet dat folieherstel bestaat, en doet de
   diagnose herstellen-of-vervangen. Stuurt door hierheen.
+- **Kleur veranderen** (Max, 19 november 2026), op alle drie de sites hetzelfde: we herstellen
+  aangetaste kozijnen, en in 90 tot 95% van de klussen komt dezelfde kleur er weer op. Wil
+  iemand bij het herstel meteen een andere kleur, dan kan dat. Kozijnen omkleuren waarvan de
+  folie nog goed is (wrappen), en nieuwe kozijnen wrappen, doen we niet.
 - **houtnerffolie.nl** — de diepte over de folie zelf: decors, kleuren, specificaties.
 - **kozijnhorren.nl** (`kozijnhorren/`) — verkoopt horren in de kleur van het kozijn. Een
   zelfstandige winkel met prijzen, want het is een product met een vaste prijs per maat.

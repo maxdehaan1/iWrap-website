@@ -526,7 +526,7 @@ def render_nav(slug):
     <a class="brand" href="/" aria-label="iWrap, naar de homepage">{LOGO}</a>
 {snel}    <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="hoofdmenu">
       <span class="bars" aria-hidden="true"></span>
-      <span class="sr-only">Menu</span>
+      <span class="nav-toggle-woord">Menu</span>
     </button>
     <nav class="navlinks" id="hoofdmenu" aria-label="Hoofdnavigatie">
 {links}
@@ -560,6 +560,22 @@ def render_kale_kop(label):
     <span class="kaal-label">{label}</span>
   </div>
 </header>"""
+
+
+def render_familie(zusterhorren=""):
+    """De familieregel onderaan alle drie de sites (Max, 19 november 2026): welke sites er zijn en
+    wat elke site doet, elke naam in zijn eigen woordmerk. iwrap.nl linkt naar beide zustersites;
+    die linken alleen terug naar iwrap.nl, niet naar elkaar."""
+    horren = (f'\n    <p class="familie-extra">Op {kozijnhorren_link()} bestel je horren in de kleur van je kozijn.</p>'
+              if zusterhorren else "")
+    return f"""<div class="wrap familie">
+    <p class="familie-kop">De sites van iWrap</p>
+    <ul class="familie-lijst">
+      <li><span class="familie-site is-hier" aria-current="page"><span class="fam-merk"><img src="/images/logo/iwrap-logo-liggend.svg" width="96" height="20" alt="iWrap" loading="lazy"></span><span class="fam-rol">Kozijnen laten herstellen en een offerte aanvragen</span><span class="fam-hier">Je bent hier</span></span></li>
+      <li><a class="familie-site" href="https://kozijnwrap.nl" rel="noopener"><span class="fam-merk fam-kw"><span class="f1">kozijn</span><span class="f2">wrap</span><span class="f3">.nl</span></span><span class="fam-rol">Uitzoeken wat je kozijn nodig heeft</span></a></li>
+      <li><a class="familie-site" href="https://www.houtnerffolie.nl" rel="noopener"><span class="fam-merk fam-hn"><span class="f1">houtnerf</span><span class="f2">folie</span><span class="f3">.nl</span></span><span class="fam-rol">Alles over Renolit folie en de kleuren</span></a></li>
+    </ul>{horren}
+  </div>"""
 
 
 def render_footer():
@@ -601,11 +617,9 @@ def render_footer():
         </p>
       </div>
 {kolommen}  </div>
+  {render_familie(zusterhorren)}
   <div class="wrap fbottom">
     <p>&copy; {time.localtime().tm_year} {b['juridisch']}, {b['plaats']}{zakelijk}</p>
-    <p class="fzus">Meer weten? <a href="https://kozijnwrap.nl" rel="noopener">kozijnwrap.nl</a>
-    legt uit wanneer herstel zin heeft, <a href="https://houtnerffolie.nl" rel="noopener">houtnerffolie.nl</a>
-    gaat over de folie zelf{zusterhorren}.</p>
   </div>
 </footer>"""
 
