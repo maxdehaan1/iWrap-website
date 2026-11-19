@@ -44,6 +44,6 @@ start = beelden("herstel", [0], 1400, 1050)[0]
 start.save(os.path.join(MAP, "keuze-start-1400.webp"), quality=80, method=6)
 start.save(os.path.join(MAP, "keuze-start-1400.jpg"), quality=80, optimize=True, progressive=True)
 start.resize((800, 600), Image.LANCZOS).save(os.path.join(MAP, "keuze-start-800.webp"), quality=80, method=6)
-for optie, t in [("herstel", 6.4), ("kleur", 6.4), ("verf", 7.4), ("vervang", 7.4)]:
+for optie, t in [("herstel", 6.4), ("kleur", 6.4), ("vervang", 8.6)]:
     beelden(optie, [t], 1000, 750)[0].save(os.path.join(MAP, "keuze-%s-1000.jpg" % optie), quality=78, optimize=True, progressive=True)
 print("ok", MAP)

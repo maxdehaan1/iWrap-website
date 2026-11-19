@@ -28,13 +28,16 @@ Wat hier staat
   kozijn, dan één haal waarin de oude folie eraf krult en de nieuwe folie erop rolt, een glans,
   en het logo ernaast. bouw_sting.py maakt daar kozijn-sting.js van (met de vormen van het logo
   uit ../geo.json). Gebruikt kozijn3d.js.
-- kozijn-keuze.js: de hero van kozijnwrap.nl, "Herstellen of wrappen?" (17 november 2026). Vier korte
-  verhalen met hetzelfde kozijn, die alle vier in hetzelfde beeld van de hele hoek eindigen: herstel (oude
-  folie eraf, nieuwe erop, zelfde kleur), kleur (antraciet folie over een goed crème kozijn: wrappen), verf
-  (een verfroller, dan drie jaar later bladdert het) en vervang (het tocht, het kozijn gaat eruit, er zakt
-  een nieuw in). teken(ctx, t, W, H, { optie: "herstel" | "kleur" | "verf" | "vervang" }), en de speler
-  voor [data-kozijn-keuze] zit er onderaan in. Gebruikt kozijn3d.js. Op kozijnwrap.nl staan kopieën van
-  allebei in js/ (kozijn-3d.js en kozijn-keuze.js): na een wijziging opnieuw kopiëren.
+- kozijn-keuze.js: de hero van kozijnwrap.nl, "Herstellen of wrappen?" (17 november 2026). Sinds 19 november
+  2026 drie korte verhalen met hetzelfde kozijn, die alle drie in hetzelfde beeld van de hele hoek eindigen:
+  herstel (duidelijk aangetaste folie, in één haal oude folie eraf en nieuwe erop, zelfde kleur), kleur
+  (antraciet folie over een goed crème kozijn: wrappen) en vervang (het kozijn is kapot: versleten folie,
+  een barst door de hoek, water dat binnenkomt en drupt, condens tussen het glas, tocht; het kozijn gaat
+  eruit en er zakt een nieuw in). Schilderen is eruit (Max: niet van toepassing). Na de drie verhalen
+  zet de speler een kaart met de knop naar de keuzehulp over het beeld (.hk-slot). teken(ctx, t, W, H,
+  { optie: "herstel" | "kleur" | "vervang" }), en de speler voor [data-kozijn-keuze] zit er onderaan in.
+  Gebruikt kozijn3d.js. Op kozijnwrap.nl staan kopieën van allebei in js/ (kozijn-3d.js en
+  kozijn-keuze.js): na een wijziging opnieuw kopiëren.
   Daarvoor kan de motor sinds deze versie drie dingen (allemaal uit, tenzij je ze zet; de andere
   animaties zijn pixel voor pixel gelijk gebleven):
     folie.jong   de kleur van de oude folie toen hij nieuw was (anders folie.nieuw). Een goed crème kozijn
@@ -61,7 +64,7 @@ Opnieuw maken (laat dit gerust door Claude doen)
 - Proefbeelden:  python3 proef.py proef.png "ts=0,5,10,15,20,25&cols=3&cel=500"
 - Korte versie:  python3 proef.py proef.png "src=kozijn3d.js,kozijn-sting.js&obj=iwrapKozijnSting&ts=0,2,4,6.6&cols=4&cel=400"
 - De hero van kozijnwrap.nl: proefbeelden van één keuze met
-    python3 keuze_beelden.py --proef kleur 0,1.5,3,6.4
+    python3 keuze_beelden.py --proef vervang 0.6,1.8,4,8.6
   en het startbeeld en de eindbeelden voor de site (rechtstreeks in kozijnwrap-project/images) met
     python3 keuze_beelden.py
 - Klusfilm-close-up: python3 proef.py proef.png "src=kozijn3d.js,kozijn-klus.js&obj=iwrapKozijnKlus&ts=1,3,5,7,9,11&cols=3&cel=500"

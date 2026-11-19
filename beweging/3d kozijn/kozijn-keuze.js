@@ -1,19 +1,21 @@
 /* ---------------------------------------------------------------------------
    Herstellen of wrappen? De hero van kozijnwrap.nl.
 
-   Hetzelfde kozijn als op iwrap.nl (kozijn3d.js moet eerst geladen zijn), in vier korte
-   verhalen, één per keuze. Ze eindigen allemaal in hetzelfde beeld van de hele hoek, zodat
+   Hetzelfde kozijn als op iwrap.nl (kozijn3d.js moet eerst geladen zijn), in drie korte
+   verhalen, één per keuze (schilderen is er sinds 19 november 2026 uit: Max, "niet van toepassing"). Ze eindigen allemaal in hetzelfde beeld van de hele hoek, zodat
    je ze makkelijk naast elkaar legt.
    - herstel: versleten crème folie (dof, gebarsten, loslatend). Voorop krult de oude folie
      eraf, vlak erachter rolt de nieuwe erop, in dezelfde kleur. Dan een glans.
    - kleur:   een goed crème kozijn. De rol antraciet folie gaat eroverheen: wrappen.
-   - verf:    een wat moe crème kozijn. Een verfroller gaat eroverheen, en dan lopen de
-     jaren: na twee, drie jaar bladdert het, want de folie eronder laat los en neemt de
-     verf mee (zie het artikel over schilderen op kozijnwrap.nl).
-   - vervang: het kozijn tocht en klemt. Het wordt eruit getild en er zakt een nieuw in.
-     Dat daar stucwerk, schilderwerk en een vensterbank bij horen, zegt de tekst ernaast.
+   - vervang: het kozijn zelf is kapot (Max, 19 november 2026: "echt duidelijker dat het kozijn
+     helemaal versleten is en kapot en lekt"): helemaal versleten folie, een gescheurde hoek,
+     water dat binnenkomt en van de dorpel drupt, condens tussen het glas (een lekke ruit), en het
+     tocht en klemt. Het wordt eruit getild en er zakt een nieuw in. Dat daar stucwerk,
+     schilderwerk en een vensterbank bij horen, zegt de tekst ernaast.
+   Na de drie verhalen komt er een eindbeeld met de knop naar de keuzehulp (.hk-slot, HTML), en
+   dan begint het rondje opnieuw.
 
-   teken(ctx, t, W, H, { optie: "herstel" | "kleur" | "verf" | "vervang" })
+   teken(ctx, t, W, H, { optie: "herstel" | "kleur" | "vervang" })
    status(optie, t): de korte regel linksboven in beeld ({ tekst, soort }).
    De speler (onderaan) zit op [data-kozijn-keuze] in de hero van kozijnwrap.nl.
    --------------------------------------------------------------------------- */
@@ -21,22 +23,21 @@
   "use strict";
   var K3 = window.iwrapKozijn3D, Mo = K3 && K3.motor;
   if (!Mo) return;
-  var m = Mo.maten, LEN = m.LEN, PH = m.PH, PD = m.PD, SW = m.SW, STI = m.STI, DN = m.DN, DL = m.DL, DO = m.DO, FLAP = m.FLAP, MARGE = m.MARGE, GZ1 = m.GZ1;
+  var m = Mo.maten, LEN = m.LEN, PH = m.PH, PD = m.PD, SW = m.SW, STI = m.STI, DN = m.DN, DL = m.DL, DO = m.DO, FLAP = m.FLAP, MARGE = m.MARGE, GZ0 = m.GZ0, GZ1 = m.GZ1;
   var klem = Mo.klem, mix = Mo.mix, fase = Mo.fase, E = Mo.E, kromme = Mo.kromme, som = Mo.som, maal = Mo.maal;
 
   /* Kleuren (sRGB 0..1) en de folie per verhaal ---------------------------------------------- */
-  var CREME = [0.928, 0.9, 0.83], ANTRACIET = [0.255, 0.272, 0.286], VERF = [0.43, 0.49, 0.53];
+  var CREME = [0.928, 0.9, 0.83], ANTRACIET = [0.255, 0.272, 0.286];
+  // Versleten crème: dezelfde kleur als nieuw, met wat meer stukjes die loslaten (zoals in de werkwijzefilm
+  // en 25 jaar zon op iwrap.nl), zodat je meteen ziet dat de folie aangetast is.
+  var VERSLETEN = { nieuw: Mo.FOLIE.cremeZon.nieuw, oud: Mo.FOLIE.cremeZon.oud, nerf: Mo.FOLIE.cremeZon.nerf, glans: Mo.FOLIE.cremeZon.glans, vuil: 0.3, schil: 2.2 };
   var FOLIE = {
-    herstel: Mo.FOLIE.cremeZon,
+    herstel: VERSLETEN,
     // een goed crème kozijn (jong) met antraciet erover
-    kleur: { jong: CREME, oud: CREME, nieuw: ANTRACIET, nerf: 0.055, glans: 0.7, vuil: 0.25 },
-    // verf erop: zijdemat blauwgrijs, zonder houtnerf
-    verf: { jong: CREME, oud: CREME, nieuw: VERF, nerf: 0.0, glans: 1.5, vuil: 0.25 },
-    // daarna verweert de verf zelf
-    verfOud: { jong: VERF, oud: VERF, nieuw: VERF, nerf: 0.0, glans: 1.5, vuil: 0.15, schil: 6 }
+    kleur: { jong: CREME, oud: CREME, nieuw: ANTRACIET, nerf: 0.055, glans: 0.7, vuil: 0.25 }
   };
 
-  /* De vier verhalen ------------------------------------------------------------------------ */
+  /* De drie verhalen ------------------------------------------------------------------------ */
   // Camera: [t, doel x, doel y, zoom, draaiing, kanteling, afstand, hoogte van het midden in beeld]
   var EIND = [252, 122, 0.95, 38, 11, 1150, 0.6];
   function cam(rijen, duur, eind) { return rijen.concat([[duur].concat(eind || EIND)]); }
@@ -51,22 +52,16 @@
       T: { nieuw: [0.8, 2.6], nieuwS: [2.55, 3.3], glans: [3.65, 4.85] },
       status: [[0, 0.8, "Goed kozijn, in crème", ""], [0.8, 3.45, "Folie in een nieuwe kleur eroverheen", ""], [3.45, 99, "Nieuwe kleur: antraciet", "donker"]]
     },
-    verf: {
-      duur: 7.4,
-      T: { verf: [0.7, 2.4], verfS: [2.35, 3.05], wissel: 3.55, jaren: [3.75, 6.0] },
-      status: [[0, 0.7, "Wat moe, dus schilderen?", ""], [0.7, 3.55, "Verf erop", ""], [3.55, 6.05, "jaren", ""], [6.05, 99, "Na 3 jaar: het bladdert", "rood"]]
-    },
     vervang: {
-      duur: 7.4,
-      T: { tocht: [0.0, 1.9], uit: [1.55, 3.05], wissel: 3.2, in_: [3.35, 4.95], glans: [5.2, 6.3], stof: [1.6, 3.2] },
-      status: [[0, 1.6, "Het tocht en het klemt", "rood"], [1.6, 3.35, "Het kozijn gaat eruit", ""], [3.35, 99, "Nieuw kozijn, met stuc- en schilderwerk", ""]]
+      duur: 8.6,
+      T: { lek: [0.1, 0.8], scheur: [0.35, 0.65], tocht: [1.35, 3.0], uit: [2.75, 4.25], wissel: 4.4, in_: [4.55, 6.15], glans: [6.4, 7.5], stof: [2.8, 4.4] },
+      status: [[0, 1.45, "Het kozijn is kapot en lekt", "rood"], [1.45, 2.8, "Het tocht en het klemt", "rood"], [2.8, 4.55, "Het kozijn gaat eruit", ""], [4.55, 99, "Nieuw kozijn, met stuc- en schilderwerk", ""]]
     }
   };
   V.herstel.CAM = cam([[0, 346, 74, 1.52, 52, 13, 880, 0.56], [0.75, 338, 78, 1.46, 50, 14, 900, 0.56], [2.1, 280, 98, 1.16, 44, 13, 1020, 0.58], [3.5, 254, 118, 0.98, 39, 11, 1130, 0.6]], 6.4);
   V.kleur.CAM = cam([[0, 300, 92, 1.28, 46, 12, 980, 0.57], [0.8, 296, 94, 1.26, 45, 12, 990, 0.57], [2.3, 268, 104, 1.12, 42, 11, 1050, 0.59], [3.4, 254, 118, 0.98, 39, 11, 1130, 0.6]], 6.4);
-  V.verf.CAM = cam([[0, 300, 92, 1.28, 46, 12, 980, 0.57], [0.7, 296, 94, 1.26, 45, 12, 990, 0.57], [2.3, 266, 104, 1.12, 42, 11, 1050, 0.59], [3.3, 250, 114, 1.02, 40, 11, 1100, 0.6], [5.6, 318, 84, 1.42, 49, 15, 920, 0.56]], 7.4, [330, 80, 1.5, 51, 15, 900, 0.56]);
-  V.vervang.CAM = cam([[0, 262, 108, 1.1, 42, 11, 1060, 0.6], [1.5, 256, 114, 1.02, 40, 11, 1100, 0.6], [3.2, 250, 128, 0.92, 38, 10, 1160, 0.6], [5.0, 252, 122, 0.95, 38, 11, 1150, 0.6]], 7.4);
-  var OPTIES = ["herstel", "kleur", "verf", "vervang"];
+  V.vervang.CAM = cam([[0, 222, 112, 1.2, 41, 12, 1010, 0.6], [1.45, 236, 114, 1.1, 40, 11, 1060, 0.6], [2.75, 250, 118, 1.0, 39, 11, 1110, 0.6], [4.4, 250, 128, 0.92, 38, 10, 1160, 0.6], [6.2, 252, 122, 0.95, 38, 11, 1150, 0.6]], 8.6);
+  var OPTIES = ["herstel", "kleur", "vervang"];
 
   /* Hulp ------------------------------------------------------------------------------------ */
   function grens(iv, L, t) { return mix(L + MARGE, -MARGE, E.gelijk(fase(t, iv[0], iv[1] - iv[0]))); }
@@ -113,25 +108,7 @@
       Mo.rolNieuw(g, F, uN, rn, vmax, maal(F.U, Math.max(0, uN - L + 4) * 0.5));
     }
   }
-  // Een verfroller: een rol met blauwgrijze verf, een beugel van staaldraad en een zwart handvat
-  // dat schuin naar achteren wijst (waar de schilder staat).
-  function verfroller(B, BF, t, F, L, vmax, g, iv) {
-    var u = L - g, a = Math.min(fase(t, iv[0] - 0.05, 0.25), 1 - fase(u, L + 4, 22));
-    if (a <= 0.003) return;
-    var k = Mo.kies(B, BF, a), r = 15, lift = (1 - Math.min(1, fase(t, iv[0], 0.3))) * 40;
-    var u0 = Math.min(u, L + 10), h = DN + 2.4 + r + lift;
-    var A = F.w(u0, -6, h), Bp = F.w(u0, vmax + 6, h);
-    Mo.cil(k.b, A, Bp, r, M(k, VERF, 0.96, 0, 1), { hoek: u0 / r, bev: 3.2, seg: 30, kapM: M(k, "#c9ccce", 0.5, 0, 1) });
-    // de beugel: vanaf de onderkant van de rol naar buiten, omhoog en naar achteren
-    var achter = maal(F.U, -1), uit = F.n, onder = maal(F.V, -1);
-    var p0 = F.w(u0, -6, h), p1 = som(p0, maal(onder, 9)), p2 = som(p1, som(maal(uit, 26), maal(achter, 8)));
-    var p3 = som(p2, som(maal(uit, 34), maal(achter, 40)));
-    Mo.buis(k.b, [p0, p1, p2, p3], 2.1, M(k, "#b7bcc0", 0.35, 0.9, 1), { seg: 10 });
-    var richting = Mo.een(som(maal(uit, 0.62), maal(achter, 0.78)));
-    Mo.cil(k.b, p3, som(p3, maal(richting, 92)), 8.5, M(k, "#232629", 0.45, 0, 1), { bev: 3, seg: 18 });
-  }
-
-  /* 2D bovenop: tocht, stof en de jaren ------------------------------------------------------- */
+  /* 2D bovenop: tocht en stof ------------------------------------------------------- */
   // Tocht: dunne lichte strepen die van buiten naar de naad tussen glas en kozijn trekken
   function tocht(ctx, c, t, iv) {
     var a = Math.min(fase(t, iv[0] + 0.1, 0.4), 1 - fase(t, iv[1] - 0.45, 0.45));
@@ -176,7 +153,76 @@
     }
     ctx.restore();
   }
-  function jarenOp(t) { var T = V.verf.T; return 3 * E.zacht(fase(t, T.jaren[0], T.jaren[1] - T.jaren[0])); }
+  /* Vervangen: wat er kapot is (2D, met de camera; off = waar het kozijn naartoe schuift) ------------- */
+  function zet(c, P, off) { return c.q(off ? som(P, off) : P); }
+  // Condens tussen het glas, het teken van een lekke ruit: een melkwitte waas, het dikst onderin, met druppels.
+  function condens(ctx, c, a, off) {
+    if (a <= 0.01) return;
+    var z = (GZ0 + GZ1) / 2, x0 = SW + 4, x1 = LEN - 8, y0 = PH + 4, y1 = PH + STI - 8;
+    var p0 = zet(c, [x0, y0, z], off), p1 = zet(c, [x1, y0, z], off), p2 = zet(c, [x1, y1, z], off), p3 = zet(c, [x0, y1, z], off);
+    ctx.save(); ctx.globalAlpha = a;
+    ctx.beginPath(); ctx.moveTo(p0[0], p0[1]); ctx.lineTo(p1[0], p1[1]); ctx.lineTo(p2[0], p2[1]); ctx.lineTo(p3[0], p3[1]); ctx.closePath(); ctx.clip();
+    var g = ctx.createLinearGradient(p3[0], p3[1], p0[0], p0[1]);
+    g.addColorStop(0, "rgba(236,240,242,0.06)"); g.addColorStop(0.5, "rgba(236,240,242,0.42)"); g.addColorStop(1, "rgba(242,245,247,0.86)");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, c.W, c.H);
+    var r = Mo.rng(7);
+    for (var i = 0; i < 120; i++) {
+      var fx = r(), fy = Math.pow(r(), 1.7) * 0.6, p = zet(c, [mix(x0, x1, fx), mix(y0, y1, fy), z], off), rr = c.S * (1.1 + r() * 2.8);
+      ctx.fillStyle = "rgba(255,255,255,0.8)"; ctx.beginPath(); ctx.arc(p[0], p[1], rr, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "rgba(110,130,140,0.28)"; ctx.beginPath(); ctx.arc(p[0] + rr * 0.32, p[1] + rr * 0.32, rr * 0.55, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+  }
+  // Lekkage: water komt binnen bij de naad tussen glas en kozijn, loopt over de dagkant en de voorkant van de
+  // dorpel naar beneden en drupt eraf.
+  function lekkage(ctx, c, t, iv, a, off) {
+    if (a <= 0.01) return;
+    ctx.save(); ctx.lineCap = "round"; ctx.lineJoin = "round";
+    [[SW + 18, 0.0], [SW + 175, 0.3], [SW + 330, 0.55]].forEach(function (s, k) {
+      var start = iv[0] + s[1], groei = E.uit(fase(t, start, 1.0)), aa = a * fase(t, start, 0.3);
+      if (aa <= 0.01) return;
+      // het pad in fijne stapjes, met een kleine slinger: water loopt nooit kaarsrecht
+      var x = s[0], hoek = [[x, PH + 1, GZ1 + 1], [x + 2, PH + 1.6, PD - 5], [x + 3, PH - 3, PD + 3], [x + 4, PH * 0.5, PD + 3], [x + 5, 3, PD + 3]], pts = [];
+      for (var i = 0; i < hoek.length - 1; i++) for (var j = 0; j < 8; j++) {
+        var f = j / 8, A = hoek[i], B = hoek[i + 1], slinger = i >= 2 ? Math.sin((i * 8 + j) * 0.9 + k * 2.1) * 1.4 : 0;
+        pts.push([mix(A[0], B[0], f) + slinger, mix(A[1], B[1], f), mix(A[2], B[2], f)]);
+      }
+      pts.push(hoek[hoek.length - 1]);
+      var n = Math.max(2, Math.round(groei * pts.length)), pp = pts.slice(0, n).map(function (P) { return zet(c, P, off); });
+      [[10, "255,255,255", 0.32], [5.6, "92,146,192", 0.62], [2.2, "205,232,250", 0.85], [0.9, "255,255,255", 0.95]].forEach(function (l) {
+        ctx.strokeStyle = "rgba(" + l[1] + "," + (l[2] * aa).toFixed(3) + ")"; ctx.lineWidth = Math.max(1, c.S * l[0]);
+        ctx.beginPath(); ctx.moveTo(pp[0][0], pp[0][1]); for (var q = 1; q < pp.length; q++) ctx.lineTo(pp[q][0], pp[q][1]); ctx.stroke();
+      });
+      function druppel(P, rr, al) {
+        ctx.fillStyle = "rgba(92,146,192," + al.toFixed(3) + ")"; ctx.beginPath(); ctx.ellipse(P[0], P[1], rr * 0.82, rr * 1.18, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "rgba(255,255,255," + Math.min(1, al * 1.1).toFixed(3) + ")"; ctx.beginPath(); ctx.arc(P[0] - rr * 0.25, P[1] - rr * 0.38, rr * 0.33, 0, Math.PI * 2); ctx.fill();
+      }
+      // een paar dikkere druppels die over het straaltje omlaag glijden
+      for (var b = 0; b < 2; b++) {
+        var fb = (t * 0.55 + b * 0.5 + k * 0.3) % 1, ib = Math.floor(fb * (n - 1));
+        if (ib > 0 && ib < pp.length) druppel(pp[ib], c.S * 4.2, 0.8 * aa);
+      }
+      if (groei < 0.98) return;
+      // en eraf druppen
+      for (var d = 0; d < 3; d++) {
+        var fp = (t * 0.85 + d / 3 + k * 0.21) % 1;
+        druppel(zet(c, [x + 5, 3 - fp * fp * 300, PD + 3], off), c.S * (4.6 - fp * 1.4), 0.85 * aa * (1 - fp * 0.5));
+      }
+    });
+    ctx.restore();
+  }
+  // Een gescheurde hoek: een barst dwars door het profiel, van de stijl over de naad de dorpel in.
+  function scheur(ctx, c, t, iv, a, off) {
+    var p = E.uit(fase(t, iv[0], iv[1] - iv[0]));
+    if (a <= 0.01 || p <= 0) return;
+    var z = PD + DO + DL + 0.8, lijn = [[SW - 9, PH + 40], [SW - 19, PH + 14], [SW - 14, PH - 3], [SW - 29, PH - 22], [SW - 25, PH - 37], [SW - 40, PH - 53], [SW - 35, 5]];
+    var n = Math.max(2, Math.ceil(p * lijn.length)), pts = lijn.slice(0, n).map(function (l) { return zet(c, [l[0], l[1], z], off); });
+    ctx.save(); ctx.globalAlpha = a; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    function pad(dx, dy) { ctx.beginPath(); ctx.moveTo(pts[0][0] + dx, pts[0][1] + dy); for (var i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0] + dx, pts[i][1] + dy); ctx.stroke(); }
+    ctx.strokeStyle = "rgba(255,255,255,0.55)"; ctx.lineWidth = Math.max(0.8, c.S * 1.2); pad(c.S * 1.8, c.S * 1.6);
+    ctx.strokeStyle = "rgba(46,38,30,0.92)"; ctx.lineWidth = Math.max(1.5, c.S * 3.6); pad(0, 0);
+    ctx.restore();
+  }
 
   /* Een beeld ------------------------------------------------------------------------------ */
   function teken(ctx, t, W, H, opties) {
@@ -213,33 +259,24 @@
       };
       glans(sc, T.glans, t);
       na.push(function (cx) { vonkjes(cx, c, t, T.glans[0] + 0.35); });
-    } else if (naam === "verf") {
-      if (t < T.wissel) {
-        var vG = grens(T.verf, LEN, t), vGS = grens(T.verfS, STI, t), vw = vanaf(T.verf, vG, t), vwS = vanaf(T.verfS, vGS, t);
-        z.nieuw = [vw, vwS]; z.nieuwBoven = vw;
-        sc.folie = FOLIE.verf; sc.leeftijd = 0.6; sc.over = true;
-        sc.dingen = function (B, BF) {
-          verfroller(B, BF, t, Mo.FVOOR.om, LEN, PH, vG, T.verf);
-          verfroller(B, BF, t, Mo.FSVOOR.om, STI, SW, vGS, T.verfS);
-        };
-      } else {
-        // de verf is nu de bovenste laag, en die verweert: jaren tellen, de folie eronder laat los
-        var a = 0.92 * jarenOp(t) / 3;
-        sc.folie = FOLIE.verfOud; sc.leeftijd = a;
-        sc.dingen = function (B) { Mo.schilfers(B, z, fase(a, 0.45, 0.4)); };
-      }
     } else {
       // vervangen: het oude kozijn gaat omhoog en weg, het nieuwe zakt erin en veert even na
       var nieuwK = t >= T.wissel, y;
       if (!nieuwK) y = 820 * E.in_(fase(t, T.uit[0], T.uit[1] - T.uit[0]));
       else { var p = fase(t, T.in_[0], T.in_[1] - T.in_[0]); y = 820 * (1 - veer(p)); }
       sc.verschuif = [nieuwK ? 0 : 40 * fase(t, T.uit[0], T.uit[1] - T.uit[0]), y, 0];
-      sc.folie = FOLIE.herstel; sc.leeftijd = nieuwK ? 0 : 0.72;
-      sc.dingen = function (B) { if (!nieuwK) Mo.schilfers(B, z, 0.35); };
+      sc.folie = VERSLETEN; sc.leeftijd = nieuwK ? 0 : 1;
+      sc.dingen = function (B) { if (!nieuwK) Mo.schilfers(B, z, 1); };
       if (nieuwK) glans(sc, T.glans, t);
       na.push(function (cx) {
-        if (!nieuwK) { tocht(cx, c, t, T.tocht); stof(cx, c, t, T.stof); }
-        else vonkjes(cx, c, t, T.glans[0] + 0.35, sc.verschuif);
+        if (!nieuwK) {
+          // wat er kapot is, verdwijnt mee als het kozijn eruit gaat
+          var kapot = fase(t, T.lek[0], T.lek[1] - T.lek[0]) * (1 - fase(t, T.uit[0] + 0.2, 0.6));
+          condens(cx, c, kapot, sc.verschuif);
+          scheur(cx, c, t, T.scheur, 1 - fase(t, T.uit[0] + 0.2, 0.6), sc.verschuif);
+          lekkage(cx, c, t, T.lek, kapot, sc.verschuif);
+          tocht(cx, c, t, T.tocht); stof(cx, c, t, T.stof);
+        } else vonkjes(cx, c, t, T.glans[0] + 0.35, sc.verschuif);
       });
     }
     sc.z = z;
@@ -258,10 +295,6 @@
   function status(naam, t) {
     var v = V[naam] || V.herstel, s = v.status, r = s[0];
     for (var i = 0; i < s.length; i++) if (t >= s[i][0] && t < s[i][1]) r = s[i];
-    if (r[2] === "jaren") {
-      var j = Math.max(1, Math.ceil(jarenOp(t) - 0.02));
-      return { tekst: j === 1 ? "1 jaar later" : j + " jaar later", soort: j >= 3 ? "rood" : "" };
-    }
     return { tekst: r[2], soort: r[3] };
   }
 
@@ -270,15 +303,17 @@
        een <canvas>, een poster (img.hk-poster, het beeld voordat het script tekent),
        een regel .hk-status, een knop .hk-pauze, en per keuze een knop [data-optie] met daarin
        een balkje .hk-balk > i (hoe ver het verhaal is) en direct erachter zijn paneel (.hk-paneel).
-     Speelt de vier verhalen achter elkaar zodra de hero in beeld is, en begint dan opnieuw. Een
-     klik op een keuze speelt die keuze en blijft daar staan. Pauzeert buiten beeld. Wie
+     Speelt de drie verhalen achter elkaar zodra de hero in beeld is; daarna staat er een paar seconden
+     een kaart met de knop naar de keuzehulp (.hk-slot), en dan begint het opnieuw. Een klik op een
+     keuze speelt die keuze en blijft daar staan. Pauzeert buiten beeld. Wie
      "minder beweging" aan heeft, ziet per keuze het eindbeeld, zonder beweging. Zonder WebGL2
      wisselt de poster per keuze (data-poster op de knop). */
   function speler(el) {
     if (el.iwrapKeuze) return;
     el.iwrapKeuze = true;
     var doek = el.querySelector("canvas"), poster = el.querySelector(".hk-poster");
-    var statusEl = el.querySelector(".hk-status"), pauzeKnop = el.querySelector(".hk-pauze");
+    var statusEl = el.querySelector(".hk-status"), pauzeKnop = el.querySelector(".hk-pauze"), slotEl = el.querySelector(".hk-slot");
+    var slotLink = slotEl && slotEl.querySelector("a");
     var knoppen = Array.prototype.slice.call(el.querySelectorAll("[data-optie]"));
     var rustig = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     var kan = !!(doek && doek.getContext && Mo.start(1536));
@@ -287,6 +322,16 @@
     var nr = 0, t = 0, auto = !rustig, speelt = false, gepauzeerd = false, inBeeld = false, raf = 0, vorig = 0;
     var W = 0, H = 0, duurGem = 8, traag = false, overslaan = false, getekend = 0, rust = 0, statusNu = "";
     var RUST = 1.4;   // zo lang blijft het eindbeeld staan voordat de volgende keuze begint
+    var SLOT = 5.5, slotOpen = false, slotT = 0;   // de kaart met de keuzehulp na het laatste verhaal
+
+    function toonSlot(aan) {
+      slotOpen = aan; slotT = 0;
+      if (!slotEl) return;
+      slotEl.classList.toggle("is-open", aan);
+      slotEl.setAttribute("aria-hidden", aan ? "false" : "true");
+      if (slotLink) slotLink.setAttribute("tabindex", aan ? "0" : "-1");
+      if (statusEl) statusEl.classList.toggle("hk-weg", aan);
+    }
 
     function naam() { return OPTIES[nr]; }
     function maat() {
@@ -335,8 +380,15 @@
       var duur = V[naam()].duur;
       if (t < duur) { t = Math.min(duur, t + dt); beeld(); }
       else if (auto) {
-        rust += dt;
-        if (rust >= RUST) { rust = 0; kies((nr + 1) % OPTIES.length, true); }
+        if (slotOpen) { slotT += dt; if (slotT >= SLOT) { toonSlot(false); kies(0, true); } }
+        else {
+          rust += dt;
+          if (rust >= RUST) {
+            rust = 0;
+            // na het laatste verhaal eerst de keuzehulp, dan weer van voren af aan
+            if (nr === OPTIES.length - 1 && slotEl) toonSlot(true); else kies((nr + 1) % OPTIES.length, true);
+          }
+        }
       } else { stop(); stand(); return; }
       if (duurGem > 11) traag = true;
     }
@@ -347,6 +399,7 @@
     function stop() { speelt = false; cancelAnimationFrame(raf); }
     function kies(i, vanzelf) {
       nr = i; rust = 0;
+      if (slotOpen) toonSlot(false);
       if (!kan) {
         // zonder WebGL: het eindbeeld van deze keuze als foto (de webp-bron van de poster gaat eruit, anders wint die)
         var src = knoppen[i] && knoppen[i].getAttribute("data-poster");
@@ -395,6 +448,6 @@
 
   window.iwrapKozijnKeuze = {
     teken: teken, status: status, opties: OPTIES,
-    duur: 7.4, duren: { herstel: V.herstel.duur, kleur: V.kleur.duur, verf: V.verf.duur, vervang: V.vervang.duur }
+    duur: 8.6, duren: { herstel: V.herstel.duur, kleur: V.kleur.duur, vervang: V.vervang.duur }
   };
 })();
