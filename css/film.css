@@ -28,7 +28,7 @@ html:not(.js) .film,html:not(.js) .film-sectie{display:none;}
 .film-doek{opacity:0;transition:opacity .35s var(--beweeg);}
 .film.film-getekend .film-doek{opacity:1;}
 /* Zonder WebGL: het herstelde kozijn als foto, met de eindkaart ernaast. */
-.film.film-geen-webgl .film-poster{content:url("/images/werkwijze-3d-eind-1000.jpg");}
+.film.film-geen-webgl .film-poster{content:url("/images/werkwijze-3d-eind-v2-1000.jpg");}
 
 .film-tekst{display:grid;align-items:center;padding:4cqw 3.4cqw 4cqw 4.6cqw;min-width:0;}
 /* Alle tekstblokken liggen op dezelfde plek; film.js laat ze om de beurt zien. */

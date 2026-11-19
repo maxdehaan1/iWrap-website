@@ -16,8 +16,12 @@ Wat hier staat
     src/f-zon.js      "25 jaar zon", de hero op de homepage: nieuw crème kozijn, 25 jaar zon over een boog
                       (de schaduwen draaien mee), de folie verweert maar verkleurt niet, dan ons herstel.
                       Ook de buitenlucht (zonLicht) die de andere animaties gebruiken.
-    src/g-werkwijze.js de werkwijzefilm (homepage en /werkwijze): verweerd kozijn, telefoon met een foto van
-                      het hele kozijn en een gele stift, offerte, afspraak, het werk, klaar. js/film.js speelt hem.
+    src/g-werkwijze.js de werkwijzefilm (homepage en /werkwijze), sinds 19 november 2026 rond de aanvraag
+                      (22 seconden): verweerd kozijn, een telefoon die het hele kozijn fotografeert, een vinger
+                      die geel (kozijn) en rood (draairaam) aanstreept zoals op het formulier en verstuurt, de
+                      offerte met een vaste totaalprijs, de afspraak, het werk in één kort shot (warmte, een
+                      zachte overgang, nieuwe folie), klaar. js/film.js speelt hem. Proefbeelden:
+                      python3 proef.py proef.png "obj=iwrapKozijnWerkwijze&w=1100&h=1000&ts=0,4.7,7.6,11.8,17,21&cols=3&cel=400"
   Sinds 16 november 2026 staat alles buiten: blauwe lucht, de zon linksboven, crème folie die verweert maar
   niet verkleurt (FOLIE.cremeZon in c-motor.js). Ook deze animatie en het close-up van de klusfilm.
 - kozijn-sting.src.js: "van beschadigd naar mooi" (6,6 seconden): dichtbij het beschadigde

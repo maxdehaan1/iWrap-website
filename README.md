@@ -642,20 +642,29 @@ site serveert. Deze opzet houdt de site snel en de reviews in je eigen beheer.
 
 ## De film op de homepage
 
-Een film van twintig seconden **in 3D**, met hetzelfde crème kozijn, dezelfde lucht en zon als
-de hero (16 november 2026; daarvoor een platte tekening): het verweerde kozijn met twee ringen
-om de schade, een telefoon die een foto maakt van **het hele kozijn** in de gevel, waarop een
-gele stift de onderdorpel en de stijl aanstreept, precies zoals het aanvraagformulier het vraagt
-(geel voor het kozijn, rood voor een draairaam; Max: "dit moet niet verwarrend zijn"), een
-offerte met dezelfde foto en een vaste prijs, een afspraakkaart
-met de dag, de monteur en het mint busje, en dan het werk in 3D: toplaag eraf met warmte,
-lijmresten eraf en vetvrij, nieuwe folie met de rakel, en een glans. Vóór en ná dezelfde
-kleur: de folie verweert, hij verkleurt niet. Het beeld tekent `js/kozijn-3d.js` (bron:
-`beweging/3d kozijn/src/g-werkwijze.js`, met de tijden in `WBLOKKEN`); `js/film.js` speelt hem
+Een film van 22 seconden **in 3D**, met hetzelfde crème kozijn, dezelfde lucht en zon als de
+rest van de site. **Sinds 19 november 2026 draait hij om de aanvraag** (Max: "Ja, begin daarmee",
+na de review van de drie sites): dat is wat de site van een bezoeker vraagt, en de drie
+herstelstappen stonden al op zeven andere plekken. De hoofdstukken (tijden in `WBLOKKEN`):
+
+| Tijd | Links in beeld | In het beeld |
+|---|---|---|
+| 0-2,6 | Zo begint het | Het verweerde kozijn van dichtbij, met twee ringen om de schade. Dezelfde kleur als nieuw, maar dof, gebarsten en loslatend (`WFOLIE`: wat meer stukjes die loslaten dan elders, zodat "voor" ook op een telefoon duidelijk anders is dan "na") |
+| 2,6-6,2 | Stap 1 · Foto | Een telefoon fotografeert **het hele kozijn** in de gevel (kader eromheen, "Het hele kozijn in beeld"), daarna "Het hele kozijn" met een vinkje, zoals in het formulier |
+| 6,2-10 | Stap 2 · Aanstrepen | Het streepscherm van het formulier: "Streep aan wat er moet gebeuren", de stiften Kozijn en Draairaam of deur. Een vinger trekt geel over de linkerstijl en de onderdorpel, kiest rood en trekt een streep rond het draairaam, en tikt op Versturen: "Verstuurd". Kleuren, dikte en rand van de strepen zijn die van `js/aanstrepen.js` |
+| 10-13,4 | Stap 3 · Vaste prijs | De offerte met dezelfde aangestreepte foto, "Vaste totaalprijs", de werkzaamheden en "Totaal: Vast bedrag" (nooit een bedrag) |
+| 13,4-16 | Stap 4 · Afspraak | De dag, wie er komt en het mint busje |
+| 16-19 | Stap 5 · Het werk | Kort, in 3D: de oude folie eraf met warmte, een zachte overgang (`WDIP`; daarin gaan de lijmresten eraf en wordt alles vetvrij, het gereedschap daarvan laten we weg), dan de nieuwe folie met de rakel |
+| 19-20,2 | Klaar | Glans over de nieuwe folie, het label Na |
+| 20,2-22 | (eindkaart) | Logo, drie punten, het reviewcijfer en de knop naar de offerte (HTML) |
+
+Het beeld tekent `js/kozijn-3d.js` (bron: `beweging/3d kozijn/src/g-werkwijze.js`; de tijden
+van de telefoon en de kaarten staan in `WK`, die van het werk in `WT`); `js/film.js` speelt hem
 af en laat de teksten links meelopen. Laad `kozijn-3d.js` daarom vóór `film.js`. De poster is
-`images/werkwijze-3d-start-*`, zonder WebGL staat er `werkwijze-3d-eind-*`. Hij speelt vanzelf af zodra hij in beeld komt, pauzeert als
-je wegscrolt en blijft aan het eind op de eindkaart staan. Wie op zijn telefoon "minder
-beweging" aan heeft staan, ziet meteen het eindbeeld met een afspeelknop.
+`images/werkwijze-3d-start-v2-*`, zonder WebGL staat er `werkwijze-3d-eind-v2-*` (gemaakt met
+`poster.py` in `beweging/3d kozijn`, op 1600×1455, en verkleind). Hij speelt vanzelf af zodra hij
+in beeld komt, pauzeert als je wegscrolt en blijft aan het eind op de eindkaart staan. Wie op zijn
+telefoon "minder beweging" aan heeft staan, ziet meteen het eindbeeld met een afspeelknop.
 
 **Waar hij staat.** Op de homepage in het donkere werkwijzeblok, en dat blok staat bewust
 direct onder de hero: eerst het resultaat (de voor/na-schuif), meteen daarna hoe het gaat.
@@ -665,11 +674,10 @@ dus één regel `{{film}}` plus `"film"` in de css- en js-lijst van die pagina (
 één keer per pagina).
 
 - **Teksten** staan in `src/film.html`, als blokken in `.film-tekst`.
-- **De vier kaartjes eronder** (homepage) heten zoals de hoofdstukken van de film en lichten
-  op met het stuk dat speelt; een klik laat de film daar verder spelen (`js/iwrap-site.js`,
-  onderdeel 3, via de gebeurtenis `filmtijd` en `iwrapFilm.speelVanaf`).
-- **Tijden** (wanneer welk blok komt) staan in `WBLOKKEN` in `g-werkwijze.js`; de kaartjes
-  onder de film op de homepage hebben `data-film-van` en `data-film-tot` met dezelfde tijden.
+- **Tijden** (wanneer welk blok komt) staan in `WBLOKKEN` in `g-werkwijze.js`. Het laatste blok
+  is de eindkaart, het blok ervoor "Klaar" (daar komt het label Na); `film.js` rekent vanaf het
+  eind, dus een hoofdstuk erbij of eraf kan zonder `film.js` aan te passen. Kaartjes onder de
+  film (`data-film-van`/`data-film-tot`, `js/iwrap-site.js` onderdeel 3) staan er nu niet.
 - **Het beeld** tekent `js/kozijn-3d.js` live, in WebGL. Alles is een functie van de tijd:
   `teken(t)`. Er zit dus geen videobestand op de site.
 
@@ -681,7 +689,7 @@ python3 build.py
 cd video && npm install && npm run opname
 ```
 
-Dat levert `video/iwrap-zo-werkt-het.mp4` op: 1920×1080, 21 seconden (de eindkaart
+Dat levert `video/iwrap-zo-werkt-het.mp4` op: 1920×1080, 23 seconden (de eindkaart
 blijft in de video een seconde langer staan), zonder geluid. Het script gebruikt je eigen
 Google Chrome en start zelf een server op poort 8011. Met `node opname.mjs --beelden 0,8,15`
 krijg je losse PNG's in `video/beelden/` om een moment te bekijken.

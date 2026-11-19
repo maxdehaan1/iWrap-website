@@ -1,7 +1,7 @@
 /* ---------------------------------------------------------------------------
-   De werkwijzefilm (homepage en /werkwijze): twintig seconden van verweerd
-   kozijn tot oplevering, in 3D, met hetzelfde crème kozijn en dezelfde lucht
-   als de hero.
+   De werkwijzefilm (homepage en /werkwijze): 22 seconden, van verweerd kozijn
+   via de aanvraag (foto, aanstrepen, vaste prijs, afspraak) tot oplevering, in
+   3D, met hetzelfde crème kozijn en dezelfde lucht als de rest van de site.
 
    Het beeld tekent js/kozijn-3d.js (window.iwrapKozijnWerkwijze, de bron staat in
    beweging/3d kozijn/src/g-werkwijze.js). Dit script speelt het af en laat de
@@ -21,8 +21,10 @@
   if (!film) return;
   var W3 = window.iwrapKozijnWerkwijze;
   var doek = film.querySelector(".film-doek");
-  var DUUR = W3 ? W3.duur : 20;
-  var BLOKKEN = W3 ? W3.blokken : [0, 3.2, 6.6, 9.0, 14.0, 17.0, 18.3];
+  var DUUR = W3 ? W3.duur : 22;
+  var BLOKKEN = W3 ? W3.blokken : [0, 2.6, 6.2, 10.0, 13.4, 16.0, 19.0, 20.2];
+  // Het laatste blok is de eindkaart, het blok ervoor "Klaar".
+  var SLOT = BLOKKEN[BLOKKEN.length - 1], KLAAR = BLOKKEN[BLOKKEN.length - 2];
   var kan = !!(W3 && doek && doek.getContext && W3.kan());
   var ctx = kan ? doek.getContext("2d") : null;
   if (!kan) film.classList.add("film-geen-webgl");
@@ -65,9 +67,9 @@
       if (a) duurGem = duurGem * 0.92 + (performance.now() - a) * 0.08;
     }
     // Labels, en het logo dat alleen in de opname staat.
-    zichtbaar(merk, 1 - fase(t, BLOKKEN[6] - 0.1, 0.25));
+    zichtbaar(merk, 1 - fase(t, SLOT - 0.1, 0.25));
     zichtbaar(labelVoor, 1 - fase(t, BLOKKEN[1] - 0.3, 0.3));
-    zichtbaar(labelNa, uit(fase(t, BLOKKEN[5] + 0.2, 0.35)));
+    zichtbaar(labelNa, uit(fase(t, KLAAR + 0.2, 0.35)));
     // Teksten: elk blok komt omhoog in beeld en gaat weg als het volgende komt.
     // Het eerste staat er meteen, zodat het beginbeeld ook een goede poster is.
     blokken.forEach(function (b, i) {
@@ -77,7 +79,7 @@
       zichtbaar(b, Math.min(erinP, 1 - eruit), (1 - erinP) * 0.6 - eruit * 0.3);
     });
     slotDelen.forEach(function (d, i) {
-      var pd = uit(fase(t, BLOKKEN[BLOKKEN.length - 1] + 0.12 + i * 0.13, 0.4));
+      var pd = uit(fase(t, SLOT + 0.12 + i * 0.13, 0.4));
       zichtbaar(d, pd, (1 - pd) * 0.5);
     });
     if (balk) balk.style.transform = "scaleX(" + (t / DUUR).toFixed(4) + ")";
