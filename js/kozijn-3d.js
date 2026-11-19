@@ -1731,12 +1731,14 @@
     return true;
   }
 
-  /* ======================= 25 jaar zon (de hero op de homepage) =======================
+  /* ======================= 25 jaar zon (homepage, "Waarom herstellen werkt") =======================
      Hetzelfde kozijn, een ander verhaal. Het kozijn is nieuw: zijdeglans, strak. Dan gaat de
      zon erover, dag na dag, steeds sneller: 25 jaar in een paar seconden. De folie verliest
-     eerst zijn glans, verbleekt, wordt krijtig, en pas in de laatste jaren komen de barsten
-     en de randen die loslaten. Daarna herstellen we hem met de drie vaste stappen, en schijnt
-     de zon weer op een kozijn dat eruitziet als nieuw.
+     eerst zijn glans en wordt dof en krijtig, en pas in de laatste jaren komen de barsten en de
+     randen die loslaten. Hij verkleurt niet. Dan zoomt hij in: het kozijn zelf is nog goed.
+     Sinds 19 november 2026 is het herstel kort, in één haal (zoals "van beschadigd naar mooi"):
+     voorop krult de oude folie eraf, vlak erachter rolt de nieuwe erop. Hoe het werk echt gaat,
+     vertelt de werkwijzefilm; deze animatie vertelt waarom herstellen werkt.
 
      - De zon loopt over een boog boven het kozijn (de zonnebaan, getekend in de achtergrond)
        en het licht in 3D komt van diezelfde plek: de schaduwen draaien mee, zoals bij een
@@ -1745,17 +1747,11 @@
        sluitertijd) en schommelt het licht op het kozijn steeds minder: dan knippert er niets.
      - De teller (jaren), de ondertitel en de drie knoppen zijn HTML; dat doet de speler.
      Alles hangt weer af van één getal, de tijd: tekenZon(ctx, t, W, H, opties). */
-  var ZDUUR = 18.6;
-  var ZR = 9.1;               // vanaf hier herstellen we
-  var ZT = {
-    los: [900, 901],
-    pel: [ZR + 0.3, ZR + 1.8], pelS: [ZR + 1.75, ZR + 2.45],
-    krabS: [ZR + 2.6, ZR + 3.1], krab: [ZR + 3.05, ZR + 4.05],
-    doek: [ZR + 4.2, ZR + 4.85], doekS: [ZR + 4.8, ZR + 5.25],
-    vetvrij: [ZR + 5.25, ZR + 5.7],
-    nieuw: [ZR + 5.8, ZR + 7.2], nieuwS: [ZR + 7.15, ZR + 7.85],
-    glans: [ZR + 7.95, ZR + 9.0]
-  };
+  var ZDUUR = 14.2;
+  var ZR = 9.7;               // vanaf hier herstellen we
+  // het herstel in één haal: eerst de dorpel naar de hoek, dan de stijl omhoog
+  var ZW = { oud: [ZR + 0.3, ZR + 1.9], nieuw: [ZR + 0.55, ZR + 2.15], oudS: [ZR + 1.85, ZR + 2.5], nieuwS: [ZR + 2.1, ZR + 2.75], glans: [ZR + 2.95, ZR + 3.95] };
+  var ZT = { los: [900, 901], glans: ZW.glans };
   // De zon: Y = hoeveel boogjes (jaren) er voorbij zijn. Het eerste jaar rustig, dan steeds sneller,
   // en aan het eind staat hij hoog (fel licht, dan zie je de schade het best).
   var Z_JAAR1 = [0.35, 2.95], Z_SNEL = [2.95, 8.0], Z_EIND = 24.38;
@@ -1768,12 +1764,13 @@
     [0.15, 2.85, "Een nieuw kozijn, met nieuwe folie."],
     [3.0, 7.7, "Elk jaar zon: de folie wordt dof, droog en broos."],
     [7.8, ZR + 0.15, "Na 25 jaar is de folie versleten. Het kozijn zelf is nog goed."],
-    [ZR + 0.3, ZR + 2.5, "Toplaag eraf, met warmte."],
-    [ZR + 2.6, ZR + 5.7, "Lijmresten eraf, alles vetvrij."],
-    [ZR + 5.8, ZR + 7.9, "Nieuwe Renolit folie, om de rand gezet."],
-    [ZR + 8.0, ZDUUR, "Weer als nieuw. Met tien jaar fabrieksgarantie op de folie."]
+    [ZR + 0.3, ZR + 2.8, "Oude folie eraf, nieuwe erop. Het kozijn blijft zitten."],
+    [ZR + 2.9, ZDUUR, "Weer als nieuw. Met tien jaar Renolit-garantie op de folie."]
   ];
-  var ZSTIL = [0.2, 8.6, ZDUUR];   // stilstaand beeld per knop (bij "minder beweging")
+  var ZSTIL = [0.2, 9.2, ZDUUR];   // stilstaand beeld per knop (bij "minder beweging")
+  // De folie van deze animatie: crème die verweert maar niet verkleurt, met wat meer stukjes die loslaten
+  // (net als in de werkwijzefilm), zodat je na 25 jaar duidelijk ziet dat hij versleten is.
+  var ZFOLIE = { nieuw: FOLIE.cremeZon.nieuw, oud: FOLIE.cremeZon.oud, nerf: FOLIE.cremeZon.nerf, glans: FOLIE.cremeZon.glans, vuil: 0.3, schil: 2.2 };
 
   // Camera: [t, doel x, doel y, zoom, draaiing, kanteling, afstand, hoogte van het midden in beeld (0..1)]
   var ZCAM = [
@@ -1783,14 +1780,43 @@
     [5.6, 252, 112, 1.04, 37, 11, 1150, 0.64],
     [7.7, 268, 92, 1.2, 37, 15, 1100, 0.6],
     [8.9, 300, 66, 1.62, 40, 21, 820, 0.55],
-    [ZR + 0.5, 280, 84, 1.22, 37, 18, 1020, 0.57],
-    [ZR + 2.6, 240, 122, 1.08, 35, 16, 1100, 0.58],
-    [ZR + 5.7, 246, 112, 1.1, 35, 16, 1100, 0.58],
-    [ZR + 7.9, 240, 116, 1.08, 35, 15, 1100, 0.59],
-    [ZR + 8.6, 246, 114, 1.04, 39, 10, 1120, 0.65],
+    [ZR - 0.1, 314, 64, 1.68, 42, 20, 800, 0.55],
+    [ZR + 0.9, 304, 74, 1.42, 41, 18, 900, 0.56],
+    [ZR + 1.9, 262, 98, 1.14, 38, 15, 1060, 0.6],
+    [ZR + 2.8, 246, 112, 1.04, 38, 11, 1120, 0.64],
     [ZDUUR, 248, 116, 1.0, 39, 9, 1150, 0.65]
   ];
   var ZON_VERHAAL = { T: ZT, BEW: BEW, CAM: ZCAM };
+
+  // Waar de oude folie al weg is en de nieuwe al ligt (zoals in kozijn-sting.src.js): de grens loopt van
+  // het eind van de dorpel naar de hoek, en daarna langs de stijl.
+  function zGrens(iv, L, t) { return mix(L + MARGE, -MARGE, E.gelijk(fase(t, iv[0], iv[1] - iv[0]))); }
+  function zonZones(t) {
+    var gO = zGrens(ZW.oud, LEN, t), gN = zGrens(ZW.nieuw, LEN, t), gOS = zGrens(ZW.oudS, STI, t), gNS = zGrens(ZW.nieuwS, STI, t);
+    var oud = t > ZW.oud[0] ? [gO, 1e5] : null, nw = t > ZW.nieuw[0] ? [gN, 1e5] : null;
+    var oudS = t > ZW.oudS[0] ? [gOS, 1e5] : null, nwS = t > ZW.nieuwS[0] ? [gNS, 1e5] : null;
+    return {
+      z: { pel: [oud, oudS], krab: [oud, oudS], nieuw: [nw, nwS], doek: [oud, oudS], nat: [null, null], nieuwBoven: nw ? [gN + FLAP, 1e5] : null, doekG: [null, null], los: 0, los0: LOS0 },
+      gO: gO, gN: gN, gOS: gOS, gNS: gNS
+    };
+  }
+  function zonKap(z, m, u) {
+    if (binnen(z.nieuw[m], u)) return [0, 0, DN];
+    if (!binnen(z.pel[m], u)) return [DL, DO, 0];
+    return [0, 0, 0];
+  }
+  // de twee rollen op één deel: voorop de oude folie die oprolt, erachter de nieuwe rol met de rakel
+  function zonRollen(B, BF, t, F, L, vmax, gO, gN, ivO, ivN) {
+    var uO = L - gO, uN = L - gN;
+    var aO = Math.min(fase(t, ivO[0] - 0.05, 0.25), 1 - fase(uO, L - 6, 20));
+    if (aO > 0.003) rolOud(kies(B, BF, aO), F, uO, Math.sqrt(30 + Math.max(0, uO + MARGE) * (DO + DL) * 1.1 / Math.PI), null);
+    var aN = Math.min(fase(t, ivN[0] - 0.05, 0.25), 1 - fase(uN, L + 6, 22));
+    if (aN > 0.003) {
+      var g = kies(B, BF, aN), rn = Math.sqrt(121 + Math.max(0, L + MARGE - uN) * DN * 0.62 / Math.PI);
+      rakel(g, F, Math.max(-20, uN - 22), vmax, Math.min(1, fase(t, ivN[0], 0.3)));
+      rolNieuw(g, F, uN, rn, vmax, maal(F.U, Math.max(0, uN - L + 4) * 0.5));
+    }
+  }
 
   function zachtStap(p) { return p * p * p * (p * (p * 6 - 15) + 10); }
   // Aantal jaren voor de zon (doorlopend). Tijdens "snel" loopt het op en af als een vliegwiel.
@@ -1918,7 +1944,7 @@
     opties = opties || {};
     gebruik(ZON_VERHAAL);
     t = klem(t, 0, ZDUUR);
-    var st = staat(t), c = maakCamera(camVoorZon(t), W, H), z = zonesVoor(st), boven = [];
+    var Z = zonZones(t), z = Z.z, c = maakCamera(camVoorZon(t), W, H), glans = fase(t, ZW.glans[0], ZW.glans[1] - ZW.glans[0]);
     // de zonnebaan is te zien zolang we niet dichtbij zitten
     var zicht = 1 - klem((camVoorZon(t).zoom - 1.14) / 0.2, 0, 1);
     // opties.leeftijd: een vaste leeftijd (voor losse beelden, zoals de voor/na op kozijnwrap.nl)
@@ -1926,30 +1952,27 @@
     var sc = {
       cam: c, z: z, schaduwMaat: opties.schaduwMaat || 2048, achtergrond: "licht",
       lk: L.lk, key: L.key, hemel: L.hemel, vloer: L.vloer, lucht: L.lucht, leeftijd: a, schaduwZacht: 5.0,
-      folie: FOLIE[opties.kleur || "cremeZon"],
+      folie: opties.kleur ? FOLIE[opties.kleur] : ZFOLIE,
       belichting: 0.92,
-      kap: [kapLaag(z, 0, LEN), kapLaag(z, 1, 0)]
+      kap: [zonKap(z, 0, LEN), zonKap(z, 1, 0)]
     };
-    if (st.vetvrij > 0 && st.vetvrij < 1) {
-      var vv = E.zacht(st.vetvrij); sc.sweep = [mix(-80, LEN + 160, vv), mix(-80, STI + 160, vv), Math.sin(Math.PI * st.vetvrij) * 1.1, 1];
-    }
-    if (st.glans > 0 && st.glans < 1) {
-      var gv = E.zacht(st.glans); sc.sweep = [mix(-90, LEN + 200, gv), mix(-90, STI + 200, gv), Math.sin(Math.PI * st.glans) * 0.55, 0];
+    if (glans > 0 && glans < 1) {
+      var gv = E.zacht(glans); sc.sweep = [mix(-90, LEN + 200, gv), mix(-90, STI + 200, gv), Math.sin(Math.PI * glans) * 0.55, 0];
     }
     sc.dingen = function (B, BF) {
       schilfers(B, z, fase(a, 0.8, 0.2));
-      omzetten(B, st);
-      gereedschap(B, BF, sc, st, t, boven);
+      if (z.nieuw[0]) omzetten(B, { nieuw: z.nieuw[0], nieuwG: Z.gN });
+      zonRollen(B, BF, t, FVOOR.om, LEN, PH, Z.gO, Z.gN, ZW.oud, ZW.nieuw);
+      zonRollen(B, BF, t, FSVOOR.om, STI, SW, Z.gOS, Z.gNS, ZW.oudS, ZW.nieuwS);
     };
     var cv = renderScene(W, H, sc);
     if (!cv) return false;
     ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
     plak(ctx, cv, W, H);
     zonlicht(ctx, c, t, L, zicht);
-    boven.forEach(function (f) { f(ctx, c); });
     // klaar: vonkjes op de nieuwe folie, waar de zon in spiegelt
     [[150, 0.6, FVOOR, PH], [360, 0.35, FVOOR, PH], [80, 0.5, FSVOOR, SW]].forEach(function (v, k) {
-      var f = fase(t, ZT.glans[0] + 0.35 + k * 0.2, 0.8), zz = Math.sin(Math.PI * f);
+      var f = fase(t, ZW.glans[0] + 0.35 + k * 0.2, 0.8), zz = Math.sin(Math.PI * f);
       if (zz <= 0.01) return;
       var p = c.q(v[2].w(v[0], v[3] * v[1], DN));
       vonk(ctx, p[0], p[1], zz * 1.7 * c.S * 0.5, zz);
@@ -2017,7 +2040,7 @@
     }
     function stand() {
       var z = "";
-      if (rustig) z = stilStap ? ZZINNEN[[0, 2, 6][stilStap - 1]][2] : "";
+      if (rustig) z = stilStap ? ZZINNEN[[0, 2, ZZINNEN.length - 1][stilStap - 1]][2] : "";
       else ZZINNEN.forEach(function (r) { if (t >= r[0] && t < r[1] + 0.3) z = r[2]; });
       if (zinEl && zinEl.getAttribute("data-zin") !== z) {
         zinEl.setAttribute("data-zin", z);

@@ -694,23 +694,27 @@ blijft in de video een seconde langer staan), zonder geluid. Het script gebruikt
 Google Chrome en start zelf een server op poort 8011. Met `node opname.mjs --beelden 0,8,15`
 krijg je losse PNG's in `video/beelden/` om een moment te bekijken.
 
-## 25 jaar zon: de hero op de homepage
+## 25 jaar zon: bij "Waarom herstellen werkt" op de homepage
 
-Naast de kop staat een animatie van een **nieuw crème kozijn** (houtnerffolie, zijdeglans)
-waar **25 jaar zon** overheen gaat. De zon loopt over een boog boven het kozijn en het licht in
-3D komt van diezelfde plek: de schaduwen draaien mee als bij een zonnewijzer. Het eerste jaar
-gaat rustig (dag en schemer), daarna steeds sneller; dan trekt de zon een spoor en schommelt het
-licht nauwelijks nog, zodat er niets knippert. De teller linksboven telt de boogjes (jaren).
-De folie verliest eerst zijn glans en wordt dof en krijtig, en in de laatste jaren komen de
-barsten en de randen die loslaten. **Hij verkleurt niet**: oud en nieuw hebben dezelfde kleur,
-de folie verweert alleen (Max, 16 november 2026). Bij 25 jaar zoomt hij in ("het kozijn zelf is nog goed"),
-en dan herstellen we hem met de drie vaste stappen: toplaag eraf met warmte, lijmresten eraf
-en vetvrij, nieuwe folie om de rand. Tot slot schijnt de zon weer op een kozijn als nieuw.
-18,6 seconden; speelt één keer en blijft op het herstelde kozijn staan. Idee van Max
-(16 november 2026).
+Een animatie van een **nieuw crème kozijn** (houtnerffolie, zijdeglans) waar **25 jaar zon**
+overheen gaat. Tot 17 november 2026 was dit de hero; nu staat hij in het blok "Waarom herstellen
+werkt". De zon loopt over een boog boven het kozijn en het licht in 3D komt van diezelfde plek: de
+schaduwen draaien mee als bij een zonnewijzer. Het eerste jaar gaat rustig (dag en schemer), daarna
+steeds sneller; dan trekt de zon een spoor en schommelt het licht nauwelijks nog, zodat er niets
+knippert. De teller linksboven telt de boogjes (jaren). De folie verliest eerst zijn glans en wordt
+dof en krijtig, en in de laatste jaren komen de barsten en de stukjes die loslaten (`ZFOLIE`, net als
+in de werkwijzefilm: duidelijk versleten na 25 jaar). **Hij verkleurt niet**: oud en nieuw hebben
+dezelfde kleur, de folie verweert alleen (Max, 16 november 2026). Bij 25 jaar zoomt hij in ("het
+kozijn zelf is nog goed"). **Sinds 19 november 2026 is het herstel kort, in één haal** (zoals "van
+beschadigd naar mooi"): voorop krult de oude folie eraf, vlak erachter rolt de nieuwe erop, eerst de
+dorpel en dan de stijl ("Oude folie eraf, nieuwe erop. Het kozijn blijft zitten."). Hoe het werk echt
+gaat, staat in de werkwijzefilm; deze animatie vertelt waarom herstellen werkt. Tot slot schijnt de
+zon weer op een kozijn als nieuw. 14,2 seconden (was 18,6); speelt één keer en blijft op het
+herstelde kozijn staan. Idee van Max (16 november 2026).
 
-- Crème op een blauwe lucht, zodat het kozijn afsteekt. De folie staat in `FOLIE.cremeZon` in
-  `c-motor.js` (`oud` = `nieuw`: geen kleurverschil; `vuil` laag). Antraciet kan ook
+- Crème op een blauwe lucht, zodat het kozijn afsteekt. De folie is `ZFOLIE` in `f-zon.js`: de kleur
+  van `FOLIE.cremeZon` in `c-motor.js` (`oud` = `nieuw`: geen kleurverschil), met `schil` 2,2 (meer
+  stukjes die loslaten) en `vuil` 0,3. Antraciet kan ook
   (`FOLIE.antraciet`), maar daar wordt de oude folie grijs, en dat is verkleuren.
 - Hetzelfde script en dezelfde motor als dat kozijn (`js/kozijn-3d.js`), met een eigen tijdlijn:
   `beweging/3d kozijn/src/f-zon.js` (tijden, teksten, camera, zon en lucht). De folie die
@@ -724,13 +728,18 @@ en vetvrij, nieuwe folie om de rand. Tot slot schijnt de zon weer op een kozijn 
   in `css/iwrap-site.css` onderdeel 13. Een klik op een knop speelt vanaf dat deel.
   Met "minder beweging" aan staat hij meteen op het herstelde kozijn en tonen de knoppen een
   stilstaand beeld.
-- De echte voor/na-schuif stond eerst in de hero; die staat nu **direct onder de hero**, in
-  "Zo ziet het eruit als we klaar zijn", groot naast vier klusfoto's: de belangrijkste
-  verkoopfoto, een echte klus, meteen na de animatie (Max, 16 november 2026).
+- De echte voor/na-schuif ("heel belangrijke verkoopfoto", Max) staat sinds 17 november 2026 weer
+  in de hero; deze animatie staat bij "Waarom herstellen werkt".
+- De video om te delen (vierkant, 1080×1080, met teller en ondertitels in beeld) is
+  `video/iwrap-25-jaar-zon.mp4`, gemaakt met
+  `python3 render_video.py '[{"src": "kozijn3d.js", "obj": "iwrapKozijnZon", "w": 1080, "h": 1080, "video": 1, "uit": "<pad>.mp4", "bitrate": 9000000, "samples": 4}]'`
+  in `beweging/3d kozijn`; een kopie staat in `~/Documents/iWrap/iWrap in beweging/3 - Video's/`.
 
 ## Het kozijn in 3D, de doorsnede en de vergelijking
 
-**Op de homepage** (blok "Waarom herstellen werkt") staat een hoek van een crème kozijn in
+**Let op:** dit 3D-kozijn (`iwrapKozijn3D`) staat sinds 17 november 2026 niet meer op de homepage; in
+het blok "Waarom herstellen werkt" staat nu 25 jaar zon. De beschrijving hieronder geldt voor het
+bestand en de video's. **Op de homepage** (blok "Waarom herstellen werkt") stond een hoek van een crème kozijn in
 3D (dezelfde motor als de hero hierboven): eerst de verweerde folie, dan de lagen (folie, lijmlaag, kunststof profiel) en dan de
 drie vaste stappen: toplaag eraf met warmte, lijmresten eraf met de krabber en vetvrij met
 een doek, nieuwe folie met de rakel. Bijna 29 seconden; hij speelt één keer als hij in
