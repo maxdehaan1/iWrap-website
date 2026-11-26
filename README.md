@@ -531,10 +531,13 @@ bestellingen).
 Alles slaat vanzelf op. Zonder bereik bewaart de telefoon het en gaat het later alsnog
 naar de server; de balk bovenin zegt wat er aan de hand is.
 
-Wil je bij de klant meteen horren bestellen, doe dat dan gewoon op kozijnhorren.nl: vul
-de maten in, en reken samen met de klant af of stuur de winkelmand via "Bestelling
-bewaren of doorsturen" als link naar de klant. De bestelling verschijnt daarna in de
-Max-modus onder "Kozijnhorren".
+Zit de oude hor na het herstel te strak, of past hij niet meer bij het kozijn? Meet dan de
+openingen op en zet de horren klaar op kozijnhorren.nl, in **vakman-modus** (eenmalig
+`kozijnhorren.nl/?vakman=<jouw code>` op je telefoon; de code staat in `VAKMANNEN`). In de
+winkelmand staat dan "Klaarzetten voor je klant": vul naam en mobiel in, stuur de link via
+WhatsApp, en de klant betaalt zelf, nu of later. De leverancier bezorgt bij de klant thuis,
+dus je hoeft niet terug te komen. De bestelling verschijnt in de Max-modus onder
+"kozijnhorren.nl", met "opgemeten en klaargezet door". Zie `kozijnhorren/README.md`.
 
 ## De achterkant (`api/` en `backend/`)
 

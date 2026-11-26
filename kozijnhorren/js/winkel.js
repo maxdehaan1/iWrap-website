@@ -1,7 +1,8 @@
 /* ---------------------------------------------------------------------------
    Gedeeld door elke pagina van kozijnhorren.nl: de aankondigingsbalk, het menu,
    de winkelmand (een zijlade, bewaard in de browser), de prijsberekening, het
-   doorsturen van een bestelling als link, en het adres van de API.
+   doorsturen van een bestelling als link, de vakman-modus (horren klaarzetten
+   voor een klant) en het adres van de API.
 
    De prijsregels zijn dezelfde als in backend/horren.py. Wijzig je daar iets aan
    de manier van rekenen, doe het hier dan ook. De tabellen zelf komen uit
@@ -350,7 +351,131 @@
     }).catch(function () {});
   }
 
+
+  // --- Vakman-modus --------------------------------------------------------
+  // Een vakman (een kozijnspecialist met een code) meet bij de klant, zet de
+  // horren in de winkelmand en zet ze klaar: de klant krijgt een link en betaalt
+  // zelf. De code blijft in deze browser staan tot de vakman op Stoppen drukt.
+
+  var VAKMAN = "kozijnhorren-vakman";
+  function leesVakman() {
+    try { var v = JSON.parse(localStorage.getItem(VAKMAN)); return v && v.code ? v : null; } catch (e) { return null; }
+  }
+  function zetVakman(v) {
+    try { if (v) localStorage.setItem(VAKMAN, JSON.stringify(v)); else localStorage.removeItem(VAKMAN); } catch (e) {}
+    toonVakman();
+  }
+  function vakmanAan(code) {
+    code = String(code || "").trim().toLowerCase();
+    if (!code) return Promise.reject(new Error("Vul je vakmancode in."));
+    return api("GET", "/horren/vakman/" + encodeURIComponent(code)).then(function (d) {
+      zetVakman({ code: code, naam: d.naam });
+      toast("Vakman-modus staat aan: " + d.naam);
+      return d;
+    });
+  }
+  function toonVakman() {
+    var v = leesVakman();
+    var balk = $(".vakbalk");
+    if (v && !balk) {
+      balk = el("div", "vakbalk");
+      balk.appendChild(el("span", "vakbalk-tekst"));
+      var stop = el("button", "linkje", "Stoppen");
+      stop.type = "button";
+      stop.addEventListener("click", function () { zetVakman(null); toast("Vakman-modus staat uit"); });
+      balk.appendChild(stop);
+      var kop = $(".kop");
+      if (kop) kop.parentNode.insertBefore(balk, kop);
+    }
+    if (balk && !v) balk.parentNode.removeChild(balk);
+    if (v && $(".vakbalk-tekst")) $(".vakbalk-tekst").textContent = "Vakman-modus: " + v.naam + ". Je zet horren klaar voor een klant.";
+    document.querySelectorAll(".vak-klaarzetten, .vak-zelf").forEach(function (e) { e.hidden = !v; });
+    document.querySelectorAll(".mand-afrekenen, .mand-delen").forEach(function (e) { e.hidden = !!v; });
+    var status = $("#vakcode-status");
+    if (status) status.textContent = v ? "De vakman-modus staat aan als " + v.naam + "." : "";
+  }
+
+  // Een link met ?vakman=CODE zet de vakman-modus aan (handig als bladwijzer).
+  var zoek = new URLSearchParams(location.search);
+  if (zoek.get("vakman")) {
+    vakmanAan(zoek.get("vakman")).catch(function (e) { toast(e.message); });
+    zoek.delete("vakman");
+    var rest = zoek.toString();
+    history.replaceState(null, "", location.pathname + (rest ? "?" + rest : "") + location.hash);
+  }
+
+  var codeForm = $("#vakcode-form");
+  if (codeForm) codeForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var knop = codeForm.querySelector("button");
+    knop.disabled = true;
+    vakmanAan($("#vakcode").value).then(function () { location.href = "/bestellen"; })
+      .catch(function (f) { toast(f.message); knop.disabled = false; });
+  });
+
+  // Een Nederlands mobiel nummer in de vorm die WhatsApp wil: 31612345678.
+  function waNummer(t) {
+    var c = String(t || "").replace(/[^0-9+]/g, "");
+    if (c.charAt(0) === "+") c = c.slice(1);
+    if (c.slice(0, 2) === "00") c = c.slice(2);
+    if (c.charAt(0) === "0") c = "31" + c.slice(1);
+    return /^31[1-9][0-9]{8}$/.test(c) ? c : "";
+  }
+
+  var klaarLade = $("#klaarzetten"), klaarLaag = $("#klaar-laag"), klaarKnop = $(".vak-klaarzetten");
+  function klaarFouten(lijst) {
+    var ul = $("#klaar-fouten");
+    ul.textContent = "";
+    lijst.forEach(function (f) { ul.appendChild(el("li", "", f)); });
+    ul.hidden = !lijst.length;
+  }
+  if (klaarKnop && klaarLade) {
+    klaarKnop.addEventListener("click", function () { openLade(klaarLade, klaarLaag); });
+    $("#klaar-sluit").addEventListener("click", sluitLade);
+    klaarLaag.addEventListener("click", sluitLade);
+    $("#klaar-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var v = leesVakman();
+      if (!v) { klaarFouten(["Zet eerst de vakman-modus aan."]); return; }
+      var klant = {};
+      ["naam", "telefoon", "email", "straat", "postcode", "plaats"].forEach(function (veld) { klant[veld] = $("#k-" + veld).value.trim(); });
+      var knop = $("#klaar-knop");
+      knop.disabled = true;
+      knop.textContent = "Even geduld…";
+      klaarFouten([]);
+      api("POST", "/horren/klaarzetten", { vakman: v.code, regels: leesMand().regels, klant: klant, mail_klant: $("#k-mail").checked })
+        .then(function (r) {
+          var tekst = "Hallo " + klant.naam.split(" ")[0] + ", hier zijn je horren, zoals ze bij je zijn opgemeten. " +
+            "Kijk je adres na en bestel ze met iDEAL: " + r.link;
+          $("#klaar-whatsapp").href = "https://wa.me/" + waNummer(klant.telefoon) + "?text=" + encodeURIComponent(tekst);
+          $("#klaar-kopieer").dataset.link = r.link;
+          $("#klaar-open").href = r.link;
+          $("#klaar-open").textContent = r.link.replace(/^https?:\/\//, "");
+          $("#klaar-kop").textContent = "De horren van " + klant.naam + " staan klaar";
+          $("#klaar-zin").textContent = "Stuur de link naar je klant." +
+            (r.gemaild ? " Er is ook een mail naar " + klant.email + " gestuurd." : "") + " De link blijft 30 dagen geldig.";
+          $("#klaar-form").hidden = true;
+          $("#klaar-klaar").hidden = false;
+        })
+        .catch(function (f) { klaarFouten(f.data && f.data.fouten ? f.data.fouten : [f.message]); })
+        .then(function () { knop.disabled = false; knop.textContent = "Link maken"; });
+    });
+    $("#klaar-kopieer").addEventListener("click", function () {
+      var link = $("#klaar-kopieer").dataset.link;
+      (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(function () { toast("Link gekopieerd"); }, function () { prompt("Kopieer de link:", link); });
+    });
+    $("#klaar-nieuw").addEventListener("click", function () {
+      leegMand();
+      $("#klaar-form").reset();
+      $("#klaar-form").hidden = false;
+      $("#klaar-klaar").hidden = true;
+      sluitLade();
+      if (location.pathname.replace(/\/$/, "") !== "/bestellen") location.href = "/bestellen";
+    });
+  }
+
   tekenMand();
+  toonVakman();
   leesDeelLink();
   window.addEventListener("hashchange", leesDeelLink);
 })();

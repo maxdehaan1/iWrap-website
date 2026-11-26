@@ -1,11 +1,12 @@
 # kozijnhorren.nl
 
-Horren in de kleur van je kozijn. Een eigen webwinkel met een eigen uiterlijk, maar
-geen geheim dat iWrap erachter zit: dat is juist het vertrouwen dat een nieuwe winkel
-nodig heeft. "Over ons" en de veelgestelde vragen noemen iWrap met het reviewcijfer
-(`{{iwrap.reviews}}`, uit `reviews.json` in de repo-root), en de footer linkt naar
-iwrap.nl. De samenhang met iwrap.nl staat in de README in de repo-root, onder "Hoe alles
-samenhangt".
+Horren in de kleur van je kozijn. Een losse webwinkel met een eigen uiterlijk. Dat iWrap
+erachter zit is geen geheim, maar het staat niet op de voorkant (Max, 26 november 2026: "op
+de achtergrond mag best een link zijn ... het hoeft niet schreeuwerig op de voorkant").
+Alleen "Over ons", de veelgestelde vragen en de regel met de handelsnaam onderaan elke
+pagina noemen iWrap; "Over ons" en de veelgestelde vragen met het reviewcijfer
+(`{{iwrap.reviews}}`, uit `reviews.json` in de repo-root). De samenhang met iwrap.nl staat
+in de README in de repo-root, onder "Hoe alles samenhangt".
 
 Waar de horren vandaan komen, welke hor we verkopen en waarom: zie
 [LEVERANCIERS.md](LEVERANCIERS.md).
@@ -20,17 +21,41 @@ Waar de horren vandaan komen, welke hor we verkopen en waarom: zie
 - **Pasgarantie.** Past een hor niet terwijl er volgens de meetinstructie gemeten is,
   dan maken we een nieuwe. Staat in `backend/data/horren.json` onder `pasgarantie`.
 
-Of de klant zelf meet of Max dat bij de klant doet, maakt niet uit: het is dezelfde
-winkel. Max kan de winkelmand vullen en hem via **"Bestelling bewaren of doorsturen"**
-als link naar de klant sturen; die rekent dan zelf af.
+## Twee routes, één kassa
+
+1. **De klant bestelt zelf.** Meten, kiezen, betalen met iDEAL. Na de betaling gaat de
+   bestelling naar de leverancier, die rechtstreeks bij de klant bezorgt.
+2. **Een vakman meet bij de klant** (Max bij een iWrap-klus, of een ander kozijnbedrijf).
+   Het moment: na het herstel zit de oude hor te strak in het vernieuwde kozijn, of hij
+   past er niet meer bij. De vakman zet de winkel op zijn telefoon in **vakman-modus**
+   (`/vakmensen` of `?vakman=<code>`), zet de horren in de winkelmand en kiest
+   **"Klaarzetten voor je klant"**. De klant krijgt een link (WhatsApp of mail), ziet de
+   horren met zijn gegevens al ingevuld, en betaalt. Hij hoeft niet aan te vinken dat hij
+   zelf gemeten heeft: de bestelling onthoudt wie er gemeten heeft (`vakman`). Na drie
+   dagen zonder betaling krijgt de klant één herinnering; na dertig dagen vervalt de link.
+   De codes staan in de omgevingsvariabele `VAKMANNEN` (zie `../LIVEGANG.md`), lokaal werkt
+   `test`.
+
+"Bestelling bewaren of doorsturen" in de winkelmand blijft bestaan voor iedereen zonder
+code: een link met de hele winkelmand erin, zonder dat er iets op de server staat.
+
+## De leverancier doet de rest
+
+In elke bestelmail aan de leverancier staat een **eigen link** (`/leverancier?nr=…&t=…`,
+afgeleid van `GEHEIM`) en een CSV met de regels. Op die pagina zet de leverancier de
+bestelling op "in productie" en later op "verzonden", met de track & trace; de klant krijgt
+dan vanzelf de mail dat zijn horren onderweg zijn. Bevestigt de leverancier niet binnen drie
+dagen, of is er na de verwachte levertijd niets verzonden, dan krijgt Max één seintje. Met
+`LEVERANCIER_AUTOMATISCH=ja` gaat elke betaalde bestelling vanzelf naar de leverancier; dan
+hoeft Max er niets meer voor te doen.
 
 ## Hoe het samenhangt met iwrap.nl
 
 Staan de horren in het opleverrapport van iWrap op oranje of rood, dan staat daar een
 tip met een link naar `kozijnhorren.nl/bestellen?kleur=<RAL>`: de kleur die bij de folie
 hoort staat dan al klaar (en is het geen standaardkleur, dan de Luxe). De klant vult zelf
-de maten in. Andersom wijst "Over ons" de klant met een verweerd of verkleurd kozijn naar
-de offerte op iwrap.nl, en noemt het formulier daar bij een kleurwissel kozijnhorren.nl.
+de maten in, of Max meet ter plekke en zet de horren klaar (vakman-modus, hierboven).
+Andersom wijst "Over ons" de klant met een verweerd kozijn naar iwrap.nl.
 
 Technisch is de winkel een **statische site** (deze map). Rekenen, betalen, bestellingen
 en mails zitten in de achterkant van iwrap.nl (`backend/` in de repo-root), die de winkel
@@ -40,10 +65,14 @@ iwrap.nl, onder "Kozijnhorren".
 ```
 /bestellen  uitvoering, kleur, maat, aantal  ->  winkelmand (zijlade, in de browser)
      |                                             |-> "bewaren of doorsturen" (link)
+     |                                             |-> vakman: "klaarzetten" -> link naar de klant
      v
 /afrekenen  adres, 2 vinkjes  ->  kassa rekent de prijs opnieuw  ->  Mollie (iDEAL)
+     |      (?klaar=<code>: horren en adres staan klaar, geen vinkje "gemeten")
      v
 /bestelling  bedankt + status        mails: bevestiging, onderweg, "past alles?"
+     v
+leverancier  bestelmail + CSV + /leverancier: bevestigd, verzonden (track & trace)
 ```
 
 ## Bewerken en bouwen
@@ -59,8 +88,9 @@ de hand. `js/catalogus.js` wordt ook gegenereerd, uit `backend/data/`.
 Plaatshouders in de bron: `{{prijs.vanaf}}`, `{{prijs.luxe_vanaf}}`, `{{levertijd}}`,
 `{{pasgarantie.dagen}}`, `{{maat.*}}`, `{{prijstabel.basis}}`, `{{prijstabel.luxe}}`,
 `{{prijsvoorbeelden}}`, `{{kleuren}}`, `{{folietabel}}`, `{{usp}}`, `{{svg.hor:<id>}}`,
-`{{svg.raam:<id>}}`, `{{icoon.<naam>}}`, `{{whatsapp}}`, `{{winkel.<veld>}}`,
-`{{iwrap.reviews}}`. Een onbekende
+`{{svg.raam:<id>}}`, `{{icoon.<naam>}}`, `{{whatsapp}}`, `{{whatsapp.meetcheck}}`,
+`{{whatsapp.twijfel}}`, `{{whatsapp.vakman}}`, `{{winkel.<veld>}}`, `{{iwrap.reviews}}`,
+`{{iwrap.jaren}}`. Een onbekende
 plaatshouder laat de build stoppen.
 
 ## Stijl

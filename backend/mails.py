@@ -172,6 +172,8 @@ def bevestiging(b, statuslink):
         _p("<b>Bezorgadres</b><br>%s" % _adres_html(k)),
         _p("<b>Verwachte levering</b><br>%s. Zodra de horren onderweg zijn, krijg je een mail." % escape(lt)),
     ]
+    if b.get("vakman"):
+        delen.append(_p("Opgemeten door %s." % escape(b["vakman"]["naam"])))
     if b.get("pasgarantie"):
         delen.append(_p(_pasgarantie_zin()))
     delen += [
@@ -192,8 +194,9 @@ def voor_max(b, beheerlink):
     k = b["klant"]
     stap = ("Staat automatisch door naar %s." % cfg.LEVERANCIER_NAAM if cfg.LEVERANCIER_AUTOMATISCH
             else "Controleer hem en druk in de Max-modus op 'Naar leverancier'.")
+    via = (" Opgemeten en klaargezet door %s." % escape(b["vakman"]["naam"])) if b.get("vakman") else ""
     delen = [
-        _p("Nieuwe betaalde bestelling. %s" % escape(stap)),
+        _p("Nieuwe betaalde bestelling. %s%s" % (escape(stap), via)),
         _regels_html(b),
         _p("<b>Klant</b><br>%s<br>%s<br>%s" % (_adres_html(k), escape(k.get("email", "")), escape(k.get("telefoon", "")))),
         _knop(beheerlink, "Open in de Max-modus", KH_ORANJE),
@@ -229,12 +232,90 @@ def leverancier_tekst(b):
     )
 
 
-def voor_leverancier(b):
+def voor_leverancier(b, link=""):
     tekst = leverancier_tekst(b)
+    uitleg = ""
+    if link:
+        uitleg = (_p("Wil je via deze link laten weten dat je de bestelling hebt ontvangen, en later dat hij "
+                     "verzonden is (met de track &amp; trace)? Dan krijgt de klant vanzelf bericht.")
+                  + _knop(link, "Bestelling bevestigen of verzenden", KH_ORANJE))
+        tekst += "\nBevestigen en verzonden melden: %s\n" % link
     html = _opmaak("Bestelling %s" % b["nr"],
-                   '<pre style="font:14px/1.6 Menlo,Consolas,monospace;white-space:pre-wrap;margin:0">%s</pre>'
-                   % escape(tekst), cfg.WINKEL["naam"], KH_ORANJE)
+                   uitleg + '<pre style="font:14px/1.6 Menlo,Consolas,monospace;white-space:pre-wrap;margin:0">%s</pre>'
+                   % escape(leverancier_tekst(b))
+                   + _p('<span style="color:#666;font-size:14px">De regels staan ook in de bijlage (CSV), '
+                        "voor in je eigen systeem.</span>"),
+                   cfg.WINKEL["naam"], KH_ORANJE)
     return "Bestelling %s, rechtstreeks leveren (%s)" % (b["nr"], b["klant"].get("plaats", "")), html, tekst
+
+
+def leverancier_csv(b):
+    """Dezelfde bestelling als CSV, met puntkomma's zodat Excel hem goed opent."""
+    import csv
+    import io
+    k = b["klant"]
+    uit = io.StringIO()
+    w = csv.writer(uit, delimiter=";", lineterminator="\r\n")
+    w.writerow(["bestelling", "regel", "aantal", "product", "uitvoering", "breedte_mm", "hoogte_mm", "maat",
+                "ral", "kleur", "gaas", "middenregel", "referentie", "leveren_aan", "straat", "postcode", "plaats",
+                "telefoon", "leveren_vanaf"])
+    vanaf = b["levertijd"]["van"] if (b.get("levertijd") or {}).get("voorjaar") else ""
+    for i, r in enumerate(b["regels"], 1):
+        w.writerow([b["nr"], i, r["aantal"], "inklemhor", r["uitvoering"], r["breedte"], r["hoogte"], "dagmaat",
+                    r["kleur"]["code"], r["kleur"]["naam"], r["gaas"], "ja" if r.get("middenregel") else "nee",
+                    "%s-%d%s" % (b["nr"], i, (" " + r["naam"]) if r.get("naam") else ""), k.get("naam", ""),
+                    k.get("straat", ""), k.get("postcode", ""), k.get("plaats", ""), k.get("telefoon", ""), vanaf])
+    return ("\ufeff" + uit.getvalue()).encode("utf-8")
+
+
+def leverancier_stil(b, wat, beheerlink):
+    """Een seintje aan Max: de leverancier bevestigt niet, of de horren zijn te laat."""
+    k = b["klant"]
+    if wat == "onbevestigd":
+        kop = "%s: leverancier heeft nog niet bevestigd" % b["nr"]
+        zin = ("%s heeft de bestelling van %s nog niet bevestigd. Even bellen of de mail goed is aangekomen?"
+               % (escape(cfg.LEVERANCIER_NAAM), escape(k.get("naam", ""))))
+    else:
+        kop = "%s: nog niet verzonden" % b["nr"]
+        zin = ("De horren van %s zouden uiterlijk %s binnen zijn, maar staan nog niet op verzonden. "
+               "Even navragen bij %s?" % (escape(k.get("naam", "")), datum_nl(b["levertijd"]["tot"]),
+                                          escape(cfg.LEVERANCIER_NAAM)))
+    html = _winkelmail(kop, [_p(zin), _regels_html(b), _knop(beheerlink, "Open in de Max-modus", KH_ORANJE)])
+    return kop, html, "%s\n\n%s\n\n%s" % (kop, re.sub(r"<[^>]+>", "", zin), beheerlink)
+
+
+def leverancier_probleem(b, opmerking, beheerlink):
+    kop = "%s: de leverancier meldt iets" % b["nr"]
+    delen = [_p("%s schreef over de bestelling van %s:" % (escape(cfg.LEVERANCIER_NAAM),
+                                                           escape(b["klant"].get("naam", "")))),
+             _p('<i>%s</i>' % escape(opmerking).replace("\n", "<br>")),
+             _knop(beheerlink, "Open in de Max-modus", KH_ORANJE)]
+    return kop, _winkelmail(kop, delen), "%s\n\n%s\n\n%s" % (kop, opmerking, beheerlink)
+
+
+def klaargezet(k, link, berekend, herinnering=False):
+    """Aan de klant: een vakman heeft bij hem gemeten en de horren klaargezet."""
+    klant = k["klant"]
+    vakman = escape(k["vakman"]["naam"])
+    delen = [_p(_aanhef(klant.get("naam")))]
+    if herinnering:
+        delen.append(_p("Je horren staan nog voor je klaar, zoals %s ze bij je heeft opgemeten. "
+                        "Wil je ze nog hebben? Bestellen kan met één klik." % vakman))
+    else:
+        delen.append(_p("%s heeft je ramen opgemeten en de horren voor je klaargezet. Kijk ze rustig na: "
+                        "klopt alles, dan vul je je adres aan en betaal je met iDEAL." % vakman))
+    delen += [
+        _regels_html(berekend),
+        _knop(link, "Bekijken en bestellen", KH_ORANJE),
+        _p("De horren worden op maat gemaakt in de kleur van je kozijn en bij je thuisbezorgd. Erin klikken doe "
+           "je zelf, zonder boren of schroeven. Past er toch een niet, dan maken we een nieuwe."),
+        _p('<span style="color:#666;font-size:14px">Je betaalt pas als je hebt nagekeken. Deze link blijft '
+           "30 dagen geldig.</span>"),
+    ]
+    kop = "Je horren staan nog klaar" if herinnering else "Je horren staan klaar"
+    tekst = "%s\n\n%s heeft je horren klaargezet.\n\n%s\n\nBekijken en bestellen: %s" % (
+        _aanhef(klant.get("naam")), k["vakman"]["naam"], _regels_tekst(berekend), link)
+    return "%s om te bestellen" % kop, _winkelmail(kop, delen), tekst
 
 
 def verzonden(b, statuslink):

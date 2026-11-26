@@ -722,7 +722,8 @@
       h("section.max-kaart", null,
         h("h2", null, b.nr + " · " + euro(b.totaal)),
         h("p.uitleg", null, "Besteld " + datumKort(b.gemaakt) + (b.levertijd ? " · verwacht " + datumKort(b.levertijd.van) + "–" + datumKort(b.levertijd.tot) : "") +
-          (b.levertijd && b.levertijd.voorjaar ? " (voorjaarslevering)" : "")),
+          (b.levertijd && b.levertijd.voorjaar ? " (voorjaarslevering)" : "") +
+          (b.vakman ? " · opgemeten en klaargezet door " + b.vakman.naam : "")),
         h("ul.bestelregels", null, b.regels.map(function (r) {
           return h("li", null, h("span.kleurstaal", { style: "background:" + (r.kleur.hex || "#ccc") }),
             h("span", null, h("b", null, r.aantal + "× " + r.productnaam + (r.naam ? " · " + r.naam : "")), h("br"),
@@ -738,6 +739,11 @@
         h("p", null, h("a", { href: b._statuslink, target: "_blank", rel: "noopener" }, "Statuspagina van de klant"))),
       h("section.max-kaart", null,
         h("h2", null, "Voor de leverancier"),
+        b.leverancier && b.leverancier.bevestigd
+          ? h("p.uitleg", null, "Bevestigd door de leverancier op " + datumKort(b.leverancier.bevestigd) + ".")
+          : (b.status === "besteld" ? h("p.uitleg", null, "De leverancier heeft nog niet bevestigd.") : null),
+        b._leverancierlink ? h("p", null, h("a", { href: b._leverancierlink, target: "_blank", rel: "noopener" },
+          "De pagina van de leverancier"), " (daar zet hij de bestelling op in productie en verzonden)") : null,
         h("p.uitleg", null, "Zo gaat hij de deur uit. Bestel je via een portaal, kopieer het dan hieruit."),
         levTekst,
         h("button.knop.knop-tweede", { type: "button", onclick: function () {

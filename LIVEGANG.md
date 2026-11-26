@@ -264,8 +264,21 @@ Dit hangt af van een leverancier en echte prijzen. Gaat de winkel later, sla dit
 iwrap.nl noemt kozijnhorren.nl pas als `KOZIJNHORREN_LIVE` in `build.py` op `True` staat (sinds 18 november
 nergens, want het domein is nog vrij). Zet die schakelaar om zodra de winkel werkt, en bouw opnieuw.
 
-- [ ] **[Max]** Leverancier kiezen. Daarna `LEVERANCIER_NAAM` en `LEVERANCIER_EMAIL` in
-      Vercel (iwrap-website), met `LEVERANCIER_AUTOMATISCH` op `nee`.
+- [ ] **[Max]** Leverancier kiezen (de mails aan zes makers staan sinds 26 november als concept
+      in je Outlook; het overzicht staat in `kozijnhorren/LEVERANCIERS.md`). Daarna
+      `LEVERANCIER_NAAM` en `LEVERANCIER_EMAIL` in Vercel (iwrap-website), met
+      `LEVERANCIER_AUTOMATISCH` op `nee`. Gaan de eerste bestellingen goed, zet hem dan op `ja`:
+      dan gaat elke betaalde bestelling vanzelf naar de leverancier, en hoef je er niets meer
+      voor te doen.
+- [ ] **[Max] `GEHEIM` moet er staan** (stap 2). Zonder `GEHEIM` krijgt de leverancier geen
+      eigen link in de bestelmail, en kan hij een bestelling niet zelf bevestigen of op
+      verzonden zetten.
+- [ ] **[Max] `VAKMANNEN`** in Vercel (iwrap-website), voor de vakman-modus van de winkel
+      (horren opmeten en klaarzetten bij een klant). Vorm: `code=Naam`, meerdere gescheiden door
+      een puntkomma, bijvoorbeeld `iwrap-x7k2p9=iWrap;bot-k4m8q2=Bot Ramen & Deuren`. De code
+      is het wachtwoord van die vakman: lang en onraadbaar, en nooit in de repo. Je eigen code
+      zet je daarna op je telefoon met `kozijnhorren.nl/?vakman=<jouw code>`. Lokaal werkt de
+      code `test`.
 - [ ] **[Max + Claude] Echte inkoopprijzen.** Die komen nooit in de repo (die is openbaar);
       Claude rekent ze om met `prijslijst.py` en zet `voorbeeldprijzen` op `false`.
 - [ ] **[Max] Mollie:** account met KvK, eerst `MOLLIE_API_KEY` met de `test_`-sleutel,
@@ -347,4 +360,4 @@ af van de overstapdag.
 
 ---
 
-*Bijgehouden door Claude. Laatst bijgewerkt: 17 november 2026 (audit: Bedrijfsprofiel op het nieuwe adres, SPF opruimen na de hosting, DMARC-rapporten).*
+*Bijgehouden door Claude. Laatst bijgewerkt: 26 november 2026 (kozijnhorren.nl: vakman-modus met `VAKMANNEN`, de leverancierslink die `GEHEIM` nodig heeft, `LEVERANCIER_AUTOMATISCH` op ja na de eerste bestellingen).*

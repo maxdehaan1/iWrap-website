@@ -1,8 +1,47 @@
 # Welke hor, en waar koop je hem in?
 
-Onderzocht op 29 en 30 september 2026, voor kozijnhorren.nl. Alles hieronder komt van de websites van de leveranciers zelf en van
-webwinkels die hun horren verkopen; wat ze dealers precies rekenen staat nergens
-openbaar. Dat moet je dus vragen, met de vragenlijst onderaan.
+Eerste onderzoek op 29 en 30 september 2026, aangevuld op 26 november 2026 (de stand
+hieronder). Alles komt van de websites van de makers zelf en van webwinkels die hun horren
+verkopen; wat ze dealers rekenen staat nergens openbaar. Dat staat in de mails.
+
+## Stand 26 november 2026: zo werkt de markt, en wie er gemaild is
+
+**Een groothandel in kant-en-klare maathorren bestaat nauwelijks**, omdat elke hor maatwerk
+is. De bron waar webwinkels zonder eigen werkplaats inkopen, is de laag van de
+**horrenmakers**: bedrijven die horren op maat zagen, poedercoaten en in elkaar zetten, en die
+alleen of vooral aan de vakhandel leveren. Daaronder zitten de onderdelengroothandels
+(profielen, gaas, clips per lengte, zoals Dalupo in Teuge), daarboven de dealers en de
+webwinkels. Weru Nederland regelt geen horren: elke Weru-vestiging koopt zelf in (Max,
+26 november 2026).
+
+Max' eisen: alleen raamhorren voor kunststof draaikiepramen (geen hordeuren, plissés of
+rolhorren); **geen schade aan het net gefolieerde kozijn** (geen boren, schroeven of tape,
+liefst kunststof veren of een borstel waar de hor het kozijn raakt, en niet te strak);
+rechtstreeks bij de klant bezorgd, neutraal verpakt; een scherpe inkoopprijs.
+
+**Op 26 november staan er zes persoonlijke mails als concept in Max' Outlook** (info@iwrap.nl),
+elk met de vragen die bij die maker horen:
+
+| Maker | Waar | Wat past bij ons | Levert bij de klant | Gemaild aan |
+|---|---|---|---|---|
+| Horren Industrie Nederland | Lienden | Inklemhor met veerclips (kunststof of RVS, per kozijn), altijd met borstel, 200 tot 2500 mm; 9 standaardkleuren en afwijkende RAL; ClearView-gaas. Alleen B2B, orderportaal. 2 jaar garantie | Ja: "bij jou of direct bij je klant"; neutrale verpakking en handleidingen (Z&R, 2019) | sales@horrenindustrie.nl |
+| KeJe | Dronten | Inzethor met **kunststof veren** (zelf: stalen veren "kunnen beschadigingen aan het kozijn veroorzaken"), flens 0,8 mm, 13 standaardkleuren, transparant gaas. Alleen via dealers | KeJe bezorgt zelf bij de klant thuis | info@keje.nl |
+| Unilux | Boxtel | Inklemhor (IKH): veerclips, 250 tot 1800 mm breed; flens tussen draaideel en kozijn ("nastellen kan nodig zijn"), ook een Softfit-versie. 5 jaar op de constructie. Premium | Eigen webwinkel bezorgt aan huis; voor dealers onbekend | klantenservice@unilux.nl (met verzoek door te sturen; dealerformulier staat op de site) |
+| Interhor | Linne | Bij kunststof altijd een horprofiel **met borstel rondom**, geen standaard inzethorprofiel; Transpatec (bijna onzichtbaar) | Onbekend; alleen vakhandel | info@interhor.nl |
+| HFT Horren | Hengelo | Inzethorren 19 tot 43 mm, flens 0,7 mm, veel voorraadkleuren; klemt met RVS-klemmen (gevraagd naar kunststof). Eigen bezorgdienst door heel Nederland | Eigen bezorgdienst; voor ons gevraagd | verkoop@hfthorren.nl |
+| Rol Techniek Benelux | Burdaard | Inzethor, eigen productie; dealerprogramma met partnerportaal, samples en prijslijsten | Onbekend | info@roltechniek.com |
+
+Bewust niet gemaild: **Horrentotaal / PRO Horren** (ook concurrent met een eigen webwinkel,
+en klachten over het bedrijf erachter op het Radar-forum), **Grandeur** (geen contactgegevens
+op de eigen site; hun inzethor PE-100 verkopen Horren.com en Raama), **Insetto** (Duitse
+webwinkel voor consumenten), **FrameBlinds/inzethor.nl** (klemt met stalen veertjes) en
+**Luxaflex** (dealernet met zware eisen).
+
+**Advies:** begin bij Horren Industrie Nederland (precies onze inklemhor, borstel, direct bij
+de klant, neutraal) en KeJe (kunststof veren, bezorgt zelf). Vraag bij de twee die het best
+antwoorden een proefhor in antraciet, en plaats die op een iWrap-klus op een net gefolieerd
+kozijn. Kijk dan naar: pasvorm, of er iets over de folie schuurt bij plaatsen en uitnemen,
+en hoe hij oogt. Pas daarna `maatgrenzen` en de meetinstructie aan op die maker.
 
 ## Welke hor verkopen we: de inklemhor die ín de opening klemt
 
@@ -74,7 +113,7 @@ twee routes:
 Vraag in de eerste week alle drie een prijslijst op (Unilux, Interhor, en KeJe of
 Horrentotaal), en reken met `prijslijst.py` beide routes door.
 
-## De kandidaten
+## De kandidaten (eerste onderzoek, 30 september)
 
 ### KeJe (Dronten), voor de middenroute
 - Nederlandse fabrikant, meer dan 30 jaar, alles in eigen huis op maat gemaakt.
@@ -157,7 +196,7 @@ maximaal 19 mm uitsteek, 13 mm vlakke aanslag. Zet ze op de waarden van je gekoz
 leverancier zodra je die hebt. Ook de meetinstructie (welke maat, wat er wel of niet
 af moet) moet je gelijktrekken met die van de leverancier.
 
-## De vragenlijst
+## De vragenlijst (eerste versie; de mails van 26 november gebruiken een korte versie per maker)
 
 Uit het productplan, aangevuld met wat het onderzoek opleverde. Stuur hem naar KeJe
 en Horrentotaal, en naar Unilux als je premium overweegt.
@@ -207,6 +246,18 @@ Factuur naar: info@iwrap.nl (iWrap VOF)
 ```
 
 ## Bronnen
+
+Aanvulling 26 november 2026:
+
+- [Horren Industrie Nederland: over ons](https://horrenindustrie.nl/over-horren-industrie-nederland), [inklemhor](https://horrenindustrie.nl/inzethorren/inklemhor), [inzethorren](https://horrenindustrie.nl/inzethorren), [dealer worden](https://horrenindustrie.nl/dealer-worden), [contact](https://horrenindustrie.nl/contactformulier), [Z&R, 2019](https://www.zenronline.nl/artikel/horren-industrie-nederland-is-een-speler-van-formaat/)
+- [KeJe: inzethor](https://www.keje.nl/keje-inzethor), [klemhor](https://www.keje.nl/keje-klemhor), [dealer worden](https://www.keje.nl/dealer-worden), [officiële informatie](https://www.keje.nl/llm-info)
+- [Unilux: inklemhor](https://www.unilux.nl/product/inklemhor-ikh/), [dealer worden](https://www.unilux.nl/dealer-worden/), [contact](https://www.unilux.nl/contact/), [verzending](https://www.unilux.nl/verzending-levering/)
+- [Interhor](https://www.interhor.nl/), [voor kunststof kozijnproducenten](https://www.interhor.nl/voor-wie/kunststof-kozijnproducenten/), [gaassoorten](https://www.interhor.nl/gaassoorten/)
+- [HFT Horren: inzethorren](https://www.hfthorren.nl/raamhorren/inzethorren/), [contact](https://www.hfthorren.nl/contact/)
+- [Rol Techniek Benelux: horren](https://roltechniek.com/zakelijk/producten/horren/), [dealer worden](https://roltechniek.com/dealer-worden/)
+- [Grandeur Horren](https://www.grandeurhorren.nl/), [FrameBlinds inzethor](https://frameblinds.nl/producten/frameblinds-inzethor), [Insetto](https://www.insetto.eu/nl/Horren-op-maat/Raamhorren/Systemen-voor-ramen/Overzicht-van-horren-voor-ramen/)
+
+Eerste onderzoek, 30 september 2026:
 
 - [KeJe: dealer worden](https://www.keje.nl/dealer-worden) en [KeJe via QNIQ](https://www.qniq.nl/keje.php)
 - [KeJe klemhor: maten en meetinstructie (mijnraamdeco.nl)](https://www.mijnraamdeco.nl/product/keje-klemhor-draaikiepraam/)

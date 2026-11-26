@@ -6,6 +6,11 @@ Openbaar (ook vanuit de winkel op een ander domein):
   POST /api/horren/bestellingen           bestelling aanmaken, betaling starten
   GET  /api/horren/bestellingen/<nr>?t=   status voor de klant
   POST /api/horren/betaling-webhook       Mollie meldt een betaling
+  GET  /api/horren/vakman/<code>          bestaat deze vakmancode? (vakman-modus)
+  POST /api/horren/klaarzetten            een vakman zet horren klaar voor zijn klant
+  GET  /api/horren/klaargezet/<code>      wat er klaarstaat (de klant opent zijn link)
+  GET  /api/horren/leverancier/<nr>?t=    de bestelling voor de leverancier
+  POST /api/horren/leverancier/<nr>       leverancier: bevestigd, verzonden of probleem
   GET  /api/horren/testkassa/<nr>?t=      nepkassa, alleen zonder Mollie-sleutel
   GET  /api/rapporten/<id>                het rapport voor de klant
   GET  /api/fotos/<id>                    een foto uit een rapport
@@ -145,6 +150,62 @@ def bestelling_maken(v):
     return antwoord({"nr": b["nr"], "token": b["token"], "betaal_url": url}, 201)
 
 
+@route("GET", r"/api/horren/vakman/(?P<code>[A-Za-z0-9-]{1,60})")
+def vakman_controleren(v, code):
+    # De code is het wachtwoord van de vakman: raden kost hier veel pogingen.
+    if opslag().teller_met_ttl("vakcode:" + v.ip, 3600) > 20:
+        raise Probleem(429, "Te veel pogingen. Probeer het over een uur opnieuw.")
+    w = bestellingen.vakman(code)
+    if not w:
+        raise Probleem(404, "Deze code kennen we niet. Kijk of hij goed is overgenomen.")
+    return antwoord({"naam": w["naam"]})
+
+
+@route("POST", "/api/horren/klaarzetten")
+def klaarzetten(v):
+    if opslag().teller_met_ttl("klaarzetten:" + v.ip, 3600) > 60:
+        raise Probleem(429, "Te veel bestellingen klaargezet. Probeer het over een uur opnieuw.")
+    try:
+        k = bestellingen.zet_klaar(v.json())
+    except bestellingen.Afgewezen as e:
+        raise Probleem(422, e.meldingen[0], {"fouten": e.meldingen})
+    return antwoord({"code": k["code"], "link": bestellingen.klaarlink(k),
+                     "gemaild": bool(k["mails"].get("klaargezet"))}, 201)
+
+
+@route("GET", r"/api/horren/klaargezet/(?P<code>[a-z0-9]{1,20})")
+def klaargezet_bekijken(v, code):
+    if opslag().teller_met_ttl("klaarlink:" + v.ip, 3600) > 120:
+        raise Probleem(429, "Te veel pogingen. Probeer het over een uur opnieuw.")
+    k = bestellingen.haal_klaar(code)
+    if not k:
+        raise Probleem(404, "Deze link werkt niet (meer).")
+    return antwoord(bestellingen.publiek_klaar(k))
+
+
+def _voor_leverancier(nr, token):
+    b = bestellingen.haal(nr)
+    if not b or not bestellingen.leverancier_mag(b, token):
+        raise Probleem(404, "Deze bestelling kennen we niet.")
+    return b
+
+
+@route("GET", r"/api/horren/leverancier/(?P<nr>[A-Z0-9-]+)")
+def leverancier_bekijken(v, nr):
+    return antwoord(bestellingen.voor_leverancier_publiek(_voor_leverancier(nr, v.query.get("t"))))
+
+
+@route("POST", r"/api/horren/leverancier/(?P<nr>[A-Z0-9-]+)")
+def leverancier_bijwerken(v, nr):
+    invoer = v.json()
+    b = _voor_leverancier(nr, invoer.get("t"))
+    try:
+        b = bestellingen.leverancier_actie(b, invoer.get("actie"), invoer)
+    except bestellingen.Afgewezen as e:
+        raise Probleem(422, e.meldingen[0], {"fouten": e.meldingen})
+    return antwoord(bestellingen.voor_leverancier_publiek(b))
+
+
 def _bestelling_met_token(nr, token):
     b = bestellingen.haal(nr)
     if not b or not token or not hmac.compare_digest(str(token), str(b.get("token") or "")):
@@ -178,6 +239,12 @@ def webhook(v):
 def testkassa(v, nr):
     _alleen_testkassa()
     b = _bestelling_met_token(nr, v.query.get("t"))
+    # Gewone links in plaats van een formulier: de Content-Security-Policy
+    # (form-action 'self') houdt een formulier tegen dat doorstuurt naar de winkel
+    # op een ander adres; een link niet.
+    if v.query.get("uitkomst") in ("paid", "canceled"):
+        bestellingen.verwerk_betaling(b, v.query["uitkomst"], "testkassa")
+        return doorsturen(bestellingen.statuslink(b))
     t = escape(b["token"], True)
     return html_antwoord(
         "<!doctype html><meta charset=utf-8><meta name=viewport content='width=device-width'>"
@@ -185,12 +252,11 @@ def testkassa(v, nr):
         "<p style='font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#a8523a'>Testkassa, geen echt geld</p>"
         "<h1 style='font-size:24px'>Bestelling %s: %s</h1>"
         "<p>Hier zou Mollie de iDEAL-betaling doen. Kies wat er gebeurt:</p>"
-        "<form method=post><input type=hidden name=t value='%s'>"
-        "<button name=uitkomst value=paid style='font-size:17px;padding:14px 22px;border-radius:99px;border:0;"
-        "background:#22262a;color:#fff;margin:0 10px 10px 0'>Betaling gelukt</button>"
-        "<button name=uitkomst value=canceled style='font-size:17px;padding:14px 22px;border-radius:99px;"
-        "border:1px solid #ccc;background:#fff'>Afgebroken</button></form></body>"
-        % (escape(b["nr"]), horren.euro(b["totaal"]), t))
+        "<p><a href='?t=%s&amp;uitkomst=paid' style='display:inline-block;font-size:17px;padding:14px 22px;"
+        "border-radius:99px;background:#22262a;color:#fff;text-decoration:none;margin:0 10px 10px 0'>Betaling gelukt</a>"
+        "<a href='?t=%s&amp;uitkomst=canceled' style='display:inline-block;font-size:17px;padding:14px 22px;"
+        "border-radius:99px;border:1px solid #ccc;color:#22262a;text-decoration:none'>Afgebroken</a></p></body>"
+        % (escape(b["nr"]), horren.euro(b["totaal"]), t, t))
 
 
 @route("POST", r"/api/horren/testkassa/(?P<nr>[A-Z0-9-]+)")
@@ -463,7 +529,8 @@ def bestellingen_lijst(v):
         if b:
             uit.append({"nr": b["nr"], "status": b["status"], "gemaakt": b["gemaakt"], "totaal": b["totaal"],
                         "naam": b["klant"].get("naam"), "plaats": b["klant"].get("plaats"),
-                        "horren": sum(r["aantal"] for r in b["regels"])})
+                        "horren": sum(r["aantal"] for r in b["regels"]),
+                        "vakman": (b.get("vakman") or {}).get("naam")})
     return antwoord({"bestellingen": uit})
 
 
@@ -475,6 +542,7 @@ def bestelling_max(v, nr):
     bestellingen.ververs_betaling(b)
     b["_leverancier_tekst"] = mails.leverancier_tekst(b)
     b["_statuslink"] = bestellingen.statuslink(b)
+    b["_leverancierlink"] = bestellingen.leverancierlink(b)
     return antwoord(b)
 
 
@@ -490,6 +558,7 @@ def bestelling_actie(v, nr):
         raise Probleem(422, e.meldingen[0], {"fouten": e.meldingen})
     b["_leverancier_tekst"] = mails.leverancier_tekst(b)
     b["_statuslink"] = bestellingen.statuslink(b)
+    b["_leverancierlink"] = bestellingen.leverancierlink(b)
     return antwoord(b)
 
 

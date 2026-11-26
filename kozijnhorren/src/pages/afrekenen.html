@@ -10,8 +10,17 @@
 <div class="breed">
   <div class="afreken">
     <form id="afrekenen" novalidate>
-      <p class="kruimels"><a href="/bestellen">Terug naar bestellen</a></p>
-      <h1>Afrekenen</h1>
+      <p class="kruimels" id="terug"><a href="/bestellen">Terug naar bestellen</a></p>
+      <h1 id="kop">Afrekenen</h1>
+      <div class="klaar-banner" id="klaar-banner" hidden>
+        <p class="opschrift">Je horren staan klaar</p>
+        <p><b id="klaar-door"></b> heeft je ramen opgemeten en de horren voor je klaargezet. Kijk ze na, vul je
+        adres aan en betaal met iDEAL. Daarna worden ze op maat gemaakt en bij je thuisbezorgd.</p>
+      </div>
+      <div class="klaar-stop" id="klaar-stop" hidden>
+        <p id="klaar-stop-tekst"></p>
+        <p><a class="knop knop-oranje" href="{{whatsapp}}">Stuur ons een WhatsApp</a></p>
+      </div>
       <ul class="foutlijst" id="fouten" hidden></ul>
 
       <h2>Waar bezorgen we je horren?</h2>
@@ -36,7 +45,8 @@
       </div>
 
       <div class="akkoord">
-        <label><input type="checkbox" id="gemeten"><span>Ik heb gemeten zoals in de <a href="/meetinstructie" target="_blank">meetinstructie</a>. Past een hor toch niet, dan geldt de pasgarantie.</span></label>
+        <label id="gemeten-regel"><input type="checkbox" id="gemeten"><span>Ik heb gemeten zoals in de <a href="/meetinstructie" target="_blank">meetinstructie</a>. Past een hor toch niet, dan geldt de pasgarantie.</span></label>
+        <p class="gemeten-door" id="gemeten-door" hidden></p>
         <label><input type="checkbox" id="voorwaarden"><span>Ik ga akkoord met de <a href="/voorwaarden" target="_blank">voorwaarden</a>. Ik weet dat horren op maat niet retour kunnen.</span></label>
       </div>
 

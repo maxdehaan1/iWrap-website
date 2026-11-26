@@ -8,6 +8,7 @@ dus er staat hier nooit een echte sleutel in.
 
 import json
 import os
+import re
 from pathlib import Path
 
 HIER = Path(__file__).resolve().parent
@@ -88,6 +89,22 @@ LEVERANCIER_EMAIL = env("LEVERANCIER_EMAIL", MAX_EMAIL)
 # Max-modus op "Naar leverancier". Begin met nee tot de eerste twintig goed gaan.
 LEVERANCIER_AUTOMATISCH = env("LEVERANCIER_AUTOMATISCH", "nee").lower() in ("ja", "1", "true", "yes")
 
+# Vakmensen die bij een klant horren mogen opmeten en klaarzetten (kozijnhorren.nl,
+# vakman-modus). In Vercel: VAKMANNEN = "code=Naam;andere-code=Andere naam". De code
+# is het wachtwoord van de vakman, dus maak hem lang en onraadbaar en zet hem nooit
+# in de repo. Lokaal werkt de code "test".
+def _vakmannen(tekst):
+    uit = {}
+    for deel in tekst.split(";"):
+        code, _, naam = deel.partition("=")
+        code = code.strip().lower()
+        if re.fullmatch(r"[a-z0-9-]{4,40}", code) and naam.strip():
+            uit[code] = naam.strip()[:60]
+    return uit
+
+
+VAKMANNEN = _vakmannen(env("VAKMANNEN", "test=Testvakman" if LOKAAL else ""))
+
 CRON_SECRET = env("CRON_SECRET")
 
 # Opslag: Upstash Redis via de Vercel Marketplace. Beide namen komen voor.
@@ -127,6 +144,7 @@ def status():
         "reviews": "google" if GOOGLE_PLACES_API_KEY else "vast",
         "leverancier": LEVERANCIER_NAAM,
         "leverancier_automatisch": LEVERANCIER_AUTOMATISCH,
+        "vakmannen": len(VAKMANNEN),
         "voorbeeldprijzen": lees_data("horren.json").get("voorbeeldprijzen", True),
         "shop_url": SHOP_URL,
     }

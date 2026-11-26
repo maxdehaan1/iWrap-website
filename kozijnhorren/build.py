@@ -67,7 +67,7 @@ FOOTER_KOLOMMEN = [
     ]),
     ("Over", [
         ("over-ons", "Over ons"),
-        ("https://iwrap.nl", "Kozijnen herstellen: iWrap"),
+        ("vakmensen", "Voor vakmensen"),
         ("voorwaarden", "Voorwaarden"),
         ("privacy", "Privacy"),
     ]),
@@ -342,7 +342,9 @@ def render_mand():
   <div class="mand-voet" hidden>
     <div class="mand-totaal"><span>Totaal <small>incl. btw, gratis bezorgd</small></span><b class="mand-bedrag"></b></div>
     <p class="mand-levertijd"></p>
-    <a class="knop knop-oranje knop-vol" href="/afrekenen">Afrekenen</a>
+    <a class="knop knop-oranje knop-vol mand-afrekenen" href="/afrekenen">Afrekenen</a>
+    <button type="button" class="knop knop-oranje knop-vol vak-klaarzetten" hidden>Klaarzetten voor je klant</button>
+    <a class="mand-nog vak-zelf" href="/afrekenen" hidden>Of zelf afrekenen</a>
     <a class="mand-nog" href="/bestellen">+ Nog een raam toevoegen</a>
     <details class="mand-delen">
       <summary>Bestelling bewaren of doorsturen</summary>
@@ -352,6 +354,39 @@ def render_mand():
         <button type="button" class="knop knop-rand knop-klein deel-kopieer">Kopieer link</button>
       </div>
     </details>
+  </div>
+</aside>
+<div class="lade-laag" id="klaar-laag" hidden></div>
+<aside class="lade" id="klaarzetten" aria-hidden="true" aria-label="Klaarzetten voor je klant">
+  <div class="mand-kop"><h2>Klaarzetten voor je klant</h2><button type="button" class="mand-sluit" id="klaar-sluit" aria-label="Sluiten">&times;</button></div>
+  <div class="binnen">
+    <form id="klaar-form" novalidate>
+      <p class="klaar-uitleg">Je klant krijgt een link met deze horren erin. Hij kijkt zijn adres na en betaalt met
+      iDEAL. Daarna worden de horren gemaakt en bij hem thuisbezorgd.</p>
+      <ul class="foutlijst" id="klaar-fouten" hidden></ul>
+      <div class="velden">
+        <div class="veld vol"><label for="k-naam">Naam van je klant</label><input id="k-naam" type="text" autocomplete="off" required></div>
+        <div class="veld vol"><label for="k-telefoon">Mobiel</label><input id="k-telefoon" type="tel" autocomplete="off">
+          <p class="hulp">Dan stuur je de link zo via WhatsApp.</p></div>
+        <div class="veld vol"><label for="k-email">E-mail</label><input id="k-email" type="email" autocomplete="off"></div>
+        <div class="veld vol"><label for="k-straat">Straat en huisnummer <small>(mag leeg)</small></label><input id="k-straat" type="text" autocomplete="off"></div>
+        <div class="veld"><label for="k-postcode">Postcode</label><input id="k-postcode" type="text" maxlength="7" autocomplete="off"></div>
+        <div class="veld"><label for="k-plaats">Plaats</label><input id="k-plaats" type="text" autocomplete="off"></div>
+      </div>
+      <label class="vinkje"><input type="checkbox" id="k-mail" checked><span>Stuur je klant ook een mail met de link</span></label>
+      <button type="submit" class="knop knop-oranje knop-vol" id="klaar-knop">Link maken</button>
+    </form>
+    <div class="klaar-klaar" id="klaar-klaar" hidden>
+      <p class="opschrift">Staat klaar</p>
+      <h3 id="klaar-kop">De horren staan klaar</h3>
+      <p id="klaar-zin"></p>
+      <div class="deel-knoppen">
+        <a class="knop knop-oranje" id="klaar-whatsapp" href="#" target="_blank" rel="noopener">Stuur via WhatsApp</a>
+        <button type="button" class="knop knop-rand" id="klaar-kopieer">Kopieer link</button>
+      </div>
+      <p class="klaar-link"><a id="klaar-open" href="#" target="_blank" rel="noopener"></a></p>
+      <button type="button" class="knop knop-rand knop-vol" id="klaar-nieuw">Volgende klant</button>
+    </div>
   </div>
 </aside>"""
 
@@ -376,7 +411,7 @@ def render_footer():
     {kolommen}
   </div>
   <div class="breed voet-onder">
-    <p>&copy; 2026 {WINKEL['naam']}, een handelsnaam van {WINKEL['juridisch']}, {WINKEL['adres']}{(' &middot; ' + zakelijk) if zakelijk else ''}</p>
+    <p>&copy; 2026 {WINKEL['naam']}, een handelsnaam van <a href="https://iwrap.nl" rel="noopener">{WINKEL['juridisch']}</a>, {WINKEL['adres']}{(' &middot; ' + zakelijk) if zakelijk else ''}</p>
     <p class="betalen"><span class="betaal-label">iDEAL</span><span class="betaal-label">Mollie</span></p>
   </div>
 </footer>"""
@@ -493,6 +528,7 @@ def substitueer(tekst):
         "{{usp}}": render_usp(),
         "{{whatsapp}}": whatsapp(),
         "{{whatsapp.meetcheck}}": whatsapp("Hoi, kunnen jullie mijn maten even controleren? Ik stuur foto's met de rolmaat erbij."),
+        "{{whatsapp.vakman}}": whatsapp("Hoi, ik ben vakman en wil graag horren via kozijnhorren.nl voor mijn klanten klaarzetten. Kan ik een vakmancode krijgen?"),
         "{{whatsapp.twijfel}}": whatsapp("Hoi, ik weet niet zeker of jullie hor op mijn raam past. Ik stuur een foto."),
         "{{basis.gaas}}": BASIS["gaas"],
         "{{luxe.gaas}}": LUXE["gaas"],
@@ -569,7 +605,7 @@ def main():
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         + "\n".join(sorted(regels)) + "\n</urlset>\n", encoding="utf-8")
     (HIER / "robots.txt").write_text(
-        "User-agent: *\nAllow: /\nDisallow: /afrekenen\nDisallow: /bestelling\n\nSitemap: %s/sitemap.xml\n" % SITE,
+        "User-agent: *\nAllow: /\nDisallow: /afrekenen\nDisallow: /bestelling\nDisallow: /leverancier\n\nSitemap: %s/sitemap.xml\n" % SITE,
         encoding="utf-8")
     print("%d pagina's gebouwd voor %s (versie %s)" % (len(paginas), WINKEL["domein"], ver))
 

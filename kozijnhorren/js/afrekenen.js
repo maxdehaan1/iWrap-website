@@ -2,6 +2,10 @@
    Afrekenen. Haalt de prijs op bij de kassa (niet uit de browser), vraagt het
    bezorgadres en twee vinkjes, maakt de bestelling aan en stuurt door naar
    Mollie voor iDEAL.
+
+   Komt de klant via de link van een vakman (/afrekenen?klaar=<code>), dan staan
+   de horren en zijn gegevens al klaar en hoeft hij niet aan te vinken dat hij
+   zelf gemeten heeft: dat deed de vakman.
    --------------------------------------------------------------------------- */
 (function () {
   "use strict";
@@ -9,9 +13,10 @@
   var W = window.Winkel, el = W.el;
   var $ = function (s) { return document.querySelector(s); };
   var KLANT = "kozijnhorren-klant";
+  var klaarCode = new URLSearchParams(location.search).get("klaar");
 
-  var mand = W.leesMand();
-  if (!mand.regels.length) { location.replace("/bestellen"); return; }
+  var mand = klaarCode ? { regels: [] } : W.leesMand();
+  if (!klaarCode && !mand.regels.length) { location.replace("/bestellen"); return; }
 
   // Ingevulde gegevens bewaren voor als de betaling mislukt en je terugkomt.
   var velden = ["naam", "straat", "postcode", "plaats", "email", "telefoon"];
@@ -76,6 +81,44 @@
     if (lijst.length) ul.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
+  // De link van de vakman werkt niet (meer): niets te betalen, wel een uitweg.
+  function klaarStop(tekst) {
+    $("#laden").hidden = true;
+    $("#klaar-stop-tekst").textContent = tekst;
+    $("#klaar-stop").hidden = false;
+    document.querySelectorAll("#afrekenen > :not(#kop):not(#klaar-stop):not(#terug)").forEach(function (e) { e.hidden = true; });
+    $("#terug").hidden = true;
+    $(".samenvatting").hidden = true;
+  }
+
+  function laadKlaargezet() {
+    W.api("GET", "/horren/klaargezet/" + encodeURIComponent(klaarCode)).then(function (k) {
+      if (k.status === "betaald") {
+        $("#kop").textContent = "Al besteld";
+        klaarStop("Deze horren zijn al besteld en betaald. Je krijgt een mail zodra ze onderweg zijn.");
+        return;
+      }
+      if (k.status !== "open") {
+        $("#kop").textContent = "Deze link is verlopen";
+        klaarStop("Deze link werkt niet meer. Stuur ons een berichtje, dan zetten we je horren opnieuw klaar.");
+        return;
+      }
+      mand = { regels: k.regels };
+      velden.forEach(function (v) { if (k.klant[v] && !$("#" + v).value) $("#" + v).value = k.klant[v]; });
+      $("#kop").textContent = "Je horren bestellen";
+      $("#terug").hidden = true;
+      $("#klaar-door").textContent = k.vakman;
+      $("#klaar-banner").hidden = false;
+      $("#gemeten-regel").hidden = true;
+      $("#gemeten-door").textContent = "Opgemeten door " + k.vakman + ". Past een hor toch niet, dan maken we een nieuwe.";
+      $("#gemeten-door").hidden = false;
+      laadPrijs();
+    }).catch(function (e) {
+      $("#kop").textContent = "Deze link werkt niet";
+      klaarStop(e.message + " Stuur ons een berichtje, dan zetten we je horren opnieuw klaar.");
+    });
+  }
+
   $("#afrekenen").addEventListener("submit", function (e) {
     e.preventDefault();
     var knop = $("#betaal");
@@ -83,13 +126,15 @@
     knop.disabled = true;
     knop.textContent = "Even geduld…";
     toonFouten([]);
-    W.api("POST", "/horren/bestellingen", {
+    var bestelling = {
       regels: mand.regels,
       klant: bewaarKlant(),
       voorjaar: voorjaar(),
-      akkoord: { gemeten: $("#gemeten").checked, voorwaarden: $("#voorwaarden").checked },
+      akkoord: { gemeten: klaarCode ? true : $("#gemeten").checked, voorwaarden: $("#voorwaarden").checked },
       website: $("#website").value
-    }).then(function (b) {
+    };
+    if (klaarCode) bestelling.klaar = klaarCode;
+    W.api("POST", "/horren/bestellingen", bestelling).then(function (b) {
       try { localStorage.setItem("kozijnhorren-laatste", JSON.stringify({ nr: b.nr, t: b.token })); } catch (err) {}
       location.href = b.betaal_url;
     }).catch(function (err) {
@@ -99,5 +144,5 @@
     });
   });
 
-  laadPrijs();
+  if (klaarCode) laadKlaargezet(); else laadPrijs();
 })();
