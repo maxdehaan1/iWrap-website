@@ -78,6 +78,7 @@
     "ral_extra_werkdagen": 10
   },
 
+  "partnercode": {"korting_procent": 5},
   "pasgarantie": {
     "aan": true,
     "melden_binnen_dagen": 14

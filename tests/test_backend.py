@@ -8,9 +8,9 @@ Staan de horren op oranje of rood, dan verwijst het rapport naar kozijnhorren.nl
 met de kleur van de folie al gekozen.
 
 kozijnhorren.nl: een klant bestelt, betaalt in de testkassa, Max stuurt door en
-zet op verzonden, en de dagelijkse cron stuurt "past alles?". Een vakman zet
-horren klaar voor zijn klant, de klant betaalt via zijn link, en de leverancier
-bevestigt en meldt de verzending via zijn eigen link.
+zet op verzonden, en de dagelijkse cron stuurt "past alles?". Een klant bestelt met
+een partnercode en krijgt korting, en de leverancier bevestigt en meldt de
+verzending via zijn eigen link.
 
 Draait tegen een lege tijdelijke map, dus je echte .data/ blijft ongemoeid.
 
@@ -313,51 +313,47 @@ def bestel_en_betaal(klant, regels):
     return r["json"]["nr"]
 
 
-def vakman_en_leverancier_testen(token):
-    print("Een vakman zet horren klaar (kozijnhorren.nl)")
-    klopt(verzoek("GET", "/api/horren/vakman/test")["json"]["naam"] == "Testvakman", "de testcode werkt lokaal")
-    klopt(verzoek("GET", "/api/horren/vakman/geraden")["status"] == 404, "een onbekende code niet")
-    regels = [{"uitvoering": "basis", "breedte": 700, "hoogte": 1150, "kleur": "9001", "naam": "Keuken", "aantal": 2}]
-    r = verzoek("POST", "/api/horren/klaarzetten", {"vakman": "geraden", "regels": regels, "klant": {"naam": "Els"}})
-    klopt(r["status"] == 422 and "vakmancode" in r["json"]["fout"], "zonder geldige code niets klaarzetten")
-    r = verzoek("POST", "/api/horren/klaarzetten", {"vakman": "test", "regels": regels, "klant": {"naam": "Els"}})
-    klopt(r["status"] == 422 and any("mobiele nummer" in f for f in r["json"]["fouten"]),
-          "de klant moet te bereiken zijn (mobiel of mail)")
-    r = verzoek("POST", "/api/horren/klaarzetten", {
-        "vakman": "TEST", "regels": regels, "mail_klant": True,
-        "klant": {"naam": "Els Bakker", "email": "els@voorbeeld.nl", "telefoon": "06 87654321", "postcode": "1214ab"}})
-    klopt(r["status"] == 201 and r["json"]["gemaild"] and "/afrekenen?klaar=" in r["json"]["link"],
-          "klaargezet: een link voor de klant, en een mail")
-    code = r["json"]["code"]
-    k = verzoek("GET", "/api/horren/klaargezet/" + code)["json"]
-    klopt(k["status"] == "open" and k["vakman"] == "Testvakman" and k["klant"]["postcode"] == "1214 AB"
-          and k["regels"][0]["aantal"] == 2, "de klant ziet wat er klaarstaat, met zijn gegevens al ingevuld")
-    klopt(verzoek("GET", "/api/horren/klaargezet/abcdefgh")["status"] == 404, "een verzonnen link werkt niet")
+def code_en_leverancier_testen(token):
+    print("Een partnercode geeft korting (kozijnhorren.nl)")
+    r = verzoek("GET", "/api/horren/code/test")
+    klopt(r["status"] == 200 and r["json"]["naam"] == "Testpartner" and r["json"]["korting_procent"] == 5,
+          "de testcode werkt lokaal, hoofdletters maken niet uit")
+    klopt(verzoek("GET", "/api/horren/code/GERADEN")["status"] == 404, "een onbekende code niet")
+    regels = [{"uitvoering": "basis", "breedte": 812, "hoogte": 1204, "kleur": "7016", "naam": "Keuken", "aantal": 4}]
+    r = verzoek("POST", "/api/horren/prijs", {"regels": regels, "code": "TEST"})["json"]
+    klopt(r["subtotaal"] == 452 and r["korting"] == 22.6 and r["totaal"] == 429.4
+          and r["partner"]["naam"] == "Testpartner", "met de code 5% korting op de horren: 452 wordt 429,40")
+    r = verzoek("POST", "/api/horren/prijs", {"regels": regels, "code": "GERADEN"})["json"]
+    klopt(r["korting"] == 0 and r["totaal"] == 452 and "code_fout" in r,
+          "een onbekende code geeft geen korting, wel een melding")
+    klopt(verzoek("POST", "/api/horren/prijs", {"regels": regels})["json"]["totaal"] == 452,
+          "zonder code: dezelfde prijs voor iedereen")
 
     klant = {"naam": "Els Bakker", "email": "els@voorbeeld.nl", "telefoon": "0687654321",
              "straat": "Kerkweg 3", "postcode": "1214ab", "plaats": "Hilversum"}
-    r = verzoek("POST", "/api/horren/bestellingen", {
-        "klaar": code, "klant": klant, "akkoord": {"voorwaarden": True},
-        "regels": [{"uitvoering": "basis", "breedte": 400, "hoogte": 400, "kleur": "9001"}]})
-    klopt(r["status"] == 201, "de klant bestelt zonder vinkje 'gemeten': dat deed de vakman")
+    akkoord = {"gemeten": True, "voorwaarden": True}
+    r = verzoek("POST", "/api/horren/bestellingen", {"regels": regels, "klant": klant, "akkoord": akkoord,
+                                                     "code": "GERADEN"})
+    klopt(r["status"] == 422 and "code" in r["json"]["fout"], "bestellen met een onbekende code kan niet")
+    r = verzoek("POST", "/api/horren/bestellingen", {"regels": regels, "klant": klant, "akkoord": akkoord,
+                                                     "code": "test"})
+    klopt(r["status"] == 201, "bestellen met de code")
     nr, t = r["json"]["nr"], r["json"]["token"]
     b = bestellingen.haal(nr)
-    klopt(b["regels"][0]["breedte"] == 700 and b["regels"][0]["aantal"] == 2 and b["vakman"]["naam"] == "Testvakman",
-          "met de maten van de vakman (niet die uit de browser), en wie er gemeten heeft")
+    klopt(b["totaal"] == 429.4 and b["korting"] == 22.6 and b["partner"]["code"] == "TEST",
+          "de bestelling onthoudt de korting en via welke partner hij kwam")
     kassa = urlparse(r["json"]["betaal_url"])
     klopt(verzoek("GET", "%s?t=%s&uitkomst=paid" % (kassa.path, t))["status"] == 303,
-          "de testkassa werkt ook met een gewone link (die de beveiliging van de browser doorlaat)")
-    klopt(verzoek("GET", "/api/horren/klaargezet/" + code)["json"]["status"] == "betaald",
-          "na het betalen staat de klaargezette bestelling op betaald")
-    r = verzoek("POST", "/api/horren/bestellingen", {"klaar": code, "klant": klant, "akkoord": {"voorwaarden": True}})
-    klopt(r["status"] == 422, "dezelfde link nog een keer betalen kan niet")
+          "de testkassa werkt met een gewone link (die de beveiliging van de browser doorlaat)")
     uitbak = os.path.join(TMP, "uitbak")
     namen = sorted(os.listdir(uitbak))
-    html = open(os.path.join(uitbak, [m for m in namen if m.endswith("-klaargezet.html")][-1]), encoding="utf-8").read()
-    klopt("Testvakman heeft je ramen opgemeten" in html and "/afrekenen?klaar=" + code in html,
-          "de mail aan de klant zegt wie er gemeten heeft, met de link")
+    html = open(os.path.join(uitbak, [m for m in namen if m.endswith("-bevestiging.html")][-1]), encoding="utf-8").read()
+    klopt("Korting (code TEST)" in html and "429,40" in html, "de klant ziet de korting in zijn bevestiging")
     html = open(os.path.join(uitbak, [m for m in namen if m.endswith("-melding-max.html")][-1]), encoding="utf-8").read()
-    klopt("klaargezet door Testvakman" in html, "Max ziet via welke vakman de bestelling kwam")
+    klopt("Via code TEST (Testpartner)" in html, "Max ziet via welke partner de bestelling kwam")
+    lijst = verzoek("GET", "/api/max/bestellingen", token=token)["json"]["bestellingen"]
+    klopt([x for x in lijst if x["nr"] == nr][0]["partner"]["naam"] == "Testpartner",
+          "en ook in het overzicht van de Max-modus")
 
     print("De leverancier, via zijn eigen link")
     r = verzoek("POST", "/api/max/bestellingen/%s/actie" % nr, {"actie": "naar_leverancier"}, token)
@@ -366,10 +362,11 @@ def vakman_en_leverancier_testen(token):
           "doorgestuurd, met een eigen link voor de leverancier")
     namen = sorted(os.listdir(uitbak))
     html = open(os.path.join(uitbak, [m for m in namen if m.endswith("-leverancier.html")][-1]), encoding="utf-8").read()
-    klopt("Bestelling bevestigen of verzenden" in html, "de bestelmail heeft een knop naar die link")
+    klopt("Bestelling bevestigen of verzenden" in html and "korting" not in html.lower(),
+          "de bestelmail heeft een knop naar die link (en de korting gaat de leverancier niet aan)")
     csvmap = [m for m in namen if m.endswith("-leverancier-bijlagen")][-1]
     csv = open(os.path.join(uitbak, csvmap, "bestelling-%s.csv" % nr), encoding="utf-8-sig").read()
-    klopt("700;1150;dagmaat;9001" in csv and "Kerkweg 3" in csv, "met een CSV erbij: maten, kleur en bezorgadres")
+    klopt("812;1204;dagmaat;7016" in csv and "Kerkweg 3" in csv, "met een CSV erbij: maten, kleur en bezorgadres")
     t_lev = link.split("t=")[1]
     klopt(verzoek("GET", "/api/horren/leverancier/%s?t=fout" % nr)["status"] == 404,
           "zonder de juiste link ziet niemand de bestelling")
@@ -389,28 +386,15 @@ def vakman_en_leverancier_testen(token):
     klopt(r["status"] == 200 and any(m.endswith("-leverancier-probleem.html") for m in os.listdir(uitbak)),
           "meldt de leverancier een probleem, dan komt dat bij Max")
 
-    print("Herinneringen (cron)")
-    r = verzoek("POST", "/api/horren/klaarzetten", {"vakman": "test", "regels": regels,
-                                                    "klant": {"naam": "Kees", "email": "kees@voorbeeld.nl"}})
-    k = bestellingen.haal_klaar(r["json"]["code"])
-    k["gemaakt"] -= 4 * 86400
-    bestellingen.bewaar_klaar(k)
+    print("Een stille leverancier (cron)")
     nr3 = bestel_en_betaal(dict(klant, naam="Bas Smit", email="bas@voorbeeld.nl"), regels)
     verzoek("POST", "/api/max/bestellingen/%s/actie" % nr3, {"actie": "naar_leverancier"}, token)
     b3 = bestellingen.haal(nr3)
     b3["leverancier"]["op"] -= 4 * 86400
     bestellingen.bewaar(b3)
-    v = verzoek("GET", "/api/cron")["json"]
-    klopt(v["klaar_herinnerd"] == 1, "klaargezet maar na drie dagen nog niet betaald: de klant krijgt één herinnering")
-    klopt(v["leverancier_stil"] == 1, "bevestigt de leverancier na drie dagen niet, dan krijgt Max een seintje")
-    v = verzoek("GET", "/api/cron")["json"]
-    klopt(v["klaar_herinnerd"] == 0 and v["leverancier_stil"] == 0, "allebei maar één keer")
-    k = bestellingen.haal_klaar(r["json"]["code"])
-    k["gemaakt"] -= 30 * 86400
-    bestellingen.bewaar_klaar(k)
-    klopt(verzoek("GET", "/api/cron")["json"]["klaar_verlopen"] == 1
-          and verzoek("GET", "/api/horren/klaargezet/" + k["code"])["json"]["status"] == "verlopen",
-          "na dertig dagen vervalt een klaargezette bestelling")
+    klopt(verzoek("GET", "/api/cron")["json"]["leverancier_stil"] == 1,
+          "bevestigt de leverancier na drie dagen niet, dan krijgt Max een seintje")
+    klopt(verzoek("GET", "/api/cron")["json"]["leverancier_stil"] == 0, "maar één keer")
 
 
 def main():
@@ -512,7 +496,7 @@ def main():
     klopt(verzoek("GET", "/api/cron")["json"]["past_alles"] == 1, "cron stuurt na vijf dagen 'past alles?'")
     klopt(bestellingen.haal(nr)["status"] == "afgerond", "bestelling afgerond")
 
-    vakman_en_leverancier_testen(token)
+    code_en_leverancier_testen(token)
 
     uitbak = sorted(os.listdir(os.path.join(TMP, "uitbak")))
     print("\n%d controles goed. Mails die verstuurd zouden zijn:" % GOED)

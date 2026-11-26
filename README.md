@@ -532,12 +532,12 @@ Alles slaat vanzelf op. Zonder bereik bewaart de telefoon het en gaat het later 
 naar de server; de balk bovenin zegt wat er aan de hand is.
 
 Zit de oude hor na het herstel te strak, of past hij niet meer bij het kozijn? Meet dan de
-openingen op en zet de horren klaar op kozijnhorren.nl, in **vakman-modus** (eenmalig
-`kozijnhorren.nl/?vakman=<jouw code>` op je telefoon; de code staat in `VAKMANNEN`). In de
-winkelmand staat dan "Klaarzetten voor je klant": vul naam en mobiel in, stuur de link via
-WhatsApp, en de klant betaalt zelf, nu of later. De leverancier bezorgt bij de klant thuis,
-dus je hoeft niet terug te komen. De bestelling verschijnt in de Max-modus onder
-"kozijnhorren.nl", met "opgemeten en klaargezet door". Zie `kozijnhorren/README.md`.
+openingen op en zet de horren in de winkelmand van kozijnhorren.nl, op je eigen telefoon of op
+die van de klant. Staat je partnercode op je telefoon (eenmalig `kozijnhorren.nl/?code=<jouw
+code>`; de codes staan in `PARTNERCODES`), dan gaat hij mee als je de winkelmand doorstuurt
+met "Bestelling bewaren of doorsturen": de klant krijgt korting en betaalt zelf, nu of later.
+De leverancier bezorgt bij de klant thuis, dus je hoeft niet terug te komen. In de Max-modus
+zie je per bestelling via welke code hij kwam. Zie `kozijnhorren/README.md`.
 
 ## De achterkant (`api/` en `backend/`)
 

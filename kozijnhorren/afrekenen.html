@@ -19,8 +19,8 @@
 <meta name="theme-color" content="#f8f3ee">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <script>document.documentElement.className+=" js";</script>
-<link rel="stylesheet" href="/css/fonts.css?v=72ee74f2">
-<link rel="stylesheet" href="/css/winkel.css?v=72ee74f2">
+<link rel="stylesheet" href="/css/fonts.css?v=6a459e45">
+<link rel="stylesheet" href="/css/winkel.css?v=6a459e45">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"OnlineStore","@id":"https://kozijnhorren.nl/#winkel","name":"kozijnhorren.nl","url":"https://kozijnhorren.nl/","email":"info@iwrap.nl","telephone":"+31614415877","slogan":"Horren in de kleur van je kozijn","areaServed":{"@type":"Country","name":"Nederland"}}]}</script>
 </head>
 <body class="afrekenpagina">
@@ -52,17 +52,8 @@
 <div class="breed">
   <div class="afreken">
     <form id="afrekenen" novalidate>
-      <p class="kruimels" id="terug"><a href="/bestellen">Terug naar bestellen</a></p>
-      <h1 id="kop">Afrekenen</h1>
-      <div class="klaar-banner" id="klaar-banner" hidden>
-        <p class="opschrift">Je horren staan klaar</p>
-        <p><b id="klaar-door"></b> heeft je ramen opgemeten en de horren voor je klaargezet. Kijk ze na, vul je
-        adres aan en betaal met iDEAL. Daarna worden ze op maat gemaakt en bij je thuisbezorgd.</p>
-      </div>
-      <div class="klaar-stop" id="klaar-stop" hidden>
-        <p id="klaar-stop-tekst"></p>
-        <p><a class="knop knop-oranje" href="https://wa.me/31614415877">Stuur ons een WhatsApp</a></p>
-      </div>
+      <p class="kruimels"><a href="/bestellen">Terug naar bestellen</a></p>
+      <h1>Afrekenen</h1>
       <ul class="foutlijst" id="fouten" hidden></ul>
 
       <h2>Waar bezorgen we je horren?</h2>
@@ -86,9 +77,17 @@
         </div>
       </div>
 
+      <div class="code-vak">
+        <label for="code">Heb je een code van je vakman? <small>Dan krijg je 5% korting.</small></label>
+        <div class="code-rij">
+          <input id="code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="20">
+          <button type="button" class="knop knop-rand" id="code-knop">Toepassen</button>
+        </div>
+        <p class="code-melding" id="code-melding" hidden></p>
+      </div>
+
       <div class="akkoord">
-        <label id="gemeten-regel"><input type="checkbox" id="gemeten"><span>Ik heb gemeten zoals in de <a href="/meetinstructie" target="_blank">meetinstructie</a>. Past een hor toch niet, dan geldt de pasgarantie.</span></label>
-        <p class="gemeten-door" id="gemeten-door" hidden></p>
+        <label><input type="checkbox" id="gemeten"><span>De maten zijn gemeten zoals in de <a href="/meetinstructie" target="_blank">meetinstructie</a>, door mij of door mijn vakman. Past een hor toch niet, dan geldt de pasgarantie.</span></label>
         <label><input type="checkbox" id="voorwaarden"><span>Ik ga akkoord met de <a href="/voorwaarden" target="_blank">voorwaarden</a>. Ik weet dat horren op maat niet retour kunnen.</span></label>
       </div>
 
@@ -101,6 +100,7 @@
       <p class="melding" id="laden">Laden&hellip;</p>
       <ul class="mand-lijst" id="overzicht"></ul>
       <div id="totaal-blok" hidden>
+        <div class="regel-totaal korting-regel" id="korting-regel" hidden><span id="korting-label">Korting</span><span id="korting"></span></div>
         <div class="regel-totaal"><span>Bezorgen</span><span id="verzend">Gratis</span></div>
         <div class="regel-totaal"><span>Waarvan btw</span><span id="btw"></span></div>
         <div class="regel-totaal groot"><span>Totaal</span><b id="totaal"></b></div>
@@ -147,9 +147,8 @@
   <div class="mand-voet" hidden>
     <div class="mand-totaal"><span>Totaal <small>incl. btw, gratis bezorgd</small></span><b class="mand-bedrag"></b></div>
     <p class="mand-levertijd"></p>
-    <a class="knop knop-oranje knop-vol mand-afrekenen" href="/afrekenen">Afrekenen</a>
-    <button type="button" class="knop knop-oranje knop-vol vak-klaarzetten" hidden>Klaarzetten voor je klant</button>
-    <a class="mand-nog vak-zelf" href="/afrekenen" hidden>Of zelf afrekenen</a>
+    <p class="mand-code" hidden></p>
+    <a class="knop knop-oranje knop-vol" href="/afrekenen">Afrekenen</a>
     <a class="mand-nog" href="/bestellen">+ Nog een raam toevoegen</a>
     <details class="mand-delen">
       <summary>Bestelling bewaren of doorsturen</summary>
@@ -161,42 +160,9 @@
     </details>
   </div>
 </aside>
-<div class="lade-laag" id="klaar-laag" hidden></div>
-<aside class="lade" id="klaarzetten" aria-hidden="true" aria-label="Klaarzetten voor je klant">
-  <div class="mand-kop"><h2>Klaarzetten voor je klant</h2><button type="button" class="mand-sluit" id="klaar-sluit" aria-label="Sluiten">&times;</button></div>
-  <div class="binnen">
-    <form id="klaar-form" novalidate>
-      <p class="klaar-uitleg">Je klant krijgt een link met deze horren erin. Hij kijkt zijn adres na en betaalt met
-      iDEAL. Daarna worden de horren gemaakt en bij hem thuisbezorgd.</p>
-      <ul class="foutlijst" id="klaar-fouten" hidden></ul>
-      <div class="velden">
-        <div class="veld vol"><label for="k-naam">Naam van je klant</label><input id="k-naam" type="text" autocomplete="off" required></div>
-        <div class="veld vol"><label for="k-telefoon">Mobiel</label><input id="k-telefoon" type="tel" autocomplete="off">
-          <p class="hulp">Dan stuur je de link zo via WhatsApp.</p></div>
-        <div class="veld vol"><label for="k-email">E-mail</label><input id="k-email" type="email" autocomplete="off"></div>
-        <div class="veld vol"><label for="k-straat">Straat en huisnummer <small>(mag leeg)</small></label><input id="k-straat" type="text" autocomplete="off"></div>
-        <div class="veld"><label for="k-postcode">Postcode</label><input id="k-postcode" type="text" maxlength="7" autocomplete="off"></div>
-        <div class="veld"><label for="k-plaats">Plaats</label><input id="k-plaats" type="text" autocomplete="off"></div>
-      </div>
-      <label class="vinkje"><input type="checkbox" id="k-mail" checked><span>Stuur je klant ook een mail met de link</span></label>
-      <button type="submit" class="knop knop-oranje knop-vol" id="klaar-knop">Link maken</button>
-    </form>
-    <div class="klaar-klaar" id="klaar-klaar" hidden>
-      <p class="opschrift">Staat klaar</p>
-      <h3 id="klaar-kop">De horren staan klaar</h3>
-      <p id="klaar-zin"></p>
-      <div class="deel-knoppen">
-        <a class="knop knop-oranje" id="klaar-whatsapp" href="#" target="_blank" rel="noopener">Stuur via WhatsApp</a>
-        <button type="button" class="knop knop-rand" id="klaar-kopieer">Kopieer link</button>
-      </div>
-      <p class="klaar-link"><a id="klaar-open" href="#" target="_blank" rel="noopener"></a></p>
-      <button type="button" class="knop knop-rand knop-vol" id="klaar-nieuw">Volgende klant</button>
-    </div>
-  </div>
-</aside>
 <div class="toast" role="status" aria-live="polite" hidden></div>
-<script src="/js/catalogus.js?v=72ee74f2"></script>
-<script src="/js/winkel.js?v=72ee74f2" defer></script>
-<script src="/js/afrekenen.js?v=72ee74f2" defer></script>
+<script src="/js/catalogus.js?v=6a459e45"></script>
+<script src="/js/winkel.js?v=6a459e45" defer></script>
+<script src="/js/afrekenen.js?v=6a459e45" defer></script>
 </body>
 </html>

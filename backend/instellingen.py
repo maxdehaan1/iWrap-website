@@ -89,21 +89,21 @@ LEVERANCIER_EMAIL = env("LEVERANCIER_EMAIL", MAX_EMAIL)
 # Max-modus op "Naar leverancier". Begin met nee tot de eerste twintig goed gaan.
 LEVERANCIER_AUTOMATISCH = env("LEVERANCIER_AUTOMATISCH", "nee").lower() in ("ja", "1", "true", "yes")
 
-# Vakmensen die bij een klant horren mogen opmeten en klaarzetten (kozijnhorren.nl,
-# vakman-modus). In Vercel: VAKMANNEN = "code=Naam;andere-code=Andere naam". De code
-# is het wachtwoord van de vakman, dus maak hem lang en onraadbaar en zet hem nooit
-# in de repo. Lokaal werkt de code "test".
-def _vakmannen(tekst):
+# Partnercodes. Een vakman of kozijnbedrijf geeft zijn klant een code, of een link met de
+# code erin (kozijnhorren.nl/?code=MAX). De klant krijgt er een kleine korting mee (zie
+# horren.json, "partnercode"), en wij zien bij elke bestelling via wie hij kwam. In Vercel:
+# PARTNERCODES = "MAX=iWrap;BOT=Bot Ramen en Deuren". Lokaal werkt de code TEST.
+def _partnercodes(tekst):
     uit = {}
     for deel in tekst.split(";"):
         code, _, naam = deel.partition("=")
-        code = code.strip().lower()
-        if re.fullmatch(r"[a-z0-9-]{4,40}", code) and naam.strip():
+        code = code.strip().upper()
+        if re.fullmatch(r"[A-Z0-9]{2,20}", code) and naam.strip():
             uit[code] = naam.strip()[:60]
     return uit
 
 
-VAKMANNEN = _vakmannen(env("VAKMANNEN", "test=Testvakman" if LOKAAL else ""))
+PARTNERCODES = _partnercodes(env("PARTNERCODES", "TEST=Testpartner" if LOKAAL else ""))
 
 CRON_SECRET = env("CRON_SECRET")
 
@@ -144,7 +144,7 @@ def status():
         "reviews": "google" if GOOGLE_PLACES_API_KEY else "vast",
         "leverancier": LEVERANCIER_NAAM,
         "leverancier_automatisch": LEVERANCIER_AUTOMATISCH,
-        "vakmannen": len(VAKMANNEN),
+        "partnercodes": len(PARTNERCODES),
         "voorbeeldprijzen": lees_data("horren.json").get("voorbeeldprijzen", True),
         "shop_url": SHOP_URL,
     }

@@ -91,6 +91,11 @@
         lijst.appendChild(li);
       });
       $("#totaal").textContent = W.euro(b.totaal);
+      if (b.korting) {
+        $("#korting-regel").hidden = false;
+        $("#korting-label").textContent = "Korting" + (b.code ? ", code " + b.code : "");
+        $("#korting").textContent = "− " + W.euro(b.korting);
+      }
       var k = b.klant || {};
       $("#adres").textContent = "Bezorgadres: " + [k.naam, k.straat, (k.postcode || "") + " " + (k.plaats || "")].join(", ") + ".";
     }

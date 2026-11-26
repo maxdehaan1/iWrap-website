@@ -61,7 +61,7 @@
   }
   function leeg(e) { while (e.firstChild) e.removeChild(e.firstChild); return e; }
 
-  function euro(n) { return "€ " + Number(n).toLocaleString("nl-NL", { maximumFractionDigits: 2 }); }
+  function euro(n) { return "€ " + Number(n).toLocaleString("nl-NL", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }); }
   function datumKort(ts) {
     const d = typeof ts === "number" ? new Date(ts * 1000) : new Date(ts + "T12:00:00");
     return d.toLocaleDateString("nl-NL", { day: "numeric", month: "short" });
@@ -205,10 +205,28 @@
       api("GET", "/max/bestellingen").then(function (j) {
         leeg(inhoud);
         if (!j.bestellingen.length) inhoud.append(h("p.max-leeg", null, "Nog geen bestellingen."));
+        // Via welke partnercode, over de betaalde bestellingen: voor de commissie.
+        const perCode = {};
+        j.bestellingen.forEach(function (b) {
+          if (!b.partner || ["betaald", "besteld", "verzonden", "afgerond"].indexOf(b.status) < 0) return;
+          const c = perCode[b.partner.code] || (perCode[b.partner.code] = { naam: b.partner.naam, aantal: 0, bedrag: 0 });
+          c.aantal += 1;
+          c.bedrag += b.totaal;
+        });
+        const codes = Object.keys(perCode).sort();
+        if (codes.length) {
+          inhoud.append(h("section.max-kaart", null, h("h2", null, "Via een partnercode"),
+            codes.map(function (code) {
+              const c = perCode[code];
+              return h("p", null, h("b", null, code), " (" + c.naam + "): " + c.aantal + (c.aantal === 1 ? " bestelling, " : " bestellingen, ") +
+                euro(c.bedrag) + " betaald");
+            })));
+        }
         j.bestellingen.forEach(function (b) {
           inhoud.append(h("a.max-regel", { href: "#bestelling/" + b.nr },
             h("span.max-regel-titel", null, b.nr + " · " + (b.naam || "")),
-            h("span.max-regel-sub", null, (b.plaats || "") + " · " + b.horren + (b.horren === 1 ? " hor" : " horren") + " · " + euro(b.totaal) + " · " + datumKort(b.gemaakt)),
+            h("span.max-regel-sub", null, (b.plaats || "") + " · " + b.horren + (b.horren === 1 ? " hor" : " horren") + " · " + euro(b.totaal) +
+              (b.partner ? " · code " + b.partner.code : "") + " · " + datumKort(b.gemaakt)),
             h("span.max-chips", null, statusChip(b.status))));
         });
       }).catch(function (e) { leeg(inhoud).append(h("p.max-fout", null, e.message)); });
@@ -723,7 +741,7 @@
         h("h2", null, b.nr + " · " + euro(b.totaal)),
         h("p.uitleg", null, "Besteld " + datumKort(b.gemaakt) + (b.levertijd ? " · verwacht " + datumKort(b.levertijd.van) + "–" + datumKort(b.levertijd.tot) : "") +
           (b.levertijd && b.levertijd.voorjaar ? " (voorjaarslevering)" : "") +
-          (b.vakman ? " · opgemeten en klaargezet door " + b.vakman.naam : "")),
+          (b.partner ? " · via code " + b.partner.code + " (" + b.partner.naam + "), " + euro(b.korting || 0) + " korting" : "")),
         h("ul.bestelregels", null, b.regels.map(function (r) {
           return h("li", null, h("span.kleurstaal", { style: "background:" + (r.kleur.hex || "#ccc") }),
             h("span", null, h("b", null, r.aantal + "× " + r.productnaam + (r.naam ? " · " + r.naam : "")), h("br"),

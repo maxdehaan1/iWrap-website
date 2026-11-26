@@ -92,6 +92,12 @@ def _regels_html(b):
             % (r["aantal"], omschrijving, escape(_detail(r)), euro(r["bedrag"]))
         )
     verzend = "gratis" if not b.get("verzendkosten") else euro(b["verzendkosten"])
+    if b.get("korting"):
+        code = (b.get("partner") or {}).get("code")
+        rijen.append(
+            '<tr><td></td><td style="padding:10px 0;border-top:1px solid #e3dfd6;color:#666">Korting%s</td>'
+            '<td style="padding:10px 0;border-top:1px solid #e3dfd6;text-align:right;color:#666">&minus; %s</td></tr>'
+            % ((" (code %s)" % escape(code)) if code else "", euro(b["korting"])))
     totaal = (
         '<tr><td></td><td style="padding:10px 0;border-top:1px solid #e3dfd6;color:#666">Bezorgen</td>'
         '<td style="padding:10px 0;border-top:1px solid #e3dfd6;text-align:right;color:#666">%s</td></tr>'
@@ -109,6 +115,9 @@ def _regels_tekst(b):
         regel = "%dx %s %d x %d mm, %s  %s" % (r["aantal"], r["productnaam"], r["breedte"], r["hoogte"],
                                                _detail(r), euro(r["bedrag"]))
         uit.append("- " + (r["naam"] + ": " if r.get("naam") else "") + regel)
+    if b.get("korting"):
+        code = (b.get("partner") or {}).get("code")
+        uit.append("Korting%s: - %s" % ((" (code %s)" % code) if code else "", euro(b["korting"])))
     uit.append("Totaal %s (incl. %s btw)" % (euro(b["totaal"]), euro(b["btw"])))
     return "\n".join(uit)
 
@@ -172,8 +181,7 @@ def bevestiging(b, statuslink):
         _p("<b>Bezorgadres</b><br>%s" % _adres_html(k)),
         _p("<b>Verwachte levering</b><br>%s. Zodra de horren onderweg zijn, krijg je een mail." % escape(lt)),
     ]
-    if b.get("vakman"):
-        delen.append(_p("Opgemeten door %s." % escape(b["vakman"]["naam"])))
+
     if b.get("pasgarantie"):
         delen.append(_p(_pasgarantie_zin()))
     delen += [
@@ -194,7 +202,8 @@ def voor_max(b, beheerlink):
     k = b["klant"]
     stap = ("Staat automatisch door naar %s." % cfg.LEVERANCIER_NAAM if cfg.LEVERANCIER_AUTOMATISCH
             else "Controleer hem en druk in de Max-modus op 'Naar leverancier'.")
-    via = (" Opgemeten en klaargezet door %s." % escape(b["vakman"]["naam"])) if b.get("vakman") else ""
+    via = ((" Via code %s (%s)." % (escape(b["partner"]["code"]), escape(b["partner"]["naam"])))
+           if b.get("partner") else "")
     delen = [
         _p("Nieuwe betaalde bestelling. %s%s" % (escape(stap), via)),
         _regels_html(b),
@@ -291,31 +300,6 @@ def leverancier_probleem(b, opmerking, beheerlink):
              _p('<i>%s</i>' % escape(opmerking).replace("\n", "<br>")),
              _knop(beheerlink, "Open in de Max-modus", KH_ORANJE)]
     return kop, _winkelmail(kop, delen), "%s\n\n%s\n\n%s" % (kop, opmerking, beheerlink)
-
-
-def klaargezet(k, link, berekend, herinnering=False):
-    """Aan de klant: een vakman heeft bij hem gemeten en de horren klaargezet."""
-    klant = k["klant"]
-    vakman = escape(k["vakman"]["naam"])
-    delen = [_p(_aanhef(klant.get("naam")))]
-    if herinnering:
-        delen.append(_p("Je horren staan nog voor je klaar, zoals %s ze bij je heeft opgemeten. "
-                        "Wil je ze nog hebben? Bestellen kan met één klik." % vakman))
-    else:
-        delen.append(_p("%s heeft je ramen opgemeten en de horren voor je klaargezet. Kijk ze rustig na: "
-                        "klopt alles, dan vul je je adres aan en betaal je met iDEAL." % vakman))
-    delen += [
-        _regels_html(berekend),
-        _knop(link, "Bekijken en bestellen", KH_ORANJE),
-        _p("De horren worden op maat gemaakt in de kleur van je kozijn en bij je thuisbezorgd. Erin klikken doe "
-           "je zelf, zonder boren of schroeven. Past er toch een niet, dan maken we een nieuwe."),
-        _p('<span style="color:#666;font-size:14px">Je betaalt pas als je hebt nagekeken. Deze link blijft '
-           "30 dagen geldig.</span>"),
-    ]
-    kop = "Je horren staan nog klaar" if herinnering else "Je horren staan klaar"
-    tekst = "%s\n\n%s heeft je horren klaargezet.\n\n%s\n\nBekijken en bestellen: %s" % (
-        _aanhef(klant.get("naam")), k["vakman"]["naam"], _regels_tekst(berekend), link)
-    return "%s om te bestellen" % kop, _winkelmail(kop, delen), tekst
 
 
 def verzonden(b, statuslink):

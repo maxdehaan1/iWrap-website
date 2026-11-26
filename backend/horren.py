@@ -187,8 +187,10 @@ def voorjaar_mogelijk(vandaag=None):
     return vandaag.month in catalogus()["levering"]["wintermaanden"]
 
 
-def bereken(regels, vandaag=None, voorjaar=False):
-    """Een hele bestelling doorrekenen. Terug: regels, totalen, levertijd, fouten."""
+def bereken(regels, vandaag=None, voorjaar=False, korting_procent=0):
+    """Een hele bestelling doorrekenen. Terug: regels, totalen, levertijd, fouten.
+
+    korting_procent: de korting van een partnercode, over de horren (niet over het bezorgen)."""
     cat = catalogus()
     if not isinstance(regels, list) or not regels:
         return {"fouten": ["Er zit nog geen hor in je bestelling."], "regels": []}
@@ -205,14 +207,16 @@ def bereken(regels, vandaag=None, voorjaar=False):
     if fouten:
         return {"fouten": fouten, "regels": uit}
     subtotaal = sum(r["bedrag"] for r in uit)
+    korting = round(subtotaal * korting_procent / 100, 2) if korting_procent else 0
     verzend = cat["levering"]["verzendkosten"]
-    totaal = subtotaal + verzend
+    totaal = round(subtotaal - korting + verzend, 2)
     btw = round(totaal - totaal / (1 + cat["btw"]), 2)
     return {
         "fouten": [],
         "regels": uit,
         "aantal_horren": sum(r["aantal"] for r in uit),
         "subtotaal": subtotaal,
+        "korting": korting,
         "verzendkosten": verzend,
         "totaal": totaal,
         "btw": btw,

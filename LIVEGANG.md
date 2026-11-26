@@ -273,12 +273,12 @@ nergens, want het domein is nog vrij). Zet die schakelaar om zodra de winkel wer
 - [ ] **[Max] `GEHEIM` moet er staan** (stap 2). Zonder `GEHEIM` krijgt de leverancier geen
       eigen link in de bestelmail, en kan hij een bestelling niet zelf bevestigen of op
       verzonden zetten.
-- [ ] **[Max] `VAKMANNEN`** in Vercel (iwrap-website), voor de vakman-modus van de winkel
-      (horren opmeten en klaarzetten bij een klant). Vorm: `code=Naam`, meerdere gescheiden door
-      een puntkomma, bijvoorbeeld `iwrap-x7k2p9=iWrap;bot-k4m8q2=Bot Ramen & Deuren`. De code
-      is het wachtwoord van die vakman: lang en onraadbaar, en nooit in de repo. Je eigen code
-      zet je daarna op je telefoon met `kozijnhorren.nl/?vakman=<jouw code>`. Lokaal werkt de
-      code `test`.
+- [ ] **[Max] `PARTNERCODES`** in Vercel (iwrap-website): de codes waarmee klanten korting
+      krijgen en waaraan je ziet via wie een bestelling kwam. Vorm: `CODE=Naam`, meerdere
+      gescheiden door een puntkomma, bijvoorbeeld `MAX=iWrap;BOT=Bot Ramen en Deuren`. Codes
+      zijn 2 tot 20 letters of cijfers. De korting staat in `backend/data/horren.json` onder
+      `partnercode` (nu 5%). Een doorverwijslink is `kozijnhorren.nl/?code=MAX`. Lokaal werkt
+      de code `TEST`.
 - [ ] **[Max + Claude] Echte inkoopprijzen.** Die komen nooit in de repo (die is openbaar);
       Claude rekent ze om met `prijslijst.py` en zet `voorbeeldprijzen` op `false`.
 - [ ] **[Max] Mollie:** account met KvK, eerst `MOLLIE_API_KEY` met de `test_`-sleutel,
@@ -360,4 +360,4 @@ af van de overstapdag.
 
 ---
 
-*Bijgehouden door Claude. Laatst bijgewerkt: 26 november 2026 (kozijnhorren.nl: vakman-modus met `VAKMANNEN`, de leverancierslink die `GEHEIM` nodig heeft, `LEVERANCIER_AUTOMATISCH` op ja na de eerste bestellingen).*
+*Bijgehouden door Claude. Laatst bijgewerkt: 26 november 2026 (kozijnhorren.nl: partnercodes met `PARTNERCODES`, de leverancierslink die `GEHEIM` nodig heeft, `LEVERANCIER_AUTOMATISCH` op ja na de eerste bestellingen).*

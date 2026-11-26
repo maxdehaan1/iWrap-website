@@ -1,15 +1,16 @@
 <!-- {
-  "title": "Voor vakmensen: horren voor je klanten | kozijnhorren.nl",
-  "description": "Kozijnspecialist of schilder? Meet bij je klant, zet de horren klaar, en wij laten ze maken en bezorgen ze bij je klant thuis. Geen voorraad, geen tweede rit.",
-  "ogtitle": "Horren voor je klanten, zonder gedoe"
+  "title": "Voor vakmensen: horren verkopen met je eigen code | kozijnhorren.nl",
+  "description": "Kozijnspecialist of schilder? Geef je klant je eigen code: hij krijgt {{partnercode.korting}}% korting op horren op maat, wij bezorgen, en jij krijgt een vergoeding.",
+  "ogtitle": "Horren voor je klanten, met je eigen code"
 } -->
 
 <section class="pagina-kop">
   <div class="breed">
     <p class="kruimels"><a href="/">Home</a> / Voor vakmensen</p>
-    <h1>Horren voor je klanten, zonder dat je er werk aan hebt</h1>
-    <p class="lead">Voor kozijnspecialisten, schilders en andere vakmensen die toch al bij het raam staan. Jij
-    meet, je klant betaalt zelf, en wij laten de horren maken en bezorgen ze bij je klant thuis.</p>
+    <h1>Horren voor je klanten, met je eigen code</h1>
+    <p class="lead">Voor kozijnspecialisten, schilders en andere vakmensen die toch al bij het raam staan. Je klant
+    bestelt gewoon op deze site. Met jouw code krijgt hij {{partnercode.korting}}% korting, en wij zien dat hij via
+    jou komt.</p>
   </div>
 </section>
 
@@ -23,14 +24,14 @@
         folie of verf op het kozijn gezet? Meet dan daarna.</p>
       </div>
       <div class="stapkaart">
-        <h3>Zet de horren klaar</h3>
-        <p>In deze winkel, op je telefoon, in vakman-modus. Kies de kleur, vul de maten in en druk op
-        "Klaarzetten voor je klant". Je klant krijgt een link via WhatsApp of mail.</p>
+        <h3>Geef je code door</h3>
+        <p>Zet de horren in de winkelmand, op je eigen telefoon of op die van je klant, en stuur ze door met
+        "Bestelling bewaren of doorsturen": je code zit er dan vanzelf in. Of geef je klant alleen je code.</p>
       </div>
       <div class="stapkaart">
         <h3>Je klant bestelt, wij doen de rest</h3>
-        <p>Je klant kijkt de horren en zijn adres na en betaalt met iDEAL. De horren worden op maat gemaakt en
-        bij hem thuisbezorgd. Erin klikken doet hij zelf, zonder gereedschap.</p>
+        <p>Hij betaalt met iDEAL en krijgt {{partnercode.korting}}% korting. De horren worden op maat gemaakt en bij
+        hem thuisbezorgd. Erin klikken doet hij zelf, zonder gereedschap.</p>
       </div>
     </div>
   </div>
@@ -43,29 +44,29 @@
       <ul class="vinklijst">
         <li><strong>Geen voorraad en geen tweede rit.</strong> Je komt niet terug om horren te plaatsen.</li>
         <li><strong>Geen geld voorschieten.</strong> Je klant betaalt zelf, vooraf.</li>
-        <li><strong>In de kleur van het kozijn.</strong> Ook als je het kozijn net een andere kleur hebt gegeven.</li>
+        <li><strong>Je klant krijgt korting</strong>, en horren in de kleur van zijn kozijn. Ook als je het kozijn net
+        een andere kleur hebt gegeven.</li>
         <li><strong>Het kozijn blijft heel.</strong> Geen boren, geen schroeven, geen tape.</li>
         <li><strong>Je klant is goed geholpen.</strong> Met onze pasgarantie, en met ons als aanspreekpunt voor de
         levering.</li>
       </ul>
       <h3>Wat verdien je eraan?</h3>
-      <p>Voor elke bestelling via jouw code krijg je een vergoeding. Hoeveel, spreken we met je af als je een
-      code aanvraagt.</p>
+      <p>Voor elke bestelling met jouw code krijg je een vergoeding. Hoeveel, spreken we met je af als je een code
+      aanvraagt.</p>
     </div>
   </div>
 </section>
 
 <section class="blok" id="code">
   <div class="smal">
-    <h2>Vakman-modus aanzetten</h2>
-    <p>Met je vakmancode zet je de winkel op je telefoon in vakman-modus. Dan staat er in de winkelmand
-    "Klaarzetten voor je klant" in plaats van "Afrekenen". De modus blijft aan op die telefoon, tot je op
-    Stoppen drukt.</p>
+    <h2>Je code op je telefoon zetten</h2>
+    <p>Doe dit één keer. Een winkelmand die je daarna doorstuurt, heeft je code erin, en je klant ziet zijn korting
+    meteen bij het afrekenen.</p>
     <form class="vakcode" id="vakcode-form" novalidate>
-      <label for="vakcode">Je vakmancode</label>
+      <label for="vakcode">Je code</label>
       <div class="vakcode-rij">
-        <input id="vakcode" type="text" autocomplete="off" autocapitalize="none" spellcheck="false">
-        <button type="submit" class="knop knop-oranje">Aanzetten</button>
+        <input id="vakcode" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="20">
+        <button type="submit" class="knop knop-oranje">Opslaan</button>
       </div>
       <p class="hulp" id="vakcode-status"></p>
     </form>
@@ -76,9 +77,10 @@
 
 <section class="blok blok-beige" id="klant">
   <div class="smal">
-    <h2>Heeft je vakman horren voor je klaargezet?</h2>
-    <p>Dan heb je van hem een link gekregen, via WhatsApp of per mail. Open de link, kijk de horren en je adres
-    na en betaal met iDEAL. Daarna worden de horren op maat gemaakt en bij je thuisbezorgd.</p>
-    <p>Je betaalt pas als je alles hebt nagekeken. Past er toch een hor niet, dan maken we een nieuwe.</p>
+    <h2>Heb je een code van je vakman?</h2>
+    <p>Vul hem in bij het afrekenen, of open de link die je van hem kreeg: dan staat hij er al. Je krijgt
+    {{partnercode.korting}}% korting op je horren.</p>
+    <p>Verder bestel je zoals iedereen: de maten invullen, de kleur kiezen en betalen met iDEAL. Past er toch een hor
+    niet, dan maken we een nieuwe.</p>
   </div>
 </section>

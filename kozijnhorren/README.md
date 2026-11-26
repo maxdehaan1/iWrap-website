@@ -21,23 +21,23 @@ Waar de horren vandaan komen, welke hor we verkopen en waarom: zie
 - **Pasgarantie.** Past een hor niet terwijl er volgens de meetinstructie gemeten is,
   dan maken we een nieuwe. Staat in `backend/data/horren.json` onder `pasgarantie`.
 
-## Twee routes, één kassa
+## Eén manier van bestellen, met een code voor korting
 
-1. **De klant bestelt zelf.** Meten, kiezen, betalen met iDEAL. Na de betaling gaat de
-   bestelling naar de leverancier, die rechtstreeks bij de klant bezorgt.
-2. **Een vakman meet bij de klant** (Max bij een iWrap-klus, of een ander kozijnbedrijf).
-   Het moment: na het herstel zit de oude hor te strak in het vernieuwde kozijn, of hij
-   past er niet meer bij. De vakman zet de winkel op zijn telefoon in **vakman-modus**
-   (`/vakmensen` of `?vakman=<code>`), zet de horren in de winkelmand en kiest
-   **"Klaarzetten voor je klant"**. De klant krijgt een link (WhatsApp of mail), ziet de
-   horren met zijn gegevens al ingevuld, en betaalt. Hij hoeft niet aan te vinken dat hij
-   zelf gemeten heeft: de bestelling onthoudt wie er gemeten heeft (`vakman`). Na drie
-   dagen zonder betaling krijgt de klant één herinnering; na dertig dagen vervalt de link.
-   De codes staan in de omgevingsvariabele `VAKMANNEN` (zie `../LIVEGANG.md`), lokaal werkt
-   `test`.
+Iedereen bestelt op dezelfde manier en betaalt dezelfde prijs: maten invullen, kleur kiezen,
+afrekenen. Alleen met een **partnercode** krijg je een kleine korting (nu 5%, in
+`backend/data/horren.json` onder `partnercode`), en dan zien wij via wie de bestelling kwam
+(Max, november 2026: "dat je eigenlijk gewoon één manier hebt om die horren te bestellen").
 
-"Bestelling bewaren of doorsturen" in de winkelmand blijft bestaan voor iedereen zonder
-code: een link met de hele winkelmand erin, zonder dat er iets op de server staat.
+- **Bij het afrekenen** staat het veld "Heb je een code van je vakman?". De kassa controleert de
+  code en rekent de korting uit; de bestelling onthoudt de partner (`partner`) en de korting.
+- **Een doorverwijslink** zet de code klaar: `kozijnhorren.nl/?code=MAX`. Hij blijft in de
+  browser staan en staat dan al ingevuld bij het afrekenen.
+- **De vakman bij de klant** (Max bij een iWrap-klus, of een partner) zet zijn code één keer op
+  zijn telefoon (`/vakmensen` of de link), meet op, vult de winkelmand en stuurt hem door met
+  "Bestelling bewaren of doorsturen". De code gaat mee in die link.
+- De codes staan in de omgevingsvariabele `PARTNERCODES` (`CODE=Naam;CODE2=Naam`, zie
+  `../LIVEGANG.md`); lokaal werkt `TEST`. De Max-modus laat per bestelling de code zien, en
+  bovenaan de bestellingen een telling per code, voor de commissie.
 
 ## De leverancier doet de rest
 
@@ -54,7 +54,7 @@ hoeft Max er niets meer voor te doen.
 Staan de horren in het opleverrapport van iWrap op oranje of rood, dan staat daar een
 tip met een link naar `kozijnhorren.nl/bestellen?kleur=<RAL>`: de kleur die bij de folie
 hoort staat dan al klaar (en is het geen standaardkleur, dan de Luxe). De klant vult zelf
-de maten in, of Max meet ter plekke en zet de horren klaar (vakman-modus, hierboven).
+de maten in, of Max meet ter plekke en stuurt de winkelmand door met zijn code erin.
 Andersom wijst "Over ons" de klant met een verweerd kozijn naar iwrap.nl.
 
 Technisch is de winkel een **statische site** (deze map). Rekenen, betalen, bestellingen
@@ -65,10 +65,8 @@ iwrap.nl, onder "Kozijnhorren".
 ```
 /bestellen  uitvoering, kleur, maat, aantal  ->  winkelmand (zijlade, in de browser)
      |                                             |-> "bewaren of doorsturen" (link)
-     |                                             |-> vakman: "klaarzetten" -> link naar de klant
      v
-/afrekenen  adres, 2 vinkjes  ->  kassa rekent de prijs opnieuw  ->  Mollie (iDEAL)
-     |      (?klaar=<code>: horren en adres staan klaar, geen vinkje "gemeten")
+/afrekenen  adres, code (korting), 2 vinkjes  ->  kassa rekent de prijs opnieuw  ->  Mollie (iDEAL)
      v
 /bestelling  bedankt + status        mails: bevestiging, onderweg, "past alles?"
      v
@@ -89,7 +87,7 @@ Plaatshouders in de bron: `{{prijs.vanaf}}`, `{{prijs.luxe_vanaf}}`, `{{levertij
 `{{pasgarantie.dagen}}`, `{{maat.*}}`, `{{prijstabel.basis}}`, `{{prijstabel.luxe}}`,
 `{{prijsvoorbeelden}}`, `{{kleuren}}`, `{{folietabel}}`, `{{usp}}`, `{{svg.hor:<id>}}`,
 `{{svg.raam:<id>}}`, `{{icoon.<naam>}}`, `{{whatsapp}}`, `{{whatsapp.meetcheck}}`,
-`{{whatsapp.twijfel}}`, `{{whatsapp.vakman}}`, `{{winkel.<veld>}}`, `{{iwrap.reviews}}`,
+`{{whatsapp.twijfel}}`, `{{whatsapp.vakman}}`, `{{partnercode.korting}}`, `{{winkel.<veld>}}`, `{{iwrap.reviews}}`,
 `{{iwrap.jaren}}`. Een onbekende
 plaatshouder laat de build stoppen.
 

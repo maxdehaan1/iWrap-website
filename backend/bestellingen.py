@@ -8,9 +8,9 @@ Statussen, in volgorde:
   afgerond    "past alles?"-mail is verstuurd
 En zijpaden: mislukt (betaling niet gelukt), geannuleerd (door Max).
 
-Er is één kassa. De klant vult zelf de maten in, of een vakman meet bij de klant
-thuis en zet de horren voor hem klaar (vakman-modus): dan krijgt de klant een
-link, kijkt zijn adres na en betaalt. Daarna loopt alles hetzelfde.
+Er is één manier van bestellen, met één prijs voor iedereen. Wie een partnercode
+heeft (van de vakman die bij hem gemeten heeft, of uit een doorverwijslink), krijgt
+een kleine korting; de bestelling onthoudt dan via welke partner hij kwam.
 
 De leverancier krijgt bij elke bestelling een eigen link (leverancierlink). Daar
 zet hij de bestelling op "in productie" en later op "verzonden" met de track &
@@ -89,22 +89,21 @@ def maak(invoer):
     if invoer.get("website"):  # honeypot: mensen zien dit veld niet
         raise Afgewezen(["Er ging iets mis. Probeer het opnieuw."])
 
-    # Klaargezet door een vakman: dan komen de maten van hem, niet uit de browser.
-    klaar = None
-    if invoer.get("klaar"):
-        klaar = haal_klaar(invoer.get("klaar"))
-        if not klaar or klaar_status(klaar) != "open":
-            raise Afgewezen(["Deze klaargezette bestelling is niet meer geldig. Stuur ons een WhatsApp, "
-                             "dan zetten we je horren opnieuw klaar."])
+    p = None
+    if str(invoer.get("code") or "").strip():
+        p = partner(invoer.get("code"))
+        if not p:
+            raise Afgewezen(["Deze code kennen we niet. Kijk of hij goed is overgenomen, of haal hem weg."])
 
     voorjaar = bool(invoer.get("voorjaar"))
-    berekend = horren.bereken(klaar["regels"] if klaar else (invoer.get("regels") or []), voorjaar=voorjaar)
+    berekend = horren.bereken(invoer.get("regels") or [], voorjaar=voorjaar,
+                              korting_procent=p["korting_procent"] if p else 0)
     klant, klantfouten = _klant(invoer.get("klant"))
     fouten = berekend["fouten"] + klantfouten
 
     akkoord = invoer.get("akkoord") or {}
-    if not akkoord.get("gemeten") and not klaar:
-        fouten.append("Vink aan dat je gemeten hebt zoals in de meetinstructie; daar hangt de pasgarantie aan.")
+    if not akkoord.get("gemeten"):
+        fouten.append("Vink aan dat er gemeten is zoals in de meetinstructie; daar hangt de pasgarantie aan.")
     if not akkoord.get("voorwaarden"):
         fouten.append("Vink aan dat je akkoord gaat met de voorwaarden.")
     if fouten:
@@ -121,6 +120,7 @@ def maak(invoer):
         "klant": klant,
         "regels": berekend["regels"],
         "subtotaal": berekend["subtotaal"],
+        "korting": berekend["korting"],
         "verzendkosten": berekend["verzendkosten"],
         "totaal": berekend["totaal"],
         "btw": berekend["btw"],
@@ -129,10 +129,8 @@ def maak(invoer):
         "betaling": {},
         "mails": {},
     }
-    if klaar:
-        b["vakman"] = klaar["vakman"]
-        b["klaargezet"] = klaar["code"]
-        b["akkoord"]["gemeten_door"] = klaar["vakman"]["naam"]
+    if p:
+        b["partner"] = {"code": p["code"], "naam": p["naam"], "korting_procent": p["korting_procent"]}
     try:
         betaling_id, url = maak_betaling(b, berekend["voorbeeldprijzen"])
     except BetaalFout as e:
@@ -141,9 +139,6 @@ def maak(invoer):
     bewaar(b, "aangemaakt, betaling gestart")
     opslag().put("betaling:" + betaling_id, {"nr": b["nr"]})
     opslag().index_zet("bestellingen", b["nr"], b["gemaakt"])
-    if klaar:
-        klaar.setdefault("pogingen", []).append(b["nr"])
-        bewaar_klaar(klaar)
     return b, url
 
 
@@ -167,11 +162,6 @@ def verwerk_betaling(b, status, methode=None):
 
 
 def _na_betaling(b):
-    if b.get("klaargezet"):
-        klaar = haal_klaar(b["klaargezet"])
-        if klaar:
-            klaar.update(status="betaald", nr=b["nr"])
-            bewaar_klaar(klaar)
     onderwerp, html, tekst = mails.bevestiging(b, statuslink(b))
     b["mails"]["bevestiging"] = mail.verstuur(b["klant"]["email"], onderwerp, html, tekst, soort="bevestiging")
     onderwerp, html, tekst = mails.voor_max(b, beheerlink(b))
@@ -255,19 +245,16 @@ def publiek(b):
         "btw": b["btw"], "verzendkosten": b["verzendkosten"], "levertijd": b.get("levertijd"),
         "klant": {k: b["klant"].get(k) for k in ("naam", "straat", "postcode", "plaats")},
         "pasgarantie": b.get("pasgarantie"), "verzending": b.get("verzending"),
-        "vakman": (b.get("vakman") or {}).get("naam"),
+        "korting": b.get("korting", 0), "code": (b.get("partner") or {}).get("code"),
     }
 
 
 def dagelijks(vandaag=None):
     """Draait één keer per dag (Vercel Cron). Stuurt "past alles?", ruimt
-    onbetaalde bestellingen op, herinnert klanten aan klaargezette horren en
-    waarschuwt Max als een leverancier stil blijft."""
+    onbetaalde bestellingen op en waarschuwt Max als een leverancier stil blijft."""
     nu = time.time()
     vandaag = vandaag or dt.date.today()
-    verslag = {"past_alles": 0, "verlopen": 0, "klaar_herinnerd": 0, "klaar_verlopen": 0,
-               "leverancier_stil": 0, "te_laat": 0}
-    _klaargezet_dagelijks(nu, verslag)
+    verslag = {"past_alles": 0, "verlopen": 0, "leverancier_stil": 0, "te_laat": 0}
     for nr in opslag().index_lijst("bestellingen", 1000):
         b = haal(nr)
         if not b:
@@ -383,125 +370,19 @@ def leverancier_actie(b, wat, invoer):
 
 
 # ---------------------------------------------------------------------------
-# Klaargezet door een vakman
+# Partnercodes
 # ---------------------------------------------------------------------------
 #
-# Een vakman (Max bij een iWrap-klus, of een ander kozijnbedrijf met een eigen
-# code) meet bij de klant, zet de horren in de winkel en kiest "Klaarzetten voor
-# je klant". De klant krijgt een link, kijkt zijn adres na en betaalt. Omdat de
-# vakman gemeten heeft, hoeft de klant niet aan te vinken dat hij volgens de
-# meetinstructie gemeten heeft.
-
-KLAAR_TEKENS = "abcdefghjkmnpqrstuvwxyz23456789"   # zonder 0/o, 1/l/i
-KLAAR_GELDIG_DAGEN = 30
-KLAAR_HERINNER_NA_DAGEN = 3
+# Een vakman of kozijnbedrijf (Max bij een iWrap-klus, of een partner) geeft zijn
+# klant een code of een doorverwijslink. De klant bestelt op de gewone manier en
+# krijgt met de code een kleine korting; wij zien via wie de bestelling kwam, voor
+# de commissie. De codes staan in PARTNERCODES (instellingen.py).
 
 
-def vakman(code):
-    code = str(code or "").strip().lower()
-    naam = cfg.VAKMANNEN.get(code)
-    return {"code": code, "naam": naam} if naam else None
-
-
-def haal_klaar(code):
-    if not code or not re.fullmatch(r"[a-z2-9]{8}", str(code)):
+def partner(code):
+    code = str(code or "").strip().upper()
+    naam = cfg.PARTNERCODES.get(code)
+    if not naam:
         return None
-    return opslag().get("klaar:" + code)
-
-
-def bewaar_klaar(k):
-    opslag().put("klaar:" + k["code"], k)
-    return k
-
-
-def klaar_status(k):
-    if k["status"] == "open" and time.time() - k["gemaakt"] > KLAAR_GELDIG_DAGEN * 86400:
-        return "verlopen"
-    return k["status"]
-
-
-def klaarlink(k):
-    return "%s/afrekenen?klaar=%s" % (cfg.SHOP_URL, k["code"])
-
-
-def _klant_klaarzetten(k):
-    """Bij het klaarzetten hoeft nog niet alles: een naam en een manier om de
-    klant te bereiken. Het adres vult de klant anders zelf in."""
-    k = k or {}
-    uit = {veld: str(k.get(veld) or "").strip()[:120] for veld in
-           ("naam", "email", "telefoon", "straat", "postcode", "plaats")}
-    fout = []
-    if len(uit["naam"]) < 2:
-        fout.append("Vul de naam van je klant in.")
-    if uit["email"] and not EMAIL.match(uit["email"]):
-        fout.append("Het e-mailadres van je klant klopt niet.")
-    if not uit["email"] and len(re.sub(r"\D", "", uit["telefoon"])) < 9:
-        fout.append("Vul het mobiele nummer of het e-mailadres van je klant in.")
-    if uit["postcode"]:
-        m = POSTCODE.match(uit["postcode"])
-        if m:
-            uit["postcode"] = "%s %s" % (m.group(1), m.group(2).upper())
-        else:
-            fout.append("Vul een Nederlandse postcode in, zoals 1214 GZ, of laat hem leeg.")
-    return uit, fout
-
-
-def zet_klaar(invoer):
-    v = vakman(invoer.get("vakman"))
-    if not v:
-        raise Afgewezen(["Deze vakmancode kennen we niet. Zet de vakman-modus opnieuw aan."])
-    berekend = horren.bereken(invoer.get("regels") or [])
-    klant, klantfouten = _klant_klaarzetten(invoer.get("klant"))
-    fouten = berekend["fouten"] + klantfouten
-    if fouten:
-        raise Afgewezen(fouten)
-    k = {
-        "code": "".join(secrets.choice(KLAAR_TEKENS) for _ in range(8)),
-        "vakman": v,
-        "klant": klant,
-        # De invoer, niet de prijzen: de kassa rekent bij het betalen opnieuw.
-        "regels": [{"uitvoering": r["uitvoering"], "breedte": r["breedte"], "hoogte": r["hoogte"],
-                    "kleur": r["kleur"]["code"], "aantal": r["aantal"], "naam": r.get("naam", "")}
-                   for r in berekend["regels"]],
-        "gemaakt": int(time.time()),
-        "status": "open",
-        "mails": {},
-    }
-    bewaar_klaar(k)
-    opslag().index_zet("klaargezet", k["code"], k["gemaakt"])
-    if invoer.get("mail_klant") and klant["email"]:
-        onderwerp, html, tekst = mails.klaargezet(k, klaarlink(k), berekend)
-        k["mails"]["klaargezet"] = mail.verstuur(klant["email"], onderwerp, html, tekst, soort="klaargezet")
-        bewaar_klaar(k)
-    return k
-
-
-def publiek_klaar(k):
-    """Wat de klant achter zijn link ziet. De link zelf is de sleutel."""
-    return {"code": k["code"], "status": klaar_status(k), "vakman": k["vakman"]["naam"],
-            "gemaakt": k["gemaakt"], "regels": k["regels"], "klant": k["klant"]}
-
-
-def _klaargezet_dagelijks(nu, verslag):
-    for code in opslag().index_lijst("klaargezet", 1000):
-        k = haal_klaar(code)
-        if not k:
-            opslag().index_weg("klaargezet", code)
-            continue
-        if k["status"] != "open":
-            continue
-        if klaar_status(k) == "verlopen":
-            k["status"] = "verlopen"
-            bewaar_klaar(k)
-            opslag().index_weg("klaargezet", code)
-            verslag["klaar_verlopen"] += 1
-        elif (k["klant"].get("email") and not k["mails"].get("herinnering")
-              and nu - k["gemaakt"] > KLAAR_HERINNER_NA_DAGEN * 86400):
-            berekend = horren.bereken(k["regels"])
-            if berekend["fouten"]:
-                continue
-            onderwerp, html, tekst = mails.klaargezet(k, klaarlink(k), berekend, herinnering=True)
-            if mail.verstuur(k["klant"]["email"], onderwerp, html, tekst, soort="klaargezet-herinnering"):
-                k["mails"]["herinnering"] = True
-                bewaar_klaar(k)
-                verslag["klaar_herinnerd"] += 1
+    return {"code": code, "naam": naam,
+            "korting_procent": horren.catalogus().get("partnercode", {}).get("korting_procent", 0)}

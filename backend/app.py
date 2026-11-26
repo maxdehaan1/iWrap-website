@@ -2,13 +2,11 @@
 
 Openbaar (ook vanuit de winkel op een ander domein):
   GET  /api/horren/catalogus              assortiment, kleuren, prijstabel
-  POST /api/horren/prijs                  prijs van een lijst horren
+  POST /api/horren/prijs                  prijs van een lijst horren (met "code": de korting erbij)
   POST /api/horren/bestellingen           bestelling aanmaken, betaling starten
   GET  /api/horren/bestellingen/<nr>?t=   status voor de klant
   POST /api/horren/betaling-webhook       Mollie meldt een betaling
-  GET  /api/horren/vakman/<code>          bestaat deze vakmancode? (vakman-modus)
-  POST /api/horren/klaarzetten            een vakman zet horren klaar voor zijn klant
-  GET  /api/horren/klaargezet/<code>      wat er klaarstaat (de klant opent zijn link)
+  GET  /api/horren/code/<code>            bestaat deze partnercode, en hoeveel korting geeft hij?
   GET  /api/horren/leverancier/<nr>?t=    de bestelling voor de leverancier
   POST /api/horren/leverancier/<nr>       leverancier: bevestigd, verzonden of probleem
   GET  /api/horren/testkassa/<nr>?t=      nepkassa, alleen zonder Mollie-sleutel
@@ -136,7 +134,15 @@ def catalogus(v):
 @route("POST", "/api/horren/prijs")
 def prijs(v):
     data = v.json()
-    return antwoord(horren.bereken(data.get("regels"), voorjaar=bool(data.get("voorjaar"))))
+    code = str(data.get("code") or "").strip()
+    p = bestellingen.partner(code) if code else None
+    uit = horren.bereken(data.get("regels"), voorjaar=bool(data.get("voorjaar")),
+                         korting_procent=p["korting_procent"] if p else 0)
+    if p:
+        uit["partner"] = {"code": p["code"], "naam": p["naam"], "korting_procent": p["korting_procent"]}
+    elif code:
+        uit["code_fout"] = "Deze code kennen we niet. Kijk of hij goed is overgenomen."
+    return antwoord(uit)
 
 
 @route("POST", "/api/horren/bestellingen")
@@ -150,37 +156,14 @@ def bestelling_maken(v):
     return antwoord({"nr": b["nr"], "token": b["token"], "betaal_url": url}, 201)
 
 
-@route("GET", r"/api/horren/vakman/(?P<code>[A-Za-z0-9-]{1,60})")
-def vakman_controleren(v, code):
-    # De code is het wachtwoord van de vakman: raden kost hier veel pogingen.
-    if opslag().teller_met_ttl("vakcode:" + v.ip, 3600) > 20:
+@route("GET", r"/api/horren/code/(?P<code>[A-Za-z0-9]{1,30})")
+def code_controleren(v, code):
+    if opslag().teller_met_ttl("code:" + v.ip, 3600) > 60:
         raise Probleem(429, "Te veel pogingen. Probeer het over een uur opnieuw.")
-    w = bestellingen.vakman(code)
-    if not w:
+    p = bestellingen.partner(code)
+    if not p:
         raise Probleem(404, "Deze code kennen we niet. Kijk of hij goed is overgenomen.")
-    return antwoord({"naam": w["naam"]})
-
-
-@route("POST", "/api/horren/klaarzetten")
-def klaarzetten(v):
-    if opslag().teller_met_ttl("klaarzetten:" + v.ip, 3600) > 60:
-        raise Probleem(429, "Te veel bestellingen klaargezet. Probeer het over een uur opnieuw.")
-    try:
-        k = bestellingen.zet_klaar(v.json())
-    except bestellingen.Afgewezen as e:
-        raise Probleem(422, e.meldingen[0], {"fouten": e.meldingen})
-    return antwoord({"code": k["code"], "link": bestellingen.klaarlink(k),
-                     "gemaild": bool(k["mails"].get("klaargezet"))}, 201)
-
-
-@route("GET", r"/api/horren/klaargezet/(?P<code>[a-z0-9]{1,20})")
-def klaargezet_bekijken(v, code):
-    if opslag().teller_met_ttl("klaarlink:" + v.ip, 3600) > 120:
-        raise Probleem(429, "Te veel pogingen. Probeer het over een uur opnieuw.")
-    k = bestellingen.haal_klaar(code)
-    if not k:
-        raise Probleem(404, "Deze link werkt niet (meer).")
-    return antwoord(bestellingen.publiek_klaar(k))
+    return antwoord(p)
 
 
 def _voor_leverancier(nr, token):
@@ -530,7 +513,7 @@ def bestellingen_lijst(v):
             uit.append({"nr": b["nr"], "status": b["status"], "gemaakt": b["gemaakt"], "totaal": b["totaal"],
                         "naam": b["klant"].get("naam"), "plaats": b["klant"].get("plaats"),
                         "horren": sum(r["aantal"] for r in b["regels"]),
-                        "vakman": (b.get("vakman") or {}).get("naam")})
+                        "partner": b.get("partner")})
     return antwoord({"bestellingen": uit})
 
 
