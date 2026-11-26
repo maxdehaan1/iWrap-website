@@ -110,7 +110,11 @@ def samenvatting(r):
 
 def horren_advies(r):
     """Een link naar kozijnhorren.nl als de horren oranje of rood staan, met de
-    horkleur die bij de folie hoort al gekozen. Anders None."""
+    horkleur die bij de folie hoort al gekozen en de code van iWrap erin: de klant
+    krijgt de korting, en wij zien dat de bestelling van de klus komt. Zolang de
+    winkel niet open is ("live" in winkel.json) noemt het rapport hem niet. Anders None."""
+    if not cfg.WINKEL_LIVE:
+        return None
     stand = (r.get("check", {}).get("horren") or {}).get("stand")
     if stand not in ("oranje", "rood"):
         return None
@@ -119,8 +123,10 @@ def horren_advies(r):
     params = {"kleur": ral} if kleur else {}
     if kleur and not kleur["standaard"]:
         params["uitvoering"] = "luxe"  # een andere kleur dan de vier standaardkleuren
+    params["code"] = cfg.IWRAP_CODE
     return {
-        "url": "%s/bestellen%s" % (cfg.SHOP_URL, ("?" + urlencode(params)) if params else ""),
+        "url": "%s/bestellen?%s" % (cfg.SHOP_URL, urlencode(params)),
+        "korting": horren.catalogus().get("partnercode", {}).get("korting_procent", 0),
         "winkel": cfg.WINKEL["naam"],
         "domein": cfg.WINKEL["domein"],
         "kleur": kleur,

@@ -319,6 +319,12 @@ def code_en_leverancier_testen(token):
     klopt(r["status"] == 200 and r["json"]["naam"] == "Testpartner" and r["json"]["korting_procent"] == 5,
           "de testcode werkt lokaal, hoofdletters maken niet uit")
     klopt(verzoek("GET", "/api/horren/code/GERADEN")["status"] == 404, "een onbekende code niet")
+    r = verzoek("GET", "/api/horren/code/max")
+    klopt(r["status"] == 200 and r["json"]["naam"] == "iWrap" and r["json"]["korting_procent"] == 5,
+          "de eigen code van iWrap (MAX) werkt altijd, zonder PARTNERCODES")
+    s = verzoek("GET", "/api/max/status", token=token)["json"]
+    klopt(s["eigen_code"] == "MAX" and s["partnercodes"] == 1 and s["winkel_live"] is False,
+          "de Max-modus kent je eigen code, telt alleen andere vakmensen, en weet dat de winkel nog dicht is")
     regels = [{"uitvoering": "basis", "breedte": 812, "hoogte": 1204, "kleur": "7016", "naam": "Keuken", "aantal": 4}]
     r = verzoek("POST", "/api/horren/prijs", {"regels": regels, "code": "TEST"})["json"]
     klopt(r["subtotaal"] == 452 and r["korting"] == 22.6 and r["totaal"] == 429.4
@@ -450,9 +456,16 @@ def main():
 
     pub = verzoek("GET", "/api/rapporten/" + rid)["json"]
     klopt("telefoon" not in pub["klant"] and "email" not in pub["klant"], "rapport lekt geen contactgegevens")
-    advies = pub["horren_advies"]
+    klopt(pub["horren_advies"] is None, "zolang de winkel dicht is (live in winkel.json), geen horrentip in het rapport")
+    cfg.WINKEL_LIVE = True
+    try:
+        advies = verzoek("GET", "/api/rapporten/" + rid)["json"]["horren_advies"]
+    finally:
+        cfg.WINKEL_LIVE = False
     klopt(advies and "kleur=7021" in advies["url"] and "uitvoering=luxe" in advies["url"],
           "rode horren: link naar kozijnhorren.nl in de kleur van de folie (Luxe, want geen standaardkleur)")
+    klopt("code=MAX" in advies["url"] and advies["korting"] == 5,
+          "de horrentip heeft de code van iWrap erin: de klant krijgt korting, wij zien dat hij van de klus komt")
     klus["check"]["horren"] = {"stand": "groen"}
     verzoek("PUT", "/api/max/rapporten/" + rid, dict(klus, _versie=klus["versie"]), token)
     klopt(verzoek("GET", "/api/rapporten/" + rid)["json"]["horren_advies"] is None, "groene horren: geen verkooppraatje")

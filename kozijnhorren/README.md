@@ -32,12 +32,22 @@ afrekenen. Alleen met een **partnercode** krijg je een kleine korting (nu 5%, in
   code en rekent de korting uit; de bestelling onthoudt de partner (`partner`) en de korting.
 - **Een doorverwijslink** zet de code klaar: `kozijnhorren.nl/?code=MAX`. Hij blijft in de
   browser staan en staat dan al ingevuld bij het afrekenen.
-- **De vakman bij de klant** (Max bij een iWrap-klus, of een partner) zet zijn code één keer op
-  zijn telefoon (`/vakmensen` of de link), meet op, vult de winkelmand en stuurt hem door met
-  "Bestelling bewaren of doorsturen". De code gaat mee in die link.
-- De codes staan in de omgevingsvariabele `PARTNERCODES` (`CODE=Naam;CODE2=Naam`, zie
-  `../LIVEGANG.md`); lokaal werkt `TEST`. De Max-modus laat per bestelling de code zien, en
-  bovenaan de bestellingen een telling per code, voor de commissie.
+- **Max bij de klant** (eerst alleen voor eigen gebruik; Max, 26 november 2026: "de andere
+  partijen voeg ik later wel toe"). Zijn code `MAX` (iWrap) werkt altijd, zonder instelling
+  (`IWRAP_CODE` in `backend/instellingen.py`). Op zijn telefoon staat de code met "eigen": via
+  de knop "Nieuwe horren opmeten" in de Max-modus (kozijncheck, horren oranje of rood: de
+  winkel opent met de kleur van de folie), of één keer `kozijnhorren.vercel.app/?code=MAX&eigen=1`.
+  Dan staat in de winkelmand **Naar je klant**: mobiel nummer, "Stuur via WhatsApp" (de link
+  met de horren en de code erin), "Laat scannen" (QR-code, `js/vendor/qrcode-1.4.4.js`, pas
+  geladen als je erop tikt), "Kopieer link" en onderaan **Nieuwe klant** (mand leeg) en
+  "Code van deze telefoon halen". De klant kijkt de horren na en betaalt op zijn eigen
+  telefoon. Een gewone link met dezelfde code haalt "eigen" er niet af.
+- **Andere vakmensen komen later.** Hun codes gaan in de omgevingsvariabele `PARTNERCODES`
+  (`CODE=Naam;CODE2=Naam`, zie `../LIVEGANG.md`); lokaal werkt daarnaast `TEST`. De pagina
+  `/vakmensen` staat klaar, maar pas met `"vakmensen": true` in `backend/data/winkel.json` in
+  het menu en de sitemap (en dan ook de stukken tussen `<!-- als vakmensen -->` en
+  `<!-- /als vakmensen -->`). Wie daar zijn code opslaat, krijgt ook "eigen". De Max-modus laat
+  per bestelling de code zien, en bovenaan de bestellingen een telling per code.
 
 ## De leverancier doet de rest
 
@@ -149,15 +159,19 @@ kassa een echte (live) Mollie-betaling.
 
 1. Vercel > Add New > Project > dezelfde repo (`iWrap-website`).
 2. **Root Directory: `kozijnhorren`**. Framework: Other. Geen build command.
-3. Domein kozijnhorren.nl koppelen (op 30 september 2026 nog vrij).
-4. Zet `SHOP_URL=https://kozijnhorren.nl` in de omgevingsvariabelen van het
-   **iwrap**-project, anders mag de winkel de API niet aanroepen en klopt de terug-link na
-   het betalen niet.
+3. Domein kozijnhorren.nl koppelen (op 26 november 2026 nog vrij).
+4. Zet `"live": true` in `backend/data/winkel.json` en bouw beide sites opnieuw. Dan wijzen de
+   links in de mails en na het betalen naar kozijnhorren.nl (`SHOP_URL` volgt de schakelaar;
+   als omgevingsvariabele kan hij nog steeds), noemt iwrap.nl de winkel, en geeft het
+   opleverrapport de horrentip met de code van iWrap erin.
 5. Maak in Microsoft 365 het adres info@kozijnhorren.nl aan (een alias is genoeg) en zet
    het in `backend/data/winkel.json`. Nu staat daar nog info@iwrap.nl.
 
-De winkel praat met de API op iwrap.nl, dus hij gaat pas echt live na de overstap van
-iwrap.nl. Alle stappen voor de livegang, in volgorde, staan in `../LIVEGANG.md` (stap 6).
+**Tot die tijd** staat de winkel op kozijnhorren.vercel.app en praat hij met de API op
+iwrap-website.vercel.app (dezelfde API als straks op iwrap.nl; `VERCEL_API` in `js/winkel.js`).
+Prijs en code werken daar al; echt bestellen pas met opslag, Mollie en mail in Vercel. Op
+kozijnhorren.nl praat de winkel met iwrap.nl. Alle stappen voor de livegang, in volgorde,
+staan in `../LIVEGANG.md` (stap 6).
 
 ## Wat er bewust niet in zit
 

@@ -57,12 +57,13 @@ Verder verwijzen de sites naar elkaar waar het de klant helpt:
   (`render_familie` in `build.py`, opmaak `.familie` in `style.css`; dezelfde opbouw op de
   zustersites). iwrap.nl linkt naar beide zustersites; **de zustersites linken alleen naar
   iwrap.nl, niet naar elkaar** (Max: de bedoeling van alle sites is een aanvraag bij iWrap).
-  Zolang `KOZIJNHORREN_LIVE` uit staat, noemt hij kozijnhorren.nl niet.
+  Zolang `"live"` in `backend/data/winkel.json` uit staat, noemt hij kozijnhorren.nl niet.
 - **De knop naar iWrap** is op kozijnwrap.nl en houtnerffolie.nl dezelfde: de knopkleur van
   iwrap.nl (`#2f5a50`) met het beeldmerk van iWrap ervoor (`.knop-iwrap`), "Offerte bij iWrap" in
   de kopbalk en "Offerte aanvragen bij iWrap" in de blokken.
 - **kozijnhorren.nl staat nog niet online** (en het domein is nog vrij). Daarom staat
-  `KOZIJNHORREN_LIVE = False` bovenin `build.py`: dan noemt de site kozijnhorren.nl nergens.
+  `"live": false` in `backend/data/winkel.json` (`KOZIJNHORREN_LIVE` in `build.py` leest hem):
+  dan noemt de site kozijnhorren.nl nergens, en geeft het opleverrapport geen horrentip.
   Alles tussen `<!-- als kozijnhorren -->` en `<!-- /als kozijnhorren -->` in de bron valt
   weg (de horrentip in het formulier, het horrenblok op /kozijncheck), en de footer noemt de
   winkel niet (audit M16, 18 november 2026). Zet hem op `True` zodra kozijnhorren.nl werkt
@@ -531,13 +532,15 @@ bestellingen).
 Alles slaat vanzelf op. Zonder bereik bewaart de telefoon het en gaat het later alsnog
 naar de server; de balk bovenin zegt wat er aan de hand is.
 
-Zit de oude hor na het herstel te strak, of past hij niet meer bij het kozijn? Meet dan de
-openingen op en zet de horren in de winkelmand van kozijnhorren.nl, op je eigen telefoon of op
-die van de klant. Staat je partnercode op je telefoon (eenmalig `kozijnhorren.nl/?code=<jouw
-code>`; de codes staan in `PARTNERCODES`), dan gaat hij mee als je de winkelmand doorstuurt
-met "Bestelling bewaren of doorsturen": de klant krijgt korting en betaalt zelf, nu of later.
-De leverancier bezorgt bij de klant thuis, dus je hoeft niet terug te komen. In de Max-modus
-zie je per bestelling via welke code hij kwam. Zie `kozijnhorren/README.md`.
+Zit de oude hor na het herstel te strak, of past hij niet meer bij het kozijn? Zet de horren in
+de kozijncheck op oranje of rood: dan verschijnt **Nieuwe horren opmeten**. Die opent de
+winkel op je telefoon met de kleur van de folie en je eigen code `MAX` (werkt altijd, zonder
+instelling). Meet de openingen op, zet de horren in de winkelmand en stuur ze met **Naar je
+klant** via WhatsApp naar de klant, of laat hem de QR-code scannen. De klant krijgt 5% korting
+en betaalt zelf met iDEAL; de leverancier bezorgt bij hem thuis, dus je hoeft niet terug te
+komen. Met **Nieuwe klant** is de mand weer leeg. In de Max-modus zie je per bestelling via
+welke code hij kwam. Het opleverrapport geeft de klant pas een horrentip (met je code erin)
+als de winkel open is (`"live"` in `winkel.json`). Zie `kozijnhorren/README.md`.
 
 ## De achterkant (`api/` en `backend/`)
 

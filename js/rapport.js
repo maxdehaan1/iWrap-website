@@ -169,5 +169,9 @@
       veld("kleurtip", "Bij je folie hoort " + a.kleur.naam + " (RAL " + a.kleur.code + "). Die staat al voor je klaar.");
     }
     $("#bestel-knop").href = a.url;
+    if (a.korting) {
+      $("#horren-korting").hidden = false;
+      veld("horren-korting", "Via deze link krijg je " + a.korting + "% korting, omdat wij je kozijnen hebben gedaan.");
+    }
   }
 })();

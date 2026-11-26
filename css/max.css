@@ -91,6 +91,7 @@ header.site.kaal .nav{padding-top:8px;padding-bottom:8px;}
 .sl-nvt.aan{background:#8b9197;border-color:#8b9197;color:#fff;}
 .check-detail{grid-column:1/-1;display:grid;gap:8px;}
 .check-hint{margin:0;font-size:.85rem;color:var(--ink-soft);font-style:italic;}
+.check-horren{margin:4px 0 0;}
 @media (max-width:460px){
   .check-rij{grid-template-columns:1fr;}
   .stoplicht .sl{flex:1;}

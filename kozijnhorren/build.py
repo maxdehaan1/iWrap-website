@@ -42,6 +42,11 @@ BASIS, LUXE = CAT["producten"]["basis"], CAT["producten"]["luxe"]
 MAAT = CAT["maatgrenzen"]
 
 SITE = "https://" + WINKEL["domein"]
+# Andere vakmensen met een eigen code komen later (Max, 26 november 2026). Zolang "vakmensen"
+# in winkel.json false is, staat de pagina Voor vakmensen niet in het menu en niet in de
+# zoekmachines, en vallen de stukken tussen <!-- als vakmensen --> en <!-- /als vakmensen -->
+# weg. Max' eigen code (MAX) werkt gewoon.
+VAKMENSEN = bool(WINKEL.get("vakmensen"))
 # De API draait op iwrap.nl (zie backend/). Lokaal pakt de winkel vanzelf
 # localhost:8010; dat regelt js/winkel.js.
 API = "https://iwrap.nl/api"
@@ -72,6 +77,8 @@ FOOTER_KOLOMMEN = [
         ("privacy", "Privacy"),
     ]),
 ]
+if not VAKMENSEN:
+    FOOTER_KOLOMMEN = [(titel, [(s, l) for s, l in items if s != "vakmensen"]) for titel, items in FOOTER_KOLOMMEN]
 
 
 # ---------------------------------------------------------------------------
@@ -343,7 +350,18 @@ def render_mand():
     <div class="mand-totaal"><span>Totaal <small>incl. btw, gratis bezorgd</small></span><b class="mand-bedrag"></b></div>
     <p class="mand-levertijd"></p>
     <p class="mand-code" hidden></p>
-    <a class="knop knop-oranje knop-vol" href="/afrekenen">Afrekenen</a>
+    <div class="mand-klant" hidden>
+      <h3>Naar je klant</h3>
+      <p class="mand-klant-code"></p>
+      <label class="sr-only" for="klant-mobiel">Mobiel nummer van je klant</label>
+      <input id="klant-mobiel" type="tel" inputmode="tel" autocomplete="off" placeholder="Mobiel nummer van je klant">
+      <a class="knop knop-oranje knop-vol klant-whatsapp" href="#" target="_blank" rel="noopener">Stuur via WhatsApp</a>
+      <div class="deel-knoppen">
+        <button type="button" class="knop knop-rand knop-klein klant-qr">Laat scannen</button>
+        <button type="button" class="knop knop-rand knop-klein deel-kopieer">Kopieer link</button>
+      </div>
+    </div>
+    <a class="knop knop-oranje knop-vol mand-afrekenen" href="/afrekenen">Afrekenen</a>
     <a class="mand-nog" href="/bestellen">+ Nog een raam toevoegen</a>
     <details class="mand-delen">
       <summary>Bestelling bewaren of doorsturen</summary>
@@ -353,6 +371,10 @@ def render_mand():
         <button type="button" class="knop knop-rand knop-klein deel-kopieer">Kopieer link</button>
       </div>
     </details>
+    <p class="mand-eigen" hidden>
+      <button type="button" class="linkje klant-nieuw">Nieuwe klant</button>
+      <button type="button" class="linkje klant-uit">Code van deze telefoon halen</button>
+    </p>
   </div>
 </aside>"""
 
@@ -563,6 +585,10 @@ def main():
         slug = bron.stem
         # Interne notities (<!-- CONCEPT ... -->) horen niet in de broncode van de site.
         inhoud = re.sub(r"<!--\s*CONCEPT.*?-->\s*", "", ruw[m.end():], flags=re.S)
+        inhoud = re.sub(r"<!--\s*als vakmensen\s*-->(.*?)<!--\s*/als vakmensen\s*-->",
+                        (lambda m: m.group(1)) if VAKMENSEN else "", inhoud, flags=re.S)
+        if slug == "vakmensen" and not VAKMENSEN:
+            meta = dict(meta, noindex=True)
         html = substitueer(render(slug, meta, inhoud, ver))
         (HIER / (slug + ".html")).write_text(html, encoding="utf-8")
         paginas.append((slug, meta))

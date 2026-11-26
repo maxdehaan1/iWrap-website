@@ -2,7 +2,8 @@
    Gedeeld door elke pagina van kozijnhorren.nl: de aankondigingsbalk, het menu,
    de winkelmand (een zijlade, bewaard in de browser), de prijsberekening, het
    doorsturen van een bestelling als link, de partnercode (een kleine korting, en
-   wij zien via wie de bestelling kwam) en het adres van de API.
+   wij zien via wie de bestelling kwam), "Naar je klant" op de telefoon van wie
+   meet, en het adres van de API.
 
    De prijsregels zijn dezelfde als in backend/horren.py. Wijzig je daar iets aan
    de manier van rekenen, doe het hier dan ook. De tabellen zelf komen uit
@@ -16,10 +17,14 @@
   var H = window.HORREN;
   var lokaal = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
   // Op een Vercel-testadres (kozijnhorren-git-<branch>-....vercel.app) praat de winkel met
-  // het testadres van dezelfde branch van iwrap.nl; anders met de echte API.
+  // het testadres van dezelfde branch van iwrap.nl. Op kozijnhorren.vercel.app met de API op
+  // iwrap-website.vercel.app: dat is dezelfde API als op iwrap.nl, maar die werkt al voordat
+  // iwrap.nl naar de nieuwe site is omgezet. Op kozijnhorren.nl met iwrap.nl.
   var preview = /^kozijnhorren-git-.+\.vercel\.app$/.test(location.hostname);
+  var VERCEL_API = { "kozijnhorren.vercel.app": "iwrap-website.vercel.app", "kozijnhorren-test.vercel.app": "iwrap-test.vercel.app" };
   var API = lokaal ? "http://" + location.hostname + ":8010/api"
     : preview ? "https://" + location.hostname.replace(/^kozijnhorren-/, "iwrap-website-") + "/api"
+    : VERCEL_API[location.hostname] ? "https://" + VERCEL_API[location.hostname] + "/api"
     : H.api;
   var MANDJE = "kozijnhorren-mand";
   var $ = function (s, ouder) { return (ouder || document).querySelector(s); };
@@ -181,12 +186,13 @@
     if (aantal) {
       $(".mand-bedrag").textContent = euro(totaal);
       $(".mand-levertijd").textContent = levertijdZin(levertijd(metRal, false));
-      var link = deelLink(m), c = leesCode();
+      var link = deelLink(m), c = leesCode(), eigen = !!(c && c.eigen);
       $(".deel-whatsapp").href = "https://wa.me/?text=" + encodeURIComponent("Je horren van " + H.winkel.naam + ", klaar om af te rekenen" +
         (c ? ", met " + c.korting + "% korting via code " + c.code : "") + ": " + link);
-      $(".deel-kopieer").dataset.link = link;
+      document.querySelectorAll(".deel-kopieer").forEach(function (k) { k.dataset.link = link; });
       var regel = $(".mand-code");
-      if (regel) { regel.hidden = !c; regel.textContent = c ? "Code " + c.code + ": " + c.korting + "% korting bij het afrekenen." : ""; }
+      if (regel) { regel.hidden = !c || eigen; regel.textContent = c ? "Code " + c.code + ": " + c.korting + "% korting bij het afrekenen." : ""; }
+      toonEigen(eigen, c);
     }
     document.dispatchEvent(new CustomEvent("mand-gewijzigd", { detail: { aantal: aantal, totaal: totaal } }));
   }
@@ -230,10 +236,11 @@
   if (nog) nog.addEventListener("click", function (e) {
     if (location.pathname.replace(/\/$/, "") === "/bestellen") { e.preventDefault(); sluitLade(); document.dispatchEvent(new Event("nog-een-raam")); }
   });
-  var kopieer = $(".deel-kopieer");
-  if (kopieer) kopieer.addEventListener("click", function () {
-    var link = kopieer.dataset.link;
-    (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(function () { toast("Link gekopieerd"); }, function () { prompt("Kopieer de link:", link); });
+  document.querySelectorAll(".deel-kopieer").forEach(function (kopieer) {
+    kopieer.addEventListener("click", function () {
+      var link = kopieer.dataset.link;
+      (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(function () { toast("Link gekopieerd"); }, function () { prompt("Kopieer de link:", link); });
+    });
   });
 
   // --- Een bestelling als link doorsturen ---------------------------------
@@ -269,6 +276,96 @@
     schrijfMand({ regels: regels });
     openMand();
   }
+
+  // --- Jouw telefoon: de horren naar je klant sturen ------------------------
+  // Op de telefoon van wie meet (Max, en later andere vakmensen) staat de code met "eigen".
+  // Dan staat in de winkelmand "Naar je klant": de horren gaan via WhatsApp of een QR-code
+  // naar de klant, die ze op zijn eigen telefoon nakijkt en met iDEAL betaalt. Afrekenen op
+  // de telefoon van de vakman kan ook, maar iDEAL opent dan zijn eigen bankapp.
+
+  function waNummer(tekst) {
+    var n = String(tekst || "").replace(/\D/g, "");
+    if (n.indexOf("00") === 0) n = n.slice(2);
+    else if (n.indexOf("0") === 0) n = "31" + n.slice(1);
+    return n.length >= 10 ? n : "";
+  }
+  function klantTekst(link, c) {
+    return "Hoi, hier zijn je nieuwe horren, zoals ik ze heb opgemeten. Kijk de maten en de kleur nog even na " +
+      "en reken af met iDEAL; ze worden bij je thuisbezorgd. Met code " + c.code + " krijg je " + c.korting +
+      "% korting, die staat er al in:\n" + link;
+  }
+  function zetKlantWhatsapp() {
+    var a = $(".klant-whatsapp"), c = leesCode(), m = leesMand();
+    if (!a || !c || !m.regels.length) return;
+    var veld = $("#klant-mobiel");
+    a.href = "https://wa.me/" + waNummer(veld && veld.value) + "?text=" + encodeURIComponent(klantTekst(deelLink(m), c));
+  }
+  function toonEigen(eigen, c) {
+    var blok = $(".mand-klant");
+    if (!blok) return;
+    // Op jouw telefoon scrolt de hele mand mee, zodat je alle horren ziet en daaronder het blok.
+    $("#mand").classList.toggle("eigen", eigen);
+    blok.hidden = !eigen;
+    if (eigen) $(".mand-klant-code").textContent = "Met jouw code " + c.code + ": je klant krijgt " + c.korting +
+      "% korting en rekent zelf af met iDEAL.";
+    $(".mand-eigen").hidden = !eigen;
+    $(".mand-delen").hidden = eigen;
+    var af = $(".mand-afrekenen");
+    af.classList.toggle("knop-oranje", !eigen);
+    af.classList.toggle("knop-rand", eigen);
+    if (eigen) zetKlantWhatsapp();
+  }
+
+  function laadQr() {
+    if (typeof window.qrcode === "function") return Promise.resolve();
+    return new Promise(function (ok, mis) {
+      var s = document.createElement("script");
+      s.src = "/js/vendor/qrcode-1.4.4.js";
+      s.onload = ok;
+      s.onerror = mis;
+      document.head.appendChild(s);
+    });
+  }
+  function toonQr(link) {
+    laadQr().then(function () {
+      var q = window.qrcode(0, "M");
+      q.addData(link);
+      q.make();
+      var laag = el("div", "qr-laag");
+      laag.setAttribute("role", "dialog");
+      laag.setAttribute("aria-label", "QR-code voor je klant");
+      var doos = el("div", "qr-groot");
+      doos.appendChild(el("p", "", "Laat je klant dit scannen met de camera van zijn telefoon"));
+      var qr = el("div", "qr");
+      qr.innerHTML = q.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
+      doos.appendChild(qr);
+      doos.appendChild(el("small", "", "Tik ergens om te sluiten"));
+      laag.appendChild(doos);
+      function weg() { laag.remove(); document.removeEventListener("keydown", toets); }
+      function toets(e) { if (e.key === "Escape") weg(); }
+      laag.addEventListener("click", weg);
+      document.addEventListener("keydown", toets);
+      document.body.appendChild(laag);
+    }, function () { toast("De QR-code kon niet laden. Stuur de link via WhatsApp."); });
+  }
+
+  var mobiel = $("#klant-mobiel");
+  if (mobiel) mobiel.addEventListener("input", zetKlantWhatsapp);
+  var qrKnop = $(".klant-qr");
+  if (qrKnop) qrKnop.addEventListener("click", function () { toonQr(deelLink(leesMand())); });
+  var nieuweKlant = $(".klant-nieuw");
+  if (nieuweKlant) nieuweKlant.addEventListener("click", function () {
+    if (!confirm("De winkelmand leegmaken voor de volgende klant?")) return;
+    if (mobiel) mobiel.value = "";
+    leegMand();
+    sluitLade();
+    location.href = "/bestellen";
+  });
+  var codeUit = $(".klant-uit");
+  if (codeUit) codeUit.addEventListener("click", function () {
+    zetCode(null);
+    toast("De code staat niet meer op deze telefoon");
+  });
 
   // --- Overig -------------------------------------------------------------
 
@@ -372,11 +469,16 @@
     tekenMand();
     toonCodeStatus();
   }
-  function codeAan(code) {
+  // eigen = dit is de telefoon van wie de code heeft. Opent die zelf een gewone link met
+  // zijn eigen code (om te zien wat de klant ziet), dan blijft het zijn telefoon.
+  function codeAan(code, eigen) {
     code = String(code || "").trim().toUpperCase();
     if (!code) return Promise.reject(new Error("Vul een code in."));
     return api("GET", "/horren/code/" + encodeURIComponent(code)).then(function (p) {
-      zetCode({ code: p.code, naam: p.naam, korting: p.korting_procent });
+      var oud = leesCode();
+      var c = { code: p.code, naam: p.naam, korting: p.korting_procent };
+      if (eigen || (oud && oud.eigen && oud.code === p.code)) c.eigen = true;
+      zetCode(c);
       return p;
     });
   }
@@ -385,13 +487,16 @@
     if (status) status.textContent = c ? "Code " + c.code + " staat op deze telefoon. Een winkelmand die je doorstuurt, heeft hem erin." : "";
   }
 
-  // Een doorverwijslink: kozijnhorren.nl/?code=MAX.
+  // Een doorverwijslink: kozijnhorren.nl/?code=MAX. Met &eigen=1 erbij (de knop "Nieuwe
+  // horren opmeten" in de Max-modus) is het de telefoon van wie meet.
   var zoek = new URLSearchParams(location.search);
   if (zoek.get("code")) {
-    codeAan(zoek.get("code")).then(function (p) {
-      toast("Code " + p.code + ": " + p.korting_procent + "% korting bij het afrekenen");
+    var eigenLink = zoek.get("eigen") === "1";
+    codeAan(zoek.get("code"), eigenLink).then(function (p) {
+      toast(eigenLink ? "Jouw code " + p.code + " staat op deze telefoon" : "Code " + p.code + ": " + p.korting_procent + "% korting bij het afrekenen");
     }).catch(function (e) { toast(e.message); });
     zoek.delete("code");
+    zoek.delete("eigen");
     var rest = zoek.toString();
     history.replaceState(null, "", location.pathname + (rest ? "?" + rest : "") + location.hash);
   }
@@ -401,7 +506,7 @@
     e.preventDefault();
     var knop = codeForm.querySelector("button");
     knop.disabled = true;
-    codeAan($("#vakcode").value).then(function (p) { toast("Code " + p.code + " staat op deze telefoon"); knop.disabled = false; })
+    codeAan($("#vakcode").value, true).then(function (p) { toast("Code " + p.code + " staat op deze telefoon"); knop.disabled = false; })
       .catch(function (f) { toast(f.message); knop.disabled = false; });
   });
 

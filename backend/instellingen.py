@@ -39,6 +39,19 @@ def env(naam, standaard=""):
 OP_VERCEL = bool(env("VERCEL"))
 LOKAAL = not OP_VERCEL
 
+
+def lees_data(naam):
+    return json.loads((DATA / naam).read_text(encoding="utf-8"))
+
+
+WINKEL = lees_data("winkel.json")
+# Is kozijnhorren.nl open voor klanten? Eén schakelaar: "live" in winkel.json. Zolang hij
+# uit staat, draait de winkel op kozijnhorren.vercel.app en gebruikt alleen Max hem: het
+# opleverrapport en iwrap.nl noemen hem nog niet, en de links in de mails gaan naar het
+# Vercel-adres. Zet hem aan als het domein werkt, en bouw beide sites opnieuw.
+WINKEL_LIVE = bool(WINKEL.get("live"))
+WINKEL_VERCEL = "https://kozijnhorren.vercel.app"
+
 # Waar de twee sites staan. Lokaal draait iwrap.nl op 8010 en kozijnhorren.nl op 8020.
 # Op een Vercel-testadres (preview) wijzen links naar dat testadres zelf, en naar het
 # testadres van dezelfde branch in het project "kozijnhorren". Zo klikt een rapport op
@@ -47,7 +60,7 @@ _PREVIEW = OP_VERCEL and env("VERCEL_ENV") == "preview" and env("VERCEL_BRANCH_U
 _IWRAP_STANDAARD = ("https://" + env("VERCEL_BRANCH_URL")) if _PREVIEW else \
     "https://iwrap.nl" if OP_VERCEL else "http://localhost:8010"
 _SHOP_STANDAARD = _IWRAP_STANDAARD.replace("://iwrap-website-", "://kozijnhorren-", 1) if _PREVIEW else \
-    "https://kozijnhorren.nl" if OP_VERCEL else "http://localhost:8020"
+    (("https://" + WINKEL["domein"]) if WINKEL_LIVE else WINKEL_VERCEL) if OP_VERCEL else "http://localhost:8020"
 IWRAP_URL = env("IWRAP_URL", _IWRAP_STANDAARD).rstrip("/")
 SHOP_URL = env("SHOP_URL", _SHOP_STANDAARD).rstrip("/")
 API_URL = IWRAP_URL + "/api"
@@ -58,6 +71,9 @@ TOEGESTANE_ORIGINS = {
     for o in env("TOEGESTANE_ORIGINS", "").split(",")
     if o.strip()
 } | {SHOP_URL, SHOP_URL.replace("://", "://www."), IWRAP_URL}
+if OP_VERCEL:
+    # Het Vercel-adres van de winkel blijft ook na de livegang werken.
+    TOEGESTANE_ORIGINS.add(WINKEL_VERCEL)
 if LOKAAL:
     TOEGESTANE_ORIGINS |= {"http://localhost:8020", "http://127.0.0.1:8020",
                            "http://localhost:8010", "http://127.0.0.1:8010"}
@@ -89,10 +105,12 @@ LEVERANCIER_EMAIL = env("LEVERANCIER_EMAIL", MAX_EMAIL)
 # Max-modus op "Naar leverancier". Begin met nee tot de eerste twintig goed gaan.
 LEVERANCIER_AUTOMATISCH = env("LEVERANCIER_AUTOMATISCH", "nee").lower() in ("ja", "1", "true", "yes")
 
-# Partnercodes. Een vakman of kozijnbedrijf geeft zijn klant een code, of een link met de
-# code erin (kozijnhorren.nl/?code=MAX). De klant krijgt er een kleine korting mee (zie
-# horren.json, "partnercode"), en wij zien bij elke bestelling via wie hij kwam. In Vercel:
-# PARTNERCODES = "MAX=iWrap;BOT=Bot Ramen en Deuren". Lokaal werkt de code TEST.
+# Codes. Wie bij de klant meet, geeft hem een code, of een link met de code erin
+# (kozijnhorren.nl/?code=MAX). De klant krijgt er een kleine korting mee (zie horren.json,
+# "partnercode"), en wij zien bij elke bestelling via wie hij kwam. De code van iWrap zelf
+# (IWRAP_CODE, standaard MAX) werkt altijd, zonder instellingen. Andere vakmensen komen
+# later in PARTNERCODES, bijvoorbeeld "BOT=Bot Ramen en Deuren;JANSEN=Schilder Jansen".
+# Lokaal werkt daarnaast de code TEST.
 def _partnercodes(tekst):
     uit = {}
     for deel in tekst.split(";"):
@@ -103,7 +121,11 @@ def _partnercodes(tekst):
     return uit
 
 
-PARTNERCODES = _partnercodes(env("PARTNERCODES", "TEST=Testpartner" if LOKAAL else ""))
+IWRAP_CODE = env("IWRAP_CODE", "MAX").upper()
+if not re.fullmatch(r"[A-Z0-9]{2,20}", IWRAP_CODE):
+    IWRAP_CODE = "MAX"
+PARTNERCODES = {IWRAP_CODE: "iWrap",
+                **_partnercodes(env("PARTNERCODES", "TEST=Testpartner" if LOKAAL else ""))}
 
 CRON_SECRET = env("CRON_SECRET")
 
@@ -125,13 +147,6 @@ IWRAP_REVIEWS_URL = env("IWRAP_REVIEWS_URL",
 IWRAP_WHATSAPP = env("IWRAP_WHATSAPP", "31614415877")
 
 
-def lees_data(naam):
-    return json.loads((DATA / naam).read_text(encoding="utf-8"))
-
-
-WINKEL = lees_data("winkel.json")
-
-
 def status():
     """Wat is er gekoppeld? De Max-modus laat dit zien, zodat Max niet hoeft te
     raden waarom er geen mail aankomt."""
@@ -144,7 +159,9 @@ def status():
         "reviews": "google" if GOOGLE_PLACES_API_KEY else "vast",
         "leverancier": LEVERANCIER_NAAM,
         "leverancier_automatisch": LEVERANCIER_AUTOMATISCH,
-        "partnercodes": len(PARTNERCODES),
+        "eigen_code": IWRAP_CODE,
+        "partnercodes": len(PARTNERCODES) - 1,  # andere vakmensen dan iWrap zelf
         "voorbeeldprijzen": lees_data("horren.json").get("voorbeeldprijzen", True),
         "shop_url": SHOP_URL,
+        "winkel_live": WINKEL_LIVE,
     }

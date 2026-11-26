@@ -95,11 +95,13 @@ BEDRIJF = {
 # exact dezelfde formulering aan; drie sites die verschillende bedragen of
 # garantietermijnen noemen is voor een klant alleen maar verwarrend.
 # ---------------------------------------------------------------------------
-# kozijnhorren.nl staat nog niet online, en het domein is nog vrij. Zolang dit False is,
-# noemt de site kozijnhorren.nl nergens: de stukken tussen <!-- als kozijnhorren --> en
-# <!-- /als kozijnhorren --> vallen weg (audit M16, akkoord Max 18 november 2026). Zet op
-# True zodra kozijnhorren.nl werkt en bouw opnieuw: dan staan naam, link en horrentips er weer.
-KOZIJNHORREN_LIVE = False
+# kozijnhorren.nl staat nog niet online, en het domein is nog vrij. Zolang "live" in
+# backend/data/winkel.json false is, noemt de site kozijnhorren.nl nergens: de stukken tussen
+# <!-- als kozijnhorren --> en <!-- /als kozijnhorren --> vallen weg (audit M16, akkoord Max
+# 18 november 2026), en het opleverrapport geeft geen horrentip. Dezelfde schakelaar zet de
+# backend om. Zet hem op true zodra kozijnhorren.nl werkt en bouw opnieuw: dan staan naam,
+# link en horrentips er weer.
+KOZIJNHORREN_LIVE = bool(json.loads((ROOT / "backend" / "data" / "winkel.json").read_text(encoding="utf-8")).get("live"))
 
 
 def kozijnhorren_link(tekst="kozijnhorren.nl", nieuw_venster=False):

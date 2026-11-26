@@ -261,8 +261,16 @@ eerder Google hem leert kennen.
 ## 6. kozijnhorren.nl (alleen als de winkel tegelijk live gaat)
 
 Dit hangt af van een leverancier en echte prijzen. Gaat de winkel later, sla dit dan over.
-iwrap.nl noemt kozijnhorren.nl pas als `KOZIJNHORREN_LIVE` in `build.py` op `True` staat (sinds 18 november
-nergens, want het domein is nog vrij). Zet die schakelaar om zodra de winkel werkt, en bouw opnieuw.
+Er is één schakelaar: `"live"` in `backend/data/winkel.json`. Zolang die `false` is, draait de winkel
+op kozijnhorren.vercel.app en is hij er alleen voor jou (met je eigen code `MAX`, die altijd werkt):
+iwrap.nl en het opleverrapport noemen hem niet, en de links in de mails gaan naar het Vercel-adres.
+Op `true` noemt iwrap.nl de winkel weer (kozijncheck, rapport, footer) en gaan de links naar
+kozijnhorren.nl.
+
+Wil je de winkel al echt gebruiken (met Mollie) **voordat iwrap.nl is omgezet** (stap 4)? Zet dan
+in Vercel (iwrap-website) `IWRAP_URL` = `https://iwrap-website.vercel.app`. Anders komt de
+betaalmelding van Mollie bij de oude site aan, en blijft een betaalde bestelling op "wacht op
+betaling" staan. Haal `IWRAP_URL` weer weg als iwrap.nl is omgezet.
 
 - [ ] **[Max]** Leverancier kiezen (de mails aan zes makers staan sinds 26 november als concept
       in je Outlook; het overzicht staat in `kozijnhorren/LEVERANCIERS.md`). Daarna
@@ -273,12 +281,6 @@ nergens, want het domein is nog vrij). Zet die schakelaar om zodra de winkel wer
 - [ ] **[Max] `GEHEIM` moet er staan** (stap 2). Zonder `GEHEIM` krijgt de leverancier geen
       eigen link in de bestelmail, en kan hij een bestelling niet zelf bevestigen of op
       verzonden zetten.
-- [ ] **[Max] `PARTNERCODES`** in Vercel (iwrap-website): de codes waarmee klanten korting
-      krijgen en waaraan je ziet via wie een bestelling kwam. Vorm: `CODE=Naam`, meerdere
-      gescheiden door een puntkomma, bijvoorbeeld `MAX=iWrap;BOT=Bot Ramen en Deuren`. Codes
-      zijn 2 tot 20 letters of cijfers. De korting staat in `backend/data/horren.json` onder
-      `partnercode` (nu 5%). Een doorverwijslink is `kozijnhorren.nl/?code=MAX`. Lokaal werkt
-      de code `TEST`.
 - [ ] **[Max + Claude] Echte inkoopprijzen.** Die komen nooit in de repo (die is openbaar);
       Claude rekent ze om met `prijslijst.py` en zet `voorbeeldprijzen` op `false`.
 - [ ] **[Max] Mollie:** account met KvK, eerst `MOLLIE_API_KEY` met de `test_`-sleutel,
@@ -289,11 +291,18 @@ nergens, want het domein is nog vrij). Zet die schakelaar om zodra de winkel wer
       in `kozijnhorren/src/pages/`.
 - [ ] **[Max] Vercel > kozijnhorren > Domains:** kozijnhorren.nl toevoegen, en het DNS
       bij GPO zoals bij stap 4.
-- [ ] **[Max] Vercel > iwrap-website:** `SHOP_URL` = `https://kozijnhorren.nl`.
 - [ ] **[Claude]** Het telscript van Vercel ook op kozijnhorren.nl zetten, en **[Max]**
       Analytics aanzetten in het project kozijnhorren.
-- [ ] **[Claude]** `KOZIJNHORREN_LIVE = True` in `build.py`. Dan linkt iwrap.nl naar de
-      winkel (kozijncheck, rapport, footer). Opnieuw bouwen en pushen.
+- [ ] **[Claude]** `"live": true` in `backend/data/winkel.json`, beide sites opnieuw bouwen en
+      pushen. Dan linkt iwrap.nl naar de winkel, krijgt het opleverrapport de horrentip (met jouw
+      code erin) en gaan de links in de mails naar kozijnhorren.nl.
+
+**Later, niet voor de livegang: andere vakmensen met een eigen code.** Je eigen code `MAX`
+werkt al. Komen er andere partijen bij, dan: `PARTNERCODES` in Vercel (iwrap-website), vorm
+`CODE=Naam` gescheiden door een puntkomma (bijvoorbeeld `BOT=Bot Ramen en Deuren`, codes van 2
+tot 20 letters of cijfers), en `"vakmensen": true` in `winkel.json` zodat de pagina Voor
+vakmensen in het menu komt. De korting staat in `backend/data/horren.json` onder `partnercode`
+(nu 5%).
 
 ## 7. Na een maand
 
@@ -360,4 +369,4 @@ af van de overstapdag.
 
 ---
 
-*Bijgehouden door Claude. Laatst bijgewerkt: 26 november 2026 (kozijnhorren.nl: partnercodes met `PARTNERCODES`, de leverancierslink die `GEHEIM` nodig heeft, `LEVERANCIER_AUTOMATISCH` op ja na de eerste bestellingen).*
+*Bijgehouden door Claude. Laatst bijgewerkt: 26 november 2026 (kozijnhorren.nl: één schakelaar `live` in `winkel.json`, je eigen code `MAX` zonder instelling, `IWRAP_URL` als je de winkel vóór iwrap.nl gebruikt, andere vakmensen later; de leverancierslink die `GEHEIM` nodig heeft, `LEVERANCIER_AUTOMATISCH` op ja na de eerste bestellingen).*

@@ -115,6 +115,7 @@ header.site.kaal .nav{padding-top:10px;padding-bottom:10px;}
 .horren-totaal strong{font-family:var(--kop);font-size:1.5rem;white-space:nowrap;}
 .levertijd{font-size:.92rem;color:var(--ink-soft);margin:0 0 18px;}
 #bestel-knop{width:100%;}
+.horren-korting{margin:0 0 14px;font-weight:600;color:var(--mint-ink);}
 .horren-beloftes{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:6px;font-size:.88rem;color:var(--ink-soft);}
 .horren-beloftes li::before{content:"\2713";color:var(--mint-ink);font-weight:700;margin-right:8px;}
 .kleurtip{display:flex;align-items:center;gap:12px;background:var(--paper);border-radius:12px;padding:12px 14px;margin:0 0 18px;font-size:.93rem;}

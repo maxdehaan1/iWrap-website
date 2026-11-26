@@ -524,6 +524,24 @@ body.lade-open{overflow:hidden;}
 .mand-code{font-size:.88rem;color:var(--inkt-2);background:var(--oranje-licht);border-radius:var(--r-klein);padding:8px 12px;margin:0 0 12px;}
 .korting-regel span:last-child{color:var(--oranje-tekst);}
 
+/* Naar je klant: alleen op de telefoon van wie meet (code met "eigen") */
+.mand-klant{background:var(--beige);border-radius:var(--r-klein);padding:14px 16px 16px;margin:0 0 12px;}
+.mand-klant h3{font-size:1.05rem;margin:0 0 4px;}
+.mand-klant p{font-size:.86rem;color:var(--inkt-2);margin:0 0 12px;}
+.mand-klant input{width:100%;margin-bottom:10px;}
+.mand.eigen{overflow-y:auto;}
+.mand.eigen .mand-kop{position:sticky;top:0;background:var(--wit);z-index:1;}
+.mand.eigen .mand-inhoud{flex:none;overflow:visible;}
+.mand.eigen .mand-voet{border-top:0;}
+.mand-klant .deel-knoppen{margin-top:8px;}
+.mand-klant .deel-knoppen .knop{flex:1;}
+.mand-eigen{display:flex;justify-content:space-between;gap:12px;margin:12px 0 0;}
+.qr-laag{position:fixed;inset:0;z-index:300;background:var(--wit);display:flex;align-items:center;justify-content:center;padding:24px;cursor:pointer;}
+.qr-groot{text-align:center;width:min(100%,400px);}
+.qr-groot p{font-weight:500;font-size:1.1rem;margin:0 0 16px;}
+.qr-groot .qr svg{display:block;width:100%;height:auto;}
+.qr-groot small{display:block;color:var(--sub);margin-top:14px;}
+
 /* De pagina voor de leverancier ------------------------------------------ */
 
 .lev h1{font-size:clamp(1.8rem,1.4rem + 1.4vw,2.5rem);margin-bottom:.2em;}

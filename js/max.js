@@ -251,6 +251,7 @@
       ["Betalen", { "mollie-live": "Mollie (live)", "mollie-test": "Mollie (testmodus)", testkassa: "testkassa" }[s.betalen]],
       ["Mail", { microsoft: "via Microsoft 365 (info@iwrap.nl)", uitbak: "niet gekoppeld (uitbak)" }[s.mail]],
       ["Leverancier", s.leverancier + (s.leverancier_automatisch ? " (automatisch)" : " (na jouw akkoord)")],
+      ["Horrenwinkel", (s.winkel_live ? "open, " : "alleen voor jou, ") + s.shop_url.replace(/^https?:\/\//, "") + " · jouw code " + s.eigen_code],
       ["Reviews", s.reviews === "google" ? "live van Google" : "vast (reviews.json)"],
     ];
     return h("details.max-status" + (waarschuwingen.length ? ".let" : ""), null,
@@ -446,6 +447,17 @@
 
   // --- Kozijncheck --------------------------------------------------------
 
+  // Nieuwe horren opmeten: de winkel op deze telefoon, met de kleur van de folie en jouw
+  // code. Met "eigen=1" weet de winkel dat het jouw telefoon is: in de winkelmand stuur je
+  // de horren dan naar de klant, die op zijn eigen telefoon afrekent.
+  function horrenOpmetenLink() {
+    const p = new URLSearchParams();
+    if (klus.oplevering.folie_ral) p.set("kleur", klus.oplevering.folie_ral);
+    p.set("code", status.eigen_code || "MAX");
+    p.set("eigen", "1");
+    return status.shop_url + "/bestellen?" + p.toString();
+  }
+
   function bouwCheck() {
     const lijst = leeg(document.getElementById("checklijst"));
     status.kozijncheck.onderdelen.forEach(function (d) {
@@ -464,7 +476,10 @@
                 gewijzigd();
                 bouwCheck();
                 if (d.sleutel === "horren" && (c.stand === "oranje" || c.stand === "rood")) {
-                  melding("Het rapport verwijst de klant naar kozijnhorren.nl" + (klus.oplevering.folie_ral ? ", in de kleur van de folie." : "."));
+                  const kleur = klus.oplevering.folie_ral ? " in de kleur van de folie" : "";
+                  melding(status.winkel_live
+                    ? "Het rapport verwijst de klant naar kozijnhorren.nl" + kleur + ", met jouw code."
+                    : "Meet de nieuwe horren meteen op: de knop opent de winkel" + kleur + ", met jouw code erin.");
                 }
               }
             }, s === "nvt" ? "n.v.t." : s[0].toUpperCase() + s.slice(1));
@@ -476,6 +491,10 @@
           h("textarea", { rows: 2, placeholder: "Korte notitie (optioneel), bijv. waar precies", value: c.notitie || "",
             "aria-label": "Notitie bij " + d.naam, oninput: function (e) { c.notitie = e.target.value; gewijzigd(); } }),
           fotoStrook(c.fotos, function () { gewijzigd(); bouwCheck(); }));
+        if (d.sleutel === "horren") {
+          detail.append(h("p.check-horren", null,
+            h("a.knop.knop-primair", { href: horrenOpmetenLink(), target: "_blank", rel: "noopener" }, "Nieuwe horren opmeten")));
+        }
       }
       lijst.append(rij);
     });
@@ -582,7 +601,7 @@
     const tel = telefoonVoorWhatsapp(k.klant.telefoon);
     const voornaam = (k.klant.naam || "").split(" ")[0];
     const waTekst = "Hoi " + voornaam + ", hierbij je opleverrapport van iWrap, met de kozijncheck" +
-      (horren === "oranje" || horren === "rood" ? " en een tip voor nieuwe horren in de kleur van je kozijn" : "") +
+      (status.winkel_live && (horren === "oranje" || horren === "rood") ? " en een tip voor nieuwe horren in de kleur van je kozijn" : "") +
       ": " + link + "\n\nGroet, Max";
     doos.append(
       h("p.klaar-melding", null, "Het rapport staat klaar. Laat de klant scannen, of stuur de link."),
