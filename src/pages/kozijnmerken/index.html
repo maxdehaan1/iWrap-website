@@ -1,84 +1,101 @@
 <!-- {
-  "title": "Kozijnherstel per merk — welk kozijn heb je? | iWrap",
-  "description": "Weru, VEKA, Schüco, Gealan, Finstral, Knipping, Kömmerling of K-Vision: Renolit folie hecht op vrijwel elk kunststof profiel. Hoe je herkent wat je hebt.",
-  "ogtitle": "Kozijnherstel per merk",
+  "title": "Kozijnmerken: we herstellen vrijwel elk merk | iWrap",
+  "description": "Weru, VEKA, Schüco, Gealan, Kömmerling, K-Vision, Knipping of Finstral: voor het herstel van de folie maakt het merk vrijwel niets uit.",
+  "ogtitle": "Kozijnmerken: we herstellen vrijwel elk merk",
   "bodyclass": "tekstpagina",
-  "css": ["content", "home", "iwrap-site"],
-  "js": ["main", "iwrap-site"],
-  "kruimels": [["Kozijnmerken", "/kozijnmerken"]]
+  "css": ["content"],
+  "js": ["main"],
+  "kruimels": [["Kozijnmerken", "/kozijnmerken"]],
+  "faq": [
+    {"v": "Maakt het merk van mijn kozijn uit voor het herstel?",
+     "a": "Nauwelijks. Renolit folie hecht op elk gangbaar kunststof profiel, welk merk het ook is. Alleen op aluminium is folie niet de oplossing."},
+    {"v": "Ik weet niet welk merk ik heb. Is dat erg?",
+     "a": "Nee, dat hoef je niet te weten. Stuur foto's van je kozijnen mee in je aanvraag. Daaraan zien we of herstel kan."},
+    {"v": "Mijn kozijnen komen van een dealer. Kan ik rechtstreeks bij jullie terecht?",
+     "a": "Ja. Je kunt gewoon zelf een aanvraag doen. Kozijndealers, waaronder verschillende Weru-vestigingen, verwijzen hun klanten ook naar ons door als alleen de folie versleten is."}
+  ]
 } -->
+<!-- Eén pagina voor alle merken (Max, 26 november 2026: "het maakt voor een klant echt geen moer
+     uit wat voor merk kozijn hij heeft"). Tot die dag had elk merk een eigen pagina; die adressen
+     sturen in vercel.json hierheen door. Feiten over een merk altijd op de site van het merk
+     nakijken. Bij acrylcolor, VEKA Spectral en kunststof zonder folie houden we Max' formulering
+     aan: "aan de hand van je foto's kijken we of nieuwe folie een goede oplossing is". -->
 
-<section class="pagina-hero breed">
+<section class="pagina-hero">
   <div class="wrap">
     <nav class="kruimels" aria-label="Kruimelpad">
       <ol><li><a href="/">Home</a></li><li>Kozijnmerken</li></ol>
     </nav>
-    <p class="opschrift">Merken</p>
-    <h1>Welk kunststof kozijn heb je?</h1>
-    <p class="lede">Eerlijk antwoord vooraf: voor het herstel maakt het merk vrijwel
-    niets uit. Renolit folie hecht op elk gangbaar kunststof profiel. Het is wel handig
-    om te weten wat je hebt — bij een enkel merk is folie namelijk níet de oplossing.</p>
+    <p class="opschrift">Kozijnmerken</p>
+    <h1>We herstellen vrijwel elk merk</h1>
+    <p class="lede">Voor het herstel maakt het merk van je kozijn bijna niets uit: Renolit folie
+    hecht op elk gangbaar kunststof profiel. Je hoeft het merk dus ook niet te weten. Aan je
+    foto's zien we of herstel kan.</p>
   </div>
 </section>
 
 <section>
-  <div class="wrap">
-    <h2 class="sr-only">Kozijnmerken waar we mee werken</h2>
-    <div class="verschijn">{{merkkaarten}}</div>
-  </div>
-</section>
-
-<section class="vlak-wit">
   <div class="wrap zij-indeling">
     <div class="tekst">
-      <h2>Hoe je erachter komt welk merk je hebt</h2>
-      <p>De meeste mensen weten het niet, en dat is prima — wij zien het meestal aan de
-      foto's. Wil je het toch zelf opzoeken, dan zijn dit de plekken waar het staat:</p>
-      <ul class="vinklijst">
-        <li><strong>In de sponning.</strong> Zet een raam open en kijk op de rand die
-        normaal tegen het kozijn aan zit. Daar staat vaak een stempel of een logo.</li>
-        <li><strong>Op het beslag.</strong> Het scharnier of de sluiting draagt meestal
-        een merknaam — soms die van de kozijnfabrikant, soms die van de beslagleverancier.</li>
-        <li><strong>Op de afstandhouder in het glas.</strong> Tussen de twee ruiten zit
-        een strip, en daar staat vaak een fabricagedatum en een merk op.</li>
-        <li><strong>In je eigen papieren.</strong> Bij een woning van na 1990 zit het
-        kozijnmerk vaak gewoon in de oplevermap of de koopakte.</li>
-      </ul>
+      <h2>De merken die we het vaakst tegenkomen</h2>
+      <div class="merkenlijst">
+        <div id="weru"><h3>Weru</h3><p>Duitse fabrikant die complete ramen en deuren maakt en via vaste dealers verkoopt. Verschillende Weru-dealers verwijzen hun klanten naar ons door.</p></div>
+        <div id="veka"><h3>VEKA</h3><p>Maakt het profiel waar veel Nederlandse kozijnbouwers hun kozijnen van bouwen, zoals Softline. Op je papieren staat dan de naam van de kozijnbouwer.</p></div>
+        <div id="schuco"><h3>Schüco</h3><p>Maakt kunststof en aluminium kozijnen, veel in nieuwbouw en bij woningcorporaties. De kunststof uitvoering herstellen we.</p></div>
+        <div id="gealan"><h3>Gealan</h3><p>Veel gebruikt voor kozijnen met een houtnerf aan de buitenkant, meestal het systeem S&nbsp;9000&nbsp;NL.</p></div>
+        <div id="kommerling"><h3>Kömmerling</h3><p>Duits profielmerk, net als KBE en Trocal van de profine-groep. Je vindt het in nieuwbouw en in renovatie.</p></div>
+        <div id="kvision"><h3>K-Vision</h3><p>Het profiel dat Kömmerling voor Nederland maakt, met de verhoudingen van een houten kozijn. Vaak crèmewit of met een houtnerf.</p></div>
+        <div id="knipping"><h3>Knipping</h3><p>Nederlands familiebedrijf uit Zwaagdijk dat kozijnen en dakkapellen maakt, veel voor woningbouw en renovatie.</p></div>
+        <div id="finstral"><h3>Finstral</h3><p>Familiebedrijf uit Zuid-Tirol dat zijn kozijnen helemaal zelf maakt, van kunststof of met een aluminium schil.</p></div>
+      </div>
+      <p>Ook kozijnen van andere profielmerken, zoals Rehau, Deceuninck en Aluplast, herstellen we
+      op dezelfde manier.</p>
 
       <div class="let-op">
-        <h3>Eén uitzondering: aluminium schil</h3>
-        <p>Sommige fabrikanten, waaronder Finstral, leveren kozijnen met een aluminium
-        buitenschaal om een kunststof kern. Op aluminium hecht deze folie niet zoals het
-        hoort. Zie je aan de buitenkant een strak, metaalachtig profiel met scherpe
-        kanten in plaats van de licht afgeronde vorm van pvc, laat dat dan even weten —
-        dan zeggen we vooraf dat het niet gaat werken.</p>
+        <h3>Alleen bij aluminium niet</h3>
+        <p>Op aluminium hecht de folie niet zoals het hoort. Dat geldt voor aluminium kozijnen van
+        Schüco, voor Finstral met een aluminium schil en voor nieuwere Knipping-kozijnen met
+        aluminium aan de buitenkant. Heeft je kozijn een kleurlaag zonder folie, zoals Gealan
+        acrylcolor of de ultramatte VEKA Spectral, dan kijken we aan de hand van je foto's of nieuwe
+        folie een goede oplossing is.</p>
       </div>
 
-      <h2>Waarom de folie op vrijwel alles past</h2>
-      <!-- js/iwrap-site.js (onderdeel 10) tekent hier drie kunststof profielen en een aluminium schil. -->
-      <figure class="iw-profiel" data-profiel>
-        <figcaption>Renolit folie hecht op elk gangbaar kunststof profiel, welk merk het ook is. Alleen op een aluminium schil hecht hij niet zoals het hoort.</figcaption>
-      </figure>
-      <p>Kunststof kozijnen worden in de fabriek gecacheerd: het pvc-profiel wordt
-      gemaakt, en daar wordt een folie op gewalst die het kozijn zijn kleur en structuur
-      geeft. Dat is hetzelfde principe en vaak letterlijk hetzelfde merk folie als wat
-      wij gebruiken. Wij doen op locatie wat de fabriek in de productielijn doet.</p>
-      <p>Daarom is het profielmerk niet doorslaggevend: het gaat om het materiaal
-      eronder, en dat is bij vrijwel alle merken pvc. Wat wél uitmaakt is de <em>staat</em>
-      van dat profiel — zie <a href="/kunststof-kozijn-herstellen">wanneer herstel kan</a>.</p>
+      <h2>Veelgestelde vragen</h2>
+      <div class="faq">
+        <details>
+          <summary>Maakt het merk van mijn kozijn uit voor het herstel?</summary>
+          <div class="antwoord"><p>Nauwelijks. Renolit folie hecht op elk gangbaar kunststof
+          profiel, welk merk het ook is. Alleen op aluminium is folie niet de oplossing.</p></div>
+        </details>
+        <details>
+          <summary>Ik weet niet welk merk ik heb. Is dat erg?</summary>
+          <div class="antwoord"><p>Nee, dat hoef je niet te weten. Stuur foto's van je kozijnen
+          mee in je aanvraag. Daaraan zien we of herstel kan.</p></div>
+        </details>
+        <details>
+          <summary>Mijn kozijnen komen van een dealer. Kan ik rechtstreeks bij jullie terecht?</summary>
+          <div class="antwoord"><p>Ja. Je kunt gewoon zelf een aanvraag doen. Kozijndealers,
+          waaronder verschillende Weru-vestigingen, verwijzen hun klanten ook naar ons door als
+          alleen de folie versleten is. Ben je kozijnbedrijf? Kijk dan bij
+          <a href="/voor-kozijnbedrijven">voor kozijnbedrijven</a>.</p></div>
+        </details>
+      </div>
     </div>
 
     <aside class="zij">
       <div class="zijkaart">
         <h3>Weet je het merk niet?</h3>
-        <p>Geen probleem. Stuur gewoon een paar foto's mee in de aanvraag — we zien het
-        meestal zo.</p>
+        <p>Dat hoeft ook niet. Een foto van elk kozijn is genoeg: daar maken we een vaste
+        prijs van.</p>
         <a class="knop knop-primair" href="/offerte">Offerte aanvragen</a>
       </div>
       <div class="zijkaart">
-        <h3>Over de folie zelf</h3>
-        <p>De decors, de kleuren en de technische specificaties van Renolit folie staan
-        uitgebreid op <a href="https://houtnerffolie.nl" rel="noopener">houtnerffolie.nl</a>.</p>
+        <h3>Ook goed om te lezen</h3>
+        <ul style="list-style:none;padding:0;margin:0;display:grid;gap:9px;font-size:.94rem">
+          <li><a href="/kunststof-kozijn-herstellen">Wanneer herstel kan</a></li>
+          <li><a href="/werkwijze">Onze werkwijze</a></li>
+          <li><a href="/voorbeelden">Voor- en na-foto's</a></li>
+        </ul>
       </div>
     </aside>
   </div>

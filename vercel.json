@@ -289,13 +289,54 @@
       "source": "/resultaten",
       "destination": "/voorbeelden",
       "permanent": true
+    },
+    {
+      "source": "/kozijncheck",
+      "destination": "/werkwijze#opleveren",
+      "permanent": true
+    },
+    {
+      "source": "/kozijnmerken/weru",
+      "destination": "/kozijnmerken#weru",
+      "permanent": true
+    },
+    {
+      "source": "/kozijnmerken/veka",
+      "destination": "/kozijnmerken#veka",
+      "permanent": true
+    },
+    {
+      "source": "/kozijnmerken/schuco",
+      "destination": "/kozijnmerken#schuco",
+      "permanent": true
+    },
+    {
+      "source": "/kozijnmerken/gealan",
+      "destination": "/kozijnmerken#gealan",
+      "permanent": true
+    },
+    {
+      "source": "/kozijnmerken/finstral",
+      "destination": "/kozijnmerken#finstral",
+      "permanent": true
+    },
+    {
+      "source": "/kozijnmerken/knipping",
+      "destination": "/kozijnmerken#knipping",
+      "permanent": true
+    },
+    {
+      "source": "/kozijnmerken/kommerling",
+      "destination": "/kozijnmerken#kommerling",
+      "permanent": true
+    },
+    {
+      "source": "/kozijnmerken/kvision",
+      "destination": "/kozijnmerken#kvision",
+      "permanent": true
     }
   ],
   "rewrites": [
-    {
-      "source": "/r/:id",
-      "destination": "/rapport"
-    },
     {
       "source": "/offerte/bedankt",
       "destination": "/offerte"

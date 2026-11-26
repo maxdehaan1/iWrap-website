@@ -28,9 +28,7 @@ het profiel, de kleur en of herstel kan.
 Wat hier bewaard wordt verloopt vanzelf: een aanvraag die niet verstuurd
 wordt na twee dagen, een verstuurde na dertig. De mail aan Max is het archief.
 
-In de Max-modus staan de verstuurde aanvragen onder "Aanvragen". Vandaar maakt
-Max er met één knop een klus van (naar_klus): de klantgegevens en het werk
-staan dan al klaar voor de kozijncheck en het opleverrapport.
+In de Max-modus staan de verstuurde aanvragen onder "Aanvragen", met de foto's.
 """
 
 import base64
@@ -40,7 +38,7 @@ import re
 import time
 
 from . import instellingen as cfg
-from . import mail, mails, rapporten
+from . import mail, mails
 from .auth import nieuwe_id
 from .opslag import opslag
 
@@ -458,7 +456,7 @@ def lijstregel(a):
         t = totalen(a)
         wat = "%d kozijn%s" % (t["kozijnen"], "en" if t["kozijnen"] != 1 else "")
     return {"id": a["id"], "naam": a["gegevens"]["naam"], "plaats": a["gegevens"]["plaats"],
-            "manier": MANIEREN[a["manier"]], "wat": wat, "gemaakt": a["gemaakt"], "klus": a.get("klus", "")}
+            "manier": MANIEREN[a["manier"]], "wat": wat, "gemaakt": a["gemaakt"]}
 
 
 def voor_max(a):
@@ -481,46 +479,3 @@ def foto(a, naam):
         return None
     data = opslag().get_ruw(_fotosleutel(a, naam))
     return base64.b64decode(data) if data else None
-
-
-def werk_kort(a):
-    """Het werk in één regel, als begin voor 'Wat we gedaan hebben' in het
-    rapport. Max past het aan naar wat er echt gedaan is."""
-    if a["manier"] == "complex":
-        return "Complex %s, %d woningen: volgens de opname." % (a["complex"]["organisatie"], a["complex"]["woningen"])
-    if a["manier"] == "papier":
-        return "Volgens de tekening bij de aanvraag."
-    delen = []
-    for nr, k in enumerate(a["kozijnen"], 1):
-        if k["heel"]:
-            wat = "het hele kozijn"
-        elif k["regels"]:
-            wat = ", ".join(r["deel"].lower() for r in k["regels"])
-        elif "draai" in k["aanstreping"]:
-            wat = "zie de aangestreepte foto (kozijn en draairaam)" if "kozijn" in k["aanstreping"] \
-                else "zie de aangestreepte foto (draairaam of deur)"
-        else:
-            wat = "zie de aangestreepte foto"
-        delen.append("Kozijn %d%s: %s" % (nr, " (%d×)" % k["aantal"] if k["aantal"] > 1 else "", wat))
-    return ". ".join(delen) + "."
-
-
-def naar_klus(a):
-    """Een klus (kozijncheck en opleverrapport) met de gegevens uit de aanvraag.
-    Bestaat hij al, dan die."""
-    if a.get("klus"):
-        r = rapporten.haal(a["klus"])
-        if r:
-            return r
-    g = a["gegevens"]
-    r = rapporten.schoon({
-        "klant": {"naam": g["naam"], "straat": ("%s %s" % (g.get("straat", ""), g["huisnummer"])).strip(),
-                  "postcode": g["postcode"], "plaats": g["plaats"], "email": g["email"], "telefoon": g["telefoon"]},
-        "oplevering": {"werk": werk_kort(a)},
-    }, rapporten.nieuw())
-    r["oplevering"]["datum"] = rapporten.nieuw()["oplevering"]["datum"]
-    r["aanvraag"] = a["id"]
-    rapporten.bewaar(r)
-    a["klus"] = r["id"]
-    opslag().put("aanvraag:" + a["id"], a, ttl=TTL_BEWAAR)
-    return r

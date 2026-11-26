@@ -32,24 +32,25 @@
         <p>Een foto, en aanstrepen wat er moet gebeuren. Daar maken we een vaste totaalprijs van. De offerte is gratis en vrijblijvend.</p>
         <span class="pijl">Start de aanvraag</span>
       </a>
-      <a class="doelgroep" href="tel:{{bedrijf.telefoon_tel}}">
-        <h3>Bellen</h3>
-        <p><strong>{{bedrijf.telefoon}}</strong><br>Op dinsdag, woensdag en donderdag
-        zijn we meestal op locatie — spreek gerust iets in.</p>
-        <span class="pijl">Bel ons</span>
-      </a>
-      <a class="doelgroep" href="{{bedrijf.whatsapp_url}}">
-        <h3>WhatsApp</h3>
-        <p><strong>{{bedrijf.telefoon}}</strong><br>Een korte vraag, of een foto van je
-        kozijn: app het gerust.</p>
-        <span class="pijl">Stuur een appje</span>
-      </a>
       <a class="doelgroep" href="mailto:{{bedrijf.email}}">
         <h3>Mailen</h3>
         <p><strong>{{bedrijf.email}}</strong><br>Stuur je foto's meteen mee, dan kunnen
         we in één keer antwoorden.</p>
         <span class="pijl">Stuur een mail</span>
       </a>
+      <a class="doelgroep" href="tel:{{bedrijf.telefoon_tel}}">
+        <h3>Bellen</h3>
+        <p><strong>{{bedrijf.telefoon}}</strong><br>Op dinsdag, woensdag en donderdag
+        zijn we meestal op locatie — spreek gerust iets in.</p>
+        <span class="pijl">Bel ons</span>
+      </a>
+<!-- als whatsapp -->      <a class="doelgroep" href="{{bedrijf.whatsapp_url}}">
+        <h3>WhatsApp</h3>
+        <p><strong>{{bedrijf.telefoon}}</strong><br>Een korte vraag, of een foto van je
+        kozijn: app het gerust.</p>
+        <span class="pijl">Stuur een appje</span>
+      </a>
+<!-- /als whatsapp -->
     </div>
   </div>
 </section>
@@ -90,7 +91,7 @@
         <h3>iWrap</h3>
         <p>
           <a href="tel:{{bedrijf.telefoon_tel}}"><strong>{{bedrijf.telefoon}}</strong></a><br>
-          <a href="{{bedrijf.whatsapp_url}}">WhatsApp</a><br>
+          <!-- als whatsapp --><a href="{{bedrijf.whatsapp_url}}">WhatsApp</a><br><!-- /als whatsapp -->
           <a href="mailto:{{bedrijf.email}}">{{bedrijf.email}}</a>
         </p>
         <p>{{bedrijf.straat}}<br>{{bedrijf.postcode}} {{bedrijf.plaats}}<br>Werkgebied: heel Nederland</p>

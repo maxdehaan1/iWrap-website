@@ -1,19 +1,15 @@
 /* ---------------------------------------------------------------------------
-   Max-modus (/max): het invulscherm voor op locatie.
+   Max-modus (/max): de aanvragen van de site en de horrenwinkel.
 
-   Drie tabs, in de volgorde van een klus:
-     Aanvragen        wat er via iwrap.nl/offerte binnenkwam; met één knop
-                      wordt een aanvraag een klus, met de gegevens al ingevuld
-     Klussen          per klus de klant, wat er gedaan is en de kozijncheck
-                      (zes onderdelen, één tik per onderdeel) -> opleverrapport
-     kozijnhorren.nl  de horrenbestellingen, vaak via de tip in dat rapport
-   Alles slaat vanzelf op, ook als er even geen bereik is: dan bewaart de
-   telefoon het en gaat het later alsnog naar de server.
+   Twee tabs:
+     Aanvragen        wat er via iwrap.nl/offerte binnenkwam, met de foto's
+     kozijnhorren.nl  horren opmeten bij een klant, en de horrenbestellingen
+   (Tot 26 november 2026 stond hier ook een kozijncheck met opleverrapport. Max wil op een
+   klus geen stoplichtformulier invullen en de klant krijgt geen rapport: die is eruit.)
 
    Opbouw: kleine helper h() maakt elementen (nooit innerHTML met klantgegevens),
    elk scherm is een functie die #app vult, de route staat in de hash:
-     #            klussen          #klus/<id>        een klus
-     #aanvragen                    #aanvraag/<id>    een aanvraag
+     #aanvragen   (of leeg)        #aanvraag/<id>    een aanvraag
      #bestellingen                 #bestelling/<nr>  een bestelling
 
    Let op bij bewerken: teksten met een apostrof tussen dubbele aanhalingstekens,
@@ -25,11 +21,7 @@
   const APP = document.getElementById("app");
   const TOKEN_SLEUTEL = "iwrap-max-token";
   let token = lees(TOKEN_SLEUTEL) || "";
-  let status = null;       // /api/max/status: instellingen, kozijncheck, horren
-  let klus = null;         // de klus die open staat
-  let opslaanTimer = null;
-  let bezigMetOpslaan = false;
-  let nogEensOpslaan = false;
+  let status = null;       // /api/max/status: instellingen, folies, horren
 
   // --- Kleine hulpjes -----------------------------------------------------
 
@@ -66,8 +58,6 @@
     const d = typeof ts === "number" ? new Date(ts * 1000) : new Date(ts + "T12:00:00");
     return d.toLocaleDateString("nl-NL", { day: "numeric", month: "short" });
   }
-  function vandaag() { return new Date().toISOString().slice(0, 10); }
-  function nieuweId() { return Math.random().toString(36).slice(2, 8); }
 
   function melding(tekst, soort) {
     const m = h("div.max-toast" + (soort ? "." + soort : ""), { role: "status" }, tekst);
@@ -104,7 +94,6 @@
     api("GET", "/max/status").then(function (s) {
       status = s;
       window.addEventListener("hashchange", route);
-      window.addEventListener("online", function () { if (klus && klus._vuil) opslaan(); });
       route();
     }).catch(function (e) {
       if (e.message !== "Log opnieuw in.") {
@@ -115,24 +104,14 @@
   }
 
   function route() {
-    bewaarVoorVertrek();
     const hash = location.hash.replace(/^#/, "");
     const delen = hash.split("/");
     window.scrollTo(0, 0);
-    if (delen[0] === "klus" && delen[1]) return toonKlus(delen[1]);
     if (delen[0] === "bestelling" && delen[1]) return toonBestelling(delen[1]);
     if (delen[0] === "aanvraag" && delen[1]) return toonAanvraag(delen[1]);
-    if (delen[0] === "aanvragen") return toonOverzicht("aanvragen");
     if (delen[0] === "bestellingen") return toonOverzicht("bestellingen");
-    return toonOverzicht("klussen");
+    return toonOverzicht("aanvragen");
   }
-
-  function bewaarVoorVertrek() {
-    if (klus && klus._vuil) { clearTimeout(opslaanTimer); opslaan(); }
-  }
-  window.addEventListener("beforeunload", function (e) {
-    if (klus && klus._vuil) { bewaarLokaal(); e.preventDefault(); e.returnValue = ""; }
-  });
 
   // --- Inloggen -----------------------------------------------------------
 
@@ -151,7 +130,7 @@
       }
     },
       h("h1", null, "Max-modus"),
-      h("p", null, "Aanvragen van de site, kozijncheck en opleverrapport, en de bestellingen van kozijnhorren.nl."),
+      h("p", null, "De aanvragen van de site, en de horren van kozijnhorren.nl."),
       h("label", { for: "ww" }, "Wachtwoord"), veld, fout,
       h("button.knop.knop-primair", { type: "submit" }, "Inloggen"));
     leeg(APP).append(form);
@@ -161,44 +140,24 @@
   // --- Overzicht ----------------------------------------------------------
 
   function toonOverzicht(tab) {
-    klus = null;
     const inhoud = h("div.max-lijst", null, h("p.max-laden", null, "Laden…"));
     voegToe(leeg(APP), [
       h("div.max-tabs", { role: "tablist" },
         h("a" + (tab === "aanvragen" ? ".actief" : ""), { href: "#aanvragen", role: "tab" }, "Aanvragen"),
-        h("a" + (tab === "klussen" ? ".actief" : ""), { href: "#", role: "tab" }, "Klussen"),
         h("a" + (tab === "bestellingen" ? ".actief" : ""), { href: "#bestellingen", role: "tab" }, "kozijnhorren.nl")),
       statusBalk(),
-      tab === "klussen" ? h("button.knop.knop-primair.max-nieuw", { type: "button", onclick: nieuweKlus }, "+ Nieuwe klus") : null,
-      tab === "klussen" ? h("p.max-hint", null, "Komt de klus uit een aanvraag van de site? Open hem dan bij Aanvragen: " +
-        "daar staan de klantgegevens al klaar.") : null,
+      tab === "bestellingen" ? horrenOpmeten() : null,
       inhoud,
       h("p.max-voet", null, h("button.linkknop", { type: "button", onclick: uitloggen }, "Uitloggen"))]);
 
-    if (tab === "klussen") {
-      api("GET", "/max/rapporten").then(function (j) {
-        leeg(inhoud);
-        if (!j.rapporten.length) inhoud.append(h("p.max-leeg", null, "Nog geen klussen. Begin met ‘Nieuwe klus’ zodra je op locatie bent."));
-        j.rapporten.forEach(function (r) {
-          const chips = [];
-          chips.push(h("span.chip." + (r.status === "klaar" ? "chip-groen" : "chip-grijs"), null, r.status === "klaar" ? "Rapport klaar" : "Concept"));
-          if (r.rood) chips.push(h("span.chip.chip-rood", null, r.rood + " rood"));
-          if (r.oranje) chips.push(h("span.chip.chip-oranje", null, r.oranje + " oranje"));
-          inhoud.append(h("a.max-regel", { href: "#klus/" + r.id },
-            h("span.max-regel-titel", null, r.naam || "Naamloze klus"),
-            h("span.max-regel-sub", null, [r.straat, r.plaats].filter(Boolean).join(", ") || "Geen adres", " · ", r.datum ? datumKort(r.datum) : ""),
-            h("span.max-chips", null, chips)));
-        });
-      }).catch(function (e) { leeg(inhoud).append(h("p.max-fout", null, e.message)); });
-    } else if (tab === "aanvragen") {
+    if (tab === "aanvragen") {
       api("GET", "/max/aanvragen").then(function (j) {
         leeg(inhoud);
         if (!j.aanvragen.length) inhoud.append(h("p.max-leeg", null, "Nog geen aanvragen via de site. Ze staan ook altijd in je mail."));
         j.aanvragen.forEach(function (a) {
           inhoud.append(h("a.max-regel", { href: "#aanvraag/" + a.id },
             h("span.max-regel-titel", null, a.naam + " · " + a.plaats),
-            h("span.max-regel-sub", null, a.wat + " · " + a.manier.toLowerCase() + " · " + datumKort(a.gemaakt)),
-            h("span.max-chips", null, a.klus ? h("span.chip.chip-groen", null, "Klus aangemaakt") : h("span.chip.chip-oranje", null, "Nieuw"))));
+            h("span.max-regel-sub", null, a.wat + " · " + a.manier.toLowerCase() + " · " + datumKort(a.gemaakt))));
         });
       }).catch(function (e) { leeg(inhoud).append(h("p.max-fout", null, e.message)); });
     } else {
@@ -260,399 +219,29 @@
       h("dl", null, regels.map(function (r) { return [h("dt", null, r[0]), h("dd", null, r[1])]; })));
   }
 
-  function nieuweKlus() {
-    api("POST", "/max/rapporten", {}).then(function (r) { location.hash = "klus/" + r.id; })
-      .catch(function (e) { melding(e.message, "fout"); });
-  }
+  // --- Horren opmeten bij een klant ---------------------------------------
 
-  // --- Een klus -----------------------------------------------------------
-
-  function lokaalSleutel(id) { return "iwrap-klus-" + id; }
-  function bewaarLokaal() { if (klus) schrijf(lokaalSleutel(klus.id), JSON.stringify(klus)); }
-
-  function toonKlus(id) {
-    leeg(APP).append(h("p.max-laden", null, "Klus laden…"));
-    api("GET", "/max/rapporten/" + id).then(function (r) {
-      const lokaal = lees(lokaalSleutel(id));
-      if (lokaal) {
-        try {
-          const l = JSON.parse(lokaal);
-          // Staat er op dit toestel iets wat nog niet op de server kwam? Dan wint dat.
-          if (l._vuil && l._versie === r.versie) { r = l; }
-          else schrijf(lokaalSleutel(id), null);
-        } catch (e) { schrijf(lokaalSleutel(id), null); }
-      }
-      klus = r;
-      if (klus._versie == null) klus._versie = r.versie || 0;
-      bouwKlus();
-      if (klus._vuil) opslaan();
-    }).catch(function (e) {
-      const lokaal = lees(lokaalSleutel(id));
-      if (lokaal) {
-        klus = JSON.parse(lokaal);
-        bouwKlus();
-        zetOpslagStatus("offline");
-        return;
-      }
-      leeg(APP).append(h("div.max-kaart", null, h("p.max-fout", null, e.message), h("a.knop.knop-tweede", { href: "#" }, "Terug")));
-    });
-  }
-
-  function gewijzigd() {
-    klus._vuil = true;
-    bewaarLokaal();
-    zetOpslagStatus("wacht");
-    clearTimeout(opslaanTimer);
-    opslaanTimer = setTimeout(opslaan, 1200);
-    werkAfrondingBij();
-  }
-
-  function opslaan() {
-    if (!klus) return Promise.resolve();
-    if (bezigMetOpslaan) { nogEensOpslaan = true; return Promise.resolve(); }
-    bezigMetOpslaan = true;
-    zetOpslagStatus("bezig");
-    const verstuur = Object.assign({}, klus);
-    delete verstuur._link; delete verstuur._samenvatting; delete verstuur._vuil;
-    return api("PUT", "/max/rapporten/" + klus.id, verstuur).then(function (r) {
-      klus._versie = r.versie;
-      klus.versie = r.versie;
-      klus.bijgewerkt = r.bijgewerkt;
-      klus.status = r.status;
-      klus._link = r._link;
-      klus._samenvatting = r._samenvatting;
-      klus._vuil = false;
-      schrijf(lokaalSleutel(klus.id), null);
-      zetOpslagStatus("klaar");
-      werkAfrondingBij();
-    }).catch(function (e) {
-      if (e.status === 409) {
-        if (confirm("Deze klus is intussen op een ander apparaat gewijzigd. Wil je jouw versie bewaren? (Annuleren laadt de andere versie.)")) {
-          klus._versie = e.data.server.versie;
-          nogEensOpslaan = true;
-        } else {
-          schrijf(lokaalSleutel(klus.id), null);
-          klus = null;
-          route();
-        }
-        return;
-      }
-      zetOpslagStatus("offline");
-      setTimeout(function () { if (klus && klus._vuil) opslaan(); }, 15000);
-    }).then(function () {
-      bezigMetOpslaan = false;
-      if (nogEensOpslaan) { nogEensOpslaan = false; opslaan(); }
-    });
-  }
-
-  function zetOpslagStatus(s) {
-    const el = document.getElementById("opslagstatus");
-    if (!el) return;
-    el.className = "opslagstatus " + s;
-    el.textContent = { wacht: "Wijziging…", bezig: "Opslaan…", klaar: "Opgeslagen", offline: "Geen bereik: bewaard op dit toestel" }[s];
-  }
-
-  function invoer(label, pad, opties) {
-    opties = opties || {};
-    const id = "v-" + pad.join("-");
-    const huidig = pad.reduce(function (o, k) { return o ? o[k] : ""; }, klus);
-    const veld = h(opties.meerregelig ? "textarea" : "input", {
-      id: id, type: opties.type || "text", value: huidig == null ? "" : huidig,
-      autocomplete: opties.autocomplete || "off", inputmode: opties.inputmode, rows: opties.meerregelig ? 3 : null,
-      placeholder: opties.placeholder, enterkeyhint: "next",
-      oninput: function (e) {
-        const doel = pad.slice(0, -1).reduce(function (o, k) { return o[k]; }, klus);
-        doel[pad[pad.length - 1]] = e.target.value;
-        gewijzigd();
-        if (opties.bijWijzigen) opties.bijWijzigen(e.target.value);
-      }
-    });
-    return h("div.veld" + (opties.breed ? ".breed" : ""), null, h("label", { for: id }, label), veld);
-  }
-
-  function bouwKlus() {
-    const k = klus;
-    k.klant = k.klant || {};
-    k.oplevering = k.oplevering || {};
-    k.check = k.check || {};
-
-    leeg(APP).append(
-      h("div.max-balk", null,
-        h("a.terug", { href: "#", "aria-label": "Terug naar de klussen" }, "‹ Klussen"),
-        h("span.opslagstatus.klaar", { id: "opslagstatus" }, "Opgeslagen")),
-      k.aanvraag ? h("p.max-hint.uit-aanvraag", null, "Deze klus komt uit een aanvraag van de site. ",
-        h("a", { href: "#aanvraag/" + k.aanvraag }, "Bekijk de aanvraag en de foto's")) : null,
-
-      h("section.max-kaart", null,
-        h("h2", null, "Klant"),
-        h("div.velden", null,
-          invoer("Naam", ["klant", "naam"], { breed: true, autocomplete: "name" }),
-          invoer("Straat en huisnummer", ["klant", "straat"], { breed: true }),
-          invoer("Postcode", ["klant", "postcode"], {}),
-          invoer("Plaats", ["klant", "plaats"], {}),
-          invoer("Telefoon", ["klant", "telefoon"], { type: "tel", inputmode: "tel", breed: true, autocomplete: "tel" }),
-          invoer("E-mail", ["klant", "email"], { type: "email", inputmode: "email", breed: true, autocomplete: "email" }))),
-
-      h("section.max-kaart", null,
-        h("h2", null, "Oplevering"),
-        h("div.velden", null,
-          invoer("Datum", ["oplevering", "datum"], { type: "date", breed: true }),
-          folieKeuze(),
-          invoer("Wat hebben we gedaan?", ["oplevering", "werk"], { meerregelig: true, breed: true,
-            placeholder: "Bijv. 4 kozijnen voorgevel, onderdorpels achterzijde" }))),
-
-      h("section.max-kaart", { id: "kaart-check" },
-        h("div.kaart-kop", null, h("h2", null, "Kozijncheck"),
-          h("button.knop-klein", { type: "button", onclick: allesGroen }, "Rest op groen")),
-        h("p.uitleg", null, "Eén tik per onderdeel. Alleen bij oranje en rood een foto en een korte notitie."),
-        h("div", { id: "checklijst" })),
-
-      h("section.max-kaart", null,
-        h("h2", null, "Interne notitie"),
-        h("p.uitleg", null, "Alleen voor jou; de klant ziet dit niet."),
-        h("div.velden", null, invoer("Notitie", ["notitie_intern"], { meerregelig: true, breed: true }))),
-
-      h("section.max-kaart.afronden", { id: "afronden" }),
-
-      h("p.max-voet", null, h("button.linkknop.gevaar", { type: "button", onclick: verwijderKlus }, "Klus verwijderen")));
-
-    bouwCheck();
-    werkAfrondingBij();
-  }
-
-  function folieKeuze() {
-    const folies = status.folies;
-    const k = klus.oplevering;
-    const bekend = folies.some(function (f) { return f.naam === k.folie; });
-    const anders = h("div.veld.breed", { hidden: bekend || !k.folie },
-      h("label", { for: "v-folie-anders" }, "Welke folie?"),
-      h("input", { id: "v-folie-anders", value: bekend ? "" : (k.folie || ""), oninput: function (e) { k.folie = e.target.value; gewijzigd(); } }));
-    const select = h("select", { id: "v-folie", onchange: function (e) {
-      const v = e.target.value;
-      if (v === "__anders") { anders.hidden = false; k.folie = ""; k.folie_ral = ""; }
-      else {
-        anders.hidden = true;
-        // De RAL-kleur bij de folie gaat mee in de link naar kozijnhorren.nl.
-        const f = folies.find(function (x) { return x.naam === v; });
-        k.folie = v; k.folie_ral = f ? f.ral : "";
-      }
-      gewijzigd();
-    } },
-      h("option", { value: "" }, "Kies de folie…"),
-      folies.map(function (f) { return h("option", { value: f.naam }, f.naam + " → RAL " + f.ral + (f.gecontroleerd ? "" : " (?)")); }),
-      h("option", { value: "__anders" }, "Andere folie…"));
-    select.value = bekend ? k.folie : (k.folie ? "__anders" : "");
-    return [h("div.veld.breed", null, h("label", { for: "v-folie" }, "Folie"), select), anders];
-  }
-
-  // --- Kozijncheck --------------------------------------------------------
-
-  // Nieuwe horren opmeten: de winkel op deze telefoon, met de kleur van de folie en jouw
-  // code. Met "eigen=1" weet de winkel dat het jouw telefoon is: in de winkelmand stuur je
-  // de horren dan naar de klant, die op zijn eigen telefoon afrekent.
-  function horrenOpmetenLink() {
+  // De winkel op deze telefoon, met jouw code en eventueel de kleur van de folie. Met
+  // "eigen=1" weet de winkel dat het jouw telefoon is: in de winkelmand stuur je de horren
+  // dan naar de klant, die op zijn eigen telefoon afrekent.
+  function horrenLink(ral) {
     const p = new URLSearchParams();
-    if (klus.oplevering.folie_ral) p.set("kleur", klus.oplevering.folie_ral);
+    if (ral) p.set("kleur", ral);
     p.set("code", status.eigen_code || "MAX");
     p.set("eigen", "1");
     return status.shop_url + "/bestellen?" + p.toString();
   }
 
-  function bouwCheck() {
-    const lijst = leeg(document.getElementById("checklijst"));
-    status.kozijncheck.onderdelen.forEach(function (d) {
-      const c = klus.check[d.sleutel] = klus.check[d.sleutel] || { stand: null, notitie: "", fotos: [] };
-      const standen = d.optioneel ? ["groen", "oranje", "rood", "nvt"] : ["groen", "oranje", "rood"];
-      const detail = h("div.check-detail", { hidden: !(c.stand === "oranje" || c.stand === "rood") });
-      const rij = h("div.check-rij" + (c.stand ? ".stand-" + c.stand : ""), null,
-        h("div.check-naam", null, h("b", null, d.naam), h("small", null, d.kijkt)),
-        h("div.stoplicht", { role: "radiogroup", "aria-label": d.naam },
-          standen.map(function (s) {
-            return h("button.sl.sl-" + s + (c.stand === s ? ".aan" : ""), {
-              type: "button", role: "radio", "aria-checked": c.stand === s ? "true" : "false",
-              title: s === "nvt" ? "Niet van toepassing" : d[s],
-              onclick: function () {
-                c.stand = c.stand === s ? null : s;
-                gewijzigd();
-                bouwCheck();
-                if (d.sleutel === "horren" && (c.stand === "oranje" || c.stand === "rood")) {
-                  const kleur = klus.oplevering.folie_ral ? " in de kleur van de folie" : "";
-                  melding(status.winkel_live
-                    ? "Het rapport verwijst de klant naar kozijnhorren.nl" + kleur + ", met jouw code."
-                    : "Meet de nieuwe horren meteen op: de knop opent de winkel" + kleur + ", met jouw code erin.");
-                }
-              }
-            }, s === "nvt" ? "n.v.t." : s[0].toUpperCase() + s.slice(1));
-          })),
-        detail);
-      if (c.stand === "oranje" || c.stand === "rood") {
-        detail.append(
-          h("p.check-hint", null, d[c.stand]),
-          h("textarea", { rows: 2, placeholder: "Korte notitie (optioneel), bijv. waar precies", value: c.notitie || "",
-            "aria-label": "Notitie bij " + d.naam, oninput: function (e) { c.notitie = e.target.value; gewijzigd(); } }),
-          fotoStrook(c.fotos, function () { gewijzigd(); bouwCheck(); }));
-        if (d.sleutel === "horren") {
-          detail.append(h("p.check-horren", null,
-            h("a.knop.knop-primair", { href: horrenOpmetenLink(), target: "_blank", rel: "noopener" }, "Nieuwe horren opmeten")));
-        }
-      }
-      lijst.append(rij);
-    });
-  }
-
-  function allesGroen() {
-    status.kozijncheck.onderdelen.forEach(function (d) {
-      const c = klus.check[d.sleutel];
-      if (!c.stand) c.stand = d.optioneel ? "nvt" : "groen";
-    });
-    gewijzigd();
-    bouwCheck();
-  }
-
-  // --- Foto's -------------------------------------------------------------
-
-  function fotoStrook(lijst, naWijziging, maximaal) {
-    maximaal = maximaal || 4;
-    const strook = h("div.foto-strook");
-    lijst.forEach(function (fid, i) {
-      strook.append(h("div.foto-duim", null,
-        h("img", { src: "/api/fotos/" + fid, alt: "" }),
-        h("button", { type: "button", "aria-label": "Foto weghalen", onclick: function () { lijst.splice(i, 1); naWijziging(); } }, "×")));
-    });
-    if (lijst.length < maximaal) {
-      const input = h("input", { type: "file", accept: "image/*", capture: "environment", hidden: true,
-        onchange: function (e) {
-          const bestand = e.target.files[0];
-          if (!bestand) return;
-          knop.textContent = "Uploaden…";
-          knop.disabled = true;
-          verkleinFoto(bestand).then(function (data) { return api("POST", "/max/fotos", { data: data }); })
-            .then(function (j) { lijst.push(j.id); naWijziging(); })
-            .catch(function (err) { melding("Foto niet opgeslagen: " + err.message, "fout"); knop.textContent = "+ Foto"; knop.disabled = false; });
-        } });
-      const knop = h("button.foto-knop", { type: "button", onclick: function () { input.click(); } }, "+ Foto");
-      strook.append(knop, input);
-    }
-    return strook;
-  }
-
-  function verkleinFoto(bestand) {
-    return new Promise(function (klaar, mis) {
-      const lezer = new FileReader();
-      lezer.onerror = function () { mis(new Error("Kan de foto niet lezen.")); };
-      lezer.onload = function () {
-        const img = new Image();
-        img.onerror = function () { mis(new Error("Dit bestand is geen foto.")); };
-        img.onload = function () {
-          const max = 1400;
-          const schaal = Math.min(1, max / Math.max(img.width, img.height));
-          const c = document.createElement("canvas");
-          c.width = Math.round(img.width * schaal);
-          c.height = Math.round(img.height * schaal);
-          c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-          klaar(c.toDataURL("image/jpeg", 0.72));
-        };
-        img.src = lezer.result;
-      };
-      lezer.readAsDataURL(bestand);
-    });
-  }
-
-  // --- Afronden en delen --------------------------------------------------
-
-  function telefoonVoorWhatsapp(tel) {
-    let t = String(tel || "").replace(/\D/g, "");
-    if (t.indexOf("00") === 0) t = t.slice(2);
-    else if (t.indexOf("0") === 0) t = "31" + t.slice(1);
-    return t.length >= 10 ? t : "";
-  }
-
-  function werkAfrondingBij() {
-    const doos = document.getElementById("afronden");
-    if (!doos || !klus) return;
-    leeg(doos);
-    const k = klus;
-    const beoordeeld = status.kozijncheck.onderdelen.filter(function (d) { return k.check[d.sleutel] && k.check[d.sleutel].stand; }).length;
-    const horren = (k.check.horren || {}).stand;
-    const punten = [
-      [!!k.klant.naam, "Naam van de klant"],
-      [!!(k.klant.email || k.klant.telefoon), "E-mail of telefoon, om het rapport te sturen"],
-      [!!k.oplevering.folie, "Folie gekozen (voor de garantie, en de horkleur op kozijnhorren.nl)"],
-      [beoordeeld === status.kozijncheck.onderdelen.length, "Kozijncheck: " + beoordeeld + " van " + status.kozijncheck.onderdelen.length + " ingevuld"],
-    ];
-    doos.append(h("h2", null, "Afronden"),
-      h("ul.afvinklijst", null, punten.map(function (p) { return h("li" + (p[0] ? ".ok" : ""), null, p[1]); })));
-
-    if (k.status !== "klaar") {
-      doos.append(h("button.knop.knop-primair.breed", { type: "button", onclick: function () {
-        k.status = "klaar";
-        gewijzigd();
-        clearTimeout(opslaanTimer);
-        opslaan().then(function () { melding("Rapport staat klaar"); });
-      } }, "Rapport klaarzetten"),
-      h("p.uitleg", null, "Pas daarna kan de klant het openen. Je kunt het daarna nog aanpassen."),
-      h("p", null, h("a", { href: "/r/" + k.id, target: "_blank", rel: "noopener" }, "Bekijk eerst als concept")));
-      return;
-    }
-
-    const link = k._link || (location.origin + "/r/" + k.id);
-    const qr = h("div.qr", { id: "qr" });
-    tekenQr(qr, link);
-    const tel = telefoonVoorWhatsapp(k.klant.telefoon);
-    const voornaam = (k.klant.naam || "").split(" ")[0];
-    const waTekst = "Hoi " + voornaam + ", hierbij je opleverrapport van iWrap, met de kozijncheck" +
-      (status.winkel_live && (horren === "oranje" || horren === "rood") ? " en een tip voor nieuwe horren in de kleur van je kozijn" : "") +
-      ": " + link + "\n\nGroet, Max";
-    doos.append(
-      h("p.klaar-melding", null, "Het rapport staat klaar. Laat de klant scannen, of stuur de link."),
-      qr,
-      h("p.link", null, h("a", { href: link, target: "_blank", rel: "noopener" }, link.replace(/^https?:\/\//, ""))),
-      h("div.deelknoppen", null,
-        h("button.knop.knop-primair", { type: "button", onclick: function () { qrGroot(link); } }, "Laat de klant scannen"),
-        h("a.knop.knop-tweede", { href: "https://wa.me/" + tel + "?text=" + encodeURIComponent(waTekst), target: "_blank", rel: "noopener" },
-          tel ? "WhatsApp naar klant" : "WhatsApp (kies zelf)"),
-        h("button.knop.knop-tweede", { type: "button", disabled: !k.klant.email, onclick: function (e) {
-          const knop = e.currentTarget;
-          knop.disabled = true;
-          (k._vuil ? opslaan() : Promise.resolve()).then(function () { return api("POST", "/max/rapporten/" + k.id + "/mail", {}); })
-            .then(function () { melding("Mail verstuurd naar " + k.klant.email); knop.textContent = "Opnieuw mailen"; })
-            .catch(function (err) { melding(err.message, "fout"); })
-            .then(function () { knop.disabled = false; });
-        } }, k.gedeeld && k.gedeeld.mail ? "Opnieuw mailen" : "Mail naar klant"),
-        h("button.knop.knop-tweede", { type: "button", onclick: function () {
-          (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(function () { melding("Link gekopieerd"); }, function () { prompt("Kopieer de link:", link); });
-        } }, "Kopieer link")),
-      h("p.uitleg", null, h("button.linkknop", { type: "button", onclick: function () { k.status = "concept"; gewijzigd(); } }, "Terug naar concept"),
-        " (de klant kan het dan niet meer openen)"));
-  }
-
-  function tekenQr(doos, tekst) {
-    if (typeof qrcode !== "function") { doos.textContent = "QR-code kon niet laden."; return; }
-    const q = qrcode(0, "M");
-    q.addData(tekst);
-    q.make();
-    doos.innerHTML = q.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
-    const svg = doos.querySelector("svg");
-    if (svg) svg.setAttribute("aria-label", "QR-code naar het rapport");
-  }
-
-  function qrGroot(link) {
-    const laag = h("div.qr-laag", { role: "dialog", "aria-label": "QR-code voor de klant", onclick: function () { laag.remove(); } },
-      h("div.qr-groot", null,
-        h("p", null, "Richt je camera hierop"),
-        h("div.qr", { id: "qr-groot" }),
-        h("small", null, "Tik ergens om te sluiten")));
-    document.body.append(laag);
-    tekenQr(document.getElementById("qr-groot"), link);
-  }
-
-  function verwijderKlus() {
-    if (!confirm("Deze klus met rapport en foto's definitief verwijderen?")) return;
-    api("DELETE", "/max/rapporten/" + klus.id).then(function () {
-      schrijf(lokaalSleutel(klus.id), null);
-      klus = null;
-      location.hash = "";
-    }).catch(function (e) { melding(e.message, "fout"); });
+  function horrenOpmeten() {
+    const knop = h("a.knop.knop-primair.breed", { href: horrenLink(""), target: "_blank", rel: "noopener" }, "Nieuwe horren opmeten");
+    const keuze = h("select", { id: "ho-folie", onchange: function (e) { knop.href = horrenLink(e.target.value); } },
+      h("option", { value: "" }, "Kleur kies ik in de winkel"),
+      (status.folies || []).map(function (f) { return h("option", { value: f.ral }, f.naam + " → RAL " + f.ral + (f.gecontroleerd ? "" : " (?)")); }));
+    return h("section.max-kaart", null,
+      h("h2", null, "Horren opmeten bij een klant"),
+      h("p.uitleg", null, "Opent de winkel met jouw code. In de winkelmand stuur je de horren naar de klant, die zelf afrekent."),
+      h("div.veld.max-veld", null, h("label", { for: "ho-folie" }, "Folie van de klus (optioneel)"), keuze),
+      knop);
   }
 
   // --- Een bestelling -----------------------------------------------------
@@ -660,7 +249,6 @@
   // --- Een aanvraag -------------------------------------------------------
 
   function toonAanvraag(id) {
-    klus = null;
     leeg(APP).append(h("p.max-laden", null, "Aanvraag laden…"));
     api("GET", "/max/aanvragen/" + id).then(bouwAanvraag).catch(function (e) {
       leeg(APP).append(h("div.max-kaart", null, h("p.max-fout", null, e.message), h("a.knop.knop-tweede", { href: "#aanvragen" }, "Terug")));
@@ -685,16 +273,8 @@
   function bouwAanvraag(a) {
     const g = a.gegevens;
     const kaart = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(a.adres);
-    const klusKnop = a.klus
-      ? h("a.knop.knop-primair", { href: "#klus/" + a.klus }, "Naar de klus en de kozijncheck")
-      : h("button.knop.knop-primair", { type: "button", onclick: function (e) {
-          e.target.disabled = true;
-          api("POST", "/max/aanvragen/" + a.id + "/klus", {}).then(function (r) { location.hash = "klus/" + r.id; })
-            .catch(function (f) { e.target.disabled = false; melding(f.message, "fout"); });
-        } }, "Klus aanmaken voor de kozijncheck");
     leeg(APP).append(
-      h("div.max-balk", null, h("a.terug", { href: "#aanvragen" }, "‹ Aanvragen"),
-        a.klus ? h("span.chip.chip-groen", null, "Klus aangemaakt") : h("span.chip.chip-oranje", null, "Nieuw")),
+      h("div.max-balk", null, h("a.terug", { href: "#aanvragen" }, "‹ Aanvragen")),
       h("section.max-kaart", null,
         h("h2", null, g.naam + " · " + g.plaats),
         h("p.uitleg", null, "Binnengekomen " + datumKort(a.gemaakt) + " · " + a.manier.toLowerCase()),
@@ -705,10 +285,7 @@
           h("dt", null, "Kleur"), h("dd", null, a.kleur),
           (a.details || []).map(function (d) { return [h("dt", null, d[0]), h("dd", null, d[1])]; }),
           a.via ? [h("dt", null, "Herkomst"), h("dd", null, a.via)] : null,
-          a.toelichting ? [h("dt", null, "Opmerking"), h("dd", null, a.toelichting)] : null),
-        klusKnop,
-        h("p.max-hint", null, a.klus ? "Klantgegevens en werk staan al in de klus." :
-          "Maakt een klus met de klantgegevens en het werk al ingevuld. Daarna doe je ter plekke de kozijncheck.")),
+          a.toelichting ? [h("dt", null, "Opmerking"), h("dd", null, a.toelichting)] : null)),
       // Spreiden: append() maakt van een lijst anders de tekst "[object HTMLElement]".
       ...a.overzicht.map(function (blok) {
         return h("section.max-kaart", null,
@@ -719,7 +296,6 @@
   }
 
   function toonBestelling(nr) {
-    klus = null;
     leeg(APP).append(h("p.max-laden", null, "Bestelling laden…"));
     api("GET", "/max/bestellingen/" + nr).then(bouwBestelling).catch(function (e) {
       leeg(APP).append(h("div.max-kaart", null, h("p.max-fout", null, e.message), h("a.knop.knop-tweede", { href: "#bestellingen" }, "Terug")));

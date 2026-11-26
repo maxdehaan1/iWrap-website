@@ -39,10 +39,6 @@ SITE = "https://iwrap.nl"
 # haalt die op bij /api/reviews en zet hem in elk [data-rv]-veld.
 REVIEWS = json.loads((ROOT / "reviews.json").read_text(encoding="utf-8"))
 
-# De kozijncheck: zes onderdelen met stoplicht. Staat in de achterkant omdat de
-# Max-modus en het rapport er ook uit lezen; hier alleen voor /kozijncheck.
-KOZIJNCHECK = json.loads((ROOT / "backend" / "data" / "kozijncheck.json").read_text(encoding="utf-8"))
-
 def instelling(naam):
     """Een gegeven dat niet in de code staat, zoals het mailadres van de zaak: uit de
     omgeving (export IWRAP_EMAIL=... in ~/.bash_profile), of anders uit .env in de
@@ -75,7 +71,6 @@ BEDRIJF = {
     # gebruiken telefoon_tel, met landcode.
     "telefoon": "06 1441 5877",
     "telefoon_tel": "+31614415877",
-    "whatsapp": "31614415877",
     "whatsapp_url": "https://wa.me/31614415877",
     "instagram": "https://www.instagram.com/iwrap.nl/",
     # Beide links komen uit de Place ID in reviews.json, zie reviews_afleiden().
@@ -98,10 +93,17 @@ BEDRIJF = {
 # kozijnhorren.nl staat nog niet online, en het domein is nog vrij. Zolang "live" in
 # backend/data/winkel.json false is, noemt de site kozijnhorren.nl nergens: de stukken tussen
 # <!-- als kozijnhorren --> en <!-- /als kozijnhorren --> vallen weg (audit M16, akkoord Max
-# 18 november 2026), en het opleverrapport geeft geen horrentip. Dezelfde schakelaar zet de
-# backend om. Zet hem op true zodra kozijnhorren.nl werkt en bouw opnieuw: dan staan naam,
-# link en horrentips er weer.
+# 18 november 2026). Dezelfde schakelaar zet de backend om. Zet hem op true zodra
+# kozijnhorren.nl werkt en bouw opnieuw: dan staan naam, link en horrentips er weer.
 KOZIJNHORREN_LIVE = bool(json.loads((ROOT / "backend" / "data" / "winkel.json").read_text(encoding="utf-8")).get("live"))
+
+
+# WhatsApp (Max, 26 november 2026): voorlopig niet. Klanten nemen contact op via de mail of
+# bellen. Zolang dit False is, valt alles tussen <!-- als whatsapp --> en <!-- /als whatsapp -->
+# in de bron weg, en hebben de footer en de actiebalk op een telefoon geen WhatsApp (de actiebalk
+# heeft dan Mailen). Weer aan: True, de privacyverklaring weer laten noemen dat je kunt appen
+# (src/pages/privacy.html), en bouwen.
+WHATSAPP = False
 
 
 def kozijnhorren_link(tekst="kozijnhorren.nl", nieuw_venster=False):
@@ -114,7 +116,7 @@ def kozijnhorren_link(tekst="kozijnhorren.nl", nieuw_venster=False):
 FEITEN = {
     "garantie_folie": "tien jaar Renolit-garantie op de folie",
     "garantie_montage": "vijf jaar garantie op de uitvoering",
-    # Dezelfde termijnen als getal: het opleverrapport rekent er de einddatum mee uit.
+    # Dezelfde termijnen als getal, voor de grote cijfers en de korte overzichtjes.
     "garantie_folie_jaren": "10",
     "garantie_montage_jaren": "5",
     "levensduur_profiel": "50 tot 75 jaar",
@@ -148,7 +150,6 @@ NAV_ONDER = {
     "rolluikkast-herstellen": "kunststof-kozijn-herstellen",
     "levensduur-kozijnfolie": "kunststof-kozijn-herstellen",
     "kozijnmerken": "kunststof-kozijn-herstellen",
-    "kozijncheck": "werkwijze",
     "voor-kozijnbedrijven": "vve-en-woningcorporaties",
     "veelgestelde-vragen": "contact",
 }
@@ -159,11 +160,10 @@ FOOTER_KOLOMMEN = [
         ("dakkapel-kozijnen", "Dakkapel kozijnen"),
         ("rolluikkast-herstellen", "Rolluikkasten"),
         ("werkwijze", "Onze werkwijze"),
-        ("kozijncheck", "Gratis kozijncheck"),
         ("kosten", "Wat kost het"),
         ("levensduur-kozijnfolie", "Hoe lang folie meegaat"),
         ("voorbeelden", "Voorbeelden"),
-        ("kozijnmerken/index", "Per kozijnmerk"),
+        ("kozijnmerken/index", "Kozijnmerken"),
     ]),
     ("Voor wie", [
         ("vve-en-woningcorporaties", "VvE's en woningcorporaties"),
@@ -179,15 +179,6 @@ FOOTER_KOLOMMEN = [
         ("privacy", "Privacy"),
     ]),
 ]
-
-# ---------------------------------------------------------------------------
-# Kozijnmerken. Uit src/merken.json komen de merkpagina's, de hub en de sitemap.
-# Elk merk heeft daar zijn eigen tekst: wie het merk is, hoe je het herkent,
-# waar het bij dat merk op aankomt en een paar eigen vragen. Zo lijken de
-# pagina's niet op elkaar, en dat is voor Google het hele punt van een pagina
-# per merk. Een merk toevoegen = daar een blok bijzetten en bouwen.
-# ---------------------------------------------------------------------------
-MERKEN = json.loads((ROOT / "src" / "merken.json").read_text(encoding="utf-8"))
 
 # ---------------------------------------------------------------------------
 # Werkgebied. Regio's met de plaatsen waar iWrap daadwerkelijk gewerkt heeft.
@@ -313,38 +304,6 @@ def render_regios():
             f'<div class="regio"><h3>{regio}</h3><ul>{items}</ul></div>'
         )
     return '<div class="regios">' + "".join(uit) + "</div>"
-
-
-def render_kozijncheck_tabel():
-    """De zes onderdelen met hun stoplicht, uit backend/data/kozijncheck.json.
-    Dezelfde bron als de Max-modus en het rapport, zodat de uitleg op de site
-    nooit iets anders zegt dan wat een klant in zijn rapport krijgt."""
-    rijen = []
-    for d in KOZIJNCHECK["onderdelen"]:
-        naam = d["naam"] + (' <small>(als je ze hebt)</small>' if d.get("optioneel") else "")
-        rijen.append(
-            f'<tr><td><strong>{naam}</strong><br><span class="check-kijkt">{d["kijkt"]}</span></td>'
-            f'<td><span class="stip stip-groen" aria-hidden="true"></span>{d["groen"]}</td>'
-            f'<td><span class="stip stip-oranje" aria-hidden="true"></span>{d["oranje"]}</td>'
-            f'<td><span class="stip stip-rood" aria-hidden="true"></span>{d["rood"]}</td></tr>'
-        )
-    return (
-        '<div class="tabel-wrap"><table class="checktabel">'
-        "<thead><tr><th>Onderdeel</th><th>Groen</th><th>Oranje</th><th>Rood</th></tr></thead>"
-        "<tbody>" + "".join(rijen) + "</tbody></table></div>"
-    )
-
-
-def render_merkkaarten():
-    """De merkhub uit MERKEN, zodat een nieuw merk maar op één plek hoeft."""
-    uit = []
-    for m in MERKEN:
-        uit.append(
-            f'<a class="merkkaart" href="/kozijnmerken/{m["slug"]}">'
-            f'<h3>{m["naam"]}</h3><p class="land">{m["land"]}</p>'
-            f'<p>{m["kenmerk"]}</p></a>'
-        )
-    return '<div class="merkkaarten">' + "".join(uit) + "</div>"
 
 
 MAANDEN = ["januari", "februari", "maart", "april", "mei", "juni", "juli",
@@ -539,23 +498,26 @@ def render_nav(slug):
 
 
 def render_actiebalk():
-    """Op een telefoon onderin altijd binnen bereik: offerte, bellen en WhatsApp. Niet op
-    /offerte (dat heeft een eigen balk met Vorige en Volgende) en niet op de kale pagina's
-    (rapport, Max-modus). De offerteknop in de kop verdwijnt op een telefoon, want die
-    staat hier al (css: "De actiebalk")."""
+    """Op een telefoon onderin altijd binnen bereik: offerte, bellen en mailen (of WhatsApp,
+    als WHATSAPP aan staat). Niet op /offerte (dat heeft een eigen balk met Vorige en
+    Volgende) en niet op de kale pagina (Max-modus). De offerteknop in de kop verdwijnt op
+    een telefoon, want die staat hier al (css: "De actiebalk")."""
     b = BEDRIJF
+    derde = (
+        f'<a href="{b["whatsapp_url"]}"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M4.5 19.5l1.2-3.6A8 8 0 1 1 8.4 18.6l-3.9.9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>WhatsApp</a>'
+        if WHATSAPP else
+        f'<a href="mailto:{b["email"]}"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m4.5 7.5 7.5 5.5 7.5-5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>Mailen</a>')
     return f"""<nav class="actiebalk" aria-label="Snel contact">
   <a class="ab-offerte" href="/offerte" aria-label="Offerte aanvragen">Offerte</a>
   <a href="tel:{b['telefoon_tel']}"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M6.6 3.5 9 3l1.6 4-2 1.3a12 12 0 0 0 5.1 5.1l1.3-2 4 1.6-.5 2.4a2 2 0 0 1-2 1.6A15.5 15.5 0 0 1 5 5.5a2 2 0 0 1 1.6-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Bellen</a>
-  <a href="{b['whatsapp_url']}"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M4.5 19.5l1.2-3.6A8 8 0 1 1 8.4 18.6l-3.9.9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>WhatsApp</a>
+  {derde}
 </nav>
 """
 
 
 def render_kale_kop(label):
-    """Voor het rapport en de Max-modus: alleen het logo en een label, geen
-    menu. Een klant die zijn rapport opent hoeft niet door de site te navigeren,
-    en op een telefoon op de steiger telt elke pixel."""
+    """Voor de Max-modus: alleen het logo en een label, geen menu. Op een telefoon
+    telt elke pixel."""
     return f"""<header class="site kaal">
   <div class="nav">
     <a class="brand" href="/" aria-label="iWrap, naar de homepage">{LOGO}</a>
@@ -609,7 +571,7 @@ def render_footer():
         Nederland. Volledig gecertificeerde monteurs, geen zzp'ers, uitsluitend Renolit folie.</p>
         <p class="fcontact">
           <a href="tel:{b['telefoon_tel']}">{b['telefoon'].replace(" ", "&nbsp;")}</a><br>
-          <a href="{b['whatsapp_url']}">WhatsApp</a><br>
+          {f'<a href="{b["whatsapp_url"]}">WhatsApp</a><br>' if WHATSAPP else ''}
           <a href="mailto:{b['email']}">{b['email']}</a>
         </p>
         <p class="fadres">{b['juridisch']}<br>{b['straat']}, {b['postcode']} {b['plaats']}</p>
@@ -766,9 +728,8 @@ def werk_csp_bij():
 
 
 # Bezoekers tellen met Vercel Web Analytics: zonder cookies en zonder iets op het
-# toestel van de bezoeker, dus zonder cookiebanner. Niet op de Max-modus en het
-# rapport (noindex): die adressen bevatten een sleutel en horen nergens in een
-# overzicht. Werkt pas als Analytics in Vercel aanstaat (zie LIVEGANG.md).
+# toestel van de bezoeker, dus zonder cookiebanner. Niet op de Max-modus (noindex):
+# die hoort nergens in een overzicht. Werkt pas als Analytics in Vercel aanstaat (zie LIVEGANG.md).
 ANALYTICS = '<script defer src="/_vercel/insights/script.js"></script>\n'
 
 
@@ -890,7 +851,7 @@ def render(slug, meta, inhoud, ver):
         nav=render_kale_kop(meta["kaal"]) if meta.get("kaal") else render_nav(slug),
         inhoud=inhoud,
         footer="" if meta.get("kaal") else render_footer() + ("" if slug == "offerte" else render_actiebalk()),
-        # Telscript niet op privé-pagina's (rapport, Max-modus); wel op het tekenblad ("tellen").
+        # Telscript niet op privé-pagina's (Max-modus); wel op het tekenblad ("tellen").
         scripts=scripts + ("" if meta.get("noindex") and not meta.get("tellen") else ANALYTICS),
     )
 
@@ -926,12 +887,12 @@ def substitueer(tekst):
     # verdwijnen ze helemaal (audit M16: het domein is nog vrij, dus de naam ook nog niet noemen).
     tekst = re.sub(r"<!-- als kozijnhorren -->(.*?)<!-- /als kozijnhorren -->",
                    (lambda m: m.group(1)) if KOZIJNHORREN_LIVE else "", tekst, flags=re.S)
+    # Hetzelfde voor WhatsApp: voorlopig uit (zie WHATSAPP bovenin).
+    tekst = re.sub(r"<!-- als whatsapp -->(.*?)<!-- /als whatsapp -->",
+                   (lambda m: m.group(1)) if WHATSAPP else "", tekst, flags=re.S)
     tekst = tekst.replace("{{kozijnhorren}}", kozijnhorren_link())
     tekst = tekst.replace("{{kozijnhorren_nieuw_venster}}", kozijnhorren_link(nieuw_venster=True))
-    tekst = tekst.replace("{{kozijncheck_tabel}}", render_kozijncheck_tabel())
-    tekst = tekst.replace("{{kozijncheck_disclaimer}}", KOZIJNCHECK["disclaimer"])
     tekst = tekst.replace("{{regios}}", render_regios())
-    tekst = tekst.replace("{{merkkaarten}}", render_merkkaarten())
     tekst = re.sub(r"\{\{reviews:(\d+)(?::(\d+))?\}\}",
                    lambda m: render_reviews(int(m.group(1)), int(m.group(2) or 0)),
                    tekst)
@@ -1002,12 +963,6 @@ def main():
         slug = str(bron.relative_to(SRC)).replace(".html", "")
         paginas.append((slug, meta, inhoud))
 
-    # Merkpagina's worden uit MERKEN gegenereerd, niet uit losse bronbestanden.
-    sjabloon = (SRC.parent / "merk-sjabloon.html").read_text(encoding="utf-8")
-    for merk in MERKEN:
-        meta, inhoud = merkpagina(merk, sjabloon)
-        paginas.append((f"kozijnmerken/{merk['slug']}", meta, inhoud))
-
     for slug, meta, inhoud in paginas:
         doel = ROOT / (slug + ".html")
         doel.parent.mkdir(parents=True, exist_ok=True)
@@ -1048,68 +1003,6 @@ def ruim_op(slugs):
     return weg
 
 
-def merkpagina(merk, sjabloon):
-    """Vult het merksjabloon met de eigen tekst van het merk (src/merken.json).
-    De opmaak is voor alle merken gelijk, de inhoud niet."""
-    n = merk["naam"]
-    meta = {
-        "title": f"{n} kozijn verkleurd? Folie herstellen | iWrap",
-        "description": merk["beschrijving"],
-        "ogtitle": f"{n}-kozijnen herstellen met Renolit folie",
-        "bodyclass": "tekstpagina",
-        "css": ["content"],
-        "kruimels": [("Kozijnmerken", "/kozijnmerken"), (n, f"/kozijnmerken/{merk['slug']}")],
-        "ogimage": "/images/na-herstelde-kozijnhoek-1600.webp",
-        # Voor Google de vragen als platte tekst, zonder de links uit het antwoord.
-        "faq": [{"v": q["v"], "a": re.sub(r"<[^>]+>", "", q["a"])} for q in merk["faq"]],
-    }
-    if len(meta["description"]) > 160:
-        raise SystemExit(f"src/merken.json: de beschrijving van {n} is langer dan 160 tekens")
-
-    def alineas(lijst, inspringen="      "):
-        return "\n".join(f"{inspringen}<p>{a}</p>" for a in lijst)
-
-    letop = ""
-    if merk.get("letop"):
-        l = merk["letop"]
-        letop = (f'      <div class="{l["klasse"]}">\n        <h3>{l["kop"]}</h3>\n'
-                 + alineas(l["tekst"], "        ") + "\n      </div>")
-    dealerblok = ""
-    if merk.get("dealer"):
-        dealerblok = (
-            '<div class="callout">\n'
-            f'  <h3>We werken samen met {n}-dealers</h3>\n'
-            f'  <p>Verschillende {n}-vestigingen verwijzen hun klanten naar ons door '
-            "wanneer herstel een betere oplossing is dan een nieuw kozijn. Ben je via "
-            f"je {n}-dealer hier terechtgekomen? Zet dat even in je aanvraag, dan "
-            "weten we meteen om welk profiel het gaat.</p>\n"
-            "</div>"
-        )
-    faq = '      <div class="faq">\n' + "\n".join(
-        f'        <details>\n          <summary>{q["v"]}</summary>\n'
-        f'          <div class="antwoord"><p>{q["a"]}</p></div>\n        </details>'
-        for q in merk["faq"]) + "\n      </div>"
-
-    inhoud = sjabloon
-    for sleutel, waarde in [
-        ("naam", n),
-        ("slug", merk["slug"]),
-        ("land", merk["land"]),
-        ("lede", merk["lede"]),
-        ("over", alineas(merk["over"])),
-        ("herkennen", '      <ul class="vinklijst">\n'
-                      + "\n".join(f"        <li>{h}</li>" for h in merk["herkennen"])
-                      + "\n      </ul>"),
-        ("letop", letop),
-        ("dealerblok", dealerblok),
-        ("faq", faq),
-    ]:
-        inhoud = inhoud.replace("{{merk." + sleutel + "}}", waarde)
-    if "{{merk." in inhoud:
-        raise SystemExit("merk-sjabloon.html: er staat nog een onbekend {{merk.…}}-veld in")
-    return meta, inhoud
-
-
 def _git_datum(pad):
     """De dag van de laatste commit van een bestand, of None."""
     try:
@@ -1141,7 +1034,7 @@ def laatst_gewijzigd(paginas):
         if not oud:
             # Eerste keer: de dag van de laatste commit van de bron is eerlijker dan vandaag.
             bron = SRC / (slug + ".html")
-            datum = _git_datum(bron if bron.exists() else SRC.parent / "merk-sjabloon.html") or vandaag
+            datum = _git_datum(bron) or vandaag
         nu[slug] = {"hash": h, "datum": datum}
     if nu != bekend:
         pad.write_text(json.dumps(nu, indent=1, sort_keys=True) + "\n", encoding="utf-8")
@@ -1168,7 +1061,7 @@ def schrijf_sitemap(paginas, datums):
         encoding="utf-8",
     )
     (ROOT / "robots.txt").write_text(
-        f"User-agent: *\nAllow: /\nDisallow: /max\nDisallow: /r/\nDisallow: /api/\n\nSitemap: {SITE}/sitemap.xml\n",
+        f"User-agent: *\nAllow: /\nDisallow: /max\nDisallow: /api/\n\nSitemap: {SITE}/sitemap.xml\n",
         encoding="utf-8"
     )
 

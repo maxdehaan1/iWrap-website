@@ -46,16 +46,15 @@ def lees_data(naam):
 
 WINKEL = lees_data("winkel.json")
 # Is kozijnhorren.nl open voor klanten? Eén schakelaar: "live" in winkel.json. Zolang hij
-# uit staat, draait de winkel op kozijnhorren.vercel.app en gebruikt alleen Max hem: het
-# opleverrapport en iwrap.nl noemen hem nog niet, en de links in de mails gaan naar het
-# Vercel-adres. Zet hem aan als het domein werkt, en bouw beide sites opnieuw.
+# uit staat, draait de winkel op kozijnhorren.vercel.app en gebruikt alleen Max hem: iwrap.nl
+# noemt hem nog niet, en de links in de mails gaan naar het Vercel-adres. Zet hem aan als het domein werkt, en bouw beide sites opnieuw.
 WINKEL_LIVE = bool(WINKEL.get("live"))
 WINKEL_VERCEL = "https://kozijnhorren.vercel.app"
 
 # Waar de twee sites staan. Lokaal draait iwrap.nl op 8010 en kozijnhorren.nl op 8020.
 # Op een Vercel-testadres (preview) wijzen links naar dat testadres zelf, en naar het
-# testadres van dezelfde branch in het project "kozijnhorren". Zo klikt een rapport op
-# een testadres niet door naar de echte site.
+# testadres van dezelfde branch in het project "kozijnhorren". Zo klikt een mail op een
+# testadres niet door naar de echte site.
 _PREVIEW = OP_VERCEL and env("VERCEL_ENV") == "preview" and env("VERCEL_BRANCH_URL")
 _IWRAP_STANDAARD = ("https://" + env("VERCEL_BRANCH_URL")) if _PREVIEW else \
     "https://iwrap.nl" if OP_VERCEL else "http://localhost:8010"
@@ -141,10 +140,6 @@ PAST_ALLES_NA_DAGEN = int(env("PAST_ALLES_NA_DAGEN", "5"))
 # Google-reviews. Met deze sleutel lopen cijfer, aantal en reviews op alle sites
 # vanzelf mee (zie reviews.py en de README). Zonder: de stand van de laatste build.
 GOOGLE_PLACES_API_KEY = env("GOOGLE_PLACES_API_KEY")
-# Waar een klant een review schrijft: het opleverrapport en de mails linken hierheen.
-IWRAP_REVIEWS_URL = env("IWRAP_REVIEWS_URL",
-                        "https://search.google.com/local/writereview?placeid=ChIJyzBbwf-FxkcRIdeuLPGJt9U")
-IWRAP_WHATSAPP = env("IWRAP_WHATSAPP", "31614415877")
 
 
 def status():

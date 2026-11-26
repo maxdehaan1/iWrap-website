@@ -5,12 +5,9 @@ bestanden in .data/, zodat je alles kunt testen zonder account. Beide kennen
 precies dezelfde handvol bewerkingen; de rest van de code weet niet welke het is.
 
 Sleutels:
-  rapport:<id>        een klus: klant, oplevering, kozijncheck
-  foto:<id>           een foto (base64-jpeg), klein gemaakt op de telefoon
   bestelling:<nr>     een horrenbestelling
   aanvraag:<id>       een offerteaanvraag van de site (verloopt vanzelf, zie aanvragen.py)
   aanvraagfoto:<id>:<naam>  een foto bij die aanvraag (base64-jpeg, verloopt mee)
-  index rapporten     alle klussen, gesorteerd op laatst bijgewerkt
   index bestellingen  alle bestellingen, gesorteerd op aanmaakmoment
   index aanvragen     alle offerteaanvragen, gesorteerd op aanmaakmoment
 

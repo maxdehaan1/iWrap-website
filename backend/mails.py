@@ -1,7 +1,7 @@
 """De teksten van alle mails. Elke functie geeft (onderwerp, html, tekst).
 
-Twee afzenders, twee stijlen: het opleverrapport komt van iWrap (Max), alles over
-een bestelling van kozijnhorren.nl. De opmaak is bewust eenvoudig: één kolom,
+Twee afzenders, twee stijlen: de aanvraag en de bevestiging komen van iWrap, alles
+over een bestelling van kozijnhorren.nl. De opmaak is bewust eenvoudig: één kolom,
 gewone tekst, één knop. Dat komt in elke mailbox goed aan, ook in Outlook.
 """
 
@@ -136,28 +136,6 @@ def _winkel():
 
 def _winkelmail(kop, delen):
     return _opmaak(kop, "".join(delen), _winkel(), KH_ORANJE)
-
-
-# ---------------------------------------------------------------------------
-# iWrap: het opleverrapport
-# ---------------------------------------------------------------------------
-
-def rapport_klant(r, link, samenvatting):
-    naam = r["klant"].get("naam", "")
-    delen = [
-        _p(_aanhef(naam)),
-        _p("Bedankt dat we je kozijnen mochten herstellen. Hieronder vind je het opleverrapport. "
-           "Daarin staat wat we gedaan hebben, welke folie erop zit en tot wanneer de garantie loopt. "
-           "Bewaar hem dus goed."),
-        _p("Terwijl we bezig waren hebben we ook naar de rest van je kozijnen gekeken. "
-           "<b>%s</b>" % escape(samenvatting["zin"])),
-        _knop(link, "Bekijk je rapport", IWRAP_MINT),
-        _p("Vragen? Antwoord gewoon op deze mail.<br>Groet, Max"),
-    ]
-    html = _opmaak("Je opleverrapport en kozijncheck", "".join(delen), "iWrap", IWRAP_MINT)
-    tekst = ("%s\n\nBedankt dat we je kozijnen mochten herstellen. Je opleverrapport met de kozijncheck staat hier:\n%s\n\n%s\n\nGroet, Max\niWrap"
-             % (_aanhef(naam), link, samenvatting["zin"]))
-    return "Je opleverrapport van iWrap", html, tekst
 
 
 # ---------------------------------------------------------------------------
@@ -482,9 +460,7 @@ def aanvraag_voor_max(a):
         '<p style="margin:0 0 18px;color:#6b7075">%s &middot; %d foto%s als bijlage</p>'
         '<table role="presentation" style="border-collapse:collapse;font-size:15px;margin:0 0 22px">%s</table>'
         '<h2 style="font-size:16px;margin:0 0 10px">Wat er moet gebeuren</h2>%s%s'
-        '<p style="margin:18px 0 0">Opdracht rond? <a href="%s" style="color:%s">Maak er in de Max-modus een klus '
-        'van</a>: de klantgegevens staan dan al klaar voor de kozijncheck.</p>'
-        '<p style="margin:10px 0 0;font-size:12px;color:#8a8f94">Antwoord je op deze mail, dan gaat hij naar '
+        '<p style="margin:18px 0 0;font-size:12px;color:#8a8f94">Antwoord je op deze mail, dan gaat hij naar '
         '%s. Aanvraag %s. Alle gegevens staan ook in de bijlage aanvraag.json.</p>'
         '</div></div></body></html>'
         % (INKT, IWRAP_MINT, escape("%s, %s" % (g["naam"], g["plaats"])),
@@ -492,7 +468,6 @@ def aanvraag_voor_max(a):
            contact, "".join(blokken),
            ('<p style="margin:14px 0 0;padding:12px 14px;background:#eef6f3;border-radius:10px">'
             '<b>Samen:</b> %s</p>' % escape(samen)) if samen else "",
-           escape(cfg.IWRAP_URL + "/max#aanvraag/" + a["id"], True), IWRAP_MINT,
            escape(g["email"]), escape(a["id"]))
     )
     tekst = "\n".join([
@@ -548,9 +523,6 @@ def aanvraag_bevestiging(a):
         _p("We bekijken je foto's en sturen je een offerte met een vaste totaalprijs. Offertes maken "
            "we op maandag, onze kantoordag. Kunnen we iets niet goed zien, dan bellen of mailen we je even."),
         _p("Wil je nog iets toevoegen, bijvoorbeeld een extra foto? Beantwoord deze mail gewoon."),
-        _p("Wordt het een klus, dan kijken we bij de oplevering ook naar je rubbers, kit, glas en beslag: "
-           '<a href="%s/kozijncheck" style="color:%s">de gratis kozijncheck</a>. Die krijg je als rapport, '
-           "met je garantie erin." % (escape(cfg.IWRAP_URL, True), IWRAP_MINT)),
         # Ondertekend met de bedrijfsnaam (Max, 18 november 2026: "Groet, iWrap").
         _p("Groet, iWrap"),
     ]

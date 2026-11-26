@@ -152,18 +152,11 @@ html:not(.js) .video-zin{display:none;}
 .regio li::after{content:"\00b7";margin-left:8px;color:var(--line-strong);}
 .regio li:last-child::after{display:none;}
 
-/* Merkhub ----------------------------------------------------------------- */
+/* Kozijnmerken: per merk een korte regel, twee naast elkaar in de tekstkolom --- */
 
-.merkkaarten{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;}
-.merkkaart{
-  background:var(--white);border:1px solid var(--rand-zacht);border-radius:var(--radius);padding:26px;
-  text-decoration:none;color:inherit;display:flex;flex-direction:column;
-  transition:transform var(--middel) var(--beweeg),box-shadow var(--middel) var(--beweeg),border-color var(--middel) var(--beweeg);
-}
-.merkkaart:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--mint);color:inherit;}
-.merkkaart h3{margin:0 0 4px;font-size:1.2rem;}
-.merkkaart .land{font-size:.94rem;color:var(--sub);margin:0 0 12px;}
-.merkkaart p{font-size:1rem;color:var(--ink-soft);margin:0;}
+.merkenlijst{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px 34px;margin:0 0 1.4em;}
+.merkenlijst h3{font-size:1.18rem;margin:0 0 4px;}
+.merkenlijst p{font-size:1.02rem;color:var(--sub);margin:0;}
 
 
 /* Getekende illustratie in de lopende tekst (dakkapel) -------------------- */

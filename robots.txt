@@ -1,7 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /max
-Disallow: /r/
 Disallow: /api/
 
 Sitemap: https://iwrap.nl/sitemap.xml

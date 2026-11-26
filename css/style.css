@@ -262,8 +262,8 @@ html.menu-open{overflow:hidden;}
 @media (max-width:330px){.nav-snel{display:none;}}
 
 /* De actiebalk ------------------------------------------------------------
-   Op een telefoon onderin altijd binnen bereik: offerte, bellen, WhatsApp
-   (render_actiebalk in build.py). De offerteknop in de kop staat er dan al in,
+   Op een telefoon onderin altijd binnen bereik: offerte, bellen en mailen
+   (render_actiebalk in build.py; WhatsApp als WHATSAPP aan staat). De offerteknop in de kop staat er dan al in,
    dus die verdwijnt op een telefoon. */
 .actiebalk{display:none;}
 @media (max-width:760px){
@@ -371,10 +371,13 @@ section.na-hero{padding-top:calc(clamp(64px,8.5vw,116px) - clamp(40px,5vw,64px))
   .sectie-kop.midden ~ .sectie-voet.knoprij,.sectie-kop.midden ~ .sectie-voet > .knoprij{justify-content:flex-start;}
 }
 /* Het kopje boven een titel: gewone letters in het mint, geen kleine hoofdletters
-   met spaties ertussen (die lezen oudere bezoekers slecht). */
+   met spaties ertussen (die lezen oudere bezoekers slecht). Altijd zo breed als de kop eronder
+   (max-width:none), zodat hij op dezelfde as staat: links met de kop mee, of in het midden. De
+   regel voor inleidingen (.sectie-kop p, 34em) gold eerst ook voor het opschrift, en dan stond
+   het in een gecentreerde kop een stuk links van het midden (Max, 26 november 2026). */
 .opschrift,.sectie-kop p.opschrift{
   font-family:var(--kop);font-size:1.02rem;font-weight:600;letter-spacing:-.01em;line-height:1.4;
-  color:var(--mint-ink);display:block;margin:0 0 10px;
+  color:var(--mint-ink);display:block;margin:0 0 10px;max-width:none;
 }
 
 /* Een kop direct onder zijn opschrift hoort erbij: geen eigen ruimte erboven (in een tekstkolom
@@ -657,7 +660,7 @@ td strong{color:var(--ink);}
 }
 .slot p{color:#1f2b28;max-width:52ch;font-size:1.1rem;}
 .slot .knoprij{position:relative;z-index:1;}
-/* Drie knoppen op één rij in het slotblok (eerst viel WhatsApp eraf naar een tweede rij). */
+/* Twee of drie knoppen op één rij in het slotblok (met WhatsApp viel de derde eerst naar een tweede rij). */
 @media (min-width:821px){ .slot .knop{padding-left:24px;padding-right:24px;} }
 /* Op een telefoon iets minder binnenruimte en geen smalle kop: anders brak de kop van het slotblok
    in vier korte regels ("en meteen / weten hoe de"). */

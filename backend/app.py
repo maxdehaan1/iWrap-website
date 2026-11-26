@@ -10,23 +10,19 @@ Openbaar (ook vanuit de winkel op een ander domein):
   GET  /api/horren/leverancier/<nr>?t=    de bestelling voor de leverancier
   POST /api/horren/leverancier/<nr>       leverancier: bevestigd, verzonden of probleem
   GET  /api/horren/testkassa/<nr>?t=      nepkassa, alleen zonder Mollie-sleutel
-  GET  /api/rapporten/<id>                het rapport voor de klant
-  GET  /api/fotos/<id>                    een foto uit een rapport
   POST /api/aanvragen                     offerteaanvraag aanmaken (zonder foto's)
   PUT  /api/aanvragen/<id>/fotos/<naam>?t= één foto bij die aanvraag
   POST /api/aanvragen/<id>/versturen?t=   alles compleet: mail aan Max + bevestiging
   GET  /api/reviews                       Google-cijfer, aantal en reviews (voor alle sites)
 
 Max-modus (met token uit /api/max/login):
-  /api/max/status, /api/max/rapporten[/<id>[/mail]], /api/max/fotos,
-  /api/max/bestellingen[/<nr>[/actie]],
-  /api/max/aanvragen[/<id>[/fotos/<naam> | /klus]]
+  /api/max/status, /api/max/bestellingen[/<nr>[/actie]],
+  /api/max/aanvragen[/<id>[/fotos/<naam>]]
 
 Vercel Cron:
   GET  /api/cron
 """
 
-import base64
 import hmac
 import json
 import re
@@ -35,9 +31,9 @@ import traceback
 from html import escape
 from urllib.parse import parse_qs
 
-from . import aanvragen, bestellingen, horren, mail, mails, rapporten, reviews
+from . import aanvragen, bestellingen, horren, mail, mails, reviews
 from . import instellingen as cfg
-from .auth import maak_token, nieuwe_id, token_geldig, wachtwoord_klopt
+from .auth import maak_token, token_geldig, wachtwoord_klopt
 from .opslag import Fout, opslag
 
 ROUTES = []
@@ -313,32 +309,6 @@ def aanvraag_versturen(v, aid):
 
 
 # ---------------------------------------------------------------------------
-# Rapport (klant)
-# ---------------------------------------------------------------------------
-
-def _rapport_voor_klant(v, rid):
-    r = rapporten.haal(rid)
-    # Max mag een concept alvast bekijken; de klant pas als het klaar staat.
-    if not r or (r["status"] != "klaar" and not token_geldig(v.token())):
-        raise Probleem(404, "Dit rapport bestaat niet (meer).")
-    return r
-
-
-@route("GET", r"/api/rapporten/(?P<rid>[a-z0-9]+)")
-def rapport(v, rid):
-    return antwoord(rapporten.publiek(_rapport_voor_klant(v, rid)))
-
-
-@route("GET", r"/api/fotos/(?P<fid>[a-z0-9]+)")
-def foto(v, fid):
-    data = opslag().get_ruw("foto:" + fid)
-    if not data:
-        raise Probleem(404, "Foto niet gevonden.")
-    return 200, {"Content-Type": "image/jpeg", "Cache-Control": "public, max-age=31536000, immutable"}, \
-        base64.b64decode(data)
-
-
-# ---------------------------------------------------------------------------
 # Max-modus
 # ---------------------------------------------------------------------------
 
@@ -357,115 +327,9 @@ def login(v):
 @route("GET", "/api/max/status", max_modus=True)
 def status(v):
     s = cfg.status()
-    s["kozijncheck"] = rapporten.onderdelen()
+    # De folies met hun RAL-kleur: voor "Horren opmeten", dat de winkel in die kleur opent.
     s["folies"] = horren.folies()
     return antwoord(s)
-
-
-def _lijstregel(r):
-    s = rapporten.samenvatting(r)
-    return {"id": r["id"], "status": r["status"], "naam": r["klant"].get("naam"),
-            "plaats": r["klant"].get("plaats"), "straat": r["klant"].get("straat"),
-            "datum": r["oplevering"].get("datum"), "bijgewerkt": r["bijgewerkt"],
-            "oranje": s["oranje"], "rood": s["rood"]}
-
-
-@route("GET", "/api/max/rapporten", max_modus=True)
-def rapporten_lijst(v):
-    uit = []
-    for rid in opslag().index_lijst("rapporten", 300):
-        r = rapporten.haal(rid)
-        if r:
-            uit.append(_lijstregel(r))
-    return antwoord({"rapporten": uit})
-
-
-@route("POST", "/api/max/rapporten", max_modus=True)
-def rapport_nieuw(v):
-    r = rapporten.nieuw()
-    invoer = v.json()
-    if invoer:
-        r = rapporten.schoon(invoer, r)
-    rapporten.bewaar(r)
-    return antwoord(r, 201)
-
-
-@route("GET", r"/api/max/rapporten/(?P<rid>[a-z0-9]+)", max_modus=True)
-def rapport_max(v, rid):
-    r = rapporten.haal(rid)
-    if not r:
-        raise Probleem(404, "Deze klus bestaat niet.")
-    r["_link"] = rapporten.link(r)
-    r["_samenvatting"] = rapporten.samenvatting(r)
-    return antwoord(r)
-
-
-@route("PUT", r"/api/max/rapporten/(?P<rid>[a-z0-9]+)", max_modus=True)
-def rapport_bijwerken(v, rid):
-    r = rapporten.haal(rid)
-    if not r:
-        raise Probleem(404, "Deze klus bestaat niet.")
-    invoer = v.json()
-    # Een telefoon die offline was mag geen nieuwere versie van een ander
-    # apparaat overschrijven. 'versie' telt alleen wijzigingen uit de
-    # Max-modus; een verstuurde mail of een bestelling telt niet mee.
-    if invoer.get("_versie") is not None and invoer["_versie"] != r.get("versie", 0) and not invoer.get("_forceer"):
-        raise Probleem(409, "Deze klus is intussen op een ander apparaat gewijzigd.", {"server": r})
-    r = rapporten.schoon(invoer, r)
-    r["versie"] = r.get("versie", 0) + 1
-    if invoer.get("status") in ("klaar", "concept"):
-        if invoer["status"] == "klaar" and r["status"] != "klaar":
-            r["klaar_op"] = int(time.time())
-        r["status"] = invoer["status"]
-    rapporten.bewaar(r)
-    r["_link"] = rapporten.link(r)
-    r["_samenvatting"] = rapporten.samenvatting(r)
-    return antwoord(r)
-
-
-@route("DELETE", r"/api/max/rapporten/(?P<rid>[a-z0-9]+)", max_modus=True)
-def rapport_weg(v, rid):
-    r = rapporten.haal(rid)
-    if r:
-        for c in r.get("check", {}).values():
-            for f in c.get("fotos", []):
-                opslag().weg("foto:" + f)
-        opslag().weg("rapport:" + rid)
-    opslag().index_weg("rapporten", rid)
-    return antwoord({"ok": True})
-
-
-@route("POST", r"/api/max/rapporten/(?P<rid>[a-z0-9]+)/mail", max_modus=True)
-def rapport_mailen(v, rid):
-    r = rapporten.haal(rid)
-    if not r:
-        raise Probleem(404, "Deze klus bestaat niet.")
-    if r["status"] != "klaar":
-        raise Probleem(422, "Zet het rapport eerst klaar.")
-    if not r["klant"].get("email"):
-        raise Probleem(422, "Er staat geen e-mailadres bij de klant.")
-    onderwerp, html, tekst = mails.rapport_klant(r, rapporten.link(r), rapporten.samenvatting(r))
-    if not mail.verstuur(r["klant"]["email"], onderwerp, html, tekst, soort="rapport"):
-        raise Probleem(502, "De mail is niet verstuurd. Kijk bij Status of de mailkoppeling werkt.")
-    r.setdefault("gedeeld", {})["mail"] = int(time.time())
-    rapporten.bewaar(r)
-    return antwoord({"ok": True})
-
-
-@route("POST", "/api/max/fotos", max_modus=True)
-def foto_opslaan(v):
-    data = v.json().get("data", "")
-    if "," in data:
-        data = data.split(",", 1)[1]
-    try:
-        ruw = base64.b64decode(data, validate=True)
-    except Exception:
-        raise Probleem(400, "Dit is geen foto.")
-    if not ruw.startswith(b"\xff\xd8") or len(ruw) > 2_500_000:
-        raise Probleem(400, "Alleen jpeg-foto's tot 2,5 MB. De Max-modus verkleint ze vanzelf.")
-    fid = nieuwe_id(14)
-    opslag().put_ruw("foto:" + fid, base64.b64encode(ruw).decode("ascii"))
-    return antwoord({"id": fid, "url": "%s/fotos/%s" % (cfg.API_URL, fid)}, 201)
 
 
 @route("GET", "/api/max/aanvragen", max_modus=True)
@@ -496,12 +360,6 @@ def aanvraag_foto_max(v, aid, naam):
     if not inhoud:
         raise Probleem(404, "Foto niet gevonden.")
     return 200, {"Content-Type": "image/jpeg", "Cache-Control": "private, max-age=3600"}, inhoud
-
-
-@route("POST", r"/api/max/aanvragen/(?P<aid>[a-z0-9]+)/klus", max_modus=True)
-def aanvraag_naar_klus(v, aid):
-    r = aanvragen.naar_klus(_aanvraag_voor_max(aid))
-    return antwoord({"id": r["id"]}, 201)
 
 
 @route("GET", "/api/max/bestellingen", max_modus=True)
@@ -622,7 +480,7 @@ def app(environ, start_response):
     except Exception:
         traceback.print_exc()
         status, koppen, inhoud = antwoord({"fout": "Er ging iets mis aan onze kant. Probeer het opnieuw, "
-                                                   "of stuur ons een WhatsApp."}, 500)
+                                                   "of mail of bel ons."}, 500)
     if "Access-Control-Allow-Origin" not in koppen:
         koppen = dict(koppen, **_cors(v))
     koppen.setdefault("X-Robots-Tag", "noindex")

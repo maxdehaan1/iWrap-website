@@ -3,9 +3,7 @@
 
 iwrap.nl: een klant vraagt op drie manieren een offerte aan (foto en
 aanstrepen, foto en maten, op papier); Max krijgt één mail met de foto's als
-bijlage. Max maakt een klus, vult de kozijncheck in en zet het rapport klaar.
-Staan de horren op oranje of rood, dan verwijst het rapport naar kozijnhorren.nl
-met de kleur van de folie al gekozen.
+bijlage, en ziet de aanvraag met de foto's in de Max-modus.
 
 kozijnhorren.nl: een klant bestelt, betaalt in de testkassa, Max stuurt door en
 zet op verzonden, en de dagelijkse cron stuurt "past alles?". Een klant bestelt met
@@ -202,7 +200,7 @@ def aanvragen_testen():
 
     klopt("Lindelaan 12, 1214 AB Hilversum" in html, "het adres staat er compleet in, met de straat")
 
-    # De Max-modus: de aanvraag staat onder Aanvragen, en wordt met één knop een klus.
+    # De Max-modus: de aanvraag staat onder Aanvragen, met de foto's.
     token = verzoek("POST", "/api/max/login", {"wachtwoord": "test"})["json"]["token"]
     klopt(verzoek("GET", "/api/max/aanvragen")["status"] == 401, "aanvragen alleen voor Max")
     lijst = verzoek("GET", "/api/max/aanvragen", token=token)["json"]["aanvragen"]
@@ -214,16 +212,8 @@ def aanvragen_testen():
     klopt(d["overzicht"][0]["regels"][1] == "Stijl: 2 × 1,30 m = 2,60 m", "Max ziet per kozijn wat er moet gebeuren")
     r = verzoek("GET", "/api/max/aanvragen/%s/fotos/kozijn-1-foto.jpg" % aid, token=token)
     klopt(r["status"] == 200 and r["koppen"]["Content-Type"] == "image/jpeg", "Max ziet de foto's")
-    klus = verzoek("POST", "/api/max/aanvragen/%s/klus" % aid, {}, token)["json"]["id"]
-    r = verzoek("GET", "/api/max/rapporten/" + klus, token=token)["json"]
-    klopt(r["klant"]["straat"] == "Lindelaan 12" and r["klant"]["email"] == "joke@voorbeeld.nl" and r["aanvraag"] == aid,
-          "klus uit een aanvraag: klantgegevens staan al klaar")
-    klopt(r["oplevering"]["werk"] == "Kozijn 1 (2×): onderdorpel, stijl. Kozijn 2: het hele kozijn.",
-          "en het werk ook, als begin voor het rapport")
-    klopt(verzoek("POST", "/api/max/aanvragen/%s/klus" % aid, {}, token)["json"]["id"] == klus,
-          "nog een keer op de knop maakt geen tweede klus")
-    klopt(verzoek("GET", "/api/max/aanvragen", token=token)["json"]["aanvragen"][0]["klus"] == klus,
-          "in de lijst staat dat er al een klus van is")
+    klopt(verzoek("POST", "/api/max/aanvragen/%s/klus" % aid, {}, token)["status"] == 404,
+          "een klus met kozijncheck en opleverrapport bestaat niet meer (Max, 26 november 2026)")
 
     # Foto en aanstrepen: de aangestreepte foto komt als eigen bijlage mee.
     r = verzoek("POST", "/api/aanvragen", {"manier": "streep", "gegevens": GEGEVENS, "kozijnen": [
@@ -423,52 +413,15 @@ def main():
 
     aanvragen_testen()
 
-    print("Max-modus en rapport (iwrap.nl)")
+    print("Max-modus (iwrap.nl)")
     klopt(verzoek("POST", "/api/max/login", {"wachtwoord": "fout"})["status"] == 401, "verkeerd wachtwoord wordt geweigerd")
     token = verzoek("POST", "/api/max/login", {"wachtwoord": "test"})["json"]["token"]
-    klopt(verzoek("GET", "/api/max/rapporten")["status"] == 401, "zonder token geen toegang")
-    klus = verzoek("POST", "/api/max/rapporten", {}, token)["json"]
-    rid = klus["id"]
-    klus.update({
-        "klant": {"naam": "Anna de Vries", "straat": "Lindelaan 12", "postcode": "1214ab",
-                  "plaats": "Hilversum", "email": "anna@voorbeeld.nl", "telefoon": "06 12345678"},
-        "oplevering": {"datum": "2026-09-29", "werk": "Vier kozijnen voorgevel", "folie": "Zwartgrijs",
-                       "folie_ral": "7021"},
-        "check": {"rubbers": {"stand": "groen"}, "kitwerk": {"stand": "oranje", "notitie": "Boven de voordeur"},
-                  "glas": {"stand": "groen"}, "beslag": {"stand": "groen"}, "horren": {"stand": "rood"},
-                  "rolluiken": {"stand": "nvt"}},
-        "_versie": klus["versie"],
-    })
-    r = verzoek("PUT", "/api/max/rapporten/" + rid, klus, token)
-    klopt(r["status"] == 200, "klus opslaan")
-    klopt("3 van de 5" in r["json"]["_samenvatting"]["zin"], "samenvatting telt n.v.t. niet mee")
-    klopt(verzoek("GET", "/api/rapporten/" + rid)["status"] == 404, "concept is niet openbaar")
-    klopt(verzoek("GET", "/api/rapporten/" + rid, token=token)["status"] == 200, "Max ziet het concept wel")
-    klopt(verzoek("PUT", "/api/max/rapporten/" + rid, dict(klus, _versie=0), token)["status"] == 409,
-          "oudere versie overschrijft niet")
-    klus = verzoek("PUT", "/api/max/rapporten/" + rid, dict(r["json"], status="klaar",
-                                                            _versie=r["json"]["versie"]), token)["json"]
-    klopt(klus["status"] == "klaar", "rapport klaarzetten")
-    klopt(verzoek("POST", "/api/max/rapporten/%s/mail" % rid, {}, token)["status"] == 200, "rapport mailen")
-    r = verzoek("PUT", "/api/max/rapporten/" + rid, dict(klus, _versie=klus["versie"]), token)
-    klopt(r["status"] == 200, "na het mailen kan Max gewoon verder (geen vals conflict)")
-    klus = r["json"]
-
-    pub = verzoek("GET", "/api/rapporten/" + rid)["json"]
-    klopt("telefoon" not in pub["klant"] and "email" not in pub["klant"], "rapport lekt geen contactgegevens")
-    klopt(pub["horren_advies"] is None, "zolang de winkel dicht is (live in winkel.json), geen horrentip in het rapport")
-    cfg.WINKEL_LIVE = True
-    try:
-        advies = verzoek("GET", "/api/rapporten/" + rid)["json"]["horren_advies"]
-    finally:
-        cfg.WINKEL_LIVE = False
-    klopt(advies and "kleur=7021" in advies["url"] and "uitvoering=luxe" in advies["url"],
-          "rode horren: link naar kozijnhorren.nl in de kleur van de folie (Luxe, want geen standaardkleur)")
-    klopt("code=MAX" in advies["url"] and advies["korting"] == 5,
-          "de horrentip heeft de code van iWrap erin: de klant krijgt korting, wij zien dat hij van de klus komt")
-    klus["check"]["horren"] = {"stand": "groen"}
-    verzoek("PUT", "/api/max/rapporten/" + rid, dict(klus, _versie=klus["versie"]), token)
-    klopt(verzoek("GET", "/api/rapporten/" + rid)["json"]["horren_advies"] is None, "groene horren: geen verkooppraatje")
+    klopt(verzoek("GET", "/api/max/status")["status"] == 401, "zonder token geen toegang")
+    s = verzoek("GET", "/api/max/status", token=token)["json"]
+    klopt("kozijncheck" not in s and any(f["ral"] for f in s["folies"]),
+          "geen kozijncheck meer; wel de folies, voor Horren opmeten in de kleur van de folie")
+    klopt(verzoek("GET", "/api/max/rapporten", token=token)["status"] == 404
+          and verzoek("GET", "/api/rapporten/abc123")["status"] == 404, "de rapportadressen bestaan niet meer")
 
     print("Bestellen op kozijnhorren.nl")
     klant = {"naam": "Piet Jansen", "email": "piet@voorbeeld.nl", "telefoon": "0612345678",

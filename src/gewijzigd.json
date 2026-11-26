@@ -8,119 +8,79 @@
   "hash": "e63445eb5ffb"
  },
  "contact": {
-  "datum": "2026-11-17",
-  "hash": "7a9c77d89453"
+  "datum": "2026-11-26",
+  "hash": "b065619cecd3"
  },
  "dakkapel-kozijnen": {
-  "datum": "2026-11-18",
-  "hash": "c8f43d868a2c"
+  "datum": "2026-11-26",
+  "hash": "c70f08bf7281"
  },
  "index": {
-  "datum": "2026-11-19",
-  "hash": "43383d3df9d8"
+  "datum": "2026-11-26",
+  "hash": "84638ffc545f"
  },
  "kosten": {
   "datum": "2026-11-18",
   "hash": "28ec9c99ad52"
  },
- "kozijncheck": {
-  "datum": "2026-11-18",
-  "hash": "78a2f7d1c55e"
- },
- "kozijnmerken/finstral": {
-  "datum": "2026-11-19",
-  "hash": "e894281966b0"
- },
- "kozijnmerken/gealan": {
-  "datum": "2026-11-19",
-  "hash": "08e43cbd8668"
- },
  "kozijnmerken/index": {
-  "datum": "2026-11-15",
-  "hash": "a30d88daa1c9"
- },
- "kozijnmerken/knipping": {
-  "datum": "2026-11-19",
-  "hash": "bd68278520b8"
- },
- "kozijnmerken/kommerling": {
-  "datum": "2026-11-19",
-  "hash": "6d1709ace343"
- },
- "kozijnmerken/kvision": {
-  "datum": "2026-11-19",
-  "hash": "4e4c2917eb20"
- },
- "kozijnmerken/schuco": {
-  "datum": "2026-11-19",
-  "hash": "244f4c3e054e"
- },
- "kozijnmerken/veka": {
-  "datum": "2026-11-19",
-  "hash": "3a9df5ac2025"
- },
- "kozijnmerken/weru": {
-  "datum": "2026-11-19",
-  "hash": "98e14878ca31"
+  "datum": "2026-11-26",
+  "hash": "6fb1f5ca3157"
  },
  "kunststof-kozijn-herstellen": {
-  "datum": "2026-11-19",
-  "hash": "aca964ba3909"
+  "datum": "2026-11-26",
+  "hash": "97719b9699cc"
  },
  "levensduur-kozijnfolie": {
-  "datum": "2026-11-18",
-  "hash": "74bbfb9385be"
+  "datum": "2026-11-26",
+  "hash": "fd23b69ef022"
  },
  "max": {
-  "datum": "2026-10-24",
-  "hash": "3d021ba59a5b"
+  "datum": "2026-11-26",
+  "hash": "bfa9b7b20db1"
  },
  "offerte": {
-  "datum": "2026-11-18",
-  "hash": "1c6ed5b13f9a"
+  "datum": "2026-11-26",
+  "hash": "4109e3e76238"
  },
  "over-iwrap": {
-  "datum": "2026-11-18",
-  "hash": "25d630aed279"
+  "datum": "2026-11-26",
+  "hash": "da7025c4d95d"
  },
  "privacy": {
-  "datum": "2026-11-18",
-  "hash": "69351ae43722"
- },
- "rapport": {
   "datum": "2026-11-26",
-  "hash": "2eca942d26cc"
+  "hash": "3291e9bb338c"
  },
  "rolluikkast-herstellen": {
-  "datum": "2026-11-18",
-  "hash": "3b64e8696faf"
+  "datum": "2026-11-26",
+  "hash": "e117d15032dd"
  },
  "tekenblad": {
   "datum": "2026-11-18",
   "hash": "aef46493d95c"
  },
  "veelgestelde-vragen": {
-  "datum": "2026-11-19",
-  "hash": "1d39b08bd1d9"
+  "datum": "2026-11-26",
+  "hash": "d37db16d86ab"
  },
  "voor-kozijnbedrijven": {
-  "datum": "2026-11-18",
-  "hash": "c6dc995aeff7"
+  "datum": "2026-11-26",
+  "hash": "02a8d9fb96fa"
  },
  "voorbeelden": {
-  "datum": "2026-11-19",
-  "hash": "dd98767560de"
+  "datum": "2026-11-26",
+  "hash": "b94909c1f6cb"
  },
  "vve-en-woningcorporaties": {
-  "datum": "2026-11-17",
-  "hash": "4c47a085cc02"
+  "datum": "2026-11-26",
+  "hash": "858a1d756d02"
  },
  "werkgebied": {
-  "datum": "2026-11-19",
-  "hash": "10df1c88a7de"
+  "datum": "2026-11-26",
+  "hash": "face1de480e9"
  },
  "werkwijze": {
-  "datum": "2026-11-18",
-  "hash": "54f47f2ee810"
+  "datum": "2026-11-26",
+  "hash": "f8f79788c0ea"
  }
 }
