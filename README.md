@@ -879,12 +879,14 @@ op Vercel verloren. **Zet de site dus pas live als de koppeling werkt.**
   controle in `.data/voor-na/`). Ligt het kozijn in verschillende vlakken (stijl, bovenkant en
   voorkant van de dorpel), dan kan het niet overal kloppen: de voorkant van de dorpel gaat voor.
   Op de site: `{{schuif:naam|sizes|alt voor|alt na|positie}}` met `images/project-<naam>-voor` en
-  `-na`; de hero gebruikt `dorpel-front`. Een paar dat al online staat krijgt bij een nieuwe
-  versie een nieuwe naam (`-v2`), want `images/` staat een jaar in de cache.
+  `-na`. Een paar dat al online staat krijgt bij een nieuwe versie een nieuwe naam (`-v2`), want
+  `images/` staat een jaar in de cache. **De hero blijft de schuine dorpel met het opgekrulde stuk
+  folie** (`voor-gebarsten-dorpel`, ook bovenaan `/voorbeelden`): Max vindt die foto veel beter dan
+  een frontale die preciezer over elkaar viel (26 november 2026). Niet vervangen zonder te vragen.
 - **De paren op `/voorbeelden`.** Drie grote blokken (De Wissel, een opengescheurde kozijnhoek,
   een hoek tegen de muur) en een raster van zes: een klein raam, groen (RAL 6009), antracietgrijs
   (RAL 7016), een witte verbinding, een crème onderdorpel en een witte onderdorpel van voren
-  (Sony-foto's). Bovenaan en in de hero: dezelfde dorpel recht van voren. De crèmewitte kozijnen
+  (Sony-foto's). Bovenaan staat dezelfde foto als in de hero. De crèmewitte kozijnen
   zijn eruit (op de voorfoto stond een raam open; oude link gaat naar `#projecten`). De
   originelen staan in Documents/iWrap/.../foto's voor website. Greefa, de Avery-fabriek en de
   villa zijn bewust weggelaten (facadefilm), de groene deur ook (alleen de dorpels waren

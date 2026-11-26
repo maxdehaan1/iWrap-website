@@ -36,7 +36,6 @@ IMG = os.path.join(ROOT, "images")
 
 # Origineel: (map in BRON, bestandsnaam)
 FOTOS = {
-    "IMG_6514": ("voor na kozijn 1", "IMG_6514.DNG"), "IMG_6526": ("voor na kozijn 1", "IMG_6526.DNG"),
     "IMG_0831_2": ("voor na kozijn 6 (klein badkamerraam) ", "IMG_0831 2.jpg"),
     "IMG_0832_2": ("voor na kozijn 6 (klein badkamerraam) ", "IMG_0832 2.HEIC"),
     "IMG_6100_2": ("voor na kozijn 4 (6009 groen)", "IMG_6100 2.JPG"),
@@ -53,12 +52,10 @@ FOTOS = {
 # hele foto's, en of er daarna nog fijn bijgesteld wordt op de randen ("fijn"). "gok": het vak in de
 # voorfoto als begin, als er geen punten zijn. "nadruk": deel van het vak dat bij het bijstellen het
 # zwaarst telt. "grof": eerst grof zoeken (verschuiven, schalen, draaien).
+# De hero (voor-gebarsten-dorpel en na-gebarsten-dorpel-hersteld) staat hier bewust niet in: Max wil die
+# foto houden zoals hij is (26 november 2026). Een frontale dorpel (IMG_6514 en IMG_6526, map 1) viel
+# beter over elkaar, maar vond hij veel minder goed; de punten daarvan staan in git (15cd017).
 PAREN = {
-    # Homepage en /voorbeelden bovenaan: dezelfde dorpel recht van voren. Tegelvoegen voor links-rechts,
-    # boven- en onderrand van de dorpel voor de hoogte.
-    "dorpel-front": dict(voor="IMG_6514", na="IMG_6526", vak=("heel",), fijn=False,
-                         punten=[((.354, .725), (.247, .647)), ((.748, .725), (.603, .656)),
-                                 ((.354, .2942), (.247, .2376)), ((.748, .2796), (.603, .2308))]),
     "project-raam-v2": dict(voor="IMG_0831_2", na="IMG_0832_2", vak=("f", .516, .527, .90),
                             gok=("f", .50, .505, .90), fijn=True, grof=True),
     "project-groen-v2": dict(voor="IMG_6100_2", na="IMG_6168_2", vak=("b", .08, .36, .84), fijn=True,
