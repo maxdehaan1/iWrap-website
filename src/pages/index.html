@@ -10,8 +10,8 @@
   "ogalt": "Onderdorpel van een kunststof kozijn voor en na het herstel met Renolit folie, met het logo van iWrap",
   "changefreq": "weekly",
   "preload": {
-    "src": "/images/voor-gebarsten-dorpel-1000.webp",
-    "srcset": "/images/voor-gebarsten-dorpel-640.webp 640w, /images/voor-gebarsten-dorpel-1000.webp 1000w",
+    "src": "/images/dorpel-front-voor-1000.webp",
+    "srcset": "/images/dorpel-front-voor-640.webp 640w, /images/dorpel-front-voor-1000.webp 1000w, /images/dorpel-front-voor-1600.webp 1600w",
     "sizes": "(max-width:900px) calc(100vw - 48px), 620px"
   },
   "schema": [
@@ -58,12 +58,14 @@
 
     <!-- De echte voor/na-schuif: de belangrijkste verkoopfoto, een echte klus (Max, 16 november
          2026). Sinds de audit van 17 november weer in de hero; de zon-animatie staat nu bij
-         "Waarom herstellen werkt". -->
+         "Waarom herstellen werkt". Sinds 26 november dezelfde dorpel recht van voren, in perspectief
+         op elkaar gelegd zodat voor en na precies samenvallen (de schuine foto met het opgekrulde
+         stukje folie staat nog bij de klachten). -->
     <figure class="hero-fig vergelijk-los">
       <div class="vergelijk" style="--pos:50%">
-        <x-beeld src="voor-gebarsten-dorpel" eager sizes="(max-width:900px) calc(100vw - 48px), 620px" alt="Onderdorpel van een kunststof kozijn waarvan de folie is gebarsten en opgekruld">
+        <x-beeld src="dorpel-front-voor" eager sizes="(max-width:900px) calc(100vw - 48px), 620px" alt="Onderdorpel van een kunststof kozijn, recht van voren: de folie is verweerd en over de hele lengte gebarsten">
         <div class="na">
-          <x-beeld src="na-gebarsten-dorpel-hersteld" sizes="(max-width:900px) calc(100vw - 48px), 620px" alt="Dezelfde onderdorpel na het aanbrengen van nieuwe Renolit folie: strak en egaal">
+          <x-beeld src="dorpel-front-na" sizes="(max-width:900px) calc(100vw - 48px), 620px" alt="Dezelfde onderdorpel na het aanbrengen van nieuwe Renolit folie: strak en egaal">
         </div>
         <span class="label label-voor">Voor</span>
         <span class="label label-na">Na</span>
@@ -102,11 +104,13 @@
       <p>Geen renders en geen voorbeelden van een fabrikant: dit zijn foto's van onze
       eigen klussen. In wit, crème, groen en antraciet.</p>
     </div>
+    <!-- Elke foto is een link naar dat voorbeeld op /voorbeelden, waar de voor/na-schuif staat (Max, 26 november
+         2026). Bij aanwijzen komt de foto omhoog en verschijnt "Voor en na" (home.css, "Voorbeelden op de homepage"). -->
     <div class="strook strook-bijschrift verschijn">
-      <figure><x-beeld src="project-raam-na" sizes="(max-width:560px) 50vw, 270px" alt="Klein crème kozijn na het herstel, rondom strak en egaal"><figcaption>Klein raam &middot; crème</figcaption></figure>
-      <figure><x-beeld src="project-groen-na" sizes="(max-width:560px) 50vw, 270px" alt="Groene onderdorpel in RAL 6009 na het herstel, egaal met houtnerf"><figcaption>Groen &middot; RAL 6009</figcaption></figure>
-      <figure><x-beeld src="project-antraciet-na" sizes="(max-width:560px) 50vw, 270px" alt="Antracietgrijze tussendorpel van een deur na het herstel"><figcaption>Antracietgrijs &middot; RAL 7016</figcaption></figure>
-      <figure><x-beeld src="project-verbinding-na" sizes="(max-width:560px) 50vw, 270px" alt="Witte verbinding van stijl en dorpel, de nieuwe folie strak om de hoek"><figcaption>Wit &middot; houtnerffolie</figcaption></figure>
+      <a class="vb-tegel" href="/voorbeelden#klein-raam"><figure><span class="vb-beeld"><x-beeld src="project-raam-v2-na" sizes="(max-width:560px) 50vw, 270px" alt="Klein crème kozijn na het herstel, rondom strak en egaal"><span class="vb-hint" aria-hidden="true"><span class="vb-hint-tekst">Voor en na</span>{{vb-pijl}}</span></span><figcaption><span class="sr-only">Voor en na bekijken: </span>Klein raam &middot; crème</figcaption></figure></a>
+      <a class="vb-tegel" href="/voorbeelden#groen"><figure><span class="vb-beeld"><x-beeld src="project-groen-v2-na" sizes="(max-width:560px) 50vw, 270px" alt="Groene onderdorpel in RAL 6009 na het herstel, egaal met houtnerf"><span class="vb-hint" aria-hidden="true"><span class="vb-hint-tekst">Voor en na</span>{{vb-pijl}}</span></span><figcaption><span class="sr-only">Voor en na bekijken: </span>Groen &middot; RAL 6009</figcaption></figure></a>
+      <a class="vb-tegel" href="/voorbeelden#antraciet"><figure><span class="vb-beeld"><x-beeld src="project-antraciet-v2-na" sizes="(max-width:560px) 50vw, 270px" alt="Antracietgrijze tussendorpel van een deur na het herstel"><span class="vb-hint" aria-hidden="true"><span class="vb-hint-tekst">Voor en na</span>{{vb-pijl}}</span></span><figcaption><span class="sr-only">Voor en na bekijken: </span>Antracietgrijs &middot; RAL 7016</figcaption></figure></a>
+      <a class="vb-tegel" href="/voorbeelden#verbinding"><figure><span class="vb-beeld"><x-beeld src="project-verbinding-v2-na" sizes="(max-width:560px) 50vw, 270px" alt="Witte verbinding van stijl en dorpel, de nieuwe folie strak om de hoek"><span class="vb-hint" aria-hidden="true"><span class="vb-hint-tekst">Voor en na</span>{{vb-pijl}}</span></span><figcaption><span class="sr-only">Voor en na bekijken: </span>Wit &middot; houtnerffolie</figcaption></figure></a>
     </div>
     <div class="knoprij sectie-voet">
       <a class="knop knop-tweede" href="/voorbeelden">Meer voorbeelden bekijken</a>

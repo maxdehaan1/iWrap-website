@@ -893,6 +893,10 @@ def substitueer(tekst):
     tekst = tekst.replace("{{kozijnhorren}}", kozijnhorren_link())
     tekst = tekst.replace("{{kozijnhorren_nieuw_venster}}", kozijnhorren_link(nieuw_venster=True))
     tekst = tekst.replace("{{regios}}", render_regios())
+    # Het pijltje in "Voor en na" op de voorbeeldfoto's van de homepage.
+    tekst = tekst.replace("{{vb-pijl}}", '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" '
+                          'focusable="false"><path d="M5 12h13m-5-5 5 5-5 5" fill="none" stroke="currentColor" '
+                          'stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>')
     tekst = re.sub(r"\{\{reviews:(\d+)(?::(\d+))?\}\}",
                    lambda m: render_reviews(int(m.group(1)), int(m.group(2) or 0)),
                    tekst)

@@ -240,12 +240,42 @@
 .sectie-kop.midden ~ .merken{justify-content:center;}
 
 /* Voorbeelden op de homepage: vier klusfoto's met de kleur eronder (sinds 17 november;
-   de voor/na-schuif staat nu in de hero). */
+   de voor/na-schuif staat nu in de hero). Elke foto is een link naar dat voorbeeld op
+   /voorbeelden (26 november): bij aanwijzen komt de foto iets omhoog, zoomt hij zacht in en
+   schuift "Voor en na" erop. Zonder muis (telefoon, tablet) staat er altijd een pijltje op. */
 .strook-bijschrift{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;}
 .strook-bijschrift figure{margin:0;}
 .strook-bijschrift img{aspect-ratio:4/3;}
-.strook-bijschrift figcaption{margin-top:9px;font-size:.97rem;color:var(--sub);line-height:1.35;}
+.strook-bijschrift figcaption{margin-top:9px;font-size:.97rem;color:var(--sub);line-height:1.35;transition:color var(--kort) var(--beweeg);}
 @media (max-width:900px){ .strook-bijschrift{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;} }
+.vb-tegel{display:block;color:inherit;text-decoration:none;border-radius:16px;-webkit-tap-highlight-color:transparent;}
+.vb-tegel:hover,.vb-tegel:focus-visible{color:inherit;}
+.vb-tegel:focus-visible{outline:3px solid var(--mint-ink);outline-offset:4px;}
+.vb-beeld{position:relative;display:block;border-radius:16px;overflow:hidden;isolation:isolate;
+  transition:transform var(--middel) var(--beweeg),box-shadow var(--middel) var(--beweeg);}
+.strook-bijschrift .vb-beeld img{display:block;border-radius:0;transition:transform .6s var(--beweeg);}
+.vb-hint{position:absolute;left:12px;bottom:12px;display:inline-flex;align-items:center;gap:7px;
+  padding:9px 13px 9px 15px;border-radius:999px;background:rgba(255,255,255,.95);color:var(--ink);
+  font:600 .9rem/1 var(--kop);box-shadow:0 8px 20px -10px rgba(34,38,42,.5);
+  opacity:0;transform:translateY(10px);transition:opacity var(--kort) var(--beweeg),transform var(--middel) var(--beweeg);}
+.vb-hint svg{flex:none;color:var(--mint-ink);transition:transform var(--middel) var(--beweeg);}
+.vb-tegel:hover .vb-beeld,.vb-tegel:focus-visible .vb-beeld{transform:translateY(-5px);box-shadow:var(--shadow-lg);}
+.vb-tegel:hover .vb-beeld img,.vb-tegel:focus-visible .vb-beeld img{transform:scale(1.05);}
+.vb-tegel:hover .vb-hint,.vb-tegel:focus-visible .vb-hint{opacity:1;transform:none;}
+.vb-tegel:hover .vb-hint svg,.vb-tegel:focus-visible .vb-hint svg{transform:translateX(3px);}
+.vb-tegel:hover figcaption,.vb-tegel:focus-visible figcaption{color:var(--ink);}
+.vb-tegel:active .vb-beeld{transform:translateY(-2px);}
+@media (max-width:560px){ .vb-beeld{border-radius:10px;} }
+/* Zonder muis: een rond pijltje rechtsonder, zonder tekst, zodat je ziet dat je kunt tikken. */
+@media (hover:none){
+  .vb-hint{opacity:1;transform:none;left:auto;right:9px;bottom:9px;width:34px;height:34px;padding:0;justify-content:center;}
+  .vb-hint-tekst{display:none;}
+}
+@media (prefers-reduced-motion:reduce){
+  .vb-beeld,.strook-bijschrift .vb-beeld img,.vb-hint,.vb-hint svg{transition:opacity var(--kort) linear,box-shadow var(--kort) linear;}
+  .vb-tegel:hover .vb-beeld,.vb-tegel:focus-visible .vb-beeld,.vb-tegel:hover .vb-beeld img,.vb-tegel:focus-visible .vb-beeld img,
+  .vb-tegel:hover .vb-hint svg,.vb-tegel:focus-visible .vb-hint svg,.vb-hint{transform:none;}
+}
 
 /* 25 jaar zon bij "Waarom herstellen werkt": in het midden, niet breder dan een foto. */
 .kozijn-3d.zon-midden{max-width:600px;margin:0 auto clamp(34px,4.5vw,56px);}

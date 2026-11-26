@@ -31,3 +31,6 @@ __pycache__
 
 # Het auditrapport hoort niet online.
 /audit-rapport.md
+
+# Het uitlijnen van de voor/na-foto's (gereedschap, niet voor de site).
+/voor-na

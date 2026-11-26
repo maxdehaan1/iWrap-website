@@ -109,7 +109,12 @@
         setTimeout(function () { hint(r.target); }, 500);
       });
     }, { threshold: 0.6 });
-    schuiven.forEach(function (s) { kijker.observe(s); });
+    // Kom je via een link op een voorbeeld (/voorbeelden#groen, vanaf de foto's op de
+    // homepage), dan doet de schuif van dat voorbeeld het, niet de eerste van de pagina.
+    var doel = null;
+    try { doel = location.hash.length > 1 && document.getElementById(decodeURIComponent(location.hash.slice(1))); } catch (e) {}
+    var eigen = doel && doel.querySelector(".vergelijk");
+    (eigen ? [eigen] : schuiven).forEach(function (s) { kijker.observe(s); });
 
     function hint(blok) {
       var schuif = blok.querySelector("input[type=range]");

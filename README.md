@@ -871,22 +871,32 @@ op Vercel verloren. **Zet de site dus pas live als de koppeling werkt.**
 
 **Later, als je zin hebt:**
 
-- **Voor/na-foto's zijn op elkaar gelegd.** Elk paar laat hetzelfde stuk kozijn zien, even
-  groot en op dezelfde plek, zodat je bij het schuiven ziet wat er veranderd is. Op
-  /voorbeelden staan ze als schuif: `{{schuif:naam|sizes|alt voor|alt na|positie}}` in de
-  bron, met `images/project-<naam>-voor` en `-na`. Een nieuw paar: snij beide foto's tot
-  hetzelfde stuk kozijn bij (ongeveer is goed genoeg; het gaat erom dat je ziet dat het
-  weer mooi is).
-- **Meer projecten op `/voorbeelden`.** Er staan nu twee grote projecten (De Wissel,
-  een opengescheurde kozijnhoek) en een raster met zes voor/na-paren: een klein raam,
-  groen (RAL 6009), antracietgrijs (RAL 7016), een witte verbinding, een crème onderdorpel
-  en crèmewitte kozijnen. De paren komen uit Documents/iWrap/.../foto's voor website; in
-  het raster zijn ze allemaal 4:3 bijgesneden tot hetzelfde stuk kozijn. Greefa, de
-  Avery-fabriek en de villa zijn bewust weggelaten (facadefilm), de groene deur ook (alleen
-  de dorpels waren hersteld, op de foto lijkt het paneel van kleur veranderd). Teksten
-  gaan over hoe het eruitziet, nooit over water of lekkage, en zonder datums. Foto's waarop
-  het kozijn helemaal geel is, tonen de lijmlaag: niet gebruiken. Altijd zonder EXIF
-  opslaan (daar zit de GPS van het huis in).
+- **Voor/na-foto's vallen over elkaar** (26 november 2026, Max: "dat de voor- en na-foto vanuit
+  dezelfde hoek genomen lijken te zijn", in redelijkheid). Elke voorfoto is in perspectief op de
+  nafoto gelegd, met punten die op beide foto's hetzelfde zijn (het verstek, de randen van de
+  dorpel, tegelvoegen) en waar dat hielp fijn bijgesteld op de randen. Hoe en met welke punten:
+  `voor-na/paren.py` (`python3 voor-na/paren.py [naam]` zet ze opnieuw in `images/`; per paar een
+  controle in `.data/voor-na/`). Ligt het kozijn in verschillende vlakken (stijl, bovenkant en
+  voorkant van de dorpel), dan kan het niet overal kloppen: de voorkant van de dorpel gaat voor.
+  Op de site: `{{schuif:naam|sizes|alt voor|alt na|positie}}` met `images/project-<naam>-voor` en
+  `-na`; de hero gebruikt `dorpel-front`. Een paar dat al online staat krijgt bij een nieuwe
+  versie een nieuwe naam (`-v2`), want `images/` staat een jaar in de cache.
+- **De paren op `/voorbeelden`.** Drie grote blokken (De Wissel, een opengescheurde kozijnhoek,
+  een hoek tegen de muur) en een raster van zes: een klein raam, groen (RAL 6009), antracietgrijs
+  (RAL 7016), een witte verbinding, een crème onderdorpel en een witte onderdorpel van voren
+  (Sony-foto's). Bovenaan en in de hero: dezelfde dorpel recht van voren. De crèmewitte kozijnen
+  zijn eruit (op de voorfoto stond een raam open; oude link gaat naar `#projecten`). De
+  originelen staan in Documents/iWrap/.../foto's voor website. Greefa, de Avery-fabriek en de
+  villa zijn bewust weggelaten (facadefilm), de groene deur ook (alleen de dorpels waren
+  hersteld, op de foto lijkt het paneel van kleur veranderd). Teksten gaan over hoe het
+  eruitziet, nooit over water of lekkage, en zonder datums. Een voorfoto moet echt schade laten
+  zien: glad wit of helemaal geel is de tussenstap (oude folie of lijm er al af), niet gebruiken
+  (Max, 26 november 2026). Altijd zonder EXIF opslaan (daar zit de GPS van het huis in).
+- **Voorbeelden op de homepage zijn links.** Elke foto in de strook "Zo ziet het eruit als we
+  klaar zijn" gaat naar dat voorbeeld op `/voorbeelden` (`#klein-raam`, `#groen`, ...). Bij
+  aanwijzen komt de foto omhoog en verschijnt "Voor en na"; op een telefoon staat er een
+  pijltje op (`home.css`, "Voorbeelden op de homepage"). Op `/voorbeelden` licht het voorbeeld
+  dan even op en gaat zijn schuif één keer heen en weer (`content.css`, `iwrap-site.js` 2).
 - **Meer merkpagina's.** Eén regel in `MERKEN` per merk. Kandidaten: Rehau, Deceuninck,
   Aluplast, Salamander.
 - **Werkgebied uitbreiden.** In `REGIOS` in `build.py` staan alleen plaatsen waar je

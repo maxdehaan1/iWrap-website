@@ -189,6 +189,16 @@ html:not(.js) .video-zin{display:none;}
 .project-meer a{font-weight:600;color:var(--mint-ink);}
 .projecten-paar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(28px,3.4vw,48px);}
 .project{scroll-margin-top:90px;}
+/* Kom je via een foto op de homepage op een voorbeeld (/voorbeelden#groen), dan licht de foto even
+   op in het mint, en gaat de schuif één keer heen en weer (iwrap-site.js, onderdeel 2). */
+@media (prefers-reduced-motion:no-preference){
+  .project:target .vergelijk,.project-groot:target .vergelijk{animation:vb-licht 1.9s var(--beweeg) .35s 1;}
+}
+@keyframes vb-licht{
+  0%{box-shadow:0 0 0 0 rgba(163,205,194,0),var(--shadow);}
+  30%{box-shadow:0 0 0 7px rgba(163,205,194,.95),var(--shadow);}
+  100%{box-shadow:0 0 0 0 rgba(163,205,194,0),var(--shadow);}
+}
 .projecten-paar{row-gap:clamp(36px,4vw,56px);}
 /* Een voor/na-schuif in een kaart: de foto boven, de tekst eronder. */
 .project .vergelijk{border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:20px;}

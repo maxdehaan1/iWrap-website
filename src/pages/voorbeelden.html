@@ -9,8 +9,8 @@
   "kruimels": [["Voorbeelden", "/voorbeelden"]],
   "ogimage": "/images/na-strakke-dorpel-1600.webp",
   "preload": {
-    "src": "/images/voor-gebarsten-dorpel-1000.webp",
-    "srcset": "/images/voor-gebarsten-dorpel-640.webp 640w, /images/voor-gebarsten-dorpel-1000.webp 1000w",
+    "src": "/images/dorpel-front-voor-1000.webp",
+    "srcset": "/images/dorpel-front-voor-640.webp 640w, /images/dorpel-front-voor-1000.webp 1000w, /images/dorpel-front-voor-1600.webp 1600w",
     "sizes": "(max-width:900px) calc(100vw - 48px), 640px"
   }
 } -->
@@ -35,8 +35,8 @@
     <div class="uitgelicht-raster">
     <figure class="hero-fig verschijn uitgelicht">
       <div class="vergelijk" style="--pos:48%">
-        <x-beeld src="voor-gebarsten-dorpel" eager sizes="(max-width:900px) calc(100vw - 48px), 640px" alt="Onderdorpel waarvan de folie is verweerd en opengebarsten">
-        <div class="na"><x-beeld src="na-gebarsten-dorpel-hersteld" eager sizes="(max-width:900px) calc(100vw - 48px), 640px" alt="Dezelfde onderdorpel met nieuwe Renolit houtnerffolie"></div>
+        <x-beeld src="dorpel-front-voor" eager sizes="(max-width:900px) calc(100vw - 48px), 640px" alt="Onderdorpel recht van voren: de folie is verweerd en over de hele lengte opengebarsten">
+        <div class="na"><x-beeld src="dorpel-front-na" eager sizes="(max-width:900px) calc(100vw - 48px), 640px" alt="Dezelfde onderdorpel met nieuwe Renolit houtnerffolie"></div>
         <span class="label label-voor">Voor</span><span class="label label-na">Na</span>
         <div class="greep" aria-hidden="true"></div>
         <label class="sr-only" for="r1">Schuif om voor en na te vergelijken</label>
@@ -89,7 +89,7 @@
 
     <article class="project-groot omgekeerd verschijn" id="kozijnhoek">
       <div class="project-beelden">
-        {{schuif:hoek|(max-width:900px) calc(100vw - 48px), 640px|Kozijnhoek voor het herstel: de folie is opengescheurd en de gele lijmlaag is zichtbaar|Dezelfde kozijnhoek na het herstel: strak en egaal, zonder naad|42}}
+        {{schuif:hoek-v2|(max-width:900px) calc(100vw - 48px), 640px|Kozijnhoek voor het herstel: de folie is opengescheurd en de gele lijmlaag is zichtbaar|Dezelfde kozijnhoek na het herstel: strak en egaal, zonder naad|42}}
       </div>
       <div class="project-tekst">
         <p class="plaats">Kozijnhoek &middot; houtnerffolie</p>
@@ -100,42 +100,58 @@
       </div>
     </article>
 
+    <article class="project-groot verschijn" id="hoek-bij-de-muur">
+      <div class="project-beelden">
+        {{schuif:muurhoek|(max-width:900px) calc(100vw - 48px), 640px|Hoek van een kozijn tegen de muur voor het herstel: de folie op de stijl en de onderdorpel is gebarsten en in het verstek losgescheurd|Dezelfde hoek na het herstel: de nieuwe folie loopt strak door het verstek|45}}
+      </div>
+      <div class="project-tekst">
+        <p class="plaats">Stijl en dorpel &middot; wit</p>
+        <h3>Een hoek tegen de muur</h3>
+        <p>Op de stijl en de onderdorpel was de folie gebarsten, en in het verstek was hij
+        losgescheurd. Nu loopt de nieuwe houtnerffolie in één strakke lijn door het verstek,
+        tot tegen de muur.</p>
+      </div>
+    </article>
+
     <div class="projecten-paar">
       <article class="project verschijn" id="klein-raam">
-        {{schuif:raam|(max-width:900px) calc(100vw - 48px), 540px|Klein kozijn voor het herstel: de folie is gebarsten en laat aan de onderkant los|Hetzelfde kleine kozijn na het herstel: strak en egaal}}
+        {{schuif:raam-v2|(max-width:900px) calc(100vw - 48px), 540px|Klein kozijn voor het herstel: de folie is gebarsten en laat aan de onderkant los|Hetzelfde kleine kozijn na het herstel: strak en egaal}}
         <p class="plaats">Klein raam &middot; crème</p>
         <h3>Een klein raam, weer als nieuw</h3>
         <p>De folie was gebarsten en liet aan de onderkant los. Nu is het kozijn rondom weer strak en egaal.</p>
       </article>
       <article class="project verschijn" id="groen">
-        {{schuif:groen|(max-width:900px) calc(100vw - 48px), 540px|Groene onderdorpel voor het herstel: verweerd, met witte strepen en kale plekken|Dezelfde groene onderdorpel na het herstel: egaal groen met houtnerf}}
+        {{schuif:groen-v2|(max-width:900px) calc(100vw - 48px), 540px|Groene onderdorpel voor het herstel: verweerd, met witte strepen en kale plekken|Dezelfde groene onderdorpel na het herstel: egaal groen met houtnerf}}
         <p class="plaats">Groen &middot; RAL 6009</p>
         <h3>Groen, weer egaal van kleur</h3>
         <p>De groene folie op de onderdorpel was verweerd, met witte strepen en kale plekken. Nu is hij weer egaal groen, met de houtnerf die erbij hoort.</p>
       </article>
       <article class="project verschijn" id="antraciet">
-        {{schuif:antraciet|(max-width:900px) calc(100vw - 48px), 540px|Antracietgrijze tussendorpel van een deur voor het herstel: gebarsten en verweerd|Dezelfde tussendorpel na het herstel: strak en egaal antraciet}}
+        {{schuif:antraciet-v2|(max-width:900px) calc(100vw - 48px), 540px|Antracietgrijze tussendorpel van een deur voor het herstel: gebarsten en verweerd|Dezelfde tussendorpel na het herstel: strak en egaal antraciet}}
         <p class="plaats">Antracietgrijs &middot; RAL 7016</p>
         <h3>Een tussendorpel in een deur</h3>
         <p>De folie op de tussendorpel van deze glazen deur was gebarsten en verweerd. Nu is hij weer strak en egaal antraciet.</p>
       </article>
       <article class="project verschijn" id="verbinding">
-        {{schuif:verbinding|(max-width:900px) calc(100vw - 48px), 540px|Verbinding van stijl en dorpel voor het herstel: de folie is verweerd en gebarsten|Dezelfde verbinding na het herstel: de nieuwe folie loopt strak om de hoek}}
+        {{schuif:verbinding-v2|(max-width:900px) calc(100vw - 48px), 540px|Verbinding van stijl en dorpel voor het herstel: de folie is verweerd en gebarsten|Dezelfde verbinding na het herstel: de nieuwe folie loopt strak om de hoek}}
         <p class="plaats">Wit &middot; houtnerffolie</p>
         <h3>Tot in de verbinding</h3>
         <p>De folie was over het hele kozijn verweerd en gebarsten, ook waar de stijl op de dorpel aansluit. Nu loopt de nieuwe houtnerffolie strak om de verbinding.</p>
       </article>
       <article class="project verschijn" id="onderdorpel">
-        {{schuif:dorpel|(max-width:900px) calc(100vw - 48px), 540px|Crème onderdorpel voor het herstel: dof, gebarsten en op plekken kaal|Dezelfde onderdorpel na het herstel: strak en egaal}}
+        {{schuif:dorpel-v2|(max-width:900px) calc(100vw - 48px), 540px|Crème onderdorpel voor het herstel: dof, gebarsten en op plekken kaal|Dezelfde onderdorpel na het herstel: strak en egaal}}
         <p class="plaats">Onderdorpel &middot; crème</p>
         <h3>Een verweerde onderdorpel</h3>
         <p>Op de onderdorpel was de folie dof en gebarsten, en op plekken helemaal weg. Nu is hij weer strak en egaal.</p>
       </article>
-      <article class="project verschijn" id="cremewitte-kozijnen">
-        {{schuif:cremewit|(max-width:900px) calc(100vw - 48px), 540px|Crèmewit kozijn voor het herstel: dof, vlekkerig en onderaan beschadigd|Hetzelfde kozijn na het herstel: weer strak en egaal}}
-        <p class="plaats">Kozijnen &middot; crèmewit</p>
-        <h3>Crèmewitte kozijnen</h3>
-        <p>De folie was dof en vlekkerig geworden, en onderaan beschadigd. Na het herstel zijn de kozijnen weer strak en egaal.</p>
+      <!-- Sinds 26 november 2026: elk paar is in perspectief op elkaar gelegd, zodat voor en na vanuit
+           dezelfde hoek lijken genomen (bron en werkwijze: README, "Voor/na-foto's"). De crèmewitte
+           kozijnen zijn eruit: op de voorfoto stond een raam open, en ze waren er alleen klein. -->
+      <article class="project verschijn" id="onderdorpel-van-voren">
+        {{schuif:dorpel-wit|(max-width:900px) calc(100vw - 48px), 540px|Witte onderdorpel recht van voren voor het herstel: de folie is gebarsten en laat op plekken los|Dezelfde onderdorpel na het herstel: strak en egaal}}
+        <p class="plaats">Onderdorpel &middot; wit</p>
+        <h3>Een onderdorpel van voren</h3>
+        <p>De folie op deze onderdorpel was gebarsten en liet op plekken los. Nu is hij weer strak en egaal, met de houtnerf die erbij hoort.</p>
       </article>
     </div>
   </div>
