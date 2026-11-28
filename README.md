@@ -876,17 +876,29 @@ op Vercel verloren. **Zet de site dus pas live als de koppeling werkt.**
   nafoto gelegd, met punten die op beide foto's hetzelfde zijn (het verstek, de randen van de
   dorpel, tegelvoegen) en waar dat hielp fijn bijgesteld op de randen. Hoe en met welke punten:
   `voor-na/paren.py` (`python3 voor-na/paren.py [naam]` zet ze opnieuw in `images/`; per paar een
-  controle in `.data/voor-na/`). Ligt het kozijn in verschillende vlakken (stijl, bovenkant en
-  voorkant van de dorpel), dan kan het niet overal kloppen: de voorkant van de dorpel gaat voor.
+  controle in `.data/voor-na/`). Is de voorfoto van een iets ander punt genomen (hoger, dichterbij,
+  meer van opzij), dan zijn de vlakken van het kozijn (stijl, bovenkant en voorkant van de dorpel,
+  het glas dat dieper ligt) op de twee foto's niet even groot en kan één perspectief ze niet
+  allemaal goed leggen. Dan legt `voor-na/vervorm.py` de voorfoto **per rand** op zijn plek: elke
+  rand die op beide foto's te zien is wordt gevolgd (of met de hand opgemeten als hij niet te
+  volgen is) en een gladde vervorming legt ze op elkaar ("lijnen" in `paren.py`). Zo gedaan op 28
+  november 2026 bij de groene en de witte dorpel (Max: "deze 2 kloppen niet goed") en bij de twee
+  hoeken. Controleer het altijd met het oog (de controle in `.data/voor-na/`): de getallen die
+  `paren.py` afdrukt kunnen bij een smalle rand naast een sterkere rand verkeerd meten.
   Op de site: `{{schuif:naam|sizes|alt voor|alt na|positie}}` met `images/project-<naam>-voor` en
-  `-na`. Een paar dat al online staat krijgt bij een nieuwe versie een nieuwe naam (`-v2`), want
-  `images/` staat een jaar in de cache. **De hero blijft de schuine dorpel met het opgekrulde stuk
+  `-na`; de positie zet de schuif zo dat de schade bij het openen te zien is. Een paar dat al online
+  staat krijgt bij een nieuwe versie een nieuwe naam (`-v2`, `-v3`), want `images/` staat een jaar in
+  de cache. De twee grote hoeken zijn vierkant (1600x1600), zodat je meer van het kozijn ziet (Max:
+  "kunnen deze wat verder uitgezoomd?"); de schuif neemt de maat van de foto over. **De hero blijft de schuine dorpel met het opgekrulde stuk
   folie** (`voor-gebarsten-dorpel`, ook bovenaan `/voorbeelden`): Max vindt die foto veel beter dan
   een frontale die preciezer over elkaar viel (26 november 2026). Niet vervangen zonder te vragen.
 - **De paren op `/voorbeelden`.** Drie grote blokken (De Wissel, een opengescheurde kozijnhoek,
   een hoek tegen de muur) en een raster van zes: een klein raam, groen (RAL 6009), antracietgrijs
   (RAL 7016), een witte verbinding, een crème onderdorpel en een witte onderdorpel van voren
-  (Sony-foto's). Bovenaan staat dezelfde foto als in de hero. De crèmewitte kozijnen
+  (Sony-foto's DSC05993 en DSC06101: op beide zie je de afstandhouder in het glas, dus van dezelfde
+  hoogte genomen). De opengescheurde hoek komt uit de originelen in "voor na kozijn 2" (5 maart
+  2026); de nafoto IMG_6539 is net als de voorfoto recht van voren genomen, de andere nafoto's meer
+  van opzij. Bovenaan staat dezelfde foto als in de hero. De crèmewitte kozijnen
   zijn eruit (op de voorfoto stond een raam open; oude link gaat naar `#projecten`). De
   originelen staan in Documents/iWrap/.../foto's voor website. Greefa, de Avery-fabriek en de
   villa zijn bewust weggelaten (facadefilm), de groene deur ook (alleen de dorpels waren
